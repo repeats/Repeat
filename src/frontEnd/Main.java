@@ -2,15 +2,18 @@ package frontEnd;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.jnativehook.NativeHookException;
+
 import core.Core;
+import core.Recorder;
 
 public class Main extends JFrame {
 
@@ -19,7 +22,7 @@ public class Main extends JFrame {
 	private ScheduledThreadPoolExecutor sc;
 
 	private JTextField tf;
-	private JButton b;
+	private JButton b, b1, b2;
 	private Runnable t;
 	private Core c;
 
@@ -30,6 +33,8 @@ public class Main extends JFrame {
 	public Main() {
 		sc = new ScheduledThreadPoolExecutor(10);
 		b = new JButton("Go");
+		b1 = new JButton("Stop");
+		b2 = new JButton("Rep");
 		c = new Core();
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -37,17 +42,49 @@ public class Main extends JFrame {
 		setLocation(300, 300);
 		tf = new JTextField(10);
 
+		JPanel main = new JPanel();
 		JPanel panel = new JPanel();
 		panel.add(tf);
-		panel.add(b);
-		add(panel);
+
+		JPanel bPanel = new JPanel();
+		bPanel.setLayout(new BoxLayout(bPanel, BoxLayout.Y_AXIS));
+		bPanel.add(b);
+		bPanel.add(b1);
+		bPanel.add(b2);
+
+		main.add(panel);
+		main.add(bPanel);
+		add(main);
+
+		final Recorder r = new Recorder(c);
 
 		b.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				c.mouse().moveBy(-50, 0);
-				c.mouse().leftClick();
-				c.keyBoard().type(KeyEvent.VK_BACK_SPACE);
+				try {
+					r.clear();
+					r.record();
+				} catch (NativeHookException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		b1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					r.stopRecord();
+				} catch (NativeHookException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		b2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				r.replay();
 			}
 		});
 	}
