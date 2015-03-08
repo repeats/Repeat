@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 public final class Core {
 
-	private ScheduledThreadPoolExecutor executor;
+	private final ScheduledThreadPoolExecutor executor;
 	private Robot controller;
 
-	private MouseCore mouse;
-	private KeyboardCore keyboard;
+	private final MouseCore mouse;
+	private final KeyboardCore keyboard;
 
 	public Core() {
 		try {
@@ -28,6 +28,10 @@ public final class Core {
 
 	public void wait(int duration, Runnable callBack) {
 		executor.schedule(callBack, duration, TimeUnit.MILLISECONDS);
+	}
+
+	public void blockingWait(int duration) throws InterruptedException {
+		Thread.sleep(duration);
 	}
 
 	public MouseCore mouse() {

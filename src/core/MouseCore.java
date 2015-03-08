@@ -11,7 +11,7 @@ import utilities.Function;
 public class MouseCore {
 
 	public static final int CLICK_DURATION_MS = 100;
-	private Robot controller;
+	private final Robot controller;
 
 	public MouseCore(Robot controller) {
 		this.controller = controller;
@@ -34,7 +34,7 @@ public class MouseCore {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param mask
 	 *            InputEvent masks
 	 */
@@ -42,12 +42,24 @@ public class MouseCore {
 		hold(mask, CLICK_DURATION_MS);
 	}
 
+	public void click(int mask, int delay) {
+		hold(mask, delay);
+	}
+
 	public void leftClick() {
 		click(InputEvent.BUTTON1_MASK);
 	}
 
+	public void leftClick(int delay) {
+		click(InputEvent.BUTTON1_MASK, delay);
+	}
+
 	public void rightClick() {
-		click(InputEvent.BUTTON2_MASK);
+		click(InputEvent.BUTTON3_MASK);
+	}
+
+	public void rightClick(int delay) {
+		click(InputEvent.BUTTON3_MASK, delay);
 	}
 
 	public void hold(int mask, int duration) {
@@ -80,8 +92,7 @@ public class MouseCore {
 		controller.mouseMove(p.x + amountX, p.y + amountY);
 	}
 
-	public void moveArea(Point topLeft, Point bottomRight, int col, int row,
-			Function<Point, Void> action) {
+	public void moveArea(Point topLeft, Point bottomRight, int col, int row, Function<Point, Void> action) {
 		if (col < 1 || row < 1) {
 			return;
 		}
