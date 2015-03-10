@@ -20,7 +20,7 @@ public class CommandLineInterface {
 		TerminalState mouseMove = new TerminalState() {
 			@Override
 			protected boolean execute(List<Object> parsed) {
-				core.mouse().move((int)parsed.get(2), (int)parsed.get(3));
+				core.mouse().move((int) parsed.get(2), (int) parsed.get(3));
 				return true;
 			}
 		};
@@ -28,7 +28,7 @@ public class CommandLineInterface {
 		TerminalState mouseMoveBy = new TerminalState() {
 			@Override
 			protected boolean execute(List<Object> parsed) {
-				core.mouse().moveBy((int)parsed.get(2), (int)parsed.get(3));
+				core.mouse().moveBy((int) parsed.get(2), (int) parsed.get(3));
 				return true;
 			}
 		};
@@ -36,7 +36,7 @@ public class CommandLineInterface {
 		TerminalState mouseClick = new TerminalState() {
 			@Override
 			protected boolean execute(List<Object> parsed) {
-				core.mouse().click((int)parsed.get(2));
+				core.mouse().click((int) parsed.get(2));
 				return true;
 			}
 		};
@@ -60,7 +60,7 @@ public class CommandLineInterface {
 		TerminalState keyType = new TerminalState() {
 			@Override
 			protected boolean execute(List<Object> parsed) {
-				core.keyBoard().type((String)parsed.get(2));
+				core.keyBoard().type((String) parsed.get(2));
 				return true;
 			}
 		};
@@ -68,7 +68,7 @@ public class CommandLineInterface {
 		TerminalState keyPress = new TerminalState() {
 			@Override
 			protected boolean execute(List<Object> parsed) {
-				core.keyBoard().press((int)parsed.get(2));
+				core.keyBoard().press((int) parsed.get(2));
 				return true;
 			}
 		};
@@ -76,7 +76,7 @@ public class CommandLineInterface {
 		TerminalState keyRelease = new TerminalState() {
 			@Override
 			protected boolean execute(List<Object> parsed) {
-				core.keyBoard().release((int)parsed.get(2));
+				core.keyBoard().release((int) parsed.get(2));
 				return true;
 			}
 		};
@@ -101,7 +101,7 @@ public class CommandLineInterface {
 				File file = new File((String) parsed.get(1));
 				final JavaSourceGenerator sourceGen = new JavaSourceGenerator();
 
-				FileUtility.readFromFile(file, new Function<String, Boolean>(){
+				FileUtility.readFromFile(file, new Function<String, Boolean>() {
 					@Override
 					public Boolean apply(String r) {
 						if (r.length() < 2) {
@@ -125,10 +125,10 @@ public class CommandLineInterface {
 
 						int[] params = new int[split.length - 3];
 						for (int i = 0; i < params.length; i++) {
-							if (NumberUtility.isInteger(split[i+3])) {
+							if (NumberUtility.isInteger(split[i + 3])) {
 								params[i] = Integer.parseInt(split[i + 3]);
 							} else {
-								System.out.println("Param " + i + " = " + split[i+3] + " must be integer.");
+								System.out.println("Param " + i + " = " + split[i + 3] + " must be integer.");
 								return false;
 							}
 						}
@@ -143,10 +143,15 @@ public class CommandLineInterface {
 					}
 				});
 
-				DynamicJavaCompiler compiler = new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{});
+				DynamicJavaCompiler compiler = new DynamicJavaCompiler("CustomAction", new String[] { "core" }, new String[] {});
 				UserDefinedAction action = compiler.compile(sourceGen.getSource());
 				if (action != null) {
-					action.executeAction(new Core());
+					try {
+						action.action(new Core());
+					} catch (InterruptedException e) {
+						System.out.println("Executed ended prematurely...");
+						return false;
+					}
 				} else {
 					System.out.println("Error in compilation...");
 					return false;
@@ -157,7 +162,7 @@ public class CommandLineInterface {
 		};
 
 		/***********************************************************************************/
-		/*************************Insert path***********************************************/
+		/************************* Insert path ***********************************************/
 		/***********************************************************************************/
 
 		NonNegativeIntegerState a1 = new NonNegativeIntegerState(mouseMove);
@@ -177,7 +182,6 @@ public class CommandLineInterface {
 		mouseChoices.put("press", a6);
 		mouseChoices.put("release", a7);
 		ChoiceState mouse = new ChoiceState(mouseChoices);
-
 
 		StringState a8 = new StringState(keyType);
 		NonNegativeIntegerState a9 = new NonNegativeIntegerState(keyPress);
@@ -200,11 +204,11 @@ public class CommandLineInterface {
 		ChoiceState start = new ChoiceState(startChoices);
 
 		/***********************************************************************************/
-		/*************************Start parsing*********************************************/
+		/************************* Start parsing *********************************************/
 		/***********************************************************************************/
 
-//		String[] test = {"test.java", "mouse", "moveBy", "100", "0"};
-//		args = test;
+		// String[] test = {"test.java", "mouse", "moveBy", "100", "0"};
+		// args = test;
 
 		ParseState current = start;
 		List<Object> parsed = new LinkedList<>();

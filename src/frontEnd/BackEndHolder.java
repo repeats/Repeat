@@ -80,6 +80,17 @@ public class BackEndHolder {
 		}
 	}
 
+	protected void forceStopRunningCompiledAction() {
+		isRunning = false;
+		if (compiledExecutor != null) {
+			while (compiledExecutor.isAlive()) {
+				compiledExecutor.interrupt();
+			}
+		}
+		
+		main.bRun.setText("Run Compiled Action");
+	}
+	
 	protected void promptSource() {
 		StringBuffer sb = new StringBuffer();
 		if (main.rbmiCompileJava.isSelected()) {
@@ -91,11 +102,6 @@ public class BackEndHolder {
 			sb.append("        System.out.println(\"hello\");\n");
 			sb.append("        controller.mouse().move(0, 0);\n");
 			sb.append("        controller.mouse().moveBy(300, 200);\n");
-			sb.append("        controller.wait(500, new Runnable() {\n");
-			sb.append("            public void run() {\n");
-			sb.append("                //controller.keyBoard().type(\"Hello\");\n");
-			sb.append("            }\n");
-			sb.append("        });\n");
 			sb.append("        controller.mouse().moveBy(-200, 200);\n");
 			sb.append("        controller.blockingWait(1000);\n");
 			sb.append("    }\n");

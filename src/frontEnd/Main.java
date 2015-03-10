@@ -34,6 +34,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.jnativehook.NativeHookException;
@@ -179,6 +180,17 @@ public class Main extends JFrame {
 		});
 		mnNewMenu_2.add(mntmNewMenuItem);
 
+		JMenuItem miStopRunningCompiledAction = new JMenuItem("Force stop running compiled action");
+		miStopRunningCompiledAction.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, InputEvent.CTRL_MASK));
+		miStopRunningCompiledAction.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.forceStopRunningCompiledAction();
+			}
+		});
+		mnNewMenu_2.add(miStopRunningCompiledAction);
+		
+		
 		JMenu mnNewMenu_3 = new JMenu("Compiling Language");
 		mnNewMenu_2.add(mnNewMenu_3);
 
@@ -235,20 +247,33 @@ public class Main extends JFrame {
 		});
 		mSetting.add(miSetReplayHotkey);
 
+		JMenuItem miClassPath = new JMenuItem("Set Java home");
+		miClassPath.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser("Java home");
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if (chooser.showDialog(Main.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
+					System.setProperty("java.home", chooser.getSelectedFile().getAbsolutePath());
+				}
+			}
+		});
+		mSetting.add(miClassPath);
+		
 		menuBar.add(mSetting);
 
-				final JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Record Mouse Click Only");
-				mSetting.add(chckbxmntmNewCheckItem);
-				chckbxmntmNewCheckItem.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if (chckbxmntmNewCheckItem.isSelected()) {
-							backEnd.recorder.setRecordMode(Recorder.MODE_MOUSE_CLICK_ONLY);
-						} else {
-							backEnd.recorder.setRecordMode(Recorder.MODE_NORMAL);
-						}
-					}
-				});
+		final JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Record Mouse Click Only");
+		mSetting.add(chckbxmntmNewCheckItem);
+		chckbxmntmNewCheckItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (chckbxmntmNewCheckItem.isSelected()) {
+					backEnd.recorder.setRecordMode(Recorder.MODE_MOUSE_CLICK_ONLY);
+				} else {
+					backEnd.recorder.setRecordMode(Recorder.MODE_NORMAL);
+				}
+			}
+		});
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -372,21 +397,26 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (backEnd.isRunning) {//Stop it
-					backEnd.isRunning = false;
-					if (backEnd.compiledExecutor != null) {
-						while (backEnd.compiledExecutor.isAlive()) {
-							backEnd.compiledExecutor.interrupt();
-						}
-					}
-					bRun.setText("Run Compiled Action");
+					backEnd.forceStopRunningCompiledAction();
 				} else {//Run it
 					if (backEnd.customFunction != null) {
 						backEnd.isRunning = true;
-
+						bRun.setText("Stop running");
+						
 						backEnd.compiledExecutor = new Thread(new Runnable() {
 						    @Override
 							public void run() {
-						    	backEnd.customFunction.executeAction(backEnd.core);
+						    	try {
+									backEnd.customFunction.action(backEnd.core);
+								} catch (InterruptedException e) {//Stopped prematurely
+									return;
+								}
+						    	SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										backEnd.forceStopRunningCompiledAction();
+									}
+								});
 						    }
 						});
 						backEnd.compiledExecutor.start();

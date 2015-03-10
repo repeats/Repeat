@@ -64,6 +64,10 @@ public class DynamicJavaCompiler implements DynamicCompiler {
                 /** Compilation Requirements *********************************************************************************************/
                 DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
                 JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+                if (compiler == null) {
+                	LOGGER.warning("No java compiler found. Set class path points to JDK in setting?");
+                	return null;
+                }
                 StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
 
                 // This sets up the class path that the compiler will use.
