@@ -12,6 +12,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 
 import utilities.CodeConverter;
 import utilities.Function;
+import utilities.NumberUtility;
 import core.Config;
 import core.Core;
 import core.DynamicCompiler;
@@ -115,15 +116,22 @@ public class BackEndHolder {
 					setEnableRecord(false);
 				}
 			});
-			recorder.replay(new Function<Void, Void>() {
-				@Override
-				public Void apply(Void r) {
-					switchReplay();
-					return null;
-				}
-			}, 5, false);
-		}
 
+			String repeatText = main.tfRepeatCount.getText();
+			String delayText = main.tfRepeatDelay.getText();
+			if (NumberUtility.isPositiveInteger(repeatText) && NumberUtility.isNonNegativeInteger(delayText)) {
+				long repeatCount = Long.parseLong(repeatText);
+				long delay = Long.parseLong(delayText);
+
+				recorder.replay(repeatCount, delay, new Function<Void, Void>() {
+					@Override
+					public Void apply(Void r) {
+						switchReplay();
+						return null;
+					}
+				}, 5, false);
+			}
+		}
 	}
 
 	protected void switchRunningCompiledAction() {

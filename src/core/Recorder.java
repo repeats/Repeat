@@ -194,11 +194,11 @@ public class Recorder {
 	}
 
 	public void replay() {
-		replay(null, 0, true);
+		replay(1, 0, null, 0, true);
 	}
 
-	public void replay(Function<Void, Void> callBack, long callBackDelay, boolean blocking) {
-		long time = taskScheduler.runTasks(callBack, callBackDelay);
+	public void replay(long count, long delay, Function<Void, Void> callBack, long callBackDelay, boolean blocking) {
+		long time = taskScheduler.runTasks(count, delay, callBack, callBackDelay);
 
 		if (blocking && time > 0) {
 			try {

@@ -28,6 +28,14 @@ public final class NumberUtility {
 		return (input == Math.floor(input)) && !Double.isInfinite(input);
 	}
 
+	public static boolean isPositiveInteger(String input) {
+		return isInteger(input) && Integer.parseInt(input) > 0;
+	}
+
+	public static boolean isNonNegativeInteger(String input) {
+		return isInteger(input) && Integer.parseInt(input) >= 0;
+	}
+
 	public static boolean isInteger(String input) {
 		if (input == null) {
 			return false;

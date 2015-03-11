@@ -59,9 +59,18 @@ class TaskScheduler {
 		return tasks.getFirst();
 	}
 
-	protected synchronized long runTasks(final Function<Void, Void> callBack, final long callBackDelay) {
+	protected synchronized long runTasks(final long count, final long delay, final Function<Void, Void> callBack, final long callBackDelay) {
 		if (isRunning) {
 			LOGGER.info("Cannot invoke two running instances");
+			return 0;
+		} else if (count < 1) {
+			LOGGER.warning("Attempt to run tasks with count " + count);
+			return 0;
+		} else if (delay < 0) {
+			LOGGER.warning("Attempt to run tasks with negative delay " + delay);
+			return 0;
+		} else if (callBackDelay < 0) {
+			LOGGER.warning("Attempt to run tasks with negative callBack delay " + callBackDelay);
 			return 0;
 		}
 
@@ -69,31 +78,42 @@ class TaskScheduler {
 		Runnable running = new Runnable() {
 			@Override
 			public void run() {
-				long time = 0;
-				for (Task t : tasks) {
-					long currentTime = t.time;
+				for (long i = 0; i < count; i++) {
+					long time = 0;
+					for (Task t : tasks) {
+						long currentTime = t.time;
 
-					if (currentTime < time) {
-						LOGGER.severe("Something went really bad");
-						System.exit(1);
+						if (currentTime < time) {
+							LOGGER.severe("Something went really bad");
+							System.exit(1);
+						}
+
+						try {
+							Thread.sleep(currentTime - time);
+						} catch (InterruptedException e) {
+							LOGGER.info("Ended prematuredly");
+							return; // Ended prematurely
+						}
+
+						time = currentTime;
+						t.task.run();
 					}
 
-					try {
-						Thread.sleep(currentTime - time);
-					} catch (InterruptedException e) {
-						LOGGER.info("Ended prematuredly");
-						return; //Ended prematurely
+					if (delay > 0) {
+						try {
+							Thread.sleep(delay);
+						} catch (InterruptedException e) {
+							LOGGER.info("Ended prematuredly");
+							return; // Ended prematurely
+						}
 					}
-
-					time = currentTime;
-					t.task.run();
 				}
 
 				if (callBack != null && callBackDelay > 0) {
 					try {
 						Thread.sleep(callBackDelay);
 					} catch (InterruptedException e) {
-						return; //Ended prematurely
+						return; // Ended prematurely
 					}
 					callBack.apply(null);
 				}
