@@ -4,16 +4,11 @@ import globalListener.GlobalKeyListener;
 import globalListener.GlobalMouseListener;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 
@@ -28,11 +23,10 @@ public class Recorder {
 	public static final int MODE_NORMAL = 0;
 	public static final int MODE_MOUSE_CLICK_ONLY = 1;
 
-	private LinkedList<Task> tasks;
-	private LinkedList<ScheduledFuture<?>> scheduled;
-	private ScheduledThreadPoolExecutor executor;
 	private long startTime;
 	private int mode;
+
+	private TaskScheduler taskScheduler;
 
 	private GlobalKeyListener keyListener;
 	private GlobalMouseListener mouseListener;
@@ -52,9 +46,7 @@ public class Recorder {
 	}
 
 	public Recorder(final Core controller) {
-		this.executor = new ScheduledThreadPoolExecutor(100);
-		this.tasks = new LinkedList<>();
-		this.scheduled = new LinkedList<>();
+		taskScheduler = new TaskScheduler();
 
 		sourceGenerators = new HashMap<>();
 		sourceGenerators.put(JAVA_LANGUAGE, new JavaSourceGenerator());
@@ -70,7 +62,7 @@ public class Recorder {
 				}
 
 				final long time = System.currentTimeMillis() - startTime;
-				tasks.add(new Task(time, new Runnable() {
+				taskScheduler.addTask(new Task(time, new Runnable() {
 					@Override
 					public void run() {
 						controller.keyBoard().press(code);
@@ -93,7 +85,7 @@ public class Recorder {
 				}
 
 				final long time = System.currentTimeMillis() - startTime;
-				tasks.add(new Task(time, new Runnable() {
+				taskScheduler.addTask(new Task(time, new Runnable() {
 					@Override
 					public void run() {
 						controller.keyBoard().release(code);
@@ -112,9 +104,9 @@ public class Recorder {
 		mouseListener.setMouseReleased(new Function<NativeMouseEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeMouseEvent r) {
-				final int code = CodeConverter.getMouseButtonCode(r.getButton());
+				final int code = CodeConverter.getMouseButtonCode(r.getButton(), false);
 				final long time = System.currentTimeMillis() - startTime;
-				tasks.add(new Task(time, new Runnable() {
+				taskScheduler.addTask(new Task(time + 20, new Runnable() {
 					@Override
 					public void run() {
 						if (mode == MODE_MOUSE_CLICK_ONLY) {
@@ -139,9 +131,9 @@ public class Recorder {
 		mouseListener.setMousePressed(new Function<NativeMouseEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeMouseEvent r) {
-				final int code = CodeConverter.getMouseButtonCode(r.getButton());
+				final int code = CodeConverter.getMouseButtonCode(r.getModifiers(), true);
 				final long time = System.currentTimeMillis() - startTime;
-				tasks.add(new Task(time, new Runnable() {
+				taskScheduler.addTask(new Task(time, new Runnable() {
 					@Override
 					public void run() {
 						if (mode == MODE_MOUSE_CLICK_ONLY) {
@@ -171,7 +163,7 @@ public class Recorder {
 				}
 
 				final long time = System.currentTimeMillis() - startTime;
-				tasks.add(new Task(time, new Runnable() {
+				taskScheduler.addTask(new Task(time, new Runnable() {
 					@Override
 					public void run() {
 						controller.mouse().move(r.getX(), r.getY());
@@ -190,53 +182,27 @@ public class Recorder {
 		this.mode = mode;
 	}
 
-	public void record() throws NativeHookException {
-		if (!GlobalScreen.isNativeHookRegistered()) {
-			GlobalScreen.registerNativeHook();
-		}
-
+	public void record() {
 		this.startTime = System.currentTimeMillis();
 		this.keyListener.startListening();
 		this.mouseListener.startListening();
 	}
 
-	public void stopRecord() throws NativeHookException {
+	public void stopRecord() {
 		this.keyListener.stopListening();
 		this.mouseListener.stopListening();
-
-//		if (GlobalScreen.isNativeHookRegistered()) {
-//			GlobalScreen.unregisterNativeHook();
-//		}
 	}
 
 	public void replay() {
-		replay(new Function<Void, Void>() {
-			@Override
-			public Void apply(Void r) {
-				return null;
-			}
-		}, 0, true);
+		replay(null, 0, true);
 	}
 
-	public void replay(final Function<Void, Void> callBack, long delayCallBack, boolean blocking) {
-		long time = 0;
-		for (Task t : tasks) {
-			time = t.time;
-			ScheduledFuture<?> future = executor.schedule(t.task, t.time, TimeUnit.MILLISECONDS);
-			scheduled.add(future);
-		}
+	public void replay(Function<Void, Void> callBack, long callBackDelay, boolean blocking) {
+		long time = taskScheduler.runTasks(callBack, callBackDelay);
 
-		ScheduledFuture<?> lastCall = executor.schedule(new Runnable() {
-			@Override
-			public void run() {
-				callBack.apply(null);
-			}
-		}, time + delayCallBack, TimeUnit.MILLISECONDS);
-		scheduled.add(lastCall);
-
-		if (blocking) {
+		if (blocking && time > 0) {
 			try {
-				Thread.sleep(time + delayCallBack);
+				Thread.sleep(time);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -244,19 +210,14 @@ public class Recorder {
 	}
 
 	public void stopReplay() {
-		for (ScheduledFuture<?> f : scheduled) {
-			f.cancel(false);
-		}
-		scheduled.clear();
+		taskScheduler.halt();
 	}
 
 	public void clear() {
 		for (SourceGenerator generator : sourceGenerators.values()) {
 			generator.clear();
 		}
-
-		tasks.clear();
-		scheduled.clear();
+		taskScheduler.clearTasks();
 	}
 
 	public String getGeneratedCode(int language) {
@@ -268,9 +229,11 @@ public class Recorder {
 		}
 	}
 
-	private static class Task {
-		private final long time;
-		private final Runnable task;
+	protected static class Task {
+
+		protected static final Task EARLY_TASK = new Task(Long.MIN_VALUE, null);
+		protected final long time;
+		protected final Runnable task;
 
 		private Task(long time, Runnable task) {
 			this.time = time;

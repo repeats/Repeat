@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,15 +33,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
 import utilities.ExceptionUtility;
 import utilities.FileUtility;
-import utilities.NumberUtility;
-import utilities.OutStream;
 
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
@@ -69,12 +66,21 @@ public class Main extends JFrame {
 	protected JButton bRecord, bReplay, bCompile, bRun;
 	protected JTextArea taSource, taStatus;
 	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython;
-	private JTextField tfMousePosition;
+	private final JTextField tfMousePosition;
 
-	/**
+	/*
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		if (!GlobalScreen.isNativeHookRegistered()) {
+			try {
+				GlobalScreen.registerNativeHook();
+			} catch (NativeHookException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -180,17 +186,6 @@ public class Main extends JFrame {
 		});
 		mnNewMenu_2.add(mntmNewMenuItem);
 
-		JMenuItem miStopRunningCompiledAction = new JMenuItem("Force stop running compiled action");
-		miStopRunningCompiledAction.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, InputEvent.CTRL_MASK));
-		miStopRunningCompiledAction.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				backEnd.forceStopRunningCompiledAction();
-			}
-		});
-		mnNewMenu_2.add(miStopRunningCompiledAction);
-		
-		
 		JMenu mnNewMenu_3 = new JMenu("Compiling Language");
 		mnNewMenu_2.add(mnNewMenu_3);
 
@@ -259,7 +254,7 @@ public class Main extends JFrame {
 			}
 		});
 		mSetting.add(miClassPath);
-		
+
 		menuBar.add(mSetting);
 
 		final JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Record Mouse Click Only");
@@ -295,28 +290,7 @@ public class Main extends JFrame {
 		bRecord.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!backEnd.isRecording) {//Start record
-					try {
-						backEnd.recorder.clear();
-						backEnd.recorder.record();
-						backEnd.isRecording = true;
-						bRecord.setText("Stop");
-
-						setEnableReplay(false);
-					} catch (NativeHookException e1) {
-						LOGGER.log(Level.WARNING, e1.getMessage());
-					}
-				} else {//Stop record
-					try {
-						backEnd.recorder.stopRecord();
-						backEnd.isRecording = false;
-						bRecord.setText("Record");
-
-						setEnableReplay(true);
-					} catch (NativeHookException e1) {
-						LOGGER.log(Level.WARNING, e1.getMessage());
-					}
-				}
+				backEnd.switchRecord();
 			}
 		});
 
@@ -325,38 +299,7 @@ public class Main extends JFrame {
 		bReplay.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!backEnd.isReplaying) {//Start replay
-					if (!NumberUtility.isInteger(tfRepeatCount.getText()) || Integer.parseInt(tfRepeatCount.getText()) < 1) {
-						JOptionPane.showMessageDialog(null, "Repeat count is not positive integer", "Error", JOptionPane.OK_OPTION);
-						return;
-					} else if (!NumberUtility.isInteger(tfRepeatDelay.getText()) || Integer.parseInt(tfRepeatDelay.getText()) < 0) {
-						JOptionPane.showMessageDialog(null, "Repeat delay is not positive integer", "Error", JOptionPane.OK_OPTION);
-						return;
-					}
-
-					backEnd.isReplaying = true;
-					bReplay.setText("Stop");
-
-					setEnableRecord(false);
-					final int count = Integer.parseInt(tfRepeatCount.getText());
-
-					backEnd.executor.schedule(new Runnable() {
-						@Override
-						public void run() {
-							for (int i = 0; i < count; i++) {
-								backEnd.recorder.replay();
-							}
-
-							bReplay.doClick();
-						}
-					}, 0, TimeUnit.MILLISECONDS);
-				} else {//Stop replay
-					backEnd.isReplaying = false;
-					bReplay.setText("Replay");
-
-					setEnableRecord(true);
-					backEnd.recorder.stopReplay();
-				}
+				backEnd.switchReplay();
 			}
 		});
 
@@ -397,29 +340,11 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (backEnd.isRunning) {//Stop it
-					backEnd.forceStopRunningCompiledAction();
+					backEnd.switchRunningCompiledAction();
 				} else {//Run it
 					if (backEnd.customFunction != null) {
 						backEnd.isRunning = true;
 						bRun.setText("Stop running");
-						
-						backEnd.compiledExecutor = new Thread(new Runnable() {
-						    @Override
-							public void run() {
-						    	try {
-									backEnd.customFunction.action(backEnd.core);
-								} catch (InterruptedException e) {//Stopped prematurely
-									return;
-								}
-						    	SwingUtilities.invokeLater(new Runnable() {
-									@Override
-									public void run() {
-										backEnd.forceStopRunningCompiledAction();
-									}
-								});
-						    }
-						});
-						backEnd.compiledExecutor.start();
 					}
 				}
 			}
@@ -512,24 +437,9 @@ public class Main extends JFrame {
 		taStatus.setEditable(false);
 
 		scrollPane_1.setViewportView(taStatus);
-		PrintStream printStream = new PrintStream(new OutStream(taStatus));
-		System.setOut(printStream);
-		System.setErr(printStream);
-	}
-
-	private void setEnableRecord(boolean state) {
-		bRecord.setEnabled(state);
-	}
-
-	private void setEnableReplay(boolean state) {
-		bReplay.setEnabled(state);
-		tfRepeatCount.setEnabled(state);
-		tfRepeatDelay.setEnabled(state);
-
-		if (state) {
-			tfRepeatCount.setText("1");
-			tfRepeatDelay.setText("0");
-		}
+//		PrintStream printStream = new PrintStream(new OutStream(taStatus));
+//		System.setOut(printStream);
+//		System.setErr(printStream);
 	}
 
 	private void refreshCompilingLanguage() {

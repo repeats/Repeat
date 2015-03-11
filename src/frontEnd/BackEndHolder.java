@@ -5,7 +5,8 @@ import globalListener.GlobalKeyListener;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.jnativehook.GlobalScreen;
+import javax.swing.SwingUtilities;
+
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
@@ -48,20 +49,17 @@ public class BackEndHolder {
 	}
 
 	protected void startGlobalHotkey() throws NativeHookException {
-		if (!GlobalScreen.isNativeHookRegistered()) {
-			GlobalScreen.registerNativeHook();
-		}
 		GlobalKeyListener keyListener = new GlobalKeyListener();
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
 				if (!main.hotkey.isVisible()) {
 					if (CodeConverter.getKeyEventCode(r.getKeyCode()) == Config.RECORD) {
-						main.bRecord.doClick();
+						switchRecord();
 					} else if (CodeConverter.getKeyEventCode(r.getKeyCode()) == Config.REPLAY) {
-						main.bReplay.doClick();
+						switchReplay();
 					} else if (CodeConverter.getKeyEventCode(r.getKeyCode()) == Config.COMPILED_REPLAY) {
-						main.bRun.doClick();
+						switchRunningCompiledAction();
 					}
 				}
 				return true;
@@ -80,17 +78,95 @@ public class BackEndHolder {
 		}
 	}
 
-	protected void forceStopRunningCompiledAction() {
-		isRunning = false;
-		if (compiledExecutor != null) {
-			while (compiledExecutor.isAlive()) {
-				compiledExecutor.interrupt();
-			}
+	protected void switchRecord() {
+		if (!isRecording) {//Start record
+			recorder.clear();
+			recorder.record();
+			isRecording = true;
+			main.bRecord.setText("Stop");
+
+			setEnableReplay(false);
+		} else {//Stop record
+			recorder.stopRecord();
+			isRecording = false;
+			main.bRecord.setText("Record");
+
+			setEnableReplay(true);
 		}
-		
-		main.bRun.setText("Run Compiled Action");
 	}
-	
+
+	protected void switchReplay() {
+		if (isReplaying) {
+			isReplaying = false;
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					main.bReplay.setText("Replay");
+					setEnableRecord(true);
+				}
+			});
+			recorder.stopReplay();
+		} else {
+			isReplaying = true;
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					main.bReplay.setText("Stop replay");
+					setEnableRecord(false);
+				}
+			});
+			recorder.replay(new Function<Void, Void>() {
+				@Override
+				public Void apply(Void r) {
+					switchReplay();
+					return null;
+				}
+			}, 5, false);
+		}
+
+	}
+
+	protected void switchRunningCompiledAction() {
+		if (isRunning) {
+			isRunning = false;
+			if (compiledExecutor != null) {
+				while (compiledExecutor.isAlive()) {
+					compiledExecutor.interrupt();
+				}
+			}
+
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					main.bRun.setText("Run Compiled Action");
+				}
+			});
+		} else {
+			isRunning = true;
+
+			compiledExecutor = new Thread(new Runnable() {
+			    @Override
+				public void run() {
+			    	try {
+						customFunction.action(core);
+					} catch (InterruptedException e) {//Stopped prematurely
+						return;
+					}
+
+					switchRunningCompiledAction();
+			    }
+			});
+			compiledExecutor.start();
+
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					main.bRun.setText("Stop running");
+				}
+			});
+		}
+	}
+
 	protected void promptSource() {
 		StringBuffer sb = new StringBuffer();
 		if (main.rbmiCompileJava.isSelected()) {
@@ -113,5 +189,20 @@ public class BackEndHolder {
 			sb.append("    repeat_lib.mouseMoveBy(100, 0)");
 		}
 		main.taSource.setText(sb.toString());
+	}
+
+	private void setEnableRecord(boolean state) {
+		main.bRecord.setEnabled(state);
+	}
+
+	private void setEnableReplay(boolean state) {
+		main.bReplay.setEnabled(state);
+		main.tfRepeatCount.setEnabled(state);
+		main.tfRepeatDelay.setEnabled(state);
+
+		if (state) {
+			main.tfRepeatCount.setText("1");
+			main.tfRepeatDelay.setText("0");
+		}
 	}
 }

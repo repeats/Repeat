@@ -9,17 +9,27 @@ import org.jnativehook.mouse.NativeMouseEvent;
 
 public class CodeConverter {
 
-	public static int getMouseButtonCode(int nativeCode) {
-		if (nativeCode == NativeMouseEvent.BUTTON1) {
-			return InputEvent.BUTTON1_MASK;
-		} else if (nativeCode == NativeMouseEvent.BUTTON2) {
-			return InputEvent.BUTTON2_MASK;
-		} else if (nativeCode == NativeMouseEvent.BUTTON3) {
-			return InputEvent.BUTTON2_MASK;
-		} else if (nativeCode == NativeMouseEvent.BUTTON4) {
-			return InputEvent.BUTTON2_MASK;
+	public static int getMouseButtonCode(int nativeCode, boolean isPressed) {
+		if (isPressed) {
+			if (nativeCode == NativeMouseEvent.BUTTON1_MASK) {
+				return InputEvent.BUTTON1_DOWN_MASK;
+			} else if (nativeCode == NativeMouseEvent.BUTTON2_MASK) {
+				return InputEvent.BUTTON3_DOWN_MASK;
+			} else if (nativeCode == NativeMouseEvent.BUTTON3_MASK) {
+				return InputEvent.BUTTON2_DOWN_MASK;
+			} else {
+				return InputEvent.BUTTON1_DOWN_MASK;
+			}
 		} else {
-			return InputEvent.BUTTON1_MASK;
+			if (nativeCode == NativeMouseEvent.BUTTON1) {
+				return InputEvent.BUTTON1_DOWN_MASK;
+			} else if (nativeCode == NativeMouseEvent.BUTTON2) {
+				return InputEvent.BUTTON3_DOWN_MASK;
+			} else if (nativeCode == NativeMouseEvent.BUTTON3) {
+				return InputEvent.BUTTON2_DOWN_MASK;
+			} else {
+				return InputEvent.BUTTON1_DOWN_MASK;
+			}
 		}
 	}
 
