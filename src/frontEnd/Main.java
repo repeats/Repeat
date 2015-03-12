@@ -2,6 +2,7 @@ package frontEnd;
 
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -10,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +42,7 @@ import org.jnativehook.NativeHookException;
 
 import utilities.ExceptionUtility;
 import utilities.FileUtility;
+import utilities.OutStream;
 
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
@@ -76,10 +79,11 @@ public class Main extends JFrame {
 			try {
 				GlobalScreen.registerNativeHook();
 			} catch (NativeHookException e) {
-				e.printStackTrace();
+				LOGGER.severe("Cannot register native hook");
 				System.exit(1);
 			}
 		}
+		Toolkit.getDefaultToolkit().setLockingKeyState(KeyEvent.VK_NUM_LOCK, false);
 
 		EventQueue.invokeLater(new Runnable() {
 			@Override
@@ -339,14 +343,7 @@ public class Main extends JFrame {
 		bRun.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (backEnd.isRunning) {//Stop it
-					backEnd.switchRunningCompiledAction();
-				} else {//Run it
-					if (backEnd.customFunction != null) {
-						backEnd.isRunning = true;
-						bRun.setText("Stop running");
-					}
-				}
+				backEnd.switchRunningCompiledAction();
 			}
 		});
 
@@ -437,9 +434,9 @@ public class Main extends JFrame {
 		taStatus.setEditable(false);
 
 		scrollPane_1.setViewportView(taStatus);
-//		PrintStream printStream = new PrintStream(new OutStream(taStatus));
-//		System.setOut(printStream);
-//		System.setErr(printStream);
+		PrintStream printStream = new PrintStream(new OutStream(taStatus));
+		System.setOut(printStream);
+		System.setErr(printStream);
 	}
 
 	private void refreshCompilingLanguage() {

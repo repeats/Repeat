@@ -5,6 +5,7 @@ import globalListener.GlobalKeyListener;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jnativehook.NativeHookException;
@@ -138,8 +139,10 @@ public class BackEndHolder {
 		if (isRunning) {
 			isRunning = false;
 			if (compiledExecutor != null) {
-				while (compiledExecutor.isAlive()) {
-					compiledExecutor.interrupt();
+				if (compiledExecutor != Thread.currentThread()) {
+					while (compiledExecutor.isAlive()) {
+						compiledExecutor.interrupt();
+					}
 				}
 			}
 
@@ -150,6 +153,11 @@ public class BackEndHolder {
 				}
 			});
 		} else {
+			if (customFunction == null) {
+				JOptionPane.showMessageDialog(main, "No compiled action in memory");
+				return;
+			}
+			
 			isRunning = true;
 
 			compiledExecutor = new Thread(new Runnable() {
