@@ -1,7 +1,5 @@
 package frontEnd;
 
-import globalListener.GlobalKeyListener;
-
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +9,16 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.jnativehook.NativeHookException;
-import org.jnativehook.keyboard.NativeKeyEvent;
-
-import utilities.CodeConverter;
 import utilities.Function;
 import utilities.NumberUtility;
 import utilities.SwingUtil;
-import core.Config;
-import core.Core;
-import core.DynamicCompiler;
-import core.DynamicJavaCompiler;
-import core.DynamicPythonCompiler;
-import core.Recorder;
+import core.TaskManager;
 import core.UserDefinedAction;
+import core.controller.Core;
+import core.languageHandler.DynamicCompiler;
+import core.languageHandler.DynamicJavaCompiler;
+import core.languageHandler.DynamicPythonCompiler;
+import core.recorder.Recorder;
 
 public class BackEndHolder {
 
@@ -39,6 +33,7 @@ public class BackEndHolder {
 	protected final DynamicPythonCompiler pythonCompiler;
 	protected UserDefinedAction customFunction;
 	private final List<UserDefinedAction> customTasks;
+	private final TaskManager taskManager;
 
 	protected boolean isRecording, isReplaying, isRunning;
 
@@ -53,29 +48,10 @@ public class BackEndHolder {
 		recorder = new Recorder(core);
 
 		customTasks = new ArrayList<>();
+		taskManager = new TaskManager();
 
 		javaCompiler = new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{});
 		pythonCompiler = new DynamicPythonCompiler();
-	}
-
-	protected void startGlobalHotkey() throws NativeHookException {
-		GlobalKeyListener keyListener = new GlobalKeyListener();
-		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
-			@Override
-			public Boolean apply(NativeKeyEvent r) {
-				if (!main.hotkey.isVisible()) {
-					if (CodeConverter.getKeyEventCode(r.getKeyCode()) == Config.RECORD) {
-						switchRecord();
-					} else if (CodeConverter.getKeyEventCode(r.getKeyCode()) == Config.REPLAY) {
-						switchReplay();
-					} else if (CodeConverter.getKeyEventCode(r.getKeyCode()) == Config.COMPILED_REPLAY) {
-						switchRunningCompiledAction();
-					}
-				}
-				return true;
-			}
-		});
-		keyListener.startListening();
 	}
 
 	/*************************************************************************************************************/
@@ -167,7 +143,7 @@ public class BackEndHolder {
 				JOptionPane.showMessageDialog(main, "No compiled action in memory");
 				return;
 			}
-			
+
 			isRunning = true;
 
 			compiledExecutor = new Thread(new Runnable() {
@@ -202,6 +178,10 @@ public class BackEndHolder {
 		if (createdInstance != null) {
 			customFunction = createdInstance;
 			customFunction.setCompiler(compiler.getName());
+
+			if (!taskManager.submitTask(customFunction, source)) {
+				JOptionPane.showMessageDialog(main, "Error writing source file...");
+			}
 		}
 	}
 
@@ -211,16 +191,21 @@ public class BackEndHolder {
 			customFunction.setName("New task");
 			customFunction.setHotkey(-1);
 			customTasks.add(customFunction);
+
 			renderTasks();
 		} else {
-			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
+			JOptionPane.showMessageDialog(main, "Nothing to add. Compile first?");
 		}
 	}
 
 	protected void removeCurrentTask() {
 		int selectedRow = main.tTasks.getSelectedRow();
 		if (selectedRow >= 0 && selectedRow < customTasks.size()) {
+			if (!taskManager.removeTask(customTasks.get(selectedRow))) {
+				JOptionPane.showMessageDialog(main, "Encountered error removing source file " + customTasks.get(selectedRow).getSourcePath());
+			}
 			customTasks.remove(selectedRow);
+
 			renderTasks();
 		} else {
 			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
@@ -249,7 +234,9 @@ public class BackEndHolder {
 		StringBuffer sb = new StringBuffer();
 		if (main.rbmiCompileJava.isSelected()) {
 			sb.append("package core;\n");
+			sb.append("import core.controller.Core;\n");
 			sb.append("import core.UserDefinedAction;\n");
+
 
 			sb.append("public class CustomAction extends UserDefinedAction {\n");
 			sb.append("    public void action(final Core controller) throws InterruptedException {\n");

@@ -1,4 +1,4 @@
-package core;
+package core.recorder;
 
 import globalListener.GlobalKeyListener;
 import globalListener.GlobalMouseListener;
@@ -14,6 +14,10 @@ import org.jnativehook.mouse.NativeMouseEvent;
 
 import utilities.CodeConverter;
 import utilities.Function;
+import core.GlobalKeysManager;
+import core.controller.Core;
+import core.languageHandler.JavaSourceGenerator;
+import core.languageHandler.SourceGenerator;
 
 public class Recorder {
 
@@ -57,7 +61,7 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (Config.isSpecialKey(code)) {
+				if (GlobalKeysManager.isKeyRegistered(code)) {
 					return true;
 				}
 
@@ -80,7 +84,7 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (Config.isSpecialKey(code)) {
+				if (GlobalKeysManager.isKeyRegistered(code)) {
 					return true;
 				}
 

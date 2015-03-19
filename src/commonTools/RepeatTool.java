@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import utilities.StringUtilities;
-import core.Recorder;
+import core.recorder.Recorder;
 
 public abstract class RepeatTool {
 

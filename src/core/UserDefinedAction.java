@@ -1,5 +1,7 @@
 package core;
 
+import core.controller.Core;
+
 public abstract class UserDefinedAction {
 
 	protected String name;

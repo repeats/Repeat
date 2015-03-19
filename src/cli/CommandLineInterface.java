@@ -8,10 +8,10 @@ import java.util.List;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.NumberUtility;
-import core.Core;
-import core.DynamicJavaCompiler;
-import core.JavaSourceGenerator;
 import core.UserDefinedAction;
+import core.controller.Core;
+import core.languageHandler.DynamicJavaCompiler;
+import core.languageHandler.JavaSourceGenerator;
 
 public class CommandLineInterface {
 	public static void main(String[] args) {

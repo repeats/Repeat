@@ -39,8 +39,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.jnativehook.GlobalScreen;
@@ -48,12 +46,13 @@ import org.jnativehook.NativeHookException;
 
 import utilities.ExceptionUtility;
 import utilities.FileUtility;
+import utilities.Function;
 import utilities.OutStream;
-
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
-
-import core.Recorder;
+import core.GlobalKeysManager;
+import core.config.Config;
+import core.recorder.Recorder;
 
 public class Main extends JFrame {
 
@@ -110,7 +109,32 @@ public class Main extends JFrame {
 	 */
 	public Main() throws NativeHookException {
 		backEnd = new BackEndHolder(this);
-		hotkey = new HotkeySetting();
+		hotkey = new HotkeySetting(backEnd);
+
+		GlobalKeysManager.startGlobalListener();
+		GlobalKeysManager.registerKey(Config.RECORD, new Function<Void, Void>() {
+			@Override
+			public Void apply(Void r) {
+				backEnd.switchRecord();
+				return null;
+			}
+		});
+
+		GlobalKeysManager.registerKey(Config.REPLAY, new Function<Void, Void>() {
+			@Override
+			public Void apply(Void r) {
+				backEnd.switchReplay();
+				return null;
+			}
+		});
+
+		GlobalKeysManager.registerKey(Config.COMPILED_REPLAY, new Function<Void, Void>() {
+			@Override
+			public Void apply(Void r) {
+				backEnd.switchRunningCompiledAction();
+				return null;
+			}
+		});
 		/*************************************************************************************/
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 590, 327);
@@ -118,7 +142,7 @@ public class Main extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				System.out.println("yeye");
+				System.exit(0);
 			}
 		});
 
@@ -357,8 +381,6 @@ public class Main extends JFrame {
 
 		JLabel lblNewLabel_3 = new JLabel("Mouse position");
 
-		backEnd.startGlobalHotkey();
-
 		JScrollPane scrollPane_2 = new JScrollPane();
 
 		JButton bAddTask = new JButton("Add task");
@@ -469,10 +491,24 @@ public class Main extends JFrame {
 				"Name", "Hotkey"
 			}
 		));
-		tTasks.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		tTasks.addKeyListener(new KeyAdapter() {
 			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				System.out.println("Changed " + tTasks.getSelectedColumn() + ", " + tTasks.getSelectedColumn());
+			public void keyReleased(KeyEvent e) {
+				int row = tTasks.getSelectedRow();
+				int column = tTasks.getSelectedColumn();
+
+				System.out.println("yeye " + row + ", " + column);
+			}
+		});
+		tTasks.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int row = tTasks.getSelectedRow();
+				int column = tTasks.getSelectedColumn();
+
+				if (column == 1 && row >= 0) {//Hotkey column
+					System.out.println("Chaingin hotkey");
+				}
 			}
 		});
 		scrollPane_2.setViewportView(tTasks);
@@ -490,10 +526,12 @@ public class Main extends JFrame {
 
 		scrollPane.setViewportView(taSource);
 		contentPane.setLayout(gl_contentPane);
-
 		taStatus.setEditable(false);
 
 		scrollPane_1.setViewportView(taStatus);
+
+
+		/*************************************************************************************/
 		PrintStream printStream = new PrintStream(new OutStream(taStatus));
 		System.setOut(printStream);
 		System.setErr(printStream);

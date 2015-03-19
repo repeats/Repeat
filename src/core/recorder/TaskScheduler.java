@@ -1,4 +1,4 @@
-package core;
+package core.recorder;
 
 import java.util.LinkedList;
 import java.util.Stack;
@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.Function;
-import core.Recorder.Task;
+import core.recorder.Recorder.Task;
 
 class TaskScheduler {
 

@@ -1,4 +1,4 @@
-package core;
+package core.controller;
 
 import java.awt.Color;
 import java.awt.MouseInfo;

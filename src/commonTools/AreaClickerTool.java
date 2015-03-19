@@ -1,6 +1,6 @@
 package commonTools;
 
-import core.Recorder;
+import core.recorder.Recorder;
 
 public class AreaClickerTool extends RepeatTool {
 

@@ -1,4 +1,4 @@
-package core;
+package core.languageHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 
 import utilities.ExceptionUtility;
 import utilities.FileUtility;
+import core.UserDefinedAction;
+import core.controller.Core;
 
 public class DynamicPythonCompiler implements DynamicCompiler {
 
@@ -36,8 +38,7 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 			@Override
 			public void action(Core controller) {
 				File sourceFile = new File("custom_action.py");
-				FileUtility.writeToFile(new StringBuffer(source), sourceFile, false);
-
+				FileUtility.writeToFile(source, sourceFile, false);
 
 				String[] cmd = { interpreter.getAbsolutePath(), sourceFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);

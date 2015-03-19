@@ -1,4 +1,4 @@
-package core;
+package core.controller;
 
 import java.awt.AWTException;
 import java.awt.Robot;

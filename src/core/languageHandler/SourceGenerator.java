@@ -1,4 +1,4 @@
-package core;
+package core.languageHandler;
 
 import java.util.Arrays;
 

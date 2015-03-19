@@ -1,4 +1,4 @@
-package core;
+package core.languageHandler;
 
 public class JavaSourceGenerator extends SourceGenerator {
 

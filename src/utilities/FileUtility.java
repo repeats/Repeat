@@ -165,20 +165,33 @@ public class FileUtility {
 	}
 
 	/**
-	 * Write a content to a file
+	 * Write a content to a file. The file will be created if it does not exist
 	 * @param content content that will be written to file using UTF-8 format
 	 * @param file target file
 	 * @param append will the content be appended to the file or overwritten old data in file (if exists)
 	 * @return return if write successfully
 	 */
-	public static boolean writeToFile(StringBuffer content, File file, boolean append) {
+	public static boolean writeToFile(String content, File file, boolean append) {
+		if (!fileExists(file)) {
+			if (!createDirectory(file.getParentFile().getAbsolutePath())) {
+				return false;
+			}
+
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+				return false;
+			}
+		}
+
 		OutputStreamWriter fw = null;
 		try {
 			fw = new OutputStreamWriter(new FileOutputStream(file, append), "UTF-8");
 			Writer bw = new BufferedWriter(fw);
 
 
-			bw.write(new String(content));
+			bw.write(content);
 			bw.flush();
 			bw.close();
 		} catch (IOException ex) {
@@ -193,6 +206,49 @@ public class FileUtility {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Write a content to a file
+	 * @param content content that will be written to file using UTF-8 format
+	 * @param file target file
+	 * @param append will the content be appended to the file or overwritten old data in file (if exists)
+	 * @return return if write successfully
+	 */
+	public static boolean writeToFile(StringBuffer content, File file, boolean append) {
+		OutputStreamWriter fw = null;
+		try {
+			fw = new OutputStreamWriter(new FileOutputStream(file, append), "UTF-8");
+			Writer bw = new BufferedWriter(fw);
+
+			bw.write(content.toString());
+			bw.flush();
+			bw.close();
+		} catch (IOException ex) {
+			Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, ex);
+			return false;
+		} finally {
+			try {
+				fw.close();
+			} catch (IOException ex) {
+				Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, ex);
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Remove a file
+	 * @param file file to be remove
+	 * @return if removal is successful. Throw IOException if encounters error
+	 */
+	public static boolean removeFile(File file) {
+		if (fileExists(file)) {
+			return file.delete();
+		} else {
+			return true;
+		}
 	}
 
 	/**

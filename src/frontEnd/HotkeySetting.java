@@ -13,7 +13,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import core.Config;
+import utilities.Function;
+import core.GlobalKeysManager;
+import core.config.Config;
 
 public class HotkeySetting extends JFrame {
 
@@ -29,7 +31,7 @@ public class HotkeySetting extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public HotkeySetting() {
+	public HotkeySetting(BackEndHolder backEnd) {
 		setResizable(false);
 		setTitle("Hotkey Setting");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -49,7 +51,10 @@ public class HotkeySetting extends JFrame {
 		tfRecord.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
+				Function<Void, Void> callBack = GlobalKeysManager.unregisterKey(Config.RECORD);
 				Config.RECORD = e.getKeyCode();
+				GlobalKeysManager.registerKey(Config.RECORD, callBack);
+
 				tfRecord.setText(KeyEvent.getKeyText(e.getKeyCode()));
 			}
 		});
@@ -61,7 +66,10 @@ public class HotkeySetting extends JFrame {
 		tfReplay.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
+				Function<Void, Void> callBack = GlobalKeysManager.unregisterKey(Config.REPLAY);
 				Config.REPLAY = e.getKeyCode();
+				GlobalKeysManager.registerKey(Config.REPLAY, callBack);
+
 				tfReplay.setText(KeyEvent.getKeyText(e.getKeyCode()));
 			}
 		});
@@ -74,7 +82,10 @@ public class HotkeySetting extends JFrame {
 		tfCompiledReplay.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
+				Function<Void, Void> callBack = GlobalKeysManager.unregisterKey(Config.COMPILED_REPLAY);
 				Config.COMPILED_REPLAY = e.getKeyCode();
+				GlobalKeysManager.registerKey(Config.COMPILED_REPLAY, callBack);
+
 				tfCompiledReplay.setText(KeyEvent.getKeyText(e.getKeyCode()));
 			}
 		});
