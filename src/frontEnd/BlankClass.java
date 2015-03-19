@@ -6,8 +6,10 @@ import java.util.logging.Logger;
 
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
-import org.jnativehook.mouse.NativeMouseEvent;
-import org.jnativehook.mouse.NativeMouseListener;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.keyboard.NativeKeyListener;
+
+import com.sun.glass.events.KeyEvent;
 
 
 public class BlankClass {
@@ -16,7 +18,7 @@ public class BlankClass {
 		// Get the logger for "org.jnativehook" and set the level to off.
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 		logger.setLevel(Level.OFF);
-
+		int a = KeyEvent.VK_0;
 		// Change the level for all handlers attached to the logger.
 		Handler[] handlers = logger.getHandlers();
 		for (int i = 0; i < handlers.length; i++) {
@@ -29,24 +31,21 @@ public class BlankClass {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		GlobalScreen.addNativeMouseListener(new NativeMouseListener() {
-
+		GlobalScreen.addNativeKeyListener(new NativeKeyListener() {
 			@Override
-			public void nativeMouseReleased(NativeMouseEvent arg0) {
-				System.out.println(System.currentTimeMillis() + " --> " + arg0.getButton());
+			public void nativeKeyTyped(NativeKeyEvent arg0) {
+				
 			}
-
+			
 			@Override
-			public void nativeMousePressed(NativeMouseEvent arg0) {
-				System.out.println(System.currentTimeMillis() + " --> " + arg0.getModifiers());
-				int a = NativeMouseEvent.BUTTON1_MASK;
-				int b = NativeMouseEvent.BUTTON2_MASK;
-				int c = NativeMouseEvent.BUTTON3_MASK;
+			public void nativeKeyReleased(NativeKeyEvent arg0) {
+				System.out.println(arg0.getKeyCode() + " ---> " + NativeKeyEvent.VC_SHIFT_L);
+				
 			}
-
+			
 			@Override
-			public void nativeMouseClicked(NativeMouseEvent arg0) {
-
+			public void nativeKeyPressed(NativeKeyEvent arg0) {
+				System.out.println(arg0.getKeyCode());
 			}
 		});
 	}

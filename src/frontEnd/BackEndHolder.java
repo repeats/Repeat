@@ -149,8 +149,10 @@ public class BackEndHolder {
 		if (isRunning) {
 			isRunning = false;
 			if (compiledExecutor != null) {
-				while (compiledExecutor.isAlive()) {
-					compiledExecutor.interrupt();
+				if (compiledExecutor != Thread.currentThread()) {
+					while (compiledExecutor.isAlive()) {
+						compiledExecutor.interrupt();
+					}
 				}
 			}
 
@@ -161,6 +163,11 @@ public class BackEndHolder {
 				}
 			});
 		} else {
+			if (customFunction == null) {
+				JOptionPane.showMessageDialog(main, "No compiled action in memory");
+				return;
+			}
+			
 			isRunning = true;
 
 			compiledExecutor = new Thread(new Runnable() {
