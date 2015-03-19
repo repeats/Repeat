@@ -55,4 +55,9 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 			}
 		};
 	}
+
+	@Override
+	public String getName() {
+		return "python";
+	}
 }

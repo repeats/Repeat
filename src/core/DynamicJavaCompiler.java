@@ -114,4 +114,9 @@ public class DynamicJavaCompiler implements DynamicCompiler {
         LOGGER.info("Cannot compile class " + className);
         return null;
 	}
+
+	@Override
+	public String getName() {
+		return "java";
+	}
 }

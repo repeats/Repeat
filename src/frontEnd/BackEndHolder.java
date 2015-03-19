@@ -2,9 +2,13 @@ package frontEnd;
 
 import globalListener.GlobalKeyListener;
 
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jnativehook.NativeHookException;
@@ -13,6 +17,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import utilities.CodeConverter;
 import utilities.Function;
 import utilities.NumberUtility;
+import utilities.SwingUtil;
 import core.Config;
 import core.Core;
 import core.DynamicCompiler;
@@ -33,8 +38,10 @@ public class BackEndHolder {
 	protected final DynamicJavaCompiler javaCompiler;
 	protected final DynamicPythonCompiler pythonCompiler;
 	protected UserDefinedAction customFunction;
+	private final List<UserDefinedAction> customTasks;
 
 	protected boolean isRecording, isReplaying, isRunning;
+
 
 	private final Main main;
 
@@ -44,6 +51,8 @@ public class BackEndHolder {
 		executor = new ScheduledThreadPoolExecutor(10);
 		core = new Core();
 		recorder = new Recorder(core);
+
+		customTasks = new ArrayList<>();
 
 		javaCompiler = new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{});
 		pythonCompiler = new DynamicPythonCompiler();
@@ -68,6 +77,8 @@ public class BackEndHolder {
 		});
 		keyListener.startListening();
 	}
+
+	/*************************************************************************************************************/
 
 	protected DynamicCompiler getCompiler() {
 		if (main.rbmiCompileJava.isSelected()) {
@@ -175,6 +186,58 @@ public class BackEndHolder {
 		}
 	}
 
+	protected void compileSource() {
+		String source = main.taSource.getText();
+
+		DynamicCompiler compiler = getCompiler();
+		UserDefinedAction createdInstance = compiler.compile(source);
+
+		if (createdInstance != null) {
+			customFunction = createdInstance;
+			customFunction.setCompiler(compiler.getName());
+		}
+	}
+
+	/*************************************************************************************************************/
+	protected void addCurrentTask() {
+		if (customFunction != null) {
+			customFunction.setName("New task");
+			customFunction.setHotkey(-1);
+			customTasks.add(customFunction);
+			renderTasks();
+		} else {
+			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
+		}
+	}
+
+	protected void removeCurrentTask() {
+		int selectedRow = main.tTasks.getSelectedRow();
+		if (selectedRow >= 0 && selectedRow < customTasks.size()) {
+			customTasks.remove(selectedRow);
+			renderTasks();
+		} else {
+			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
+		}
+	}
+
+	protected void renderTasks() {
+		SwingUtil.TableUtil.ensureRowNumber(main.tTasks, customTasks.size());
+		SwingUtil.TableUtil.clearTable(main.tTasks);
+
+		int row = 0;
+		for (UserDefinedAction task : customTasks) {
+			main.tTasks.setValueAt(task.getName(), row, 0);
+			if (task.getHotkey() != -1) {
+				main.tTasks.setValueAt(KeyEvent.getKeyText(task.getHotkey()), row, 1);
+			} else {
+				main.tTasks.setValueAt("None", row, 1);
+			}
+			row++;
+		}
+	}
+
+	/*************************************************************************************************************/
+
 	protected void promptSource() {
 		StringBuffer sb = new StringBuffer();
 		if (main.rbmiCompileJava.isSelected()) {
@@ -198,6 +261,8 @@ public class BackEndHolder {
 		}
 		main.taSource.setText(sb.toString());
 	}
+
+	/*************************************************************************************************************/
 
 	private void setEnableRecord(boolean state) {
 		main.bRecord.setEnabled(state);
