@@ -5,7 +5,7 @@ import java.io.File;
 import utilities.FileUtility;
 
 
-public class TaskManager {
+public class TaskSourceManager {
 
 	public boolean submitTask(UserDefinedAction task, String source) {
 		String fileName = generateName();

@@ -7,5 +7,18 @@ abstract class ConfigParser {
 	protected abstract String getPreviousVersion();
 
 	protected abstract JsonRootNode convertFromPreviousVersion(JsonRootNode previousVersion);
-	protected abstract void extractData();
+
+	protected final boolean extractData(JsonRootNode data) {
+		try {
+			//Sanity check
+			if (!data.getStringValue("version").equals(getVersion())) {
+				return false;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+
+		return internalExtractData(data);
+	}
+	protected abstract boolean internalExtractData(JsonRootNode data);
 }

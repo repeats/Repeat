@@ -3,60 +3,120 @@ package core;
 import globalListener.GlobalKeyListener;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import utilities.CodeConverter;
 import utilities.Function;
+import core.config.Config;
+import core.config.Parser1_0;
+import core.controller.Core;
 
 public final class GlobalKeysManager {
 
-	private static final Map<Integer, Function<Void, Void>> actionMap = new HashMap<>();
-	private static Function<Void, Boolean> disablingFunction = Function.falseFunction();
+	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 
-	public static void startGlobalListener() throws NativeHookException {
+	private final Core controller;
+	private final Map<Integer, UserDefinedAction> actionMap = new HashMap<>();
+	private Function<Void, Boolean> disablingFunction = Function.falseFunction();
+	private final Map<String, Thread> executions;
+
+	public GlobalKeysManager(Core controller) {
+		this.controller = controller;
+		executions = new HashMap<>();
+	}
+
+	public void startGlobalListener() throws NativeHookException {
 		GlobalKeyListener keyListener = new GlobalKeyListener();
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				if (disablingFunction.apply(null)) {
-					return false;
-				}
-
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
 
-				Function<Void, Void> action = actionMap.get(code);
-				if (action != null) {
-					action.apply(null);
+				if (code == Config.HALT_TASK) {
+					LinkedList<Thread> endings = new LinkedList<>();
+					for (Thread t : executions.values()) {
+						endings.addLast(t);
+					}
+
+					for (Thread t : endings) {
+						if (t.isAlive()) {
+							t.interrupt();
+						}
+					}
+					executions.clear();
+
 					return true;
 				}
 
-				return false;
+				if (disablingFunction.apply(null)) {
+					return true;
+				}
+
+				final UserDefinedAction action = actionMap.get(code);
+				if (action != null) {
+					final String id = System.currentTimeMillis() + ""; //Don't need the fancy UUID
+					Thread execution = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								action.action(controller);
+							} catch (InterruptedException e) {
+								LOGGER.info("Task ended prematurely");
+							}
+
+							executions.remove(id);
+						}
+					});
+
+					executions.put(id, execution);
+					execution.start();
+
+					return true;
+				}
+
+				return true;
 			}
 		});
 		keyListener.startListening();
 	}
 
-	public static void setDisablingFunction(Function<Void, Boolean> disablingFunction) {
-		GlobalKeysManager.disablingFunction = disablingFunction;
+	public void setDisablingFunction(Function<Void, Boolean> disablingFunction) {
+		this.disablingFunction = disablingFunction;
 	}
 
-	public static boolean isKeyRegistered(int code) {
+	public boolean isKeyRegistered(int code) {
 		return actionMap.containsKey(code);
 	}
 
-	public static Function<Void, Void> unregisterKey(int code) {
+	public UserDefinedAction unregisterKey(int code) {
 		return actionMap.remove(code);
 	}
 
-	public static Function<Void, Void> registerKey(int code, Function<Void, Void> action) {
-		Function<Void, Void> removal = actionMap.get(code);
+	public UserDefinedAction registerKey(int code, UserDefinedAction action) {
+		if (code == Config.HALT_TASK) {
+			return null;
+		}
+
+		UserDefinedAction removal = actionMap.get(code);
 		actionMap.put(code, action);
 
 		return removal;
 	}
 
-	private GlobalKeysManager() {}
+	public UserDefinedAction reRegisterKey(int code, int oldCode, UserDefinedAction action) {
+		UserDefinedAction output = unregisterKey(oldCode);
+
+		if (action == null && output != null) {
+			registerKey(code, output);
+		} else if (action != null) {
+			registerKey(code, action);
+		}
+
+		return output;
+	}
 }

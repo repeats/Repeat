@@ -116,12 +116,12 @@ public class FileUtility {
 
 			br.close();
 		} catch (IOException e) {
-			Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+			Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, "IOException while reading file", e);
 		} finally {
 			try {
 				fr.close();
 			} catch (IOException e) {
-				Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+				Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, "IOException while closing file reader", e);
 			}
 		}
 	}

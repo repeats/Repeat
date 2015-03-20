@@ -3,7 +3,6 @@ package frontEnd;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.swing.JOptionPane;
@@ -12,7 +11,8 @@ import javax.swing.SwingUtilities;
 import utilities.Function;
 import utilities.NumberUtility;
 import utilities.SwingUtil;
-import core.TaskManager;
+import core.GlobalKeysManager;
+import core.TaskSourceManager;
 import core.UserDefinedAction;
 import core.controller.Core;
 import core.languageHandler.DynamicCompiler;
@@ -23,7 +23,6 @@ import core.recorder.Recorder;
 public class BackEndHolder {
 
 	protected ScheduledThreadPoolExecutor executor;
-	protected ScheduledFuture<?> mouseTracker;
 	protected Thread compiledExecutor;
 
 	protected Core core;
@@ -32,8 +31,11 @@ public class BackEndHolder {
 	protected final DynamicJavaCompiler javaCompiler;
 	protected final DynamicPythonCompiler pythonCompiler;
 	protected UserDefinedAction customFunction;
-	private final List<UserDefinedAction> customTasks;
-	private final TaskManager taskManager;
+
+	protected final List<UserDefinedAction> customTasks;
+	protected final TaskSourceManager taskManager;
+
+	protected final GlobalKeysManager keysManager;
 
 	protected boolean isRecording, isReplaying, isRunning;
 
@@ -45,10 +47,11 @@ public class BackEndHolder {
 
 		executor = new ScheduledThreadPoolExecutor(10);
 		core = new Core();
-		recorder = new Recorder(core);
+		keysManager = new GlobalKeysManager(core);
+		recorder = new Recorder(core, keysManager);
 
 		customTasks = new ArrayList<>();
-		taskManager = new TaskManager();
+		taskManager = new TaskSourceManager();
 
 		javaCompiler = new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{});
 		pythonCompiler = new DynamicPythonCompiler();

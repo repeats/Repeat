@@ -48,10 +48,14 @@ import utilities.ExceptionUtility;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.OutStream;
+import utilities.SwingUtil;
+
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
-import core.GlobalKeysManager;
+
+import core.UserDefinedAction;
 import core.config.Config;
+import core.controller.Core;
 import core.recorder.Recorder;
 
 public class Main extends JFrame {
@@ -107,32 +111,36 @@ public class Main extends JFrame {
 	 * Create the frame.
 	 * @throws NativeHookException
 	 */
+	@SuppressWarnings("serial")
 	public Main() throws NativeHookException {
 		backEnd = new BackEndHolder(this);
 		hotkey = new HotkeySetting(backEnd);
 
-		GlobalKeysManager.startGlobalListener();
-		GlobalKeysManager.registerKey(Config.RECORD, new Function<Void, Void>() {
+		backEnd.keysManager.startGlobalListener();
+		backEnd.keysManager.setDisablingFunction(new Function<Void, Boolean>(){
 			@Override
-			public Void apply(Void r) {
+			public Boolean apply(Void r) {
+				return hotkey.isVisible();
+			}
+		});
+		backEnd.keysManager.registerKey(Config.RECORD, new UserDefinedAction() {
+			@Override
+			public void action(Core controller) throws InterruptedException {
 				backEnd.switchRecord();
-				return null;
 			}
 		});
 
-		GlobalKeysManager.registerKey(Config.REPLAY, new Function<Void, Void>() {
+		backEnd.keysManager.registerKey(Config.REPLAY, new UserDefinedAction() {
 			@Override
-			public Void apply(Void r) {
+			public void action(Core controller) throws InterruptedException {
 				backEnd.switchReplay();
-				return null;
 			}
 		});
 
-		GlobalKeysManager.registerKey(Config.COMPILED_REPLAY, new Function<Void, Void>() {
+		backEnd.keysManager.registerKey(Config.COMPILED_REPLAY, new UserDefinedAction() {
 			@Override
-			public Void apply(Void r) {
+			public void action(Core controller) throws InterruptedException {
 				backEnd.switchRunningCompiledAction();
-				return null;
 			}
 		});
 		/*************************************************************************************/
@@ -160,7 +168,6 @@ public class Main extends JFrame {
 				System.exit(0);
 			}
 		});
-
 
 		taSource = new JTextArea();
 		taStatus = new JTextArea();
@@ -320,7 +327,7 @@ public class Main extends JFrame {
 		tfMousePosition.setColumns(10);
 		tfMousePosition.setEditable(false);
 
-		backEnd.mouseTracker = backEnd.executor.scheduleWithFixedDelay(new Runnable(){
+		backEnd.executor.scheduleWithFixedDelay(new Runnable(){
 			@Override
 			public void run() {
 				Point p = backEnd.core.mouse().getPosition();
@@ -483,6 +490,8 @@ public class Main extends JFrame {
 		);
 
 		tTasks = new JTable();
+		tTasks.setRowSelectionAllowed(false);
+		tTasks.setColumnSelectionAllowed(false);
 		tTasks.setModel(new DefaultTableModel(
 			new Object[][] {
 				{null, null},
@@ -490,24 +499,27 @@ public class Main extends JFrame {
 			new String[] {
 				"Name", "Hotkey"
 			}
-		));
+		){
+			@Override
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+	            return columnIndex != 1;
+	        }
+		});
+
 		tTasks.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				int row = tTasks.getSelectedRow();
 				int column = tTasks.getSelectedColumn();
 
-				System.out.println("yeye " + row + ", " + column);
-			}
-		});
-		tTasks.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				int row = tTasks.getSelectedRow();
-				int column = tTasks.getSelectedColumn();
+				if (column == 0 && row >= 0) {
+					backEnd.customTasks.get(row).setName(SwingUtil.TableUtil.getStringValueTable(tTasks, row, column));
+				} else if (column == 1 && row >= 0) {
+					final UserDefinedAction action = backEnd.customTasks.get(row);
+					backEnd.keysManager.reRegisterKey(e.getKeyCode(), action.getHotkey(), action);
 
-				if (column == 1 && row >= 0) {//Hotkey column
-					System.out.println("Chaingin hotkey");
+					action.setHotkey(e.getKeyCode());
+					tTasks.setValueAt(KeyEvent.getKeyText(e.getKeyCode()), row, column);
 				}
 			}
 		});

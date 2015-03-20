@@ -49,7 +49,7 @@ public class Recorder {
 		}
 	}
 
-	public Recorder(final Core controller) {
+	public Recorder(final Core controller, final GlobalKeysManager globalKeys) {
 		taskScheduler = new TaskScheduler();
 
 		sourceGenerators = new HashMap<>();
@@ -61,7 +61,7 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (GlobalKeysManager.isKeyRegistered(code)) {
+				if (globalKeys.isKeyRegistered(code)) {
 					return true;
 				}
 
@@ -84,7 +84,7 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (GlobalKeysManager.isKeyRegistered(code)) {
+				if (globalKeys.isKeyRegistered(code)) {
 					return true;
 				}
 
