@@ -157,14 +157,6 @@ public class Main extends JFrame {
 			}
 		});
 
-		addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				System.out.println(e.getButton());
-			}
-		});
-
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 

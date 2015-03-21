@@ -4,7 +4,7 @@ import core.UserDefinedAction;
 public class CustomAction extends UserDefinedAction {
     public void action(final Core controller) throws InterruptedException {
         while (true) {
-			controller.mouse().rightClick(200);
+			controller.mouse().rightClick();
 		}
     }
 }

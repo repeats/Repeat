@@ -74,6 +74,12 @@ public class MouseCore {
 		controller.mouseRelease(mask);
 	}
 
+	public void releaseAll() {
+		controller.mouseRelease(InputEvent.BUTTON1_MASK);
+		controller.mouseRelease(InputEvent.BUTTON2_MASK);
+		controller.mouseRelease(InputEvent.BUTTON3_MASK);
+	}
+
 	public void move(int newX, int newY) {
 		controller.mouseMove(newX, newY);
 	}
