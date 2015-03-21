@@ -1,23 +1,14 @@
 package frontEnd;
 
+import java.io.File;
+
+import utilities.FileUtility;
+
 public class BlankClass {
 
-	private final String name;
-
-	public BlankClass(String name) {
-		this.name = name;
-	}
-
 	public static void main(String[] args) {
-		new BlankClass("asd") {
-			@Override
-			public void hello() {
-				System.out.println("yolo");
-			}
-		}.hello();
-	}
+		File x = new File(FileUtility.joinPath(System.getProperty("user.dir"), "test"));
+		System.out.println(x.getParent());
 
-	public void hello() {
-		System.out.println(name);
 	}
 }

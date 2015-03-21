@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,14 +46,11 @@ import org.jnativehook.NativeHookException;
 import utilities.ExceptionUtility;
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.OutStream;
-import utilities.SwingUtil;
 
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
 
 import core.UserDefinedAction;
-import core.config.Config;
 import core.controller.Core;
 import core.recorder.Recorder;
 
@@ -115,6 +111,7 @@ public class Main extends JFrame {
 	public Main() throws NativeHookException {
 		backEnd = new BackEndHolder(this);
 		hotkey = new HotkeySetting(backEnd);
+		backEnd.config.loadConfig();
 
 		backEnd.keysManager.startGlobalListener();
 		backEnd.keysManager.setDisablingFunction(new Function<Void, Boolean>(){
@@ -123,21 +120,21 @@ public class Main extends JFrame {
 				return hotkey.isVisible();
 			}
 		});
-		backEnd.keysManager.registerKey(Config.RECORD, new UserDefinedAction() {
+		backEnd.keysManager.registerKey(backEnd.config.RECORD, new UserDefinedAction() {
 			@Override
 			public void action(Core controller) throws InterruptedException {
 				backEnd.switchRecord();
 			}
 		});
 
-		backEnd.keysManager.registerKey(Config.REPLAY, new UserDefinedAction() {
+		backEnd.keysManager.registerKey(backEnd.config.REPLAY, new UserDefinedAction() {
 			@Override
 			public void action(Core controller) throws InterruptedException {
 				backEnd.switchReplay();
 			}
 		});
 
-		backEnd.keysManager.registerKey(Config.COMPILED_REPLAY, new UserDefinedAction() {
+		backEnd.keysManager.registerKey(backEnd.config.COMPILED_REPLAY, new UserDefinedAction() {
 			@Override
 			public void action(Core controller) throws InterruptedException {
 				backEnd.switchRunningCompiledAction();
@@ -150,6 +147,10 @@ public class Main extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				if (!backEnd.writeConfigFile()) {
+					JOptionPane.showMessageDialog(Main.this, "Error saving configuration file.");
+				}
+
 				System.exit(0);
 			}
 		});
@@ -297,7 +298,7 @@ public class Main extends JFrame {
 				JFileChooser chooser = new JFileChooser("Java home");
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				if (chooser.showDialog(Main.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-					System.setProperty("java.home", chooser.getSelectedFile().getAbsolutePath());
+					backEnd.config.compilerFactory().getCompiler("java").setPath(chooser.getSelectedFile());
 				}
 			}
 		});
@@ -509,18 +510,14 @@ public class Main extends JFrame {
 		tTasks.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				int row = tTasks.getSelectedRow();
-				int column = tTasks.getSelectedColumn();
+				backEnd.keyReleaseTaskTable(e);
+			}
+		});
 
-				if (column == 0 && row >= 0) {
-					backEnd.customTasks.get(row).setName(SwingUtil.TableUtil.getStringValueTable(tTasks, row, column));
-				} else if (column == 1 && row >= 0) {
-					final UserDefinedAction action = backEnd.customTasks.get(row);
-					backEnd.keysManager.reRegisterKey(e.getKeyCode(), action.getHotkey(), action);
-
-					action.setHotkey(e.getKeyCode());
-					tTasks.setValueAt(KeyEvent.getKeyText(e.getKeyCode()), row, column);
-				}
+		tTasks.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				backEnd.mouseReleaseTaskTable(e);
 			}
 		});
 		scrollPane_2.setViewportView(tTasks);
@@ -542,11 +539,13 @@ public class Main extends JFrame {
 
 		scrollPane_1.setViewportView(taStatus);
 
+		/*************************************************************************************/
+		backEnd.renderTasks();
 
 		/*************************************************************************************/
-		PrintStream printStream = new PrintStream(new OutStream(taStatus));
-		System.setOut(printStream);
-		System.setErr(printStream);
+//		PrintStream printStream = new PrintStream(new OutStream(taStatus));
+//		System.setOut(printStream);
+//		System.setErr(printStream);
 	}
 
 	private void refreshCompilingLanguage() {
@@ -559,9 +558,10 @@ public class Main extends JFrame {
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			if (chooser.showDialog(Main.this, "Set Python Interpreter") == JFileChooser.APPROVE_OPTION) {
 				File chosen = chooser.getSelectedFile();
-				backEnd.pythonCompiler.setInterpreter(chosen);
+				backEnd.config.compilerFactory().getCompiler("python").setPath(chosen);
 			} else {
-				JOptionPane.showMessageDialog(Main.this, "Using python interpreter at " + backEnd.pythonCompiler.getInterpreter().getAbsolutePath(),
+				JOptionPane.showMessageDialog(Main.this, "Using python interpreter at "
+						+ backEnd.config.compilerFactory().getCompiler("python").getPath().getAbsolutePath(),
 						"Python interpreter not chosen", JOptionPane.OK_OPTION);
 			}
 		}

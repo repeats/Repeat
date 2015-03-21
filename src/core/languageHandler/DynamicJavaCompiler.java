@@ -21,10 +21,10 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-import core.UserDefinedAction;
 import utilities.ExceptionUtility;
 import utilities.FileUtility;
 import utilities.StringUtilities;
+import core.UserDefinedAction;
 
 public class DynamicJavaCompiler implements DynamicCompiler {
 
@@ -119,5 +119,25 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	@Override
 	public String getName() {
 		return "java";
+	}
+
+	@Override
+	public File getPath() {
+		return new File(System.getProperty("java.home"));
+	}
+
+	@Override
+	public void setPath(File path) {
+		System.setProperty("java.home", path.getAbsolutePath());
+	}
+
+	@Override
+	public String getRunArgs() {
+		return "";
+	}
+
+	@Override
+	public void setRunArgs(String args) {
+
 	}
 }

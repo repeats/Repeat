@@ -154,11 +154,14 @@ public class FileUtility {
 
 		} catch (IOException e) {
 			Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+			return null;
 		} finally {
-			try {
-				fr.close();
-			} catch (IOException e) {
-				Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+			if (fr != null) {
+				try {
+					fr.close();
+				} catch (IOException e) {
+					Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+				}
 			}
 		}
 		return output;
@@ -173,8 +176,10 @@ public class FileUtility {
 	 */
 	public static boolean writeToFile(String content, File file, boolean append) {
 		if (!fileExists(file)) {
-			if (!createDirectory(file.getParentFile().getAbsolutePath())) {
-				return false;
+			if (file.getParentFile() != null) {
+				if (!createDirectory(file.getParentFile().getAbsolutePath())) {
+					return false;
+				}
 			}
 
 			try {

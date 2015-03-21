@@ -131,6 +131,13 @@ public class SwingUtil {
 			}
 		}
 
+		public static void setRowNumber(JTable table, int numberOfRow) {
+			ensureRowNumber(table, numberOfRow);
+			//Now table has at least numberOfRow. We make sure table does not have any extra row
+			int toDelete = table.getRowCount() - numberOfRow;
+			removeLastRowTable(table, toDelete);
+		}
+
 		public static void clearTable(JTable table) {
 			for (int i = 0; i < table.getRowCount(); i++) {
 				for (int j = 0; j < table.getColumnCount(); j++) {

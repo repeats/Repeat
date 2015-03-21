@@ -1,6 +1,8 @@
 package frontEnd;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -8,16 +10,16 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import utilities.FileUtility;
 import utilities.Function;
 import utilities.NumberUtility;
 import utilities.SwingUtil;
 import core.GlobalKeysManager;
 import core.TaskSourceManager;
 import core.UserDefinedAction;
+import core.config.Config;
 import core.controller.Core;
 import core.languageHandler.DynamicCompiler;
-import core.languageHandler.DynamicJavaCompiler;
-import core.languageHandler.DynamicPythonCompiler;
 import core.recorder.Recorder;
 
 public class BackEndHolder {
@@ -28,42 +30,40 @@ public class BackEndHolder {
 	protected Core core;
 	protected Recorder recorder;
 
-	protected final DynamicJavaCompiler javaCompiler;
-	protected final DynamicPythonCompiler pythonCompiler;
 	protected UserDefinedAction customFunction;
 
 	protected final List<UserDefinedAction> customTasks;
+	protected int selectedTaskIndex;
 	protected final TaskSourceManager taskManager;
 
 	protected final GlobalKeysManager keysManager;
+	protected final Config config;
 
 	protected boolean isRecording, isReplaying, isRunning;
-
 
 	private final Main main;
 
 	public BackEndHolder(Main main) {
 		this.main = main;
+		config = new Config(this);
 
 		executor = new ScheduledThreadPoolExecutor(10);
 		core = new Core();
-		keysManager = new GlobalKeysManager(core);
+		keysManager = new GlobalKeysManager(config, core);
 		recorder = new Recorder(core, keysManager);
 
 		customTasks = new ArrayList<>();
+		selectedTaskIndex = -1;
 		taskManager = new TaskSourceManager();
-
-		javaCompiler = new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{});
-		pythonCompiler = new DynamicPythonCompiler();
 	}
 
 	/*************************************************************************************************************/
 
 	protected DynamicCompiler getCompiler() {
 		if (main.rbmiCompileJava.isSelected()) {
-			return javaCompiler;
+			return config.compilerFactory().getCompiler("java");
 		} else if (main.rbmiCompilePython.isSelected()) {
-			return pythonCompiler;
+			return config.compilerFactory().getCompiler("python");
 		} else {
 			return null;
 		}
@@ -195,14 +195,21 @@ public class BackEndHolder {
 			customFunction.setHotkey(-1);
 			customTasks.add(customFunction);
 
+			customFunction = null;
+
 			renderTasks();
 		} else {
 			JOptionPane.showMessageDialog(main, "Nothing to add. Compile first?");
 		}
+
+		int selectedRow = main.tTasks.getSelectedRow();
+		selectedTaskIndex = selectedRow;
 	}
 
 	protected void removeCurrentTask() {
 		int selectedRow = main.tTasks.getSelectedRow();
+		selectedTaskIndex = selectedRow;
+
 		if (selectedRow >= 0 && selectedRow < customTasks.size()) {
 			if (!taskManager.removeTask(customTasks.get(selectedRow))) {
 				JOptionPane.showMessageDialog(main, "Encountered error removing source file " + customTasks.get(selectedRow).getSourcePath());
@@ -216,7 +223,7 @@ public class BackEndHolder {
 	}
 
 	protected void renderTasks() {
-		SwingUtil.TableUtil.ensureRowNumber(main.tTasks, customTasks.size());
+		SwingUtil.TableUtil.setRowNumber(main.tTasks, customTasks.size());
 		SwingUtil.TableUtil.clearTable(main.tTasks);
 
 		int row = 0;
@@ -229,6 +236,52 @@ public class BackEndHolder {
 			}
 			row++;
 		}
+	}
+
+	protected void keyReleaseTaskTable(KeyEvent e) {
+		int row = main.tTasks.getSelectedRow();
+		int column = main.tTasks.getSelectedColumn();
+
+
+		if (column == 0 && row >= 0) {
+			customTasks.get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
+		} else if (column == 1 && row >= 0) {
+			final UserDefinedAction action = customTasks.get(row);
+			keysManager.reRegisterKey(e.getKeyCode(), action.getHotkey(), action);
+
+			action.setHotkey(e.getKeyCode());
+			main.tTasks.setValueAt(KeyEvent.getKeyText(e.getKeyCode()), row, column);
+		}
+
+		//Load source if possible
+		if (row >= 0 && row < customTasks.size()) {
+			if (selectedTaskIndex != row) {
+				StringBuffer source = FileUtility.readFromFile(new File(customTasks.get(row).getSourcePath()));
+				if (source != null) {
+					main.taSource.setText(source.toString());
+				}
+			}
+		}
+		selectedTaskIndex = row;
+	}
+
+	protected void mouseReleaseTaskTable(MouseEvent e) {
+		int row = main.tTasks.getSelectedRow();
+
+		//Load source if possible
+		if (row >= 0 && row < customTasks.size()) {
+			if (selectedTaskIndex != row) {
+				String sourcePath = customTasks.get(row).getSourcePath();
+
+				StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
+				if (source != null) {
+					main.taSource.setText(source.toString());
+				} else {
+					JOptionPane.showMessageDialog(main, "Cannot load source file " + sourcePath + ".\nTry recompiling and add again");
+				}
+			}
+		}
+		selectedTaskIndex = row;
 	}
 
 	/*************************************************************************************************************/
@@ -260,7 +313,12 @@ public class BackEndHolder {
 	}
 
 	/*************************************************************************************************************/
+	//Write config file
+	protected boolean writeConfigFile() {
+		return config.writeConfig();
+	}
 
+	/*************************************************************************************************************/
 	private void setEnableRecord(boolean state) {
 		main.bRecord.setEnabled(state);
 	}
@@ -275,4 +333,10 @@ public class BackEndHolder {
 			main.tfRepeatDelay.setText("0");
 		}
 	}
+
+	/*************************************************************************************************************/
+	public List<UserDefinedAction> getCustomTasks() {
+		return customTasks;
+	}
+
 }

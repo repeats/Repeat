@@ -8,7 +8,7 @@ abstract class ConfigParser {
 
 	protected abstract JsonRootNode convertFromPreviousVersion(JsonRootNode previousVersion);
 
-	protected final boolean extractData(JsonRootNode data) {
+	protected final boolean extractData(Config config, JsonRootNode data) {
 		try {
 			//Sanity check
 			if (!data.getStringValue("version").equals(getVersion())) {
@@ -18,7 +18,7 @@ abstract class ConfigParser {
 			return false;
 		}
 
-		return internalExtractData(data);
+		return internalExtractData(config, data);
 	}
-	protected abstract boolean internalExtractData(JsonRootNode data);
+	protected abstract boolean internalExtractData(Config config, JsonRootNode data);
 }

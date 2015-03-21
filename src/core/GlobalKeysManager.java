@@ -21,13 +21,15 @@ public final class GlobalKeysManager {
 	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 
 	private final Core controller;
+	private final Config config;
 	private final Map<Integer, UserDefinedAction> actionMap = new HashMap<>();
 	private Function<Void, Boolean> disablingFunction = Function.falseFunction();
 	private final Map<String, Thread> executions;
 
-	public GlobalKeysManager(Core controller) {
+	public GlobalKeysManager(Config config, Core controller) {
 		this.controller = controller;
-		executions = new HashMap<>();
+		this.executions = new HashMap<>();
+		this.config = config;
 	}
 
 	public void startGlobalListener() throws NativeHookException {
@@ -37,7 +39,7 @@ public final class GlobalKeysManager {
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
 
-				if (code == Config.HALT_TASK) {
+				if (code == config.HALT_TASK) {
 					LinkedList<Thread> endings = new LinkedList<>();
 					for (Thread t : executions.values()) {
 						endings.addLast(t);
@@ -98,7 +100,7 @@ public final class GlobalKeysManager {
 	}
 
 	public UserDefinedAction registerKey(int code, UserDefinedAction action) {
-		if (code == Config.HALT_TASK) {
+		if (code == config.HALT_TASK) {
 			return null;
 		}
 

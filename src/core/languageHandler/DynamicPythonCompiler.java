@@ -24,11 +24,13 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 		interpreter = new File("python.exe");
 	}
 
-	public void setInterpreter(File file) {
+	@Override
+	public void setPath(File file) {
 		interpreter = file;
 	}
 
-	public File getInterpreter() {
+	@Override
+	public File getPath() {
 		return interpreter;
 	}
 
@@ -60,5 +62,16 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 	@Override
 	public String getName() {
 		return "python";
+	}
+
+	@Override
+	public String getRunArgs() {
+		return "";
+	}
+
+	@Override
+	public void setRunArgs(String args) {
+		// TODO Auto-generated method stub
+
 	}
 }
