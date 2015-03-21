@@ -33,41 +33,36 @@ public class MouseCore {
 		return getColor(getPosition());
 	}
 
-	/**
-	 *
-	 * @param mask
-	 *            InputEvent masks
-	 */
-	public void click(int mask) {
+	public void click(int mask) throws InterruptedException {
 		hold(mask, CLICK_DURATION_MS);
 	}
 
-	public void click(int mask, int delay) {
+	public void click(int mask, int delay) throws InterruptedException {
 		hold(mask, delay);
 	}
 
-	public void leftClick() {
+	public void leftClick() throws InterruptedException {
 		click(InputEvent.BUTTON1_MASK);
 	}
 
-	public void leftClick(int delay) {
+	public void leftClick(int delay) throws InterruptedException {
 		click(InputEvent.BUTTON1_MASK, delay);
 	}
 
-	public void rightClick() {
+	public void rightClick() throws InterruptedException {
 		click(InputEvent.BUTTON3_MASK);
 	}
 
-	public void rightClick(int delay) {
+	public void rightClick(int delay) throws InterruptedException {
 		click(InputEvent.BUTTON3_MASK, delay);
 	}
 
-	public void hold(int mask, int duration) {
-		controller.mousePress(InputEvent.BUTTON1_MASK);
+	public void hold(int mask, int duration) throws InterruptedException {
+		controller.mousePress(mask);
 
 		if (duration >= 0) {
-			controller.delay(duration);
-			controller.mouseRelease(InputEvent.BUTTON1_MASK);
+			Thread.sleep(duration);
+			controller.mouseRelease(mask);
 		}
 	}
 

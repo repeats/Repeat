@@ -46,7 +46,7 @@ public final class GlobalKeysManager {
 					}
 
 					for (Thread t : endings) {
-						if (t.isAlive()) {
+						while (t.isAlive()) {
 							t.interrupt();
 						}
 					}
@@ -92,7 +92,7 @@ public final class GlobalKeysManager {
 	}
 
 	public boolean isKeyRegistered(int code) {
-		return actionMap.containsKey(code);
+		return actionMap.containsKey(code) && code != config.HALT_TASK;
 	}
 
 	public UserDefinedAction unregisterKey(int code) {

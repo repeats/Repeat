@@ -211,10 +211,14 @@ public class BackEndHolder {
 		selectedTaskIndex = selectedRow;
 
 		if (selectedRow >= 0 && selectedRow < customTasks.size()) {
-			if (!taskManager.removeTask(customTasks.get(selectedRow))) {
+			UserDefinedAction selectedTask = customTasks.get(selectedRow);
+			keysManager.unregisterKey(selectedTask.getHotkey());
+			if (!taskManager.removeTask(selectedTask)) {
 				JOptionPane.showMessageDialog(main, "Encountered error removing source file " + customTasks.get(selectedRow).getSourcePath());
 			}
+
 			customTasks.remove(selectedRow);
+
 
 			renderTasks();
 		} else {
@@ -231,6 +235,10 @@ public class BackEndHolder {
 			main.tTasks.setValueAt(task.getName(), row, 0);
 			if (task.getHotkey() != -1) {
 				main.tTasks.setValueAt(KeyEvent.getKeyText(task.getHotkey()), row, 1);
+
+				if (!keysManager.isKeyRegistered(task.getHotkey())) {
+					keysManager.registerKey(task.getHotkey(), task);
+				}
 			} else {
 				main.tTasks.setValueAt("None", row, 1);
 			}
@@ -247,18 +255,29 @@ public class BackEndHolder {
 			customTasks.get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
 		} else if (column == 1 && row >= 0) {
 			final UserDefinedAction action = customTasks.get(row);
-			keysManager.reRegisterKey(e.getKeyCode(), action.getHotkey(), action);
+			if (e.getKeyCode() == config.HALT_TASK) {
+				keysManager.unregisterKey(action.getHotkey());
+				action.setHotkey(-1);
+				main.tTasks.setValueAt("None", row, column);
+			} else if (!keysManager.isKeyRegistered(e.getKeyCode())) {
+				keysManager.reRegisterKey(e.getKeyCode(), action.getHotkey(), action);
 
-			action.setHotkey(e.getKeyCode());
-			main.tTasks.setValueAt(KeyEvent.getKeyText(e.getKeyCode()), row, column);
+				action.setHotkey(e.getKeyCode());
+				main.tTasks.setValueAt(KeyEvent.getKeyText(e.getKeyCode()), row, column);
+			} else {
+				JOptionPane.showMessageDialog(main, "Key " + KeyEvent.getKeyText(e.getKeyCode()) + " already registered. Remove it first");
+			}
 		}
 
-		//Load source if possible
+		//Load source if needed and possible
 		if (row >= 0 && row < customTasks.size()) {
 			if (selectedTaskIndex != row) {
-				StringBuffer source = FileUtility.readFromFile(new File(customTasks.get(row).getSourcePath()));
+				String sourcePath = customTasks.get(row).getSourcePath();
+				StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
 				if (source != null) {
 					main.taSource.setText(source.toString());
+				} else {
+					JOptionPane.showMessageDialog(main, "Unable to load source from file " + sourcePath);
 				}
 			}
 		}

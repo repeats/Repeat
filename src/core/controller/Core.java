@@ -4,6 +4,8 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class Core {
 
@@ -17,7 +19,7 @@ public final class Core {
 		try {
 			controller = new Robot();
 		} catch (AWTException e) {
-			e.printStackTrace();
+			Logger.getLogger(Core.class.getName()).log(Level.SEVERE, "Exception constructing controller", e);
 			System.exit(1);
 		}
 

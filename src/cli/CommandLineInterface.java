@@ -36,7 +36,12 @@ public class CommandLineInterface {
 		TerminalState mouseClick = new TerminalState() {
 			@Override
 			protected boolean execute(List<Object> parsed) {
-				core.mouse().click((int) parsed.get(2));
+				try {
+					core.mouse().click((int) parsed.get(2));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					//Shouldn't be interrupted here though
+				}
 				return true;
 			}
 		};

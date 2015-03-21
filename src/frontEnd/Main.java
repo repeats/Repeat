@@ -37,7 +37,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import org.jnativehook.GlobalScreen;
@@ -152,6 +154,14 @@ public class Main extends JFrame {
 				}
 
 				System.exit(0);
+			}
+		});
+
+		addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				System.out.println(e.getButton());
 			}
 		});
 
@@ -495,7 +505,6 @@ public class Main extends JFrame {
 		tTasks.setColumnSelectionAllowed(false);
 		tTasks.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null},
 			},
 			new String[] {
 				"Name", "Hotkey"
@@ -520,6 +529,11 @@ public class Main extends JFrame {
 				backEnd.mouseReleaseTaskTable(e);
 			}
 		});
+
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		tTasks.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+
 		scrollPane_2.setViewportView(tTasks);
 
 		taSource.setTabSize(1);
