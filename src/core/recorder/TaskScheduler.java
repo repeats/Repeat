@@ -1,14 +1,13 @@
 package core.recorder;
 
-import java.util.LinkedList;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.Function;
-import core.recorder.Recorder.Task;
+import core.AbstractScheduler;
+import core.SchedulingData;
 
-class TaskScheduler {
+class TaskScheduler extends AbstractScheduler<Runnable> {
 
 	private static final Logger LOGGER = Logger.getLogger(TaskScheduler.class.getName());
 
@@ -16,47 +15,11 @@ class TaskScheduler {
 		LOGGER.setLevel(Level.ALL);
 	}
 
-	private final LinkedList<Task> tasks;
 	private Thread executeAgent;
 	private boolean isRunning;
 
 	protected TaskScheduler() {
-		tasks = new LinkedList<>();
-	}
-
-	protected synchronized boolean addTask(Task task) {
-		if (isRunning) {
-			LOGGER.warning("Failed attempt to add task to scheduler while running.");
-			return false;
-		}
-
-		Stack<Task> temp = new Stack<>();
-		while (true) {
-			Task lastItem;
-			if (tasks.isEmpty()) {
-				lastItem = Task.EARLY_TASK;
-			} else {
-				lastItem = tasks.getLast();
-			}
-
-			if (lastItem.time < task.time) {
-				tasks.addLast(task);
-				while (!temp.isEmpty()) {
-					tasks.add(temp.pop());
-				}
-				return true;
-			} else {
-				temp.push(tasks.removeLast());
-			}
-		}
-	}
-
-	protected Task getLast() {
-		return tasks.getLast();
-	}
-
-	protected Task getFirst() {
-		return tasks.getFirst();
+		super();
 	}
 
 	protected synchronized long runTasks(final long count, final long delay, final Function<Void, Void> callBack, final long callBackDelay) {
@@ -80,8 +43,8 @@ class TaskScheduler {
 			public void run() {
 				for (long i = 0; i < count; i++) {
 					long time = 0;
-					for (Task t : tasks) {
-						long currentTime = t.time;
+					for (SchedulingData<Runnable> t : tasks) {
+						long currentTime = t.getTime();
 
 						if (currentTime < time) {
 							LOGGER.severe("Something went really bad");
@@ -96,7 +59,7 @@ class TaskScheduler {
 						}
 
 						time = currentTime;
-						t.task.run();
+						t.getData().run();
 					}
 
 					if (delay > 0) {
@@ -126,7 +89,7 @@ class TaskScheduler {
 			LOGGER.info("Nothing to run");
 			return callBackDelay;
 		} else {
-			return tasks.getLast().time + callBackDelay;
+			return tasks.getLast().getTime() + callBackDelay;
 		}
 	}
 
@@ -151,6 +114,15 @@ class TaskScheduler {
 		}
 
 		tasks.clear();
+		return true;
+	}
+
+	@Override
+	protected synchronized boolean isLegalAddTask() {
+		if (isRunning) {
+			LOGGER.warning("Failed attempt to add task to scheduler while running.");
+			return false;
+		}
 		return true;
 	}
 }

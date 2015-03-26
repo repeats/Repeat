@@ -20,6 +20,7 @@ import core.UserDefinedAction;
 import core.config.Config;
 import core.controller.Core;
 import core.languageHandler.DynamicCompiler;
+import core.languageHandler.JavaSourceGenerator;
 import core.recorder.Recorder;
 
 public class BackEndHolder {
@@ -308,20 +309,7 @@ public class BackEndHolder {
 	protected void promptSource() {
 		StringBuffer sb = new StringBuffer();
 		if (main.rbmiCompileJava.isSelected()) {
-			sb.append("package core;\n");
-			sb.append("import core.controller.Core;\n");
-			sb.append("import core.UserDefinedAction;\n");
-
-
-			sb.append("public class CustomAction extends UserDefinedAction {\n");
-			sb.append("    public void action(final Core controller) throws InterruptedException {\n");
-			sb.append("        System.out.println(\"hello\");\n");
-			sb.append("        controller.mouse().move(0, 0);\n");
-			sb.append("        controller.mouse().moveBy(300, 200);\n");
-			sb.append("        controller.mouse().moveBy(-200, 200);\n");
-			sb.append("        controller.blockingWait(1000);\n");
-			sb.append("    }\n");
-			sb.append("}");
+			sb.append(new JavaSourceGenerator().getSource());
 		} else if (main.rbmiCompilePython.isSelected()) {
 			sb.append("import repeat_lib\n");
 			sb.append("if __name__ == \"__main__\":\n");

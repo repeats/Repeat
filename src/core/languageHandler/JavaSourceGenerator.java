@@ -1,22 +1,32 @@
 package core.languageHandler;
 
+import java.util.logging.Logger;
+
+import utilities.Function;
+import core.SchedulingData;
+
 public class JavaSourceGenerator extends SourceGenerator {
 
+	private static final Logger LOGGER = Logger.getLogger(JavaSourceGenerator.class.getName());
+	
 	private static final String TAB = "    ";
 	private static final String TWO_TAB = TAB + TAB;
 	private static final String THREE_TAB = TWO_TAB + TAB;
 	private static final String FOUR_TAB = THREE_TAB + TAB;
 
+	public JavaSourceGenerator() {
+		super();
+		this.sourceScheduler.setSleepSource(new Function<Long, String>() {
+			@Override
+			public String apply(Long r) {
+				return FOUR_TAB + "controller.blockingWait(" + r + ");\n";
+			}
+		});
+	}
+	
 	@Override
 	public boolean submitTask(long time, String device, String action, int[] param) {
-		String prepend = "", append = "";
-		if (this.verify(device, action, param)) {
-			if (time >= 0) {
-				prepend = TWO_TAB + "controller.wait(" + time + ", new Runnable() {\n"
-							+ THREE_TAB + "public void run() {\n";
-				append = THREE_TAB + "}\n" + TWO_TAB + "});\n";
-			}
-		} else {
+		if (!this.verify(device, action, param)) {
 			return false;
 		}
 
@@ -49,20 +59,26 @@ public class JavaSourceGenerator extends SourceGenerator {
 			mid = "controller.blockingWait(" + param[0] + ");\n";
 		}
 
-		source.append(prepend + FOUR_TAB + mid + append);
-		return true;
+		return sourceScheduler.addTask(new SchedulingData<String>(time, FOUR_TAB + mid));
 	}
 
 	@Override
 	public String getSource() {
+		String mainSource = sourceScheduler.getSource();
+		if (mainSource == null) {
+			LOGGER.severe("Unable to generate source...");
+			mainSource = "";
+		}
+			
 		StringBuffer sb = new StringBuffer();
 		sb.append("package core;\n");
 		sb.append("import core.UserDefinedAction;\n");
+		sb.append("import core.controller.Core;\n");
 
-		sb.append("public class CustomAction implements UserDefinedAction {\n");
-		sb.append("    public void action(final Core controller) {\n");
+		sb.append("public class CustomAction extends UserDefinedAction {\n");
+		sb.append("    public void action(final Core controller) throws InterruptedException {\n");
 		sb.append("        /*Begin generated code*/\n");
-		sb.append(source.toString());
+		sb.append(mainSource);
 		sb.append("    }\n");
 		sb.append("}");
 

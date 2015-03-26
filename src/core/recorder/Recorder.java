@@ -15,6 +15,7 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import utilities.CodeConverter;
 import utilities.Function;
 import core.GlobalKeysManager;
+import core.SchedulingData;
 import core.controller.Core;
 import core.languageHandler.JavaSourceGenerator;
 import core.languageHandler.SourceGenerator;
@@ -66,7 +67,7 @@ public class Recorder {
 				}
 
 				final long time = System.currentTimeMillis() - startTime;
-				taskScheduler.addTask(new Task(time, new Runnable() {
+				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
 					public void run() {
 						controller.keyBoard().press(code);
@@ -89,7 +90,7 @@ public class Recorder {
 				}
 
 				final long time = System.currentTimeMillis() - startTime;
-				taskScheduler.addTask(new Task(time, new Runnable() {
+				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
 					public void run() {
 						controller.keyBoard().release(code);
@@ -110,7 +111,7 @@ public class Recorder {
 			public Boolean apply(final NativeMouseEvent r) {
 				final int code = CodeConverter.getMouseButtonCode(r.getButton(), false);
 				final long time = System.currentTimeMillis() - startTime;
-				taskScheduler.addTask(new Task(time + 20, new Runnable() {
+				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
 					public void run() {
 						if (mode == MODE_MOUSE_CLICK_ONLY) {
@@ -119,6 +120,7 @@ public class Recorder {
 						controller.mouse().release(code);
 					}
 				}));
+				
 
 				for (SourceGenerator generator : sourceGenerators.values()) {
 					if (mode == MODE_MOUSE_CLICK_ONLY) {
@@ -137,7 +139,7 @@ public class Recorder {
 			public Boolean apply(final NativeMouseEvent r) {
 				final int code = CodeConverter.getMouseButtonCode(r.getModifiers(), true);
 				final long time = System.currentTimeMillis() - startTime;
-				taskScheduler.addTask(new Task(time, new Runnable() {
+				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
 					public void run() {
 						if (mode == MODE_MOUSE_CLICK_ONLY) {
@@ -167,7 +169,7 @@ public class Recorder {
 				}
 
 				final long time = System.currentTimeMillis() - startTime;
-				taskScheduler.addTask(new Task(time, new Runnable() {
+				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
 					public void run() {
 						controller.mouse().move(r.getX(), r.getY());
@@ -230,18 +232,6 @@ public class Recorder {
 			return generator.getSource();
 		} else {
 			return null;
-		}
-	}
-
-	protected static class Task {
-
-		protected static final Task EARLY_TASK = new Task(Long.MIN_VALUE, null);
-		protected final long time;
-		protected final Runnable task;
-
-		private Task(long time, Runnable task) {
-			this.time = time;
-			this.task = task;
 		}
 	}
 }
