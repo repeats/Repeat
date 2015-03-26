@@ -18,6 +18,7 @@ public abstract class RepeatTool {
 	public RepeatTool() {
 		imports = new LinkedList<>();
 		imports.add("import core.UserDefinedAction;");
+		imports.add("import core.controller.Core;");
 	}
 
 	public String getSource(int language) {

@@ -251,10 +251,12 @@ public class BackEndHolder {
 		int row = main.tTasks.getSelectedRow();
 		int column = main.tTasks.getSelectedColumn();
 
+		final int COLUMN_TASK_NAME = 0;
+		final int COLUMN_TASK_HOTKEY = 1;
 
-		if (column == 0 && row >= 0) {
+		if (column == COLUMN_TASK_NAME && row >= 0) {
 			customTasks.get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
-		} else if (column == 1 && row >= 0) {
+		} else if (column == COLUMN_TASK_HOTKEY && row >= 0) {
 			final UserDefinedAction action = customTasks.get(row);
 			if (e.getKeyCode() == config.HALT_TASK) {
 				keysManager.unregisterKey(action.getHotkey());
