@@ -19,8 +19,8 @@ import core.TaskSourceManager;
 import core.UserDefinedAction;
 import core.config.Config;
 import core.controller.Core;
-import core.languageHandler.DynamicCompiler;
-import core.languageHandler.JavaSourceGenerator;
+import core.languageHandler.compiler.DynamicCompiler;
+import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.recorder.Recorder;
 
 public class BackEndHolder {

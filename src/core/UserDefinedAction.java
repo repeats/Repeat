@@ -12,8 +12,8 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
 import core.controller.Core;
-import core.languageHandler.DynamicCompiler;
-import core.languageHandler.DynamicCompilerFactory;
+import core.languageHandler.compiler.DynamicCompiler;
+import core.languageHandler.compiler.DynamicCompilerFactory;
 
 public abstract class UserDefinedAction implements IJsonable {
 

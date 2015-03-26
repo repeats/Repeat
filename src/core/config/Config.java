@@ -16,7 +16,7 @@ import argo.jdom.JsonRootNode;
 import com.sun.glass.events.KeyEvent;
 
 import core.UserDefinedAction;
-import core.languageHandler.DynamicCompilerFactory;
+import core.languageHandler.compiler.DynamicCompilerFactory;
 import frontEnd.BackEndHolder;
 
 public class Config {

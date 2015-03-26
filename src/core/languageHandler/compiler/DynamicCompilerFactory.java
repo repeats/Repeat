@@ -1,4 +1,4 @@
-package core.languageHandler;
+package core.languageHandler.compiler;
 
 import java.util.ArrayList;
 import java.util.HashMap;

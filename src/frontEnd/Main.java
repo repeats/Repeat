@@ -223,7 +223,7 @@ public class Main extends JFrame {
 		JMenu mnNewMenu_2 = new JMenu("Tool");
 		menuBar.add(mnNewMenu_2);
 
-		JMenuItem mntmNewMenuItem = new JMenuItem("Generate source (Java only)");
+		JMenuItem mntmNewMenuItem = new JMenuItem("Generate source");
 		mntmNewMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
 		mntmNewMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -231,7 +231,7 @@ public class Main extends JFrame {
 				if (rbmiCompileJava.isSelected()) {
 					taSource.setText(backEnd.recorder.getGeneratedCode(Recorder.JAVA_LANGUAGE));
 				} else if (rbmiCompilePython.isSelected()) {
-
+					taSource.setText(backEnd.recorder.getGeneratedCode(Recorder.PYTHON_LANGUAGE));
 				}
 			}
 		});
@@ -252,7 +252,7 @@ public class Main extends JFrame {
 		group.add(rbmiCompileJava);
 
 		rbmiCompilePython = new JRadioButtonMenuItem("Python");
-//		mnNewMenu_3.add(rbmiCompilePython);
+		mnNewMenu_3.add(rbmiCompilePython);
 		rbmiCompilePython.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -293,15 +293,24 @@ public class Main extends JFrame {
 		});
 		mSetting.add(miSetReplayHotkey);
 
-		JMenuItem miClassPath = new JMenuItem("Set Java home");
+		JMenuItem miClassPath = new JMenuItem("Set compiler path");
 		miClassPath.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser("Java home");
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				if (chooser.showDialog(Main.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-					backEnd.config.compilerFactory().getCompiler("java").setPath(chooser.getSelectedFile());
+				if (rbmiCompileJava.isSelected()) {
+					JFileChooser chooser = new JFileChooser("Java home");
+					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					if (chooser.showDialog(Main.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
+						backEnd.config.compilerFactory().getCompiler("java").setPath(chooser.getSelectedFile());
+					}
+				} else if (rbmiCompilePython.isSelected()) {
+					JFileChooser chooser = new JFileChooser("Python interpreter");
+					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					if (chooser.showDialog(Main.this, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
+						backEnd.config.compilerFactory().getCompiler("python").setPath(chooser.getSelectedFile());
+					}
 				}
+
 			}
 		});
 		mSetting.add(miClassPath);
@@ -560,16 +569,9 @@ public class Main extends JFrame {
 			bCompile.setText("Compile source");
 		} else if (rbmiCompilePython.isSelected()) {
 			bCompile.setText("Load source");
-			JFileChooser chooser = new JFileChooser();
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			if (chooser.showDialog(Main.this, "Set Python Interpreter") == JFileChooser.APPROVE_OPTION) {
-				File chosen = chooser.getSelectedFile();
-				backEnd.config.compilerFactory().getCompiler("python").setPath(chosen);
-			} else {
-				JOptionPane.showMessageDialog(Main.this, "Using python interpreter at "
-						+ backEnd.config.compilerFactory().getCompiler("python").getPath().getAbsolutePath(),
-						"Python interpreter not chosen", JOptionPane.OK_OPTION);
-			}
+			JOptionPane.showMessageDialog(Main.this, "Using python interpreter at "
+					+ backEnd.config.compilerFactory().getCompiler("python").getPath().getAbsolutePath(),
+					"Python interpreter not chosen", JOptionPane.OK_OPTION);
 		}
 
 		backEnd.promptSource();

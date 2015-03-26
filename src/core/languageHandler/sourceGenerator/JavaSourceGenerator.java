@@ -1,18 +1,13 @@
-package core.languageHandler;
+package core.languageHandler.sourceGenerator;
 
 import java.util.logging.Logger;
 
 import utilities.Function;
 import core.SchedulingData;
 
-public class JavaSourceGenerator extends SourceGenerator {
+public class JavaSourceGenerator extends AbstractSourceGenerator {
 
 	private static final Logger LOGGER = Logger.getLogger(JavaSourceGenerator.class.getName());
-	
-	private static final String TAB = "    ";
-	private static final String TWO_TAB = TAB + TAB;
-	private static final String THREE_TAB = TWO_TAB + TAB;
-	private static final String FOUR_TAB = THREE_TAB + TAB;
 
 	public JavaSourceGenerator() {
 		super();
@@ -23,13 +18,9 @@ public class JavaSourceGenerator extends SourceGenerator {
 			}
 		});
 	}
-	
-	@Override
-	public boolean submitTask(long time, String device, String action, int[] param) {
-		if (!this.verify(device, action, param)) {
-			return false;
-		}
 
+	@Override
+	public boolean internalSubmitTask(long time, String device, String action, int[] param) {
 		String mid = "";
 		if (device.equals("mouse")) {
 			if (action.equals("move")) {
@@ -69,7 +60,7 @@ public class JavaSourceGenerator extends SourceGenerator {
 			LOGGER.severe("Unable to generate source...");
 			mainSource = "";
 		}
-			
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("package core;\n");
 		sb.append("import core.UserDefinedAction;\n");

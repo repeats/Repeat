@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;
 import core.UserDefinedAction;
-import core.languageHandler.DynamicCompiler;
+import core.languageHandler.compiler.DynamicCompiler;
 
 public class Parser1_0 extends ConfigParser {
 

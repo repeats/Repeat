@@ -1,4 +1,4 @@
-package core.languageHandler;
+package core.languageHandler.sourceGenerator;
 
 import java.util.logging.Logger;
 

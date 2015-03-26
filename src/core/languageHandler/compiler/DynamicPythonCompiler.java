@@ -1,4 +1,4 @@
-package core.languageHandler;
+package core.languageHandler.compiler;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,24 +36,34 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 
 	@Override
 	public UserDefinedAction compile(final String source) {
+		if (!FileUtility.fileExists(interpreter)) {
+			LOGGER.severe("No interpreter found at " + interpreter.getAbsolutePath());
+			return null;
+		}
+
 		return new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
 				File sourceFile = new File("custom_action.py");
 				FileUtility.writeToFile(source, sourceFile, false);
 
-				String[] cmd = { interpreter.getAbsolutePath(), sourceFile.getPath() };
+				String[] cmd = { interpreter.getAbsolutePath(), "-u", sourceFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
 				pb.redirectOutput(Redirect.INHERIT);
 				pb.redirectError(Redirect.INHERIT);
 
-		        Process p;
+		        Process p = null;
 				try {
 					p = pb.start();
 
 					p.waitFor();
-				} catch (InterruptedException | IOException e) {
+				} catch (IOException e) {
 					LOGGER.warning(ExceptionUtility.getStackTrace(e));
+				} catch (InterruptedException e) {
+					if (p != null) {
+						p.destroy();
+					}
+					LOGGER.info("Task ended prematurely");
 				}
 			}
 		};

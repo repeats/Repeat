@@ -10,8 +10,8 @@ import utilities.Function;
 import utilities.NumberUtility;
 import core.UserDefinedAction;
 import core.controller.Core;
-import core.languageHandler.DynamicJavaCompiler;
-import core.languageHandler.JavaSourceGenerator;
+import core.languageHandler.compiler.DynamicJavaCompiler;
+import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 
 public class CommandLineInterface {
 	public static void main(String[] args) {

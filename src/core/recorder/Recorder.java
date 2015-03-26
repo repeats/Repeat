@@ -17,8 +17,9 @@ import utilities.Function;
 import core.GlobalKeysManager;
 import core.SchedulingData;
 import core.controller.Core;
-import core.languageHandler.JavaSourceGenerator;
-import core.languageHandler.SourceGenerator;
+import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
+import core.languageHandler.sourceGenerator.JavaSourceGenerator;
+import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 
 public class Recorder {
 
@@ -36,7 +37,7 @@ public class Recorder {
 	private GlobalKeyListener keyListener;
 	private GlobalMouseListener mouseListener;
 
-	private HashMap<Integer, SourceGenerator> sourceGenerators;
+	private HashMap<Integer, AbstractSourceGenerator> sourceGenerators;
 
 	static {
 		// Get the logger for "org.jnativehook" and set the level to off.
@@ -55,6 +56,7 @@ public class Recorder {
 
 		sourceGenerators = new HashMap<>();
 		sourceGenerators.put(JAVA_LANGUAGE, new JavaSourceGenerator());
+		sourceGenerators.put(PYTHON_LANGUAGE, new PythonSourceGenerator());
 
 		/*************************************************************************************************/
 		keyListener = new GlobalKeyListener();
@@ -74,7 +76,7 @@ public class Recorder {
 					}
 				}));
 
-				for (SourceGenerator generator : sourceGenerators.values()) {
+				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 					generator.submitTask(time, "keyBoard", "press", new int[]{code});
 				}
 				return true;
@@ -97,7 +99,7 @@ public class Recorder {
 					}
 				}));
 
-				for (SourceGenerator generator : sourceGenerators.values()) {
+				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 					generator.submitTask(time, "keyBoard", "release", new int[]{code});
 				}
 				return true;
@@ -120,9 +122,9 @@ public class Recorder {
 						controller.mouse().release(code);
 					}
 				}));
-				
 
-				for (SourceGenerator generator : sourceGenerators.values()) {
+
+				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 					if (mode == MODE_MOUSE_CLICK_ONLY) {
 						generator.submitTask(time, "mouse", "move", new int[]{r.getX(), r.getY()});
 						generator.submitTask(time + 5, "mouse", "release", new int[]{code});
@@ -149,7 +151,7 @@ public class Recorder {
 					}
 				}));
 
-				for (SourceGenerator generator : sourceGenerators.values()) {
+				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 					if (mode == MODE_MOUSE_CLICK_ONLY) {
 						generator.submitTask(time, "mouse", "move", new int[]{r.getX(), r.getY()});
 						generator.submitTask(time + 5, "mouse", "press", new int[]{code});
@@ -176,7 +178,7 @@ public class Recorder {
 					}
 				}));
 
-				for (SourceGenerator generator : sourceGenerators.values()) {
+				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 					generator.submitTask(time, "mouse", "move", new int[]{r.getX(), r.getY()});
 				}
 				return true;
@@ -220,17 +222,17 @@ public class Recorder {
 	}
 
 	public void clear() {
-		for (SourceGenerator generator : sourceGenerators.values()) {
+		for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 			generator.clear();
 		}
 		taskScheduler.clearTasks();
 	}
 
 	public String getGeneratedCode(int language) {
-		SourceGenerator generator = sourceGenerators.get(language);
+		AbstractSourceGenerator generator = sourceGenerators.get(language);
 		if (generator != null) {
 			return generator.getSource();
-		} else {
+		} else {//Return null to indicate generator does not exist
 			return null;
 		}
 	}
