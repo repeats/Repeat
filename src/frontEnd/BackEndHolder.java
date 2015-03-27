@@ -42,9 +42,9 @@ public class BackEndHolder {
 
 	protected boolean isRecording, isReplaying, isRunning;
 
-	private final Main main;
+	protected final MainFrame main;
 
-	public BackEndHolder(Main main) {
+	public BackEndHolder(MainFrame main) {
 		this.main = main;
 		config = new Config(this);
 
@@ -58,17 +58,17 @@ public class BackEndHolder {
 		taskManager = new TaskSourceManager();
 	}
 
-	/*************************************************************************************************************/
-
-	protected DynamicCompiler getCompiler() {
-		if (main.rbmiCompileJava.isSelected()) {
-			return config.compilerFactory().getCompiler("java");
-		} else if (main.rbmiCompilePython.isSelected()) {
-			return config.compilerFactory().getCompiler("python");
-		} else {
-			return null;
+	protected void exit() {
+		if (!writeConfigFile()) {
+			JOptionPane.showMessageDialog(main, "Error saving configuration file.");
+			System.exit(2);
 		}
+
+		System.exit(0);
 	}
+
+	/*************************************************************************************************************/
+	/****************************************Record and replay****************************************************/
 
 	protected void switchRecord() {
 		if (!isRecording) {//Start record
@@ -173,23 +173,9 @@ public class BackEndHolder {
 		}
 	}
 
-	protected void compileSource() {
-		String source = main.taSource.getText();
-
-		DynamicCompiler compiler = getCompiler();
-		UserDefinedAction createdInstance = compiler.compile(source);
-
-		if (createdInstance != null) {
-			customFunction = createdInstance;
-			customFunction.setCompiler(compiler.getName());
-
-			if (!taskManager.submitTask(customFunction, source)) {
-				JOptionPane.showMessageDialog(main, "Error writing source file...");
-			}
-		}
-	}
-
 	/*************************************************************************************************************/
+	/*****************************************Task related********************************************************/
+
 	protected void addCurrentTask() {
 		if (customFunction != null) {
 			customFunction.setName("New task");
@@ -307,6 +293,7 @@ public class BackEndHolder {
 	}
 
 	/*************************************************************************************************************/
+	/********************************************Source code related**********************************************/
 
 	protected void promptSource() {
 		StringBuffer sb = new StringBuffer();
@@ -319,6 +306,35 @@ public class BackEndHolder {
 			sb.append("    repeat_lib.mouseMoveBy(100, 0)");
 		}
 		main.taSource.setText(sb.toString());
+	}
+
+	/*************************************************************************************************************/
+	/***************************************Source compilation****************************************************/
+
+	protected DynamicCompiler getCompiler() {
+		if (main.rbmiCompileJava.isSelected()) {
+			return config.compilerFactory().getCompiler("java");
+		} else if (main.rbmiCompilePython.isSelected()) {
+			return config.compilerFactory().getCompiler("python");
+		} else {
+			return null;
+		}
+	}
+
+	protected void compileSource() {
+		String source = main.taSource.getText();
+
+		DynamicCompiler compiler = getCompiler();
+		UserDefinedAction createdInstance = compiler.compile(source);
+
+		if (createdInstance != null) {
+			customFunction = createdInstance;
+			customFunction.setCompiler(compiler.getName());
+
+			if (!taskManager.submitTask(customFunction, source)) {
+				JOptionPane.showMessageDialog(main, "Error writing source file...");
+			}
+		}
 	}
 
 	/*************************************************************************************************************/

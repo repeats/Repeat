@@ -51,6 +51,7 @@ public class Parser1_0 extends ConfigParser {
 			}
 
 			List<UserDefinedAction> tasks = config.getBackEnd().getCustomTasks();
+			tasks.clear();
 			for (JsonNode taskNode : root.getArrayNode("tasks")) {
 				UserDefinedAction task = UserDefinedAction.parseJSON(config.compilerFactory(), taskNode);
 				if (task != null) {

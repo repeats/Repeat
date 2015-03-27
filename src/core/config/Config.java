@@ -40,14 +40,14 @@ public class Config {
 		return compilerFactory;
 	}
 
-	public void loadConfig() {
+	public void loadConfig(File file) {
 		compilerFactory = new DynamicCompilerFactory();
 
 		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
 			new Parser1_0()
 		});
 
-		File configFile = new File(CONFIG_FILE_NAME);
+		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;
 		if (FileUtility.fileExists(configFile)) {
 			JsonRootNode root = JSONUtility.readJSON(configFile);
 
