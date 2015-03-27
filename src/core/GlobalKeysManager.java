@@ -52,7 +52,6 @@ public final class GlobalKeysManager {
 					}
 					executions.clear();
 
-					controller.mouse().releaseAll();
 					return true;
 				}
 
