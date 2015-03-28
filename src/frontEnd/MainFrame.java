@@ -516,7 +516,7 @@ public class MainFrame extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Name", "Hotkey"
+				"Name", "Key chain"
 			}
 		){
 			@Override
@@ -539,9 +539,9 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-		tTasks.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+		DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
+		centerRender.setHorizontalAlignment(SwingConstants.CENTER);
+		tTasks.getColumnModel().getColumn(1).setCellRenderer(centerRender);
 
 		scrollPane_2.setViewportView(tTasks);
 

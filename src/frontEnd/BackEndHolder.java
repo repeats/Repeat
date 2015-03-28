@@ -267,6 +267,20 @@ public class BackEndHolder {
 
 	protected void mouseReleaseTaskTable(MouseEvent e) {
 		int row = main.tTasks.getSelectedRow();
+		int column = main.tTasks.getSelectedColumn();
+
+		final int COLUMN_TASK_HOTKEY = 1;
+
+		if (column == COLUMN_TASK_HOTKEY && row >= 0) {
+			final UserDefinedAction action = customTasks.get(row);
+			KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);
+			if (newKeyChain != null) {
+				keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
+
+				action.setHotkey(newKeyChain);
+				main.tTasks.setValueAt(newKeyChain.toString(), row, column);
+			}
+		}
 
 		loadSource(row);
 		selectedTaskIndex = row;
