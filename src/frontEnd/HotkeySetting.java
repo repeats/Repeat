@@ -1,7 +1,7 @@
 package frontEnd;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -13,6 +13,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import utilities.swing.KeyChainInputPanel;
 import core.KeyChain;
 
 public class HotkeySetting extends JFrame {
@@ -46,14 +47,17 @@ public class HotkeySetting extends JFrame {
 		tfRecord.setHorizontalAlignment(SwingConstants.CENTER);
 		tfRecord.setEditable(false);
 		tfRecord.setColumns(10);
-		tfRecord.addKeyListener(new KeyAdapter() {
+		tfRecord.addMouseListener(new MouseAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				backEnd.keysManager.reRegisterKey(new KeyChain(e.getKeyCode()),
-												  backEnd.config.getRECORD(), null);
-				backEnd.config.setRECORD(e.getKeyCode());
+			public void mouseReleased(MouseEvent e) {
+				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
-				tfRecord.setText(KeyEvent.getKeyText(e.getKeyCode()));
+				if (newKeyChain != null) {
+					backEnd.keysManager.reRegisterKey(newKeyChain, backEnd.config.getRECORD(), null);
+					backEnd.config.setRECORD(newKeyChain);
+
+					tfRecord.setText(newKeyChain.toString());
+				}
 			}
 		});
 
@@ -61,14 +65,17 @@ public class HotkeySetting extends JFrame {
 		tfReplay.setHorizontalAlignment(SwingConstants.CENTER);
 		tfReplay.setEditable(false);
 		tfReplay.setColumns(10);
-		tfReplay.addKeyListener(new KeyAdapter() {
+		tfReplay.addMouseListener(new MouseAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				backEnd.keysManager.reRegisterKey(new KeyChain(e.getKeyCode()),
-												  backEnd.config.getREPLAY(), null);
-				backEnd.config.setREPLAY(e.getKeyCode());
+			public void mouseReleased(MouseEvent e) {
+				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
-				tfReplay.setText(KeyEvent.getKeyText(e.getKeyCode()));
+				if (newKeyChain != null) {
+					backEnd.keysManager.reRegisterKey(newKeyChain, backEnd.config.getREPLAY(), null);
+					backEnd.config.setREPLAY(newKeyChain);
+
+					tfReplay.setText(newKeyChain.toString());
+				}
 			}
 		});
 
@@ -77,14 +84,17 @@ public class HotkeySetting extends JFrame {
 		tfCompiledReplay.setHorizontalAlignment(SwingConstants.CENTER);
 		tfCompiledReplay.setEditable(false);
 		tfCompiledReplay.setColumns(10);
-		tfCompiledReplay.addKeyListener(new KeyAdapter() {
+		tfCompiledReplay.addMouseListener(new MouseAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				backEnd.keysManager.reRegisterKey(new KeyChain(e.getKeyCode()),
-												  backEnd.config.getCOMPILED_REPLAY(), null);
-				backEnd.config.setCOMPILED_REPLAY(e.getKeyCode());
+			public void mouseReleased(MouseEvent e) {
+				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
-				tfCompiledReplay.setText(KeyEvent.getKeyText(e.getKeyCode()));
+				if (newKeyChain != null) {
+					backEnd.keysManager.reRegisterKey(newKeyChain, backEnd.config.getCOMPILED_REPLAY(), null);
+					backEnd.config.setCOMPILED_REPLAY(newKeyChain);
+
+					tfCompiledReplay.setText(newKeyChain.toString());
+				}
 			}
 		});
 

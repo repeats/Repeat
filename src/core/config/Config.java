@@ -28,7 +28,7 @@ public class Config {
 	private DynamicCompilerFactory compilerFactory;
 	private final BackEndHolder backEnd;
 
-	public int HALT_TASK = KeyEvent.VK_ESCAPE;
+	public final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and should not be changed
 	private KeyChain RECORD;
 	private KeyChain REPLAY;
 	private KeyChain COMPILED_REPLAY;
