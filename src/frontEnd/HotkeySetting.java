@@ -13,6 +13,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import core.KeyChain;
+
 public class HotkeySetting extends JFrame {
 
 	/**
@@ -40,44 +42,47 @@ public class HotkeySetting extends JFrame {
 		JLabel lblNewLabel_1 = new JLabel("Start/Stop Replay");
 		JLabel lblNewLabel_2 = new JLabel("Start/Stop Compiled Replay");
 
-		tfRecord = new JTextField(KeyEvent.getKeyText(backEnd.config.RECORD));
+		tfRecord = new JTextField(backEnd.config.getRECORD().toString());
 		tfRecord.setHorizontalAlignment(SwingConstants.CENTER);
 		tfRecord.setEditable(false);
 		tfRecord.setColumns(10);
 		tfRecord.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				backEnd.keysManager.reRegisterKey(e.getKeyCode(), backEnd.config.RECORD, null);
-				backEnd.config.RECORD = e.getKeyCode();
+				backEnd.keysManager.reRegisterKey(new KeyChain(e.getKeyCode()),
+												  backEnd.config.getRECORD(), null);
+				backEnd.config.setRECORD(e.getKeyCode());
 
 				tfRecord.setText(KeyEvent.getKeyText(e.getKeyCode()));
 			}
 		});
 
-		tfReplay = new JTextField(KeyEvent.getKeyText(backEnd.config.REPLAY));
+		tfReplay = new JTextField(backEnd.config.getREPLAY().toString());
 		tfReplay.setHorizontalAlignment(SwingConstants.CENTER);
 		tfReplay.setEditable(false);
 		tfReplay.setColumns(10);
 		tfReplay.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				backEnd.keysManager.reRegisterKey(e.getKeyCode(), backEnd.config.REPLAY, null);
-				backEnd.config.REPLAY = e.getKeyCode();
+				backEnd.keysManager.reRegisterKey(new KeyChain(e.getKeyCode()),
+												  backEnd.config.getREPLAY(), null);
+				backEnd.config.setREPLAY(e.getKeyCode());
 
 				tfReplay.setText(KeyEvent.getKeyText(e.getKeyCode()));
 			}
 		});
 
 
-		tfCompiledReplay = new JTextField(KeyEvent.getKeyText(backEnd.config.COMPILED_REPLAY));
+		tfCompiledReplay = new JTextField(backEnd.config.getCOMPILED_REPLAY().toString());
 		tfCompiledReplay.setHorizontalAlignment(SwingConstants.CENTER);
 		tfCompiledReplay.setEditable(false);
 		tfCompiledReplay.setColumns(10);
 		tfCompiledReplay.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				backEnd.keysManager.reRegisterKey(e.getKeyCode(), backEnd.config.COMPILED_REPLAY, null);
-				backEnd.config.COMPILED_REPLAY = e.getKeyCode();
+				backEnd.keysManager.reRegisterKey(new KeyChain(e.getKeyCode()),
+												  backEnd.config.getCOMPILED_REPLAY(), null);
+				backEnd.config.setCOMPILED_REPLAY(e.getKeyCode());
 
 				tfCompiledReplay.setText(KeyEvent.getKeyText(e.getKeyCode()));
 			}

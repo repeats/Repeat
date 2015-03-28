@@ -1,4 +1,4 @@
-package utilities;
+package utilities.swing;
 
 import java.awt.Frame;
 import java.awt.Point;
@@ -15,6 +15,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
+import utilities.Function;
 
 public class SwingUtil {
 

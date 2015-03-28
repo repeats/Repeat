@@ -1,4 +1,4 @@
-package utilities;
+package utilities.logging;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

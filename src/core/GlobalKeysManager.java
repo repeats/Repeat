@@ -22,14 +22,16 @@ public final class GlobalKeysManager {
 
 	private final Core controller;
 	private final Config config;
-	private final Map<Integer, UserDefinedAction> actionMap = new HashMap<>();
+	private final Map<KeyChain, UserDefinedAction> actionMap = new HashMap<>();
 	private Function<Void, Boolean> disablingFunction = Function.falseFunction();
 	private final Map<String, Thread> executions;
+	private final KeyChain currentKeyChain;
 
 	public GlobalKeysManager(Config config, Core controller) {
 		this.controller = controller;
 		this.executions = new HashMap<>();
 		this.config = config;
+		this.currentKeyChain = new KeyChain();
 	}
 
 	public void startGlobalListener() throws NativeHookException {
@@ -47,6 +49,7 @@ public final class GlobalKeysManager {
 
 					for (Thread t : endings) {
 						while (t.isAlive()) {
+							LOGGER.info("Interrupting execution thread " + t);
 							t.interrupt();
 						}
 					}
@@ -59,7 +62,9 @@ public final class GlobalKeysManager {
 					return true;
 				}
 
-				final UserDefinedAction action = actionMap.get(code);
+				currentKeyChain.getKeys().add(code);
+
+				final UserDefinedAction action = actionMap.get(currentKeyChain);
 				if (action != null) {
 					final String id = System.currentTimeMillis() + ""; //Don't need the fancy UUID
 					Thread execution = new Thread(new Runnable() {
@@ -84,6 +89,21 @@ public final class GlobalKeysManager {
 				return true;
 			}
 		});
+
+		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
+			@Override
+			public Boolean apply(NativeKeyEvent r) {
+				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
+
+				if (code == config.HALT_TASK) {
+					currentKeyChain.getKeys().clear();
+					return true;
+				}
+
+				currentKeyChain.getKeys().remove(Integer.valueOf(code));
+				return true;
+			}
+		});
 		keyListener.startListening();
 	}
 
@@ -91,16 +111,24 @@ public final class GlobalKeysManager {
 		this.disablingFunction = disablingFunction;
 	}
 
-	public boolean isKeyRegistered(int code) {
-		return actionMap.containsKey(code) && code != config.HALT_TASK;
+	public boolean isKeyRegistered(KeyChain code) {
+		return actionMap.containsKey(code);
 	}
 
-	public UserDefinedAction unregisterKey(int code) {
+	public boolean isKeyRegistered(int code) {
+		return isKeyRegistered(new KeyChain(code));
+	}
+
+	public UserDefinedAction unregisterKey(KeyChain code) {
 		return actionMap.remove(code);
 	}
 
-	public UserDefinedAction registerKey(int code, UserDefinedAction action) {
-		if (code == config.HALT_TASK) {
+	public UserDefinedAction unregisterKey(int code) {
+		return unregisterKey(new KeyChain(code));
+	}
+
+	public UserDefinedAction registerKey(KeyChain code, UserDefinedAction action) {
+		if (code.getKeys().contains(config.HALT_TASK)) {
 			return null;
 		}
 
@@ -110,7 +138,11 @@ public final class GlobalKeysManager {
 		return removal;
 	}
 
-	public UserDefinedAction reRegisterKey(int code, int oldCode, UserDefinedAction action) {
+	public UserDefinedAction registerKey(int code, UserDefinedAction action) {
+		return registerKey(new KeyChain(code), action);
+	}
+
+	public UserDefinedAction reRegisterKey(KeyChain code, KeyChain oldCode, UserDefinedAction action) {
 		UserDefinedAction output = unregisterKey(oldCode);
 
 		if (action == null && output != null) {
@@ -120,5 +152,11 @@ public final class GlobalKeysManager {
 		}
 
 		return output;
+	}
+
+	public UserDefinedAction reRegisterKey(int code, int oldCode, UserDefinedAction action) {
+		return reRegisterKey(new KeyChain(code),
+							 new KeyChain(oldCode),
+							 action);
 	}
 }

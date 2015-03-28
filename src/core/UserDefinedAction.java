@@ -18,7 +18,7 @@ import core.languageHandler.compiler.DynamicCompilerFactory;
 public abstract class UserDefinedAction implements IJsonable {
 
 	protected String name;
-	protected int hotkey;
+	protected KeyChain hotkey;
 	protected String sourcePath;
 	protected String compilerName;
 
@@ -28,7 +28,7 @@ public abstract class UserDefinedAction implements IJsonable {
 		this.name = name;
 	}
 
-	public void setHotkey(int hotkey) {
+	public void setHotkey(KeyChain hotkey) {
 		this.hotkey = hotkey;
 	}
 
@@ -36,7 +36,7 @@ public abstract class UserDefinedAction implements IJsonable {
 		return name;
 	}
 
-	public int getHotkey() {
+	public KeyChain getHotkey() {
 		return hotkey;
 	}
 
@@ -63,7 +63,7 @@ public abstract class UserDefinedAction implements IJsonable {
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compilerName)),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
-				JsonNodeFactories.field("hotkey", JsonNodeFactories.number(hotkey))
+				JsonNodeFactories.field("hotkey", hotkey.jsonize())
 				);
 
 	}
@@ -78,7 +78,7 @@ public abstract class UserDefinedAction implements IJsonable {
 			}
 
 			String name = node.getStringValue("name");
-			int hotkey = Integer.parseInt(node.getNumberValue("hotkey"));
+			KeyChain hotkey = KeyChain.parseJSON(node.getArrayNode("hotkey"));
 
 			StringBuffer sourceBuffer = FileUtility.readFromFile(new File(sourcePath));
 			String source = null;

@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
-import utilities.ExceptionUtility;
+import utilities.logging.ExceptionUtility;
 
 public class Main {
 

@@ -1,4 +1,4 @@
-package utilities;
+package utilities.logging;
 
 import java.io.IOException;
 import java.io.OutputStream;

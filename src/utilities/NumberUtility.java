@@ -62,7 +62,7 @@ public final class NumberUtility {
 	}
 
 	public static boolean isDouble(String input) {
-		if (StringUtility.countOccurrence(input, '.') > 1) {
+		if (StringUtilities.countOccurrence(input, '.') > 1) {
 			return false;
 		}
 		input = input.replaceAll("\\.", "");

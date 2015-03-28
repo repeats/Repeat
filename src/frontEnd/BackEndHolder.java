@@ -13,8 +13,10 @@ import javax.swing.SwingUtilities;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.NumberUtility;
-import utilities.SwingUtil;
+import utilities.swing.KeyChainInputPanel;
+import utilities.swing.SwingUtil;
 import core.GlobalKeysManager;
+import core.KeyChain;
 import core.TaskSourceManager;
 import core.UserDefinedAction;
 import core.config.Config;
@@ -179,7 +181,7 @@ public class BackEndHolder {
 	protected void addCurrentTask() {
 		if (customFunction != null) {
 			customFunction.setName("New task");
-			customFunction.setHotkey(-1);
+			customFunction.setHotkey(null);
 			customTasks.add(customFunction);
 
 			customFunction = null;
@@ -220,8 +222,8 @@ public class BackEndHolder {
 		int row = 0;
 		for (UserDefinedAction task : customTasks) {
 			main.tTasks.setValueAt(task.getName(), row, 0);
-			if (task.getHotkey() != -1) {
-				main.tTasks.setValueAt(KeyEvent.getKeyText(task.getHotkey()), row, 1);
+			if (task.getHotkey() != null) {
+				main.tTasks.setValueAt(task.getHotkey().toString(), row, 1);
 
 				if (!keysManager.isKeyRegistered(task.getHotkey())) {
 					keysManager.registerKey(task.getHotkey(), task);
@@ -246,36 +248,31 @@ public class BackEndHolder {
 			final UserDefinedAction action = customTasks.get(row);
 			if (e.getKeyCode() == config.HALT_TASK) {
 				keysManager.unregisterKey(action.getHotkey());
-				action.setHotkey(-1);
+				action.setHotkey(new KeyChain(-1));
 				main.tTasks.setValueAt("None", row, column);
-			} else if (!keysManager.isKeyRegistered(e.getKeyCode())) {
-				keysManager.reRegisterKey(e.getKeyCode(), action.getHotkey(), action);
-
-				action.setHotkey(e.getKeyCode());
-				main.tTasks.setValueAt(KeyEvent.getKeyText(e.getKeyCode()), row, column);
 			} else {
-				JOptionPane.showMessageDialog(main, "Key " + KeyEvent.getKeyText(e.getKeyCode()) + " already registered. Remove it first");
-			}
-		}
+				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);
+				if (newKeyChain != null) {
+					keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
 
-		//Load source if needed and possible
-		if (row >= 0 && row < customTasks.size()) {
-			if (selectedTaskIndex != row) {
-				String sourcePath = customTasks.get(row).getSourcePath();
-				StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
-				if (source != null) {
-					main.taSource.setText(source.toString());
-				} else {
-					JOptionPane.showMessageDialog(main, "Unable to load source from file " + sourcePath);
+					action.setHotkey(newKeyChain);
+					main.tTasks.setValueAt(newKeyChain.toString(), row, column);
 				}
 			}
 		}
+
+		loadSource(row);
 		selectedTaskIndex = row;
 	}
 
 	protected void mouseReleaseTaskTable(MouseEvent e) {
 		int row = main.tTasks.getSelectedRow();
 
+		loadSource(row);
+		selectedTaskIndex = row;
+	}
+
+	private void loadSource(int row) {
 		//Load source if possible
 		if (row >= 0 && row < customTasks.size()) {
 			if (selectedTaskIndex != row) {
@@ -289,7 +286,6 @@ public class BackEndHolder {
 				}
 			}
 		}
-		selectedTaskIndex = row;
 	}
 
 	/*************************************************************************************************************/

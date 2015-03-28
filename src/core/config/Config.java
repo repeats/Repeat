@@ -15,6 +15,7 @@ import argo.jdom.JsonRootNode;
 
 import com.sun.glass.events.KeyEvent;
 
+import core.KeyChain;
 import core.UserDefinedAction;
 import core.languageHandler.compiler.DynamicCompilerFactory;
 import frontEnd.BackEndHolder;
@@ -28,12 +29,16 @@ public class Config {
 	private final BackEndHolder backEnd;
 
 	public int HALT_TASK = KeyEvent.VK_ESCAPE;
-	public int RECORD = KeyEvent.VK_F9;
-	public int REPLAY = KeyEvent.VK_F11;
-	public int COMPILED_REPLAY = KeyEvent.VK_F12;
+	private KeyChain RECORD;
+	private KeyChain REPLAY;
+	private KeyChain COMPILED_REPLAY;
 
 	public Config(BackEndHolder backEnd) {
 		this.backEnd = backEnd;
+
+		RECORD = new KeyChain(KeyEvent.VK_F9);
+		REPLAY = new KeyChain(KeyEvent.VK_F11);
+		COMPILED_REPLAY = new KeyChain(KeyEvent.VK_F12);
 	}
 
 	public DynamicCompilerFactory compilerFactory() {
@@ -86,12 +91,54 @@ public class Config {
 				JsonNodeFactories.field("compilers", compilerFactory.jsonize()),
 				JsonNodeFactories.field("tasks", JsonNodeFactories.array(taskNodes)),
 				JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
-						JsonNodeFactories.field("record", JsonNodeFactories.number(RECORD)),
-						JsonNodeFactories.field("replay", JsonNodeFactories.number(REPLAY)),
-						JsonNodeFactories.field("replay_compiled", JsonNodeFactories.number(COMPILED_REPLAY))))
-				);
+						JsonNodeFactories.field("record", RECORD.jsonize()),
+						JsonNodeFactories.field("replay", REPLAY.jsonize()),
+						JsonNodeFactories.field("replay_compiled", COMPILED_REPLAY.jsonize())
+				)));
 
 		return FileUtility.writeToFile(JSONUtility.jsonToString(root), new File(CONFIG_FILE_NAME), false);
+	}
+
+	public KeyChain getRECORD() {
+		return RECORD;
+	}
+
+	public void setRECORD(KeyChain RECORD) {
+		if (RECORD != null) {
+			this.RECORD = RECORD;
+		}
+	}
+
+	public void setRECORD(int RECORD) {
+		setRECORD(new KeyChain(Arrays.asList(RECORD)));
+	}
+
+	public KeyChain getREPLAY() {
+		return REPLAY;
+	}
+
+	public void setREPLAY(KeyChain REPLAY) {
+		if (REPLAY != null) {
+			this.REPLAY = REPLAY;
+		}
+	}
+
+	public void setREPLAY(int REPLAY) {
+		setREPLAY(new KeyChain(Arrays.asList(REPLAY)));
+	}
+
+	public KeyChain getCOMPILED_REPLAY() {
+		return COMPILED_REPLAY;
+	}
+
+	public void setCOMPILED_REPLAY(KeyChain COMPILED_REPLAY) {
+		if (COMPILED_REPLAY != null) {
+			this.COMPILED_REPLAY = COMPILED_REPLAY;
+		}
+	}
+
+	public void setCOMPILED_REPLAY(int COMPILED_REPLAY) {
+		setCOMPILED_REPLAY(new KeyChain(Arrays.asList(COMPILED_REPLAY)));
 	}
 
 	protected BackEndHolder getBackEnd() {

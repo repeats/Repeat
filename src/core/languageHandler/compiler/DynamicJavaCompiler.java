@@ -21,9 +21,9 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-import utilities.ExceptionUtility;
 import utilities.FileUtility;
 import utilities.StringUtilities;
+import utilities.logging.ExceptionUtility;
 import core.UserDefinedAction;
 
 public class DynamicJavaCompiler implements DynamicCompiler {

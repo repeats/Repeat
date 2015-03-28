@@ -87,8 +87,8 @@ public class MainFrame extends JFrame {
 	@SuppressWarnings("serial")
 	public MainFrame() throws NativeHookException {
 		backEnd = new BackEndHolder(this);
-		hotkey = new HotkeySetting(backEnd);
 		backEnd.config.loadConfig(null);
+		hotkey = new HotkeySetting(backEnd);
 
 		if (!SystemTray.isSupported()) {
 			LOGGER.warning("System tray is not supported!");
@@ -105,21 +105,21 @@ public class MainFrame extends JFrame {
 				return hotkey.isVisible();
 			}
 		});
-		backEnd.keysManager.registerKey(backEnd.config.RECORD, new UserDefinedAction() {
+		backEnd.keysManager.registerKey(backEnd.config.getRECORD(), new UserDefinedAction() {
 			@Override
 			public void action(Core controller) throws InterruptedException {
 				backEnd.switchRecord();
 			}
 		});
 
-		backEnd.keysManager.registerKey(backEnd.config.REPLAY, new UserDefinedAction() {
+		backEnd.keysManager.registerKey(backEnd.config.getREPLAY(), new UserDefinedAction() {
 			@Override
 			public void action(Core controller) throws InterruptedException {
 				backEnd.switchReplay();
 			}
 		});
 
-		backEnd.keysManager.registerKey(backEnd.config.COMPILED_REPLAY, new UserDefinedAction() {
+		backEnd.keysManager.registerKey(backEnd.config.getCOMPILED_REPLAY(), new UserDefinedAction() {
 			@Override
 			public void action(Core controller) throws InterruptedException {
 				backEnd.switchRunningCompiledAction();

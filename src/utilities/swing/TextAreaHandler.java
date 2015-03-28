@@ -1,4 +1,4 @@
-package utilities;
+package utilities.swing;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

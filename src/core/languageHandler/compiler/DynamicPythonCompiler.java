@@ -6,8 +6,8 @@ import java.lang.ProcessBuilder.Redirect;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.ExceptionUtility;
 import utilities.FileUtility;
+import utilities.logging.ExceptionUtility;
 import core.UserDefinedAction;
 import core.controller.Core;
 

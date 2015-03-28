@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;
+import core.KeyChain;
 import core.UserDefinedAction;
 import core.languageHandler.compiler.DynamicCompiler;
 
@@ -32,9 +33,10 @@ public class Parser1_0 extends ConfigParser {
 	@Override
 	protected boolean internalExtractData(Config config, JsonRootNode root) {
 		try {
-			config.RECORD = Integer.parseInt(root.getNode("global_hotkey").getNumberValue("record"));
-			config.REPLAY = Integer.parseInt(root.getNode("global_hotkey").getNumberValue("replay"));
-			config.COMPILED_REPLAY = Integer.parseInt(root.getNode("global_hotkey").getNumberValue("replay_compiled"));
+			JsonNode globalHotkey = root.getNode("global_hotkey");
+			config.setRECORD(KeyChain.parseJSON(globalHotkey.getArrayNode("record")));
+			config.setREPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay")));
+			config.setCOMPILED_REPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay_compiled")));
 
 			for (JsonNode compilerNode : root.getArrayNode("compilers")) {
 				String name = compilerNode.getStringValue("name");
@@ -58,7 +60,6 @@ public class Parser1_0 extends ConfigParser {
 					tasks.add(task);
 				}
 			}
-
 			return true;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to parse json", e);
