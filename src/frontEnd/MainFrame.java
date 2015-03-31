@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +49,7 @@ import org.jnativehook.NativeHookException;
 
 import utilities.FileUtility;
 import utilities.Function;
+import utilities.logging.OutStream;
 
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
@@ -560,6 +562,9 @@ public class MainFrame extends JFrame {
 
 		/*************************************************************************************/
 		backEnd.renderTasks();
+		PrintStream printStream = new PrintStream(new OutStream(taStatus));
+		System.setOut(printStream);
+		System.setErr(printStream);
 
 		/*************************************************************************************/
 		LOGGER.info("Successfully intialized application");

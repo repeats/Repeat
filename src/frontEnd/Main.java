@@ -3,9 +3,8 @@ package frontEnd;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -20,9 +19,10 @@ public class Main {
 	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
 	public static void main(String[] args) throws FileNotFoundException {
-		PrintStream printStream = new PrintStream(new File("repeat.log"));
-		System.setOut(printStream);
-		System.setErr(printStream);
+
+		// Get the logger for "org.jnativehook" and set the level to warning.
+		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		logger.setLevel(Level.WARNING);
 
 		if (!GlobalScreen.isNativeHookRegistered()) {
 			try {
@@ -33,6 +33,8 @@ public class Main {
 			}
 		}
 		Toolkit.getDefaultToolkit().setLockingKeyState(KeyEvent.VK_NUM_LOCK, false);
+
+		/*********************************************************************************/
 
 		EventQueue.invokeLater(new Runnable() {
 			@Override

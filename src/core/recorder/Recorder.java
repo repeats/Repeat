@@ -4,11 +4,7 @@ import globalListener.GlobalKeyListener;
 import globalListener.GlobalMouseListener;
 
 import java.util.HashMap;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.jnativehook.GlobalScreen;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 
@@ -38,18 +34,6 @@ public class Recorder {
 	private GlobalMouseListener mouseListener;
 
 	private HashMap<Integer, AbstractSourceGenerator> sourceGenerators;
-
-	static {
-		// Get the logger for "org.jnativehook" and set the level to off.
-		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-		logger.setLevel(Level.OFF);
-
-		// Change the level for all handlers attached to the logger.
-		Handler[] handlers = logger.getHandlers();
-		for (int i = 0; i < handlers.length; i++) {
-			handlers[i].setLevel(Level.OFF);
-		}
-	}
 
 	public Recorder(final Core controller, final GlobalKeysManager globalKeys) {
 		taskScheduler = new TaskScheduler();
