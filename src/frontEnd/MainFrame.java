@@ -62,10 +62,6 @@ public class MainFrame extends JFrame {
 
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
-	static {
-		LOGGER.setLevel(Level.ALL);
-	}
-
 	private final BackEndHolder backEnd;
 
 	protected TrayIcon trayIcon;
@@ -94,7 +90,7 @@ public class MainFrame extends JFrame {
 			LOGGER.warning("System tray is not supported!");
 			trayIcon = null;
 		} else {
-			trayIcon = new MinimizedFrame(Toolkit.getDefaultToolkit().getImage("D:\\Repeat.jpg"), backEnd);
+			trayIcon = new MinimizedFrame(Toolkit.getDefaultToolkit().getImage("Repeat.jpg"), backEnd);
 		}
 
 		/*************************************************************************************/
@@ -566,9 +562,7 @@ public class MainFrame extends JFrame {
 		backEnd.renderTasks();
 
 		/*************************************************************************************/
-//		PrintStream printStream = new PrintStream(new OutStream(taStatus));
-//		System.setOut(printStream);
-//		System.setErr(printStream);
+		LOGGER.info("Successfully intialized application");
 	}
 
 	private void refreshCompilingLanguage() {

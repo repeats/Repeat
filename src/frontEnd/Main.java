@@ -3,6 +3,9 @@ package frontEnd;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -16,7 +19,11 @@ public class Main {
 
 	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
+		PrintStream printStream = new PrintStream(new File("repeat.log"));
+		System.setOut(printStream);
+		System.setErr(printStream);
+
 		if (!GlobalScreen.isNativeHookRegistered()) {
 			try {
 				GlobalScreen.registerNativeHook();
@@ -35,6 +42,7 @@ public class Main {
 					frame.setVisible(true);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, ExceptionUtility.getStackTrace(e));
+					System.exit(2);
 				}
 			}
 		});

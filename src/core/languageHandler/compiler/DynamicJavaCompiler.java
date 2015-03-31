@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.tools.Diagnostic;
@@ -35,85 +34,92 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	private final String className;
 	private final String[] classPaths;
 
-	static {
-		LOGGER.setLevel(Level.ALL);
-	}
+	private File home;
 
 	public DynamicJavaCompiler(String className, String[] packageTree, String[] classPaths) {
 		this.packageTree = packageTree;
 		this.className = className;
 		this.classPaths = classPaths;
+
+		home = new File(System.getProperty("java.home"));
 	}
 
 	@Override
 	public UserDefinedAction compile(String sourceCode) {
-		File compiling = new File(FileUtility.joinPath(FileUtility.joinPath(packageTree), className + ".java"));
-        if (compiling.getParentFile().exists() || compiling.getParentFile().mkdirs()) {
-            try {
-                Writer writer = null;
-                try {
-                    writer = new FileWriter(compiling);
-                    writer.write(sourceCode);
-                    writer.flush();
-                } finally {
-                    try {
-                        writer.close();
-                    } catch (Exception e) {
-                    }
-                }
+		String originalPath = System.getProperty("java.home");
+		System.setProperty("java.home", home.getAbsolutePath());
 
-                /** Compilation Requirements *********************************************************************************************/
-                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-                if (compiler == null) {
-                	LOGGER.warning("No java compiler found. Set class path points to JDK in setting?");
-                	return null;
-                }
-                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
+		try {
+			File compiling = new File(FileUtility.joinPath(FileUtility.joinPath(packageTree), className + ".java"));
+	        if (compiling.getParentFile().exists() || compiling.getParentFile().mkdirs()) {
+	            try {
+	                Writer writer = null;
+	                try {
+	                    writer = new FileWriter(compiling);
+	                    writer.write(sourceCode);
+	                    writer.flush();
+	                } finally {
+	                    try {
+	                        writer.close();
+	                    } catch (Exception e) {
+	                    }
+	                }
 
-                // This sets up the class path that the compiler will use.
-                // I've added the .jar file that contains the DoStuff interface within in it...
-                List<String> optionList = new ArrayList<String>();
-                optionList.add("-classpath");
-                String paths = System.getProperty("java.class.path");
-                if (classPaths.length > 0) {
-                	 paths += ";" + StringUtilities.join(classPaths, ";");
-                }
-                optionList.add(paths);
+	                /** Compilation Requirements *********************************************************************************************/
+	                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+	                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+	                if (compiler == null) {
+	                	LOGGER.warning("No java compiler found. Set class path points to JDK in setting?");
+	                	return null;
+	                }
+	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
 
-                Iterable<? extends JavaFileObject> compilationUnit
-                        = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(compiling));
-                JavaCompiler.CompilationTask task = compiler.getTask(
-                    null,
-                    fileManager,
-                    diagnostics,
-                    optionList,
-                    null,
-                    compilationUnit);
-                /********************************************************************************************* Compilation Requirements **/
-                if (task.call()) {
-                	if (classLoader != null) {
-                		classLoader.close();
-                	}
-                    classLoader = new URLClassLoader(new URL[]{new File("./").toURI().toURL()});
-                    Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + className);
-                    Object object = loadedClass.newInstance();
+	                // This sets up the class path that the compiler will use.
+	                // I've added the .jar file that contains the DoStuff interface within in it...
+	                List<String> optionList = new ArrayList<String>();
+	                optionList.add("-classpath");
+	                String paths = System.getProperty("java.class.path");
+	                if (classPaths.length > 0) {
+	                	 paths += ";" + StringUtilities.join(classPaths, ";");
+	                }
+	                optionList.add(paths);
 
-                    LOGGER.info("Successfully compiled class " + className);
-                    return (UserDefinedAction) object;
-                } else {
-                    for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                    	LOGGER.warning("Error on line " + diagnostic.getLineNumber() +" in " + diagnostic.getSource().toUri() + "\n");
-                    	LOGGER.warning(diagnostic.getMessage(Locale.US));
-                    }
-                }
-                fileManager.close();
-            } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException exp) {
-            	LOGGER.warning(ExceptionUtility.getStackTrace(exp));
-            }
-        }
-        LOGGER.info("Cannot compile class " + className);
-        return null;
+	                Iterable<? extends JavaFileObject> compilationUnit
+	                        = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(compiling));
+	                JavaCompiler.CompilationTask task = compiler.getTask(
+	                    null,
+	                    fileManager,
+	                    diagnostics,
+	                    optionList,
+	                    null,
+	                    compilationUnit);
+	                /********************************************************************************************* Compilation Requirements **/
+	                if (task.call()) {
+	                	if (classLoader != null) {
+	                		classLoader.close();
+	                	}
+	                    classLoader = new URLClassLoader(new URL[]{new File("./").toURI().toURL()});
+	                    Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + className);
+	                    Object object = loadedClass.newInstance();
+
+	                    LOGGER.info("Successfully compiled class " + className);
+	                    return (UserDefinedAction) object;
+	                } else {
+	                    for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+	                    	LOGGER.warning("Error on line " + diagnostic.getLineNumber() +" in " + diagnostic.getSource().toUri() + "\n");
+	                    	LOGGER.warning(diagnostic.getMessage(Locale.US));
+	                    }
+	                }
+	                fileManager.close();
+	            } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException exp) {
+	            	LOGGER.warning(ExceptionUtility.getStackTrace(exp));
+	            }
+	        }
+	        LOGGER.info("Cannot compile class " + className);
+	        return null;
+		} finally {
+			System.setProperty("java.home", originalPath);
+		}
 	}
 
 	@Override
@@ -123,12 +129,12 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 
 	@Override
 	public File getPath() {
-		return new File(System.getProperty("java.home"));
+		return home.getAbsoluteFile();
 	}
 
 	@Override
 	public void setPath(File path) {
-		System.setProperty("java.home", path.getAbsolutePath());
+		home = path;
 	}
 
 	@Override

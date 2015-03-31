@@ -222,7 +222,7 @@ public class BackEndHolder {
 		int row = 0;
 		for (UserDefinedAction task : customTasks) {
 			main.tTasks.setValueAt(task.getName(), row, 0);
-			if (task.getHotkey() != null) {
+			if (task.getHotkey() != null && !task.getHotkey().getKeys().isEmpty()) {
 				main.tTasks.setValueAt(task.getHotkey().toString(), row, 1);
 
 				if (!keysManager.isKeyRegistered(task.getHotkey())) {

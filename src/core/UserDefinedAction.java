@@ -37,6 +37,9 @@ public abstract class UserDefinedAction implements IJsonable {
 	}
 
 	public KeyChain getHotkey() {
+		if (hotkey == null) {
+			hotkey = new KeyChain();
+		}
 		return hotkey;
 	}
 
@@ -63,7 +66,7 @@ public abstract class UserDefinedAction implements IJsonable {
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compilerName)),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
-				JsonNodeFactories.field("hotkey", hotkey.jsonize())
+				JsonNodeFactories.field("hotkey", getHotkey().jsonize())
 				);
 
 	}
