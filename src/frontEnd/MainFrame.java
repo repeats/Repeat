@@ -304,13 +304,13 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (rbmiCompileJava.isSelected()) {
-					JFileChooser chooser = new JFileChooser("Java home");
+					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
 						backEnd.config.compilerFactory().getCompiler("java").setPath(chooser.getSelectedFile());
 					}
 				} else if (rbmiCompilePython.isSelected()) {
-					JFileChooser chooser = new JFileChooser("Python interpreter");
+					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
 						backEnd.config.compilerFactory().getCompiler("python").setPath(chooser.getSelectedFile());
