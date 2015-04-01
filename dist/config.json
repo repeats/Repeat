@@ -3,25 +3,16 @@
 	"compilers": [
 		{
 			"name": "python",
-			"path": "D:\\Study\\IT\\Java\\Projects\\Repeat\\dist\\python.exe",
+			"path": "C:\\Users\\hoatruon\\Projects\\Repeat\\dist\\python.exe",
 			"run_args": ""
 		},
 		{
 			"name": "java",
-			"path": "C:\\Program Files\\Java\\jdk1.8.0_25",
+			"path": "C:\\Program Files\\Java\\jre1.8.0_40",
 			"run_args": ""
 		}
 	],
-	"tasks": [
-		{
-			"source_path": "D:\\Study\\IT\\Java\\Projects\\Repeat\\dist\\data\\source\\java\\1427843390154",
-			"compiler": "java",
-			"name": "test",
-			"hotkey": [
-				192
-			]
-		}
-	],
+	"tasks": [],
 	"global_hotkey": {
 		"record": [
 			120

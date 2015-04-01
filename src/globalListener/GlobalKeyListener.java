@@ -14,7 +14,7 @@ import utilities.Function;
 
 public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 
-	private static final long KEY_PRESS_DELAY_MS = 100;
+	private static final long KEY_PRESS_DELAY_MS = 1000;
 
 	private Function<NativeKeyEvent, Boolean> keyPressed;
 	private Function<NativeKeyEvent, Boolean> keyReleased;

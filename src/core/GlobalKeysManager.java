@@ -2,6 +2,7 @@ package core;
 
 import globalListener.GlobalKeyListener;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -100,7 +101,7 @@ public final class GlobalKeysManager {
 					return true;
 				}
 
-				currentKeyChain.getKeys().remove(Integer.valueOf(code));
+				currentKeyChain.getKeys().removeAll(Collections.singleton(Integer.valueOf(code)));
 				return true;
 			}
 		});
