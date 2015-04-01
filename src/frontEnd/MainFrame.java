@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -566,6 +567,8 @@ public class MainFrame extends JFrame {
 		System.setOut(printStream);
 		System.setErr(printStream);
 
+		Logger.getLogger("").addHandler(new ConsoleHandler());
+		
 		/*************************************************************************************/
 		LOGGER.info("Successfully intialized application");
 	}
