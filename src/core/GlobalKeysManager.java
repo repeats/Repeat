@@ -2,7 +2,6 @@ package core;
 
 import globalListener.GlobalKeyListener;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -64,7 +63,7 @@ public final class GlobalKeysManager {
 				}
 
 				currentKeyChain.getKeys().add(code);
-
+				
 				final UserDefinedAction action = actionMap.get(currentKeyChain);
 				if (action != null) {
 					final String id = System.currentTimeMillis() + ""; //Don't need the fancy UUID
@@ -101,7 +100,8 @@ public final class GlobalKeysManager {
 					return true;
 				}
 
-				currentKeyChain.getKeys().removeAll(Collections.singleton(Integer.valueOf(code)));
+//				currentKeyChain.getKeys().removeAll(Collections.singleton(Integer.valueOf(code)));
+				currentKeyChain.getKeys().clear();
 				return true;
 			}
 		});
