@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,6 +59,7 @@ import commonTools.ClickerTool;
 import core.UserDefinedAction;
 import core.controller.Core;
 import core.recorder.Recorder;
+import frontEnd.graphics.BootStrapResources;
 
 public class MainFrame extends JFrame {
 
@@ -126,7 +128,7 @@ public class MainFrame extends JFrame {
 		});
 		/*************************************************************************************/
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 590, 327);
+		setBounds(100, 100, 653, 327);
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -326,6 +328,33 @@ public class MainFrame extends JFrame {
 
 		final JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Record Mouse Click Only");
 		mSetting.add(chckbxmntmNewCheckItem);
+
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+
+		JMenuItem miAPI = new JMenuItem("API");
+		miAPI.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (rbmiCompileJava.isSelected()) {
+					JOptionPane.showMessageDialog(MainFrame.this, BootStrapResources.getAPI("java"));
+				} else if (rbmiCompilePython.isSelected()) {
+					JOptionPane.showMessageDialog(MainFrame.this, BootStrapResources.getAPI("python"));
+				}
+			}
+		});
+
+		JMenuItem miAbout = new JMenuItem("About");
+		miAbout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(MainFrame.this, BootStrapResources.getAbout());
+			}
+		});
+
+		mnHelp.add(miAPI);
+		mnHelp.add(miAbout);
+
 		chckbxmntmNewCheckItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -409,7 +438,9 @@ public class MainFrame extends JFrame {
 
 		JScrollPane scrollPane_2 = new JScrollPane();
 
-		JButton bAddTask = new JButton("Add task");
+		JButton bAddTask = new JButton();
+		bAddTask.setIcon(BootStrapResources.ADD);
+		bAddTask.setToolTipText("Add most recently compiled task");
 		bAddTask.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -417,11 +448,33 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		JButton bRemoveTask = new JButton("Remove task");
+		JButton bRemoveTask = new JButton();
+		bRemoveTask.setIcon(BootStrapResources.DELETE);
+		bRemoveTask.setToolTipText("Delete currently selected task from the list");
 		bRemoveTask.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				backEnd.removeCurrentTask();
+			}
+		});
+
+		JButton bMoveTaskUp = new JButton();
+		bMoveTaskUp.setIcon(BootStrapResources.UP);
+		bMoveTaskUp.setToolTipText("Move currently selected task up in the list");
+		bMoveTaskUp.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.moveTaskUp();
+			}
+		});
+
+		JButton bMoveTaskDown = new JButton();
+		bMoveTaskDown.setIcon(BootStrapResources.DOWN);
+		bMoveTaskDown.setToolTipText("Move currently selected task down in the list");
+		bMoveTaskDown.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.moveTaskDown();
 			}
 		});
 
@@ -430,11 +483,11 @@ public class MainFrame extends JFrame {
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
 								.addComponent(bReplay, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(bRecord, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+								.addComponent(bRecord, Alignment.LEADING))
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addPreferredGap(ComponentPlacement.RELATED)
@@ -452,10 +505,10 @@ public class MainFrame extends JFrame {
 									.addComponent(lblNewLabel_3)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
 									.addPreferredGap(ComponentPlacement.UNRELATED))
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(bCompile)
@@ -463,17 +516,21 @@ public class MainFrame extends JFrame {
 									.addComponent(bRun)
 									.addGap(32)))
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(bAddTask)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(bRemoveTask))
-								.addGroup(Alignment.TRAILING, gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_contentPane.createSequentialGroup()
-										.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+										.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
 										.addPreferredGap(ComponentPlacement.RELATED))
 									.addGroup(gl_contentPane.createSequentialGroup()
-										.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
-										.addGap(1))))))
+										.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+										.addGap(1)))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(bAddTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bRemoveTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bMoveTaskUp, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bMoveTaskDown, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)))))
 					.addGap(7))
 		);
 		gl_contentPane.setVerticalGroup(
@@ -489,15 +546,17 @@ public class MainFrame extends JFrame {
 						.addComponent(bReplay)
 						.addComponent(lblNewLabel)
 						.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel_2)
 						.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel_1))
+						.addComponent(lblNewLabel_1)
+						.addComponent(lblNewLabel_2))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(bCompile)
 						.addComponent(bRun)
 						.addComponent(bAddTask)
-						.addComponent(bRemoveTask))
+						.addComponent(bRemoveTask)
+						.addComponent(bMoveTaskUp)
+						.addComponent(bMoveTaskDown))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPane.createSequentialGroup()
@@ -567,8 +626,11 @@ public class MainFrame extends JFrame {
 		System.setOut(printStream);
 		System.setErr(printStream);
 
+		for (Handler handler : Logger.getLogger("").getHandlers()) {
+			Logger.getLogger("").removeHandler(handler);
+		}
 		Logger.getLogger("").addHandler(new ConsoleHandler());
-		
+
 		/*************************************************************************************/
 		LOGGER.info("Successfully intialized application");
 	}

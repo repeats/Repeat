@@ -59,6 +59,7 @@ public class MinimizedFrame extends TrayIcon {
 	private void showMainFrame() {
 		SystemTray.getSystemTray().remove(MinimizedFrame.this);
 		backEnd.main.setState(Frame.NORMAL);
+		backEnd.main.toFront();
 		backEnd.main.setVisible(true);
 	}
 }

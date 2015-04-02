@@ -3,6 +3,7 @@ package core;
 import java.io.File;
 
 import utilities.FileUtility;
+import utilities.RandomUtil;
 
 
 public class TaskSourceManager {
@@ -26,6 +27,6 @@ public class TaskSourceManager {
 	}
 
 	private String generateName() {
-		return System.currentTimeMillis() + "";
+		return RandomUtil.randomID();
 	}
 }

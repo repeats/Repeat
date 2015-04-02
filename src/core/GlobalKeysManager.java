@@ -12,6 +12,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 
 import utilities.CodeConverter;
 import utilities.Function;
+import utilities.RandomUtil;
 import core.config.Config;
 import core.config.Parser1_0;
 import core.controller.Core;
@@ -63,10 +64,10 @@ public final class GlobalKeysManager {
 				}
 
 				currentKeyChain.getKeys().add(code);
-				
+
 				final UserDefinedAction action = actionMap.get(currentKeyChain);
 				if (action != null) {
-					final String id = System.currentTimeMillis() + ""; //Don't need the fancy UUID
+					final String id = RandomUtil.randomID();
 					Thread execution = new Thread(new Runnable() {
 						@Override
 						public void run() {

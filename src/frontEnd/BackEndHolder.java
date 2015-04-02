@@ -207,11 +207,31 @@ public class BackEndHolder {
 			}
 
 			customTasks.remove(selectedRow);
-
+			selectedTaskIndex = - 1; //Reset selected index
 
 			renderTasks();
 		} else {
 			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
+		}
+	}
+
+	protected void moveTaskUp() {
+		int selected = main.tTasks.getSelectedRow();
+		if (selected >= 1) {
+			UserDefinedAction temp = customTasks.get(selected);
+			customTasks.set(selected, customTasks.get(selected - 1));
+			customTasks.set(selected - 1, temp);
+			renderTasks();
+		}
+	}
+
+	protected void moveTaskDown() {
+		int selected = main.tTasks.getSelectedRow();
+		if (selected >= 0 && selected < customTasks.size() - 1) {
+			UserDefinedAction temp = customTasks.get(selected);
+			customTasks.set(selected, customTasks.get(selected + 1));
+			customTasks.set(selected + 1, temp);
+			renderTasks();
 		}
 	}
 

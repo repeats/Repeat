@@ -1,9 +1,7 @@
 package core.languageHandler.compiler;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +19,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import utilities.FileUtility;
+import utilities.RandomUtil;
 import utilities.StringUtilities;
 import utilities.logging.ExceptionUtility;
 import core.UserDefinedAction;
@@ -28,6 +27,7 @@ import core.UserDefinedAction;
 public class DynamicJavaCompiler implements DynamicCompiler {
 
 	private static final Logger LOGGER = Logger.getLogger(DynamicJavaCompiler.class.getName());
+	private static final String DUMMY_CLASS_NAME_PREFIX = "CC_";
 	private static URLClassLoader classLoader;
 
 	private final String[] packageTree;
@@ -49,20 +49,20 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 		String originalPath = System.getProperty("java.home");
 		System.setProperty("java.home", home.getAbsolutePath());
 
+		if (!sourceCode.contains("class " + className)) {
+			LOGGER.warning("Cannot find class " + className + " in source code.");
+			return null;
+		}
+		String newClassName = DUMMY_CLASS_NAME_PREFIX + RandomUtil.randomID();
+		sourceCode = sourceCode.replaceFirst("class " + className, "class " + newClassName);
+
 		try {
-			File compiling = new File(FileUtility.joinPath(FileUtility.joinPath(packageTree), className + ".java"));
+			File compiling = new File(FileUtility.joinPath(FileUtility.joinPath(packageTree), newClassName + ".java"));
 	        if (compiling.getParentFile().exists() || compiling.getParentFile().mkdirs()) {
 	            try {
-	                Writer writer = null;
-	                try {
-	                    writer = new FileWriter(compiling);
-	                    writer.write(sourceCode);
-	                    writer.flush();
-	                } finally {
-	                    try {
-	                        writer.close();
-	                    } catch (Exception e) {
-	                    }
+	                if (!FileUtility.writeToFile(sourceCode, compiling, false)) {
+	                	LOGGER.warning("Cannot write source code to file.");
+	                	return null;
 	                }
 
 	                /** Compilation Requirements *********************************************************************************************/
@@ -75,7 +75,7 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
 
 	                // This sets up the class path that the compiler will use.
-	                // I've added the .jar file that contains the DoStuff interface within in it...
+	                // Added the .jar file that contains the [className] interface within in it...
 	                List<String> optionList = new ArrayList<String>();
 	                optionList.add("-classpath");
 	                String paths = System.getProperty("java.class.path");
@@ -99,7 +99,9 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	                		classLoader.close();
 	                	}
 	                    classLoader = new URLClassLoader(new URL[]{new File("./").toURI().toURL()});
-	                    Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + className);
+	                    System.out.println(new File("./").getAbsolutePath());
+
+	                    Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + newClassName);
 	                    Object object = loadedClass.newInstance();
 
 	                    LOGGER.info("Successfully compiled class " + className);
