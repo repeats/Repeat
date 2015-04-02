@@ -99,7 +99,6 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	                		classLoader.close();
 	                	}
 	                    classLoader = new URLClassLoader(new URL[]{new File("./").toURI().toURL()});
-	                    System.out.println(new File("./").getAbsolutePath());
 
 	                    Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + newClassName);
 	                    Object object = loadedClass.newInstance();

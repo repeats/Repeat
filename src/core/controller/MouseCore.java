@@ -66,6 +66,23 @@ public class MouseCore {
 		}
 	}
 
+	public void click(int mask, int x, int y) throws InterruptedException {
+		move(x, y);
+		click(mask);
+	}
+	
+	public void click(int mask, Point p) throws InterruptedException {
+		click(mask, p.x, p.y);
+	}
+	
+	public void leftClick(int x, int y) throws InterruptedException {
+		click(InputEvent.BUTTON1_MASK, x, y);
+	}
+	
+	public void rightClick(int x, int y) throws InterruptedException {
+		click(InputEvent.BUTTON3_MASK, x, y);
+	}
+	
 	public void press(int mask) {
 		controller.mousePress(mask);
 	}

@@ -8,11 +8,28 @@
 		},
 		{
 			"name": "java",
-			"path": "C:\\Program Files\\Java\\jre1.8.0_40",
+			"path": "C:\\Program Files\\Java\\jdk1.8.0_40\\jre",
 			"run_args": ""
 		}
 	],
-	"tasks": [],
+	"tasks": [
+		{
+			"source_path": "C:\\Users\\hoatruon\\Projects\\Repeat\\dist\\data\\source\\java\\1427982084075",
+			"compiler": "java",
+			"name": "Copy",
+			"hotkey": [
+				113
+			]
+		},
+		{
+			"source_path": "C:\\Users\\hoatruon\\Projects\\Repeat\\dist\\data\\source\\java\\1427982099857",
+			"compiler": "java",
+			"name": "Paste",
+			"hotkey": [
+				114
+			]
+		}
+	],
 	"global_hotkey": {
 		"record": [
 			120
