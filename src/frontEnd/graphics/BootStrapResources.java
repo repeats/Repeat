@@ -10,14 +10,21 @@ import javax.swing.ImageIcon;
 public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
-	public static final ImageIcon UP, DOWN, DELETE, ADD;
+	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT;
+	public static final ImageIcon RECORD, STOP, PLAY;
 
 	static {
 		ADD = getImage("/toolbarButtonGraphics/general/Add24.gif");
+		EDIT = getImage("/toolbarButtonGraphics/general/Edit24.gif");
 		DELETE = getImage("/toolbarButtonGraphics/general/Delete24.gif");
 
 		UP = getImage("/toolbarButtonGraphics/navigation/Up24.gif");
 		DOWN = getImage("/toolbarButtonGraphics/navigation/Down24.gif");
+
+		RECORD = getImage("/toolbarButtonGraphics/general/Stop16.gif");
+		STOP = getImage("/toolbarButtonGraphics/media/Stop16.gif");
+
+		PLAY = getImage("/toolbarButtonGraphics/media/Play16.gif");
 	}
 
 	private static ImageIcon getImage(String resource) {

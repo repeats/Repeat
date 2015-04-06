@@ -15,6 +15,9 @@ import utilities.Function;
 import utilities.NumberUtility;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
+
+import com.sun.istack.internal.logging.Logger;
+
 import core.GlobalKeysManager;
 import core.KeyChain;
 import core.TaskSourceManager;
@@ -24,8 +27,11 @@ import core.controller.Core;
 import core.languageHandler.compiler.DynamicCompiler;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.recorder.Recorder;
+import frontEnd.graphics.BootStrapResources;
 
 public class BackEndHolder {
+
+	private static final Logger LOGGER = Logger.getLogger(BackEndHolder.class);
 
 	protected ScheduledThreadPoolExecutor executor;
 	protected Thread compiledExecutor;
@@ -77,13 +83,13 @@ public class BackEndHolder {
 			recorder.clear();
 			recorder.record();
 			isRecording = true;
-			main.bRecord.setText("Stop");
+			main.bRecord.setIcon(BootStrapResources.STOP);
 
 			setEnableReplay(false);
 		} else {//Stop record
 			recorder.stopRecord();
 			isRecording = false;
-			main.bRecord.setText("Record");
+			main.bRecord.setIcon(BootStrapResources.RECORD);
 
 			setEnableReplay(true);
 		}
@@ -95,7 +101,7 @@ public class BackEndHolder {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					main.bReplay.setText("Replay");
+					main.bReplay.setIcon(BootStrapResources.PLAY);
 					setEnableRecord(true);
 				}
 			});
@@ -105,7 +111,7 @@ public class BackEndHolder {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					main.bReplay.setText("Stop replay");
+					main.bReplay.setIcon(BootStrapResources.STOP);
 					setEnableRecord(false);
 				}
 			});
@@ -178,6 +184,13 @@ public class BackEndHolder {
 	/*************************************************************************************************************/
 	/*****************************************Task related********************************************************/
 
+	private void removeTask(UserDefinedAction task) {
+		keysManager.unregisterKey(task.getHotkey());
+		if (!taskManager.removeTask(task)) {
+			JOptionPane.showMessageDialog(main, "Encountered error removing source file " + task.getSourcePath());
+		}
+	}
+
 	protected void addCurrentTask() {
 		if (customFunction != null) {
 			customFunction.setName("New task");
@@ -201,10 +214,7 @@ public class BackEndHolder {
 
 		if (selectedRow >= 0 && selectedRow < customTasks.size()) {
 			UserDefinedAction selectedTask = customTasks.get(selectedRow);
-			keysManager.unregisterKey(selectedTask.getHotkey());
-			if (!taskManager.removeTask(selectedTask)) {
-				JOptionPane.showMessageDialog(main, "Encountered error removing source file " + customTasks.get(selectedRow).getSourcePath());
-			}
+			removeTask(selectedTask);
 
 			customTasks.remove(selectedRow);
 			selectedTaskIndex = - 1; //Reset selected index
@@ -232,6 +242,28 @@ public class BackEndHolder {
 			customTasks.set(selected, customTasks.get(selected + 1));
 			customTasks.set(selected + 1, temp);
 			renderTasks();
+		}
+	}
+
+	protected void overrideTask() {
+		int selected = main.tTasks.getSelectedRow();
+		if (selected >= 0) {
+			if (customFunction == null) {
+				JOptionPane.showMessageDialog(main, "Nothing to override. Compile first?");
+				return;
+			}
+
+			UserDefinedAction toRemove = customTasks.get(selected);
+			customFunction.setName(toRemove.getName());
+			customFunction.setHotkey(toRemove.getHotkey());
+
+			removeTask(toRemove);
+			keysManager.registerKey(customFunction.getHotkey(), customFunction);
+			customTasks.set(selected, customFunction);
+
+			LOGGER.info("Successfully overridden task " + customFunction.getName());
+		} else {
+			JOptionPane.showMessageDialog(main, "Select a task to override");
 		}
 	}
 
@@ -268,7 +300,7 @@ public class BackEndHolder {
 			final UserDefinedAction action = customTasks.get(row);
 			if (e.getKeyCode() == config.HALT_TASK) {
 				keysManager.unregisterKey(action.getHotkey());
-				action.setHotkey(new KeyChain(-1));
+				action.setHotkey(new KeyChain());
 				main.tTasks.setValueAt("None", row, column);
 			} else {
 				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);

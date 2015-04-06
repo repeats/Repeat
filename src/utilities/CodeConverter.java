@@ -515,12 +515,18 @@ public class CodeConverter {
 			return KeyEvent.VK_ALT;
 
 		case VC_META_L:
-
-			return KeyEvent.VK_META;
+			if (OSIdentifier.IS_WINDOWS) {
+				return KeyEvent.VK_WINDOWS;
+			} else {
+				return KeyEvent.VK_META;
+			}
 
 		case VC_META_R:
-
-			return KeyEvent.VK_META;
+			if (OSIdentifier.IS_WINDOWS) {
+				return KeyEvent.VK_WINDOWS;
+			} else {
+				return KeyEvent.VK_META;
+			}
 
 		case VC_CONTEXT_MENU:
 

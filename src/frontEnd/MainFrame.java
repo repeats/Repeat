@@ -222,7 +222,20 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		JMenuItem miSaveConfig = new JMenuItem("Save config");
+		miSaveConfig.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (backEnd.config.writeConfig()) {
+					JOptionPane.showMessageDialog(MainFrame.this, "Configuration saved successfully");
+				} else {
+					JOptionPane.showMessageDialog(MainFrame.this, "Failed to savd configuration");
+				}
+			}
+		});
+
 		mnNewMenu.add(miLoadConfig);
+		mnNewMenu.add(miSaveConfig);
 		mnNewMenu.add(miLoadSource);
 		mnNewMenu.add(miSaveSource);
 		mnNewMenu.add(miExit);
@@ -383,7 +396,9 @@ public class MainFrame extends JFrame {
 			}
 		}, 0, 200, TimeUnit.MILLISECONDS);
 
-		bRecord = new JButton("Record");
+		bRecord = new JButton();
+		bRecord.setIcon(BootStrapResources.RECORD);
+		bRecord.setToolTipText("Record / Stop Recording");
 		bRecord.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -391,7 +406,9 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		bReplay = new JButton("Replay");
+		bReplay = new JButton();
+		bReplay.setIcon(BootStrapResources.PLAY);
+		bReplay.setToolTipText("Replay / Stop Replay");
 		bReplay.setEnabled(false);
 		bReplay.addActionListener(new ActionListener() {
 			@Override
@@ -478,13 +495,23 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		JButton bModifyTask = new JButton();
+		bModifyTask.setIcon(BootStrapResources.EDIT);
+		bModifyTask.setToolTipText("Override the current task with the most recently compiled task");
+		bModifyTask.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.overrideTask();
+			}
+		});
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
 								.addComponent(bReplay, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(bRecord, Alignment.LEADING))
@@ -526,10 +553,12 @@ public class MainFrame extends JFrame {
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(bAddTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bModifyTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(bRemoveTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(bMoveTaskUp, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGap(10)
 									.addComponent(bMoveTaskDown, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)))))
 					.addGap(7))
 		);
@@ -537,33 +566,37 @@ public class MainFrame extends JFrame {
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(bRecord)
-						.addComponent(lblNewLabel_3)
-						.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(bReplay)
-						.addComponent(lblNewLabel)
-						.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel_1)
-						.addComponent(lblNewLabel_2))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(bCompile)
-						.addComponent(bRun)
-						.addComponent(bAddTask)
-						.addComponent(bRemoveTask)
-						.addComponent(bMoveTaskUp)
-						.addComponent(bMoveTaskDown))
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(bRecord)
+								.addComponent(lblNewLabel_3)
+								.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(bReplay)
+								.addComponent(lblNewLabel)
+								.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblNewLabel_1)
+								.addComponent(lblNewLabel_2))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+									.addComponent(bCompile)
+									.addComponent(bRun)
+									.addComponent(bAddTask))
+								.addComponent(bModifyTask, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+								.addComponent(bRemoveTask)))
+						.addComponent(bMoveTaskDown)
+						.addComponent(bMoveTaskUp))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
+							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE)
 							.addGap(11)
-							.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE))
-						.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE))
+							.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE))
+						.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 
@@ -599,6 +632,7 @@ public class MainFrame extends JFrame {
 
 		DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
 		centerRender.setHorizontalAlignment(SwingConstants.CENTER);
+		tTasks.getColumnModel().getColumn(0).setCellRenderer(centerRender);
 		tTasks.getColumnModel().getColumn(1).setCellRenderer(centerRender);
 
 		scrollPane_2.setViewportView(tTasks);

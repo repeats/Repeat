@@ -95,15 +95,13 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	                    compilationUnit);
 	                /********************************************************************************************* Compilation Requirements **/
 	                if (task.call()) {
-	                	if (classLoader != null) {
-	                		classLoader.close();
-	                	}
 	                    classLoader = new URLClassLoader(new URL[]{new File("./").toURI().toURL()});
 
 	                    Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + newClassName);
 	                    Object object = loadedClass.newInstance();
 
 	                    LOGGER.info("Successfully compiled class " + className);
+	                    classLoader.close();
 	                    return (UserDefinedAction) object;
 	                } else {
 	                    for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {

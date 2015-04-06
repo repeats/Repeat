@@ -40,7 +40,7 @@ public class KeyboardCore {
 	}
 
 	public static final int TYPE_DURATION_MS = 20;
-	private Robot controller;
+	private final Robot controller;
 
 	public KeyboardCore(Robot controller) {
 		this.controller = controller;
@@ -79,15 +79,29 @@ public class KeyboardCore {
 		controller.keyPress(KeyEvent.getExtendedKeyCodeForChar(c));
 	}
 
-	public void type(int key) {
+	public void type(int key) throws InterruptedException {
 		hold(key, TYPE_DURATION_MS);
 	}
 
-	public void hold(int key, int duration) {
+	public void type(int...keys) throws InterruptedException {
+		for (int key : keys) {
+			type(key);
+		}
+	}
+
+	public void combination(int...keys) {
+		press(keys);
+
+		for (int i = keys.length - 1; i >= 0; i--) {
+			release(keys[i]);
+		}
+	}
+
+	public void hold(int key, int duration) throws InterruptedException {
 		press(key);
 
 		if (duration >= 0) {
-			controller.delay(duration);
+			Thread.sleep(duration);
 			release(key);
 		}
 	}
@@ -96,7 +110,19 @@ public class KeyboardCore {
 		controller.keyPress(key);
 	}
 
+	public void press(int...keys) {
+		for (int key : keys) {
+			press(key);
+		}
+	}
+
 	public void release(int key) {
 		controller.keyRelease(key);
+	}
+
+	public void release(int...keys) {
+		for (int key : keys) {
+			release(key);
+		}
 	}
 }
