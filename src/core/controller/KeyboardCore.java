@@ -77,7 +77,9 @@ public class KeyboardCore {
 	}
 
 	private void typeUnknown(char c) {
-		controller.keyPress(KeyEvent.getExtendedKeyCodeForChar(c));
+		int converted = KeyEvent.getExtendedKeyCodeForChar(c);
+		controller.keyPress(converted);
+		controller.keyRelease(converted);
 	}
 
 	public void type(int key) throws InterruptedException {
@@ -103,8 +105,9 @@ public class KeyboardCore {
 
 		if (duration >= 0) {
 			Thread.sleep(duration);
-			release(key);
 		}
+		
+		release(key);
 	}
 
 	public void press(int key) {
