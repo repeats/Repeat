@@ -33,6 +33,7 @@ public class KeyboardCore {
 					r.keyPress(KeyEvent.VK_SHIFT);
 					r.keyPress(keys[index]);
 					r.keyRelease(KeyEvent.VK_SHIFT);
+					r.keyRelease(keys[index]);
 					return null;
 				}
 			});
