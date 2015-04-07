@@ -11,9 +11,9 @@ import core.KeyChain;
 import core.UserDefinedAction;
 import core.languageHandler.compiler.DynamicCompiler;
 
-public class Parser1_0 extends ConfigParser {
+public class Parser1_1 extends ConfigParser {
 
-	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Parser1_1.class.getName());
 
 	@Override
 	protected String getVersion() {

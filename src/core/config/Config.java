@@ -23,7 +23,7 @@ import frontEnd.BackEndHolder;
 public class Config {
 
 	private static final String CONFIG_FILE_NAME = "config.json";
-	private static final String CURRENT_VERSION = "1.0";
+	private static final String CURRENT_CONFIG_VERSION = "1.1";
 
 	private DynamicCompilerFactory compilerFactory;
 	private final BackEndHolder backEnd;
@@ -49,7 +49,8 @@ public class Config {
 		compilerFactory = new DynamicCompilerFactory();
 
 		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
-			new Parser1_0()
+			new Parser1_0(),
+			new Parser1_1(),
 		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;
@@ -87,7 +88,7 @@ public class Config {
 		}
 
 		JsonRootNode root = JsonNodeFactories.object(
-				JsonNodeFactories.field("version", JsonNodeFactories.string(CURRENT_VERSION)),
+				JsonNodeFactories.field("version", JsonNodeFactories.string(CURRENT_CONFIG_VERSION)),
 				JsonNodeFactories.field("compilers", compilerFactory.jsonize()),
 				JsonNodeFactories.field("tasks", JsonNodeFactories.array(taskNodes)),
 				JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
