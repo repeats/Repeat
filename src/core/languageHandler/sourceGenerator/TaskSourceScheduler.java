@@ -3,8 +3,8 @@ package core.languageHandler.sourceGenerator;
 import java.util.logging.Logger;
 
 import utilities.Function;
-import core.AbstractScheduler;
-import core.SchedulingData;
+import core.scheduler.AbstractScheduler;
+import core.scheduler.SchedulingData;
 
 class TaskSourceScheduler extends AbstractScheduler<String> {
 

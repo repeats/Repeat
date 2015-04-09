@@ -1,4 +1,4 @@
-package core;
+package core.userDefinedTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
+import core.keyChain.GlobalKeysManager;
 import core.languageHandler.compiler.DynamicCompilerFactory;
 
 public class TaskGroup implements IJsonable {

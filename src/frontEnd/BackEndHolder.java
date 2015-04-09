@@ -12,22 +12,23 @@ import javax.swing.SwingUtilities;
 
 import utilities.FileUtility;
 import utilities.Function;
+import utilities.InterruptibleFunction;
 import utilities.NumberUtility;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
 
 import com.sun.istack.internal.logging.Logger;
 
-import core.GlobalKeysManager;
-import core.KeyChain;
-import core.TaskGroup;
-import core.TaskSourceManager;
-import core.UserDefinedAction;
 import core.config.Config;
 import core.controller.Core;
+import core.keyChain.GlobalKeysManager;
+import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompiler;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.recorder.Recorder;
+import core.userDefinedTask.TaskGroup;
+import core.userDefinedTask.TaskSourceManager;
+import core.userDefinedTask.UserDefinedAction;
 import frontEnd.graphics.BootStrapResources;
 
 public class BackEndHolder {
@@ -43,7 +44,7 @@ public class BackEndHolder {
 	protected UserDefinedAction customFunction;
 
 	protected final List<TaskGroup> taskGroups;
-	protected TaskGroup currentGroup;
+	private TaskGroup currentGroup;
 
 	protected int selectedTaskIndex;
 	protected final TaskSourceManager taskManager;
@@ -166,6 +167,24 @@ public class BackEndHolder {
 			    @Override
 				public void run() {
 			    	try {
+			    		customFunction.setExecuteTaskInGroup(new InterruptibleFunction<Integer, Void> () {
+							@Override
+							public Void apply(Integer d) throws InterruptedException {
+								if (currentGroup == null) {
+									LOGGER.warning("Task group is null. Cannot execute given task with index " + d);
+									return null;
+								}
+								List<UserDefinedAction> tasks = currentGroup.getTasks();
+
+								if (d >= 0 && d < tasks.size()) {
+									currentGroup.getTasks().get(d).action(core);
+								} else {
+									LOGGER.warning("Index out of bound. Cannot execute given task with index " + d + " given task group only has " + tasks.size() + " elements.");
+								}
+
+								return null;
+							}
+						});
 						customFunction.action(core);
 					} catch (InterruptedException e) {//Stopped prematurely
 						return;
@@ -485,7 +504,12 @@ public class BackEndHolder {
 		return taskGroups;
 	}
 
+	protected TaskGroup getCurrentTaskGroup() {
+		return this.currentGroup;
+	}
+
 	public void setCurrentTaskGroup(TaskGroup currentTaskGroup) {
 		this.currentGroup = currentTaskGroup;
+		keysManager.setCurrentTaskGroup(currentTaskGroup);
 	}
 }

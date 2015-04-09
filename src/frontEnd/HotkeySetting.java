@@ -14,7 +14,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import utilities.swing.KeyChainInputPanel;
-import core.KeyChain;
+import core.keyChain.KeyChain;
 
 public class HotkeySetting extends JFrame {
 

@@ -1,4 +1,4 @@
-package core;
+package core.scheduler;
 
 public class SchedulingData<T> {
 	private long time;

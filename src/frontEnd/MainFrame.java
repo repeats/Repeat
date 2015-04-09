@@ -53,13 +53,11 @@ import org.jnativehook.NativeHookException;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.logging.OutStream;
-
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
-
-import core.UserDefinedAction;
 import core.controller.Core;
 import core.recorder.Recorder;
+import core.userDefinedTask.UserDefinedAction;
 import frontEnd.graphics.BootStrapResources;
 
 @SuppressWarnings("serial")

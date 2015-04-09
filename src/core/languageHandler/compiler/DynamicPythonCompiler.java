@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 
 import utilities.FileUtility;
 import utilities.logging.ExceptionUtility;
-import core.UserDefinedAction;
 import core.controller.Core;
+import core.userDefinedTask.UserDefinedAction;
 
 public class DynamicPythonCompiler implements DynamicCompiler {
 

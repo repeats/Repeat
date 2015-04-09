@@ -3,7 +3,7 @@ package core.languageHandler.sourceGenerator;
 import java.util.logging.Logger;
 
 import utilities.Function;
-import core.SchedulingData;
+import core.scheduler.SchedulingData;
 
 public class JavaSourceGenerator extends AbstractSourceGenerator {
 
@@ -63,7 +63,7 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("package core;\n");
-		sb.append("import core.UserDefinedAction;\n");
+		sb.append("import core.userDefinedTask.UserDefinedAction;\n");
 		sb.append("import core.controller.Core;\n");
 		sb.append("import core.controller.MouseCore;\n");
 		sb.append("import core.controller.KeyboardCore;\n");

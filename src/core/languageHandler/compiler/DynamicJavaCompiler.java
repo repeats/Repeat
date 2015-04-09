@@ -22,7 +22,7 @@ import utilities.FileUtility;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
 import utilities.logging.ExceptionUtility;
-import core.UserDefinedAction;
+import core.userDefinedTask.UserDefinedAction;
 
 public class DynamicJavaCompiler implements DynamicCompiler {
 

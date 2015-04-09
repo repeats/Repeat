@@ -15,9 +15,9 @@ import argo.jdom.JsonRootNode;
 
 import com.sun.glass.events.KeyEvent;
 
-import core.KeyChain;
-import core.TaskGroup;
+import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerFactory;
+import core.userDefinedTask.TaskGroup;
 import frontEnd.BackEndHolder;
 
 public class Config {

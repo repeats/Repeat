@@ -1,4 +1,4 @@
-package core;
+package core.userDefinedTask;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -6,12 +6,14 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import utilities.InterruptibleFunction;
 import utilities.FileUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
 import core.controller.Core;
+import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompiler;
 import core.languageHandler.compiler.DynamicCompilerFactory;
 
@@ -22,6 +24,7 @@ public abstract class UserDefinedAction implements IJsonable {
 	protected String sourcePath;
 	protected String compilerName;
 	protected boolean enabled;
+	protected InterruptibleFunction<Integer, Void> executeTaskInGroup;
 
 	public UserDefinedAction() {
 		enabled = true;
@@ -70,6 +73,10 @@ public abstract class UserDefinedAction implements IJsonable {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public void setExecuteTaskInGroup(InterruptibleFunction<Integer, Void> executeTaskInGroup) {
+		this.executeTaskInGroup = executeTaskInGroup;
 	}
 
 	/***********************************************************************/

@@ -4,8 +4,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.Function;
-import core.AbstractScheduler;
-import core.SchedulingData;
+import core.scheduler.AbstractScheduler;
+import core.scheduler.SchedulingData;
 
 class TaskScheduler extends AbstractScheduler<Runnable> {
 

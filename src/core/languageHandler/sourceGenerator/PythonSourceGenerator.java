@@ -3,7 +3,7 @@ package core.languageHandler.sourceGenerator;
 import java.util.logging.Logger;
 
 import utilities.Function;
-import core.SchedulingData;
+import core.scheduler.SchedulingData;
 
 public class PythonSourceGenerator extends AbstractSourceGenerator {
 

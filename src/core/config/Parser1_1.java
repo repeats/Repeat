@@ -9,9 +9,9 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import core.KeyChain;
-import core.TaskGroup;
+import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompiler;
+import core.userDefinedTask.TaskGroup;
 
 public class Parser1_1 extends ConfigParser {
 

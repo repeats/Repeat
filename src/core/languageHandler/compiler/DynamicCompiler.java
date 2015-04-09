@@ -2,7 +2,7 @@ package core.languageHandler.compiler;
 
 import java.io.File;
 
-import core.UserDefinedAction;
+import core.userDefinedTask.UserDefinedAction;
 
 public interface DynamicCompiler {
 	public abstract UserDefinedAction compile(String source);

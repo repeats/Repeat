@@ -1,4 +1,4 @@
-package core;
+package core.keyChain;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;

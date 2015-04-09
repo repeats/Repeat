@@ -10,12 +10,12 @@ import org.jnativehook.mouse.NativeMouseEvent;
 
 import utilities.CodeConverter;
 import utilities.Function;
-import core.GlobalKeysManager;
-import core.SchedulingData;
 import core.controller.Core;
+import core.keyChain.GlobalKeysManager;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
+import core.scheduler.SchedulingData;
 
 public class Recorder {
 
@@ -76,7 +76,7 @@ public class Recorder {
 				}
 
 				final long time = System.currentTimeMillis() - startTime;
-				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
+				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable() {
 					@Override
 					public void run() {
 						controller.keyBoard().release(code);

@@ -1,9 +1,10 @@
-package core;
+package core.keyChain;
 
 import globalListener.GlobalKeyListener;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -11,11 +12,14 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import utilities.CodeConverter;
+import utilities.InterruptibleFunction;
 import utilities.Function;
 import utilities.RandomUtil;
 import core.config.Config;
 import core.config.Parser1_0;
 import core.controller.Core;
+import core.userDefinedTask.TaskGroup;
+import core.userDefinedTask.UserDefinedAction;
 
 public final class GlobalKeysManager {
 
@@ -27,6 +31,8 @@ public final class GlobalKeysManager {
 	private Function<Void, Boolean> disablingFunction = Function.falseFunction();
 	private final Map<String, Thread> executions;
 	private final KeyChain currentKeyChain;
+
+	private TaskGroup currentTaskGroup;
 
 	public GlobalKeysManager(Config config, Core controller) {
 		this.controller = controller;
@@ -72,6 +78,24 @@ public final class GlobalKeysManager {
 						@Override
 						public void run() {
 							try {
+								action.setExecuteTaskInGroup(new InterruptibleFunction<Integer, Void> () {
+									@Override
+									public Void apply(Integer d) throws InterruptedException {
+										if (currentTaskGroup == null) {
+											LOGGER.warning("Task group is null. Cannot execute given task with index " + d);
+											return null;
+										}
+										List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
+
+										if (d >= 0 && d < tasks.size()) {
+											currentTaskGroup.getTasks().get(d).action(controller);
+										} else {
+											LOGGER.warning("Index out of bound. Cannot execute given task with index " + d + " given task group only has " + tasks.size() + " elements.");
+										}
+
+										return null;
+									}
+								});
 								action.action(controller);
 							} catch (InterruptedException e) {
 								LOGGER.info("Task ended prematurely");
@@ -101,7 +125,6 @@ public final class GlobalKeysManager {
 					return true;
 				}
 
-//				currentKeyChain.getKeys().removeAll(Collections.singleton(Integer.valueOf(code)));
 				currentKeyChain.getKeys().clear();
 				return true;
 			}
@@ -111,6 +134,10 @@ public final class GlobalKeysManager {
 
 	public void setDisablingFunction(Function<Void, Boolean> disablingFunction) {
 		this.disablingFunction = disablingFunction;
+	}
+
+	public void setCurrentTaskGroup(TaskGroup currentTaskGroup) {
+		this.currentTaskGroup = currentTaskGroup;
 	}
 
 	public boolean isKeyRegistered(KeyChain code) {

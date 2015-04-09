@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import utilities.swing.SwingUtil;
-import core.TaskGroup;
+import core.userDefinedTask.TaskGroup;
 import frontEnd.graphics.BootStrapResources;
 
 @SuppressWarnings("serial")
@@ -203,11 +203,11 @@ public class TaskGroupFrame extends JFrame {
 		int row = tGroups.getSelectedRow();
 
 		TaskGroup selected = backEnd.taskGroups.get(row);
-		if (selected != backEnd.currentGroup) {
-			backEnd.currentGroup = selected;
+		if (selected != backEnd.getCurrentTaskGroup()) {
+			backEnd.setCurrentTaskGroup(selected);
 			backEnd.renderTasks();
 		} else {
-			backEnd.currentGroup = selected;
+			backEnd.setCurrentTaskGroup(selected);
 		}
 
 		renderTaskGroup();
@@ -238,8 +238,8 @@ public class TaskGroupFrame extends JFrame {
 				backEnd.taskGroups.add(new TaskGroup("default"));
 			}
 
-			if (backEnd.currentGroup == removed) {
-				backEnd.currentGroup = backEnd.taskGroups.get(0);
+			if (backEnd.getCurrentTaskGroup() == removed) {
+				backEnd.setCurrentTaskGroup(backEnd.taskGroups.get(0));
 			}
 			renderTaskGroup();
 		} else {
@@ -300,7 +300,7 @@ public class TaskGroupFrame extends JFrame {
 			tGroups.setValueAt(group.getTasks().size(), row, COLUMN_COUNT);
 			tGroups.setValueAt(group.isEnabled(), row, COLUMN_ENABLED);
 			//\u2713 is check mark
-			tGroups.setValueAt(backEnd.currentGroup == group ? '\u2713' : "", row, COLUMN_SELECTED);
+			tGroups.setValueAt(backEnd.getCurrentTaskGroup() == group ? '\u2713' : "", row, COLUMN_SELECTED);
 			row++;
 		}
 	}

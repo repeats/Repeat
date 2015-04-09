@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import core.KeyChain;
+import core.keyChain.KeyChain;
 
 public class KeyChainInputPanel extends JPanel {
 
