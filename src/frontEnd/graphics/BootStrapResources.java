@@ -11,7 +11,7 @@ public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT;
-	public static final ImageIcon RECORD, STOP, PLAY;
+	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
 
 	static {
 		ADD = getImage("/toolbarButtonGraphics/general/Add24.gif");
@@ -25,6 +25,8 @@ public class BootStrapResources {
 		STOP = getImage("/toolbarButtonGraphics/media/Stop16.gif");
 
 		PLAY = getImage("/toolbarButtonGraphics/media/Play16.gif");
+
+		SELECT = getImage("/toolbarButtonGraphics/general/Preferences24.gif");
 	}
 
 	private static ImageIcon getImage(String resource) {

@@ -21,6 +21,11 @@ public abstract class UserDefinedAction implements IJsonable {
 	protected KeyChain hotkey;
 	protected String sourcePath;
 	protected String compilerName;
+	protected boolean enabled;
+
+	public UserDefinedAction() {
+		enabled = true;
+	}
 
 	public abstract void action(Core controller) throws InterruptedException;
 
@@ -59,6 +64,14 @@ public abstract class UserDefinedAction implements IJsonable {
 		this.compilerName = compiler;
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	/***********************************************************************/
 	@Override
 	public final JsonRootNode jsonize() {
@@ -66,7 +79,8 @@ public abstract class UserDefinedAction implements IJsonable {
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compilerName)),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
-				JsonNodeFactories.field("hotkey", getHotkey().jsonize())
+				JsonNodeFactories.field("hotkey", getHotkey().jsonize()),
+				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled))
 				);
 
 	}
@@ -98,14 +112,17 @@ public abstract class UserDefinedAction implements IJsonable {
 				return null;
 			}
 
+			boolean enabled = node.getBooleanValue("enabled");
+
 			output.sourcePath = sourcePath;
 			output.compilerName = compiler.getName();
 			output.name = name;
 			output.hotkey = hotkey;
+			output.enabled = enabled;
 
 			return output;
 		} catch (Exception e) {
-			Logger.getLogger(FileUtility.class.getName()).log(Level.WARNING, "Exception parsing task from JSON", e);
+			Logger.getLogger(UserDefinedAction.class.getName()).log(Level.WARNING, "Exception parsing task from JSON", e);
 			return null;
 		}
 	}

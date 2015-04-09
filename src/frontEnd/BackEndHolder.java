@@ -20,6 +20,7 @@ import com.sun.istack.internal.logging.Logger;
 
 import core.GlobalKeysManager;
 import core.KeyChain;
+import core.TaskGroup;
 import core.TaskSourceManager;
 import core.UserDefinedAction;
 import core.config.Config;
@@ -41,7 +42,9 @@ public class BackEndHolder {
 
 	protected UserDefinedAction customFunction;
 
-	protected final List<UserDefinedAction> customTasks;
+	protected final List<TaskGroup> taskGroups;
+	protected TaskGroup currentGroup;
+
 	protected int selectedTaskIndex;
 	protected final TaskSourceManager taskManager;
 
@@ -61,7 +64,8 @@ public class BackEndHolder {
 		keysManager = new GlobalKeysManager(config, core);
 		recorder = new Recorder(core, keysManager);
 
-		customTasks = new ArrayList<>();
+		taskGroups = new ArrayList<>();
+
 		selectedTaskIndex = -1;
 		taskManager = new TaskSourceManager();
 	}
@@ -182,6 +186,22 @@ public class BackEndHolder {
 	}
 
 	/*************************************************************************************************************/
+	/*****************************************Task group related**************************************************/
+	protected void renderTaskGroup() {
+		main.taskGroup.renderTaskGroup();
+
+		for (TaskGroup group : taskGroups) {
+			if (group.isEnabled()) {
+				for (UserDefinedAction task : group.getTasks()) {
+					if (task.isEnabled() && !keysManager.isKeyRegistered(task.getHotkey())) {
+						keysManager.registerKey(task.getHotkey(), task);
+					}
+				}
+			}
+		}
+	}
+
+	/*************************************************************************************************************/
 	/*****************************************Task related********************************************************/
 
 	private void removeTask(UserDefinedAction task) {
@@ -195,7 +215,7 @@ public class BackEndHolder {
 		if (customFunction != null) {
 			customFunction.setName("New task");
 			customFunction.setHotkey(null);
-			customTasks.add(customFunction);
+			currentGroup.getTasks().add(customFunction);
 
 			customFunction = null;
 
@@ -212,11 +232,11 @@ public class BackEndHolder {
 		int selectedRow = main.tTasks.getSelectedRow();
 		selectedTaskIndex = selectedRow;
 
-		if (selectedRow >= 0 && selectedRow < customTasks.size()) {
-			UserDefinedAction selectedTask = customTasks.get(selectedRow);
+		if (selectedRow >= 0 && selectedRow < currentGroup.getTasks().size()) {
+			UserDefinedAction selectedTask = currentGroup.getTasks().get(selectedRow);
 			removeTask(selectedTask);
 
-			customTasks.remove(selectedRow);
+			currentGroup.getTasks().remove(selectedRow);
 			selectedTaskIndex = - 1; //Reset selected index
 
 			renderTasks();
@@ -228,19 +248,19 @@ public class BackEndHolder {
 	protected void moveTaskUp() {
 		int selected = main.tTasks.getSelectedRow();
 		if (selected >= 1) {
-			UserDefinedAction temp = customTasks.get(selected);
-			customTasks.set(selected, customTasks.get(selected - 1));
-			customTasks.set(selected - 1, temp);
+			UserDefinedAction temp = currentGroup.getTasks().get(selected);
+			currentGroup.getTasks().set(selected, currentGroup.getTasks().get(selected - 1));
+			currentGroup.getTasks().set(selected - 1, temp);
 			renderTasks();
 		}
 	}
 
 	protected void moveTaskDown() {
 		int selected = main.tTasks.getSelectedRow();
-		if (selected >= 0 && selected < customTasks.size() - 1) {
-			UserDefinedAction temp = customTasks.get(selected);
-			customTasks.set(selected, customTasks.get(selected + 1));
-			customTasks.set(selected + 1, temp);
+		if (selected >= 0 && selected < currentGroup.getTasks().size() - 1) {
+			UserDefinedAction temp = currentGroup.getTasks().get(selected);
+			currentGroup.getTasks().set(selected, currentGroup.getTasks().get(selected + 1));
+			currentGroup.getTasks().set(selected + 1, temp);
 			renderTasks();
 		}
 	}
@@ -253,13 +273,13 @@ public class BackEndHolder {
 				return;
 			}
 
-			UserDefinedAction toRemove = customTasks.get(selected);
+			UserDefinedAction toRemove = currentGroup.getTasks().get(selected);
 			customFunction.setName(toRemove.getName());
 			customFunction.setHotkey(toRemove.getHotkey());
 
 			removeTask(toRemove);
 			keysManager.registerKey(customFunction.getHotkey(), customFunction);
-			customTasks.set(selected, customFunction);
+			currentGroup.getTasks().set(selected, customFunction);
 
 			LOGGER.info("Successfully overridden task " + customFunction.getName());
 		} else {
@@ -267,22 +287,44 @@ public class BackEndHolder {
 		}
 	}
 
+	protected void changeHotkeyTask(int row) {
+		final UserDefinedAction action = currentGroup.getTasks().get(row);
+		KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);
+		if (newKeyChain != null) {
+			keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
+
+			action.setHotkey(newKeyChain);
+			main.tTasks.setValueAt(newKeyChain.toString(), row, 1);
+		}
+	}
+
+	protected void switchEnableTask(int row) {
+		final UserDefinedAction action = currentGroup.getTasks().get(row);
+		action.setEnabled(!action.isEnabled());
+		main.tTasks.setValueAt(action.isEnabled(), row, 2);
+
+		if (!action.isEnabled()) {
+			keysManager.unregisterKey(action.getHotkey());
+		} else {
+			keysManager.registerKey(action.getHotkey(), action);
+		}
+	}
+
 	protected void renderTasks() {
-		SwingUtil.TableUtil.setRowNumber(main.tTasks, customTasks.size());
+		main.bTaskGroup.setText(currentGroup.getName());
+		SwingUtil.TableUtil.setRowNumber(main.tTasks, currentGroup.getTasks().size());
 		SwingUtil.TableUtil.clearTable(main.tTasks);
 
 		int row = 0;
-		for (UserDefinedAction task : customTasks) {
+		for (UserDefinedAction task : currentGroup.getTasks()) {
 			main.tTasks.setValueAt(task.getName(), row, 0);
 			if (task.getHotkey() != null && !task.getHotkey().getKeys().isEmpty()) {
 				main.tTasks.setValueAt(task.getHotkey().toString(), row, 1);
-
-				if (!keysManager.isKeyRegistered(task.getHotkey())) {
-					keysManager.registerKey(task.getHotkey(), task);
-				}
 			} else {
 				main.tTasks.setValueAt("None", row, 1);
 			}
+
+			main.tTasks.setValueAt(task.isEnabled(), row, 2);
 			row++;
 		}
 	}
@@ -293,23 +335,22 @@ public class BackEndHolder {
 
 		final int COLUMN_TASK_NAME = 0;
 		final int COLUMN_TASK_HOTKEY = 1;
+		final int COLUMN_ENABLED = 2;
 
 		if (column == COLUMN_TASK_NAME && row >= 0) {
-			customTasks.get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
+			currentGroup.getTasks().get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
 		} else if (column == COLUMN_TASK_HOTKEY && row >= 0) {
-			final UserDefinedAction action = customTasks.get(row);
 			if (e.getKeyCode() == config.HALT_TASK) {
+				final UserDefinedAction action = currentGroup.getTasks().get(row);
 				keysManager.unregisterKey(action.getHotkey());
 				action.setHotkey(new KeyChain());
 				main.tTasks.setValueAt("None", row, column);
 			} else {
-				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);
-				if (newKeyChain != null) {
-					keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
-
-					action.setHotkey(newKeyChain);
-					main.tTasks.setValueAt(newKeyChain.toString(), row, column);
-				}
+				changeHotkeyTask(row);
+			}
+		} else if (column == COLUMN_ENABLED && row >= 0) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				switchEnableTask(row);
 			}
 		}
 
@@ -322,16 +363,12 @@ public class BackEndHolder {
 		int column = main.tTasks.getSelectedColumn();
 
 		final int COLUMN_TASK_HOTKEY = 1;
+		final int COLUMN_ENABLED = 2;
 
 		if (column == COLUMN_TASK_HOTKEY && row >= 0) {
-			final UserDefinedAction action = customTasks.get(row);
-			KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);
-			if (newKeyChain != null) {
-				keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
-
-				action.setHotkey(newKeyChain);
-				main.tTasks.setValueAt(newKeyChain.toString(), row, column);
-			}
+			changeHotkeyTask(row);
+		} else if (column == COLUMN_ENABLED && row >= 0) {
+			switchEnableTask(row);
 		}
 
 		loadSource(row);
@@ -340,9 +377,9 @@ public class BackEndHolder {
 
 	private void loadSource(int row) {
 		//Load source if possible
-		if (row >= 0 && row < customTasks.size()) {
+		if (row >= 0 && row < currentGroup.getTasks().size()) {
 			if (selectedTaskIndex != row) {
-				String sourcePath = customTasks.get(row).getSourcePath();
+				String sourcePath = currentGroup.getTasks().get(row).getSourcePath();
 
 				StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
 				if (source != null) {
@@ -370,6 +407,14 @@ public class BackEndHolder {
 		main.taSource.setText(sb.toString());
 	}
 
+	protected void generateSource() {
+		if (main.rbmiCompileJava.isSelected()) {
+			main.taSource.setText(recorder.getGeneratedCode(Recorder.JAVA_LANGUAGE));
+		} else if (main.rbmiCompilePython.isSelected()) {
+			main.taSource.setText(recorder.getGeneratedCode(Recorder.PYTHON_LANGUAGE));
+		}
+	}
+
 	/*************************************************************************************************************/
 	/***************************************Source compilation****************************************************/
 
@@ -381,6 +426,20 @@ public class BackEndHolder {
 		} else {
 			return null;
 		}
+	}
+
+	protected void refreshCompilingLanguage() {
+		customFunction = null;
+		if (main.rbmiCompileJava.isSelected()) {
+			main.bCompile.setText("Compile source");
+		} else if (main.rbmiCompilePython.isSelected()) {
+			main.bCompile.setText("Load source");
+			JOptionPane.showMessageDialog(main, "Using python interpreter at "
+					+ config.compilerFactory().getCompiler("python").getPath().getAbsolutePath(),
+					"Python interpreter not chosen", JOptionPane.OK_OPTION);
+		}
+
+		promptSource();
 	}
 
 	protected void compileSource() {
@@ -422,8 +481,11 @@ public class BackEndHolder {
 	}
 
 	/*************************************************************************************************************/
-	public List<UserDefinedAction> getCustomTasks() {
-		return customTasks;
+	public List<TaskGroup> getTaskGroups() {
+		return taskGroups;
 	}
 
+	public void setCurrentTaskGroup(TaskGroup currentTaskGroup) {
+		this.currentGroup = currentTaskGroup;
+	}
 }

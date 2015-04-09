@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
@@ -61,9 +62,8 @@ import core.controller.Core;
 import core.recorder.Recorder;
 import frontEnd.graphics.BootStrapResources;
 
+@SuppressWarnings("serial")
 public class MainFrame extends JFrame {
-
-	private static final long serialVersionUID = 2804146302677040692L;
 
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
@@ -72,10 +72,11 @@ public class MainFrame extends JFrame {
 	protected TrayIcon trayIcon;
 
 	protected HotkeySetting hotkey;
+	protected TaskGroupFrame taskGroup;
 	private final JPanel contentPane;
 	protected final JTextField tfRepeatCount;
 	protected final JTextField tfRepeatDelay;
-	protected JButton bRecord, bReplay, bCompile, bRun;
+	protected JButton bRecord, bReplay, bCompile, bRun, bTaskGroup;
 	protected JTextArea taSource, taStatus;
 	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython;
 	private final JTextField tfMousePosition;
@@ -85,11 +86,12 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 * @throws NativeHookException
 	 */
-	@SuppressWarnings("serial")
 	public MainFrame() throws NativeHookException {
+		setTitle("Repeat");
 		backEnd = new BackEndHolder(this);
 		backEnd.config.loadConfig(null);
 		hotkey = new HotkeySetting(backEnd);
+		taskGroup = new TaskGroupFrame(backEnd);
 
 		if (!SystemTray.isSupported()) {
 			LOGGER.warning("System tray is not supported!");
@@ -149,6 +151,23 @@ public class MainFrame extends JFrame {
 					return;
 				}
 				MainFrame.this.setVisible(false);
+			}
+		});
+
+		addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowLostFocus(WindowEvent e) {
+			}
+
+			@Override
+			public void windowGainedFocus(WindowEvent e) {
+				if (taskGroup.isVisible()) {
+					taskGroup.setVisible(false);
+				}
+
+				if (hotkey.isVisible()) {
+					hotkey.setVisible(false);
+				}
 			}
 		});
 
@@ -250,11 +269,7 @@ public class MainFrame extends JFrame {
 		mntmNewMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (rbmiCompileJava.isSelected()) {
-					taSource.setText(backEnd.recorder.getGeneratedCode(Recorder.JAVA_LANGUAGE));
-				} else if (rbmiCompilePython.isSelected()) {
-					taSource.setText(backEnd.recorder.getGeneratedCode(Recorder.PYTHON_LANGUAGE));
-				}
+				backEnd.generateSource();
 			}
 		});
 		mnNewMenu_2.add(mntmNewMenuItem);
@@ -268,7 +283,7 @@ public class MainFrame extends JFrame {
 		rbmiCompileJava.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				refreshCompilingLanguage();
+				backEnd.refreshCompilingLanguage();
 			}
 		});
 		group.add(rbmiCompileJava);
@@ -278,7 +293,7 @@ public class MainFrame extends JFrame {
 		rbmiCompilePython.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				refreshCompilingLanguage();
+				backEnd.refreshCompilingLanguage();
 			}
 		});
 		group.add(rbmiCompilePython);
@@ -505,6 +520,16 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		bTaskGroup = new JButton("Global");
+		bTaskGroup.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				taskGroup.setVisible(true);
+			}
+		});
+
+		JLabel lblNewLabel_4 = new JLabel("Task group");
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -531,7 +556,12 @@ public class MainFrame extends JFrame {
 									.addGap(10)
 									.addComponent(lblNewLabel_3)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+									.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED, 264, Short.MAX_VALUE)
+									.addComponent(lblNewLabel_4)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(bTaskGroup)))
+							.addPreferredGap(ComponentPlacement.RELATED))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
@@ -571,7 +601,9 @@ public class MainFrame extends JFrame {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(bRecord)
 								.addComponent(lblNewLabel_3)
-								.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+								.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(bTaskGroup)
+								.addComponent(lblNewLabel_4))
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(bReplay)
@@ -593,10 +625,10 @@ public class MainFrame extends JFrame {
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE)
+							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
 							.addGap(11)
-							.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE))
-						.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
+							.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
+						.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 
@@ -607,14 +639,20 @@ public class MainFrame extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Name", "Key chain"
+				"Name", "Key chain", "Enabled"
 			}
 		){
 			@Override
-			public boolean isCellEditable(int rowIndex, int columnIndex) {
-	            return columnIndex != 1;
-	        }
+		    public boolean isCellEditable(int row, int column) {
+		        return column == 0;
+		    }
 		});
+
+		DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
+		centerRender.setHorizontalAlignment(SwingConstants.CENTER);
+		for (int i = 0 ; i < tTasks.getColumnCount(); i++) {
+			tTasks.getColumnModel().getColumn(i).setCellRenderer(centerRender);
+		}
 
 		tTasks.addKeyListener(new KeyAdapter() {
 			@Override
@@ -629,11 +667,6 @@ public class MainFrame extends JFrame {
 				backEnd.mouseReleaseTaskTable(e);
 			}
 		});
-
-		DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
-		centerRender.setHorizontalAlignment(SwingConstants.CENTER);
-		tTasks.getColumnModel().getColumn(0).setCellRenderer(centerRender);
-		tTasks.getColumnModel().getColumn(1).setCellRenderer(centerRender);
 
 		scrollPane_2.setViewportView(tTasks);
 
@@ -655,31 +688,16 @@ public class MainFrame extends JFrame {
 		scrollPane_1.setViewportView(taStatus);
 
 		/*************************************************************************************/
+		backEnd.renderTaskGroup();
 		backEnd.renderTasks();
+
 		PrintStream printStream = new PrintStream(new OutStream(taStatus));
 		System.setOut(printStream);
 		System.setErr(printStream);
-
 		for (Handler handler : Logger.getLogger("").getHandlers()) {
 			Logger.getLogger("").removeHandler(handler);
 		}
 		Logger.getLogger("").addHandler(new ConsoleHandler());
-
 		/*************************************************************************************/
-		LOGGER.info("Successfully intialized application");
-	}
-
-	private void refreshCompilingLanguage() {
-		backEnd.customFunction = null;
-		if (rbmiCompileJava.isSelected()) {
-			bCompile.setText("Compile source");
-		} else if (rbmiCompilePython.isSelected()) {
-			bCompile.setText("Load source");
-			JOptionPane.showMessageDialog(MainFrame.this, "Using python interpreter at "
-					+ backEnd.config.compilerFactory().getCompiler("python").getPath().getAbsolutePath(),
-					"Python interpreter not chosen", JOptionPane.OK_OPTION);
-		}
-
-		backEnd.promptSource();
 	}
 }

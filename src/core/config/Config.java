@@ -16,7 +16,7 @@ import argo.jdom.JsonRootNode;
 import com.sun.glass.events.KeyEvent;
 
 import core.KeyChain;
-import core.UserDefinedAction;
+import core.TaskGroup;
 import core.languageHandler.compiler.DynamicCompilerFactory;
 import frontEnd.BackEndHolder;
 
@@ -83,14 +83,14 @@ public class Config {
 
 	public boolean writeConfig() {
 		List<JsonNode> taskNodes = new ArrayList<>();
-		for (UserDefinedAction action : backEnd.getCustomTasks()) {
-			taskNodes.add(action.jsonize());
+		for (TaskGroup group : backEnd.getTaskGroups()) {
+			taskNodes.add(group.jsonize());
 		}
 
 		JsonRootNode root = JsonNodeFactories.object(
 				JsonNodeFactories.field("version", JsonNodeFactories.string(CURRENT_CONFIG_VERSION)),
 				JsonNodeFactories.field("compilers", compilerFactory.jsonize()),
-				JsonNodeFactories.field("tasks", JsonNodeFactories.array(taskNodes)),
+				JsonNodeFactories.field("task_groups", JsonNodeFactories.array(taskNodes)),
 				JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
 						JsonNodeFactories.field("record", RECORD.jsonize()),
 						JsonNodeFactories.field("replay", REPLAY.jsonize()),

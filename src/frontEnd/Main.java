@@ -41,6 +41,8 @@ public class Main {
 			public void run() {
 				try {
 					MainFrame frame = new MainFrame();
+					LOGGER.info("Successfully intialized application");
+
 					frame.setVisible(true);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, ExceptionUtility.getStackTrace(e));
