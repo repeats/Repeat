@@ -6,6 +6,11 @@ import java.util.HashMap;
 
 import utilities.Function;
 
+/**
+ * Class to provide API to control mouse
+ * @author HP Truong
+ *
+ */
 public class KeyboardCore {
 
 	private static final HashMap<Character, Function<Robot, Void>> charShiftType;
@@ -43,10 +48,15 @@ public class KeyboardCore {
 	public static final int TYPE_DURATION_MS = 20;
 	private final Robot controller;
 
-	public KeyboardCore(Robot controller) {
+	protected KeyboardCore(Robot controller) {
 		this.controller = controller;
 	}
 
+	/**
+	 * Simulate keyboard type to type out a string. This types upper case letter by using SHIFT + lower case letter.
+	 * Almost every typeable character on ANSI keyboard is supported.
+	 * @param string string to be typed.
+	 */
 	public void type(String string) {
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
@@ -54,6 +64,11 @@ public class KeyboardCore {
 		}
 	}
 
+	/**
+	 * Simulate keyboard type to type out a character. This types upper case letter by using SHIFT + lower case letter.
+	 * Almost every typeable character on ANSI keyboard is supported.
+	 * @param c character to be typed
+	 */
 	public void type(char c) {
 		if (Character.isAlphabetic(c)) {
 			typeAlphabetic(c);
@@ -64,6 +79,10 @@ public class KeyboardCore {
 		}
 	}
 
+	/**
+	 * Type an alphabetic latin character
+	 * @param c character to be typed
+	 */
 	private void typeAlphabetic(char c) {
 		if (Character.isUpperCase(c)) {
 			controller.keyPress(KeyEvent.VK_SHIFT);
@@ -76,22 +95,41 @@ public class KeyboardCore {
 		}
 	}
 
+
+	/**
+	 * Type a character that is neither an alphabetic character and not in list of known characters (see list defined in this class)
+	 * @param c character to be typed
+	 */
 	private void typeUnknown(char c) {
 		int converted = KeyEvent.getExtendedKeyCodeForChar(c);
 		controller.keyPress(converted);
 		controller.keyRelease(converted);
 	}
 
+	/**
+	 * Type a key on the keyboard. Key integers are as specified in {@link java.awt.event.KeyEvent} class
+	 * @param key integer representing the key as specified in java.awt.events.KeyEvent class
+	 * @throws InterruptedException
+	 */
 	public void type(int key) throws InterruptedException {
 		hold(key, TYPE_DURATION_MS);
 	}
 
+	/**
+	 * Type a series of keys on the keyboard
+	 * @param keys array of keys representing the keys as specified in {@link java.awt.event.KeyEvent} class
+	 * @throws InterruptedException
+	 */
 	public void type(int...keys) throws InterruptedException {
 		for (int key : keys) {
 			type(key);
 		}
 	}
 
+	/**
+	 * Type a combination of keys. E.g. control + C, control + alt + delete
+	 * @param keys the array of keys that form the combination in the order. Key integers are as specified in {@link java.awt.event.KeyEvent} class
+	 */
 	public void combination(int...keys) {
 		press(keys);
 
@@ -100,30 +138,52 @@ public class KeyboardCore {
 		}
 	}
 
+	/**
+	 * Hold a key for a certain duration
+	 * @param key the integer representing the key to be held. See {@link java.awt.event.KeyEvent} class for these integers
+	 * @param duration duration to hold key in milliseconds
+	 * @throws InterruptedException
+	 */
 	public void hold(int key, int duration) throws InterruptedException {
 		press(key);
 
 		if (duration >= 0) {
 			Thread.sleep(duration);
 		}
-		
+
 		release(key);
 	}
 
+	/**
+	 * Press a key
+	 * @param key the integer representing the key to be pressed. See {@link java.awt.event.KeyEvent} class for these integers
+	 */
 	public void press(int key) {
 		controller.keyPress(key);
 	}
 
+	/**
+	 * Press a series of key
+	 * @param keys the array of keys to be pressed. See {@link java.awt.event.KeyEvent} class for these integers
+	 */
 	public void press(int...keys) {
 		for (int key : keys) {
 			press(key);
 		}
 	}
 
+	/**
+	 * Release a key
+	 * @param key key the integer representing the key to be released. See {@link java.awt.event.KeyEvent} class for these integers
+	 */
 	public void release(int key) {
 		controller.keyRelease(key);
 	}
 
+	/**
+	 * Release a series key
+	 * @param keys the array of keys to be released. See {@link java.awt.event.KeyEvent} class for these integers
+	 */
 	public void release(int...keys) {
 		for (int key : keys) {
 			release(key);

@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import utilities.InterruptibleFunction;
 import utilities.FileUtility;
+import utilities.InterruptibleFunction;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
@@ -30,6 +30,11 @@ public abstract class UserDefinedAction implements IJsonable {
 		enabled = true;
 	}
 
+	/**
+	 * Custom action defined by user
+	 * @param controller See {@link core.controller.Core} class
+	 * @throws InterruptedException
+	 */
 	public abstract void action(Core controller) throws InterruptedException;
 
 	public void setName(String name) {

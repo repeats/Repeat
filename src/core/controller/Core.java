@@ -28,18 +28,36 @@ public final class Core {
 		keyboard = new KeyboardCore(controller);
 	}
 
-	public void wait(int duration, Runnable callBack) {
+	/**
+	 * Unsafe method since not interruptible
+	 * @param duration duration for controller to wait
+	 * @param callBack action to perform after wait duration
+	 */
+	protected void wait(int duration, Runnable callBack) {
 		executor.schedule(callBack, duration, TimeUnit.MILLISECONDS);
 	}
 
+	/**
+	 * Blocking wait the current action for an amount of time
+	 * @param duration wait duration in milliseconds
+	 * @throws InterruptedException
+	 */
 	public void blockingWait(int duration) throws InterruptedException {
 		Thread.sleep(duration);
 	}
 
+	/**
+	 * Getter for the mouse attribute. See {@link core.controller.MouseCore} class
+	 * @return The mouse controller attribute
+	 */
 	public MouseCore mouse() {
 		return mouse;
 	}
 
+	/**
+	 * Getter for the mouse attribute. See {@link core.controller.KeyboardCore} class
+	 * @return The keyboard controller attribute
+	 */
 	public KeyboardCore keyBoard() {
 		return keyboard;
 	}

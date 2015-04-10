@@ -78,6 +78,10 @@ public class Config {
 			if (!foundVersion) {
 				JOptionPane.showMessageDialog(null, "Config file is in unknown version " + version);
 			}
+		} else {
+			List<TaskGroup> taskGroups = backEnd.getTaskGroups();
+			taskGroups.add(new TaskGroup("default"));
+			backEnd.setCurrentTaskGroup(taskGroups.get(0));
 		}
 	}
 
