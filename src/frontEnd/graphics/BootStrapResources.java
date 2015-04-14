@@ -10,13 +10,15 @@ import javax.swing.ImageIcon;
 public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
-	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT;
+	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE;
 	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
 
 	static {
 		ADD = getImage("/toolbarButtonGraphics/general/Add24.gif");
 		EDIT = getImage("/toolbarButtonGraphics/general/Edit24.gif");
 		DELETE = getImage("/toolbarButtonGraphics/general/Delete24.gif");
+
+		MOVE = getImage("/toolbarButtonGraphics/general/Redo24.gif");
 
 		UP = getImage("/toolbarButtonGraphics/navigation/Up24.gif");
 		DOWN = getImage("/toolbarButtonGraphics/navigation/Down24.gif");

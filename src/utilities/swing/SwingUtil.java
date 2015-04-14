@@ -294,6 +294,36 @@ public class SwingUtil {
 					"Enter values", JOptionPane.OK_OPTION);
 		}
 
+		public static int confirmValues(String confirmTitle, String[] titles, String[] values) {
+			if (titles.length == 0 || (titles.length != values.length)) {
+				return -1;
+			}
+
+			JTextField[] textFields = new JTextField[titles.length];
+
+			JPanel mainPanel = new JPanel();
+			mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+			for (int i = 0; i < titles.length; i++) {
+				JPanel myPanel = new JPanel();
+				if (titles[i] != null) {
+					myPanel.add(new JLabel(titles[i]));
+				} else {
+					myPanel.add(new JLabel(i + ")"));
+				}
+
+				textFields[i] = new JTextField();
+				textFields[i].setText(values[i]);
+				textFields[i].setEditable(false);
+
+				myPanel.add(textFields[i]);
+				mainPanel.add(myPanel);
+			}
+
+			return JOptionPane.showConfirmDialog(null, mainPanel,
+					confirmTitle, JOptionPane.YES_NO_OPTION);
+		}
+
 		public static String[] getInputs(String[] titles) {
 			if (titles.length == 0) {
 				return null;

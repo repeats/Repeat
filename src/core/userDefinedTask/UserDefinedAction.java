@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import utilities.FileUtility;
-import utilities.InterruptibleFunction;
+import utilities.ExceptableFunction;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
@@ -24,7 +24,7 @@ public abstract class UserDefinedAction implements IJsonable {
 	protected String sourcePath;
 	protected String compilerName;
 	protected boolean enabled;
-	protected InterruptibleFunction<Integer, Void> executeTaskInGroup;
+	protected ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup;
 
 	public UserDefinedAction() {
 		enabled = true;
@@ -80,7 +80,7 @@ public abstract class UserDefinedAction implements IJsonable {
 		this.enabled = enabled;
 	}
 
-	public void setExecuteTaskInGroup(InterruptibleFunction<Integer, Void> executeTaskInGroup) {
+	public void setExecuteTaskInGroup(ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup) {
 		this.executeTaskInGroup = executeTaskInGroup;
 	}
 

@@ -4,7 +4,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.swing.JOptionPane;
@@ -12,7 +15,7 @@ import javax.swing.SwingUtilities;
 
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.InterruptibleFunction;
+import utilities.ExceptableFunction;
 import utilities.NumberUtility;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
@@ -167,7 +170,7 @@ public class BackEndHolder {
 			    @Override
 				public void run() {
 			    	try {
-			    		customFunction.setExecuteTaskInGroup(new InterruptibleFunction<Integer, Void> () {
+			    		customFunction.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
 							@Override
 							public Void apply(Integer d) throws InterruptedException {
 								if (currentGroup == null) {
@@ -281,6 +284,31 @@ public class BackEndHolder {
 			currentGroup.getTasks().set(selected, currentGroup.getTasks().get(selected + 1));
 			currentGroup.getTasks().set(selected + 1, temp);
 			renderTasks();
+		}
+	}
+
+	protected void changeTaskGroup() {
+		int selected = main.tTasks.getSelectedRow();
+		if (selected >= 0 && selected < currentGroup.getTasks().size()) {
+			int newGroupIndex = SwingUtil.OptionPaneUtil.getSelection("Select new group",
+				new Function<TaskGroup, String>() {
+					@Override
+					public String apply(TaskGroup d) {
+						return d.getName();
+					}
+				}.applyList(taskGroups).toArray(new String[taskGroups.size()]), -1);
+
+			if (newGroupIndex >= 0) {
+				TaskGroup destination = taskGroups.get(newGroupIndex);
+				if (destination == currentGroup) {
+					JOptionPane.showMessageDialog(main, "Cannot move to the same group...");
+					return;
+				}
+				UserDefinedAction toMove = currentGroup.getTasks().remove(selected);
+				destination.getTasks().add(toMove);
+
+				renderTasks();
+			}
 		}
 	}
 
@@ -431,6 +459,50 @@ public class BackEndHolder {
 			main.taSource.setText(recorder.getGeneratedCode(Recorder.JAVA_LANGUAGE));
 		} else if (main.rbmiCompilePython.isSelected()) {
 			main.taSource.setText(recorder.getGeneratedCode(Recorder.PYTHON_LANGUAGE));
+		}
+	}
+
+	protected void cleanUnusedSource() {
+		List<File> files = FileUtility.walk(FileUtility.joinPath("data", "source"));
+		Set<String> allNames = new HashSet<>(new Function<File, String>() {
+			@Override
+			public String apply(File d) {
+				return d.getAbsolutePath();
+			}
+		}.applyList(files));
+
+		Set<String> using = new HashSet<>();
+		for (TaskGroup g : taskGroups) {
+			using.addAll(new Function<UserDefinedAction, String>() {
+				@Override
+				public String apply(UserDefinedAction d) {
+					return d.getSourcePath();
+				}
+
+			}.applyList(g.getTasks()));
+		}
+
+
+		allNames.removeAll(using);
+		if (allNames.size() == 0) {
+			JOptionPane.showMessageDialog(main, "Nothing to clean...");
+			return;
+		}
+
+		String[] titles = new String[allNames.size()];
+		Arrays.fill(titles, "Deleting");
+		int confirmDelete = SwingUtil.OptionPaneUtil.confirmValues("Delete these files?", titles, allNames.toArray(new String[0]));
+		if (confirmDelete == JOptionPane.OK_OPTION) {
+			int count = 0, failed = 0;
+			for (String name : allNames) {
+				if (FileUtility.removeFile(new File(name))) {
+					count++;
+				} else {
+					failed++;
+				}
+			}
+
+			JOptionPane.showMessageDialog(main, "Successfully cleaned " + count + " files.\n Failed to clean " + failed + " files.");
 		}
 	}
 

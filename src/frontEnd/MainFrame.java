@@ -53,8 +53,10 @@ import org.jnativehook.NativeHookException;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.logging.OutStream;
+
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
+
 import core.controller.Core;
 import core.recorder.Recorder;
 import core.userDefinedTask.UserDefinedAction;
@@ -128,7 +130,7 @@ public class MainFrame extends JFrame {
 		});
 		/*************************************************************************************/
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 653, 327);
+		setBounds(100, 100, 759, 327);
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -226,6 +228,14 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		JMenuItem miCleanSource = new JMenuItem("Clean unused source...");
+		miCleanSource.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.cleanUnusedSource();
+			}
+		});
+
 		JMenuItem miLoadConfig = new JMenuItem("Load config...");
 		miLoadConfig.addActionListener(new ActionListener() {
 			@Override
@@ -255,6 +265,7 @@ public class MainFrame extends JFrame {
 		mnNewMenu.add(miSaveConfig);
 		mnNewMenu.add(miLoadSource);
 		mnNewMenu.add(miSaveSource);
+		mnNewMenu.add(miCleanSource);
 		mnNewMenu.add(miExit);
 
 		ButtonGroup group = new ButtonGroup();
@@ -528,6 +539,16 @@ public class MainFrame extends JFrame {
 
 		JLabel lblNewLabel_4 = new JLabel("Task group");
 
+		JButton bMoveTask = new JButton();
+		bMoveTask.setIcon(BootStrapResources.MOVE);
+		bMoveTask.setToolTipText("Move this task to another task group.");
+		bMoveTask.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.changeTaskGroup();
+			}
+		});
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -555,7 +576,7 @@ public class MainFrame extends JFrame {
 									.addComponent(lblNewLabel_3)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(tfMousePosition, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED, 264, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED, 370, Short.MAX_VALUE)
 									.addComponent(lblNewLabel_4)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(bTaskGroup)))
@@ -563,7 +584,7 @@ public class MainFrame extends JFrame {
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)
 									.addPreferredGap(ComponentPlacement.UNRELATED))
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(bCompile)
@@ -573,10 +594,10 @@ public class MainFrame extends JFrame {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 									.addGroup(gl_contentPane.createSequentialGroup()
-										.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
+										.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
 										.addPreferredGap(ComponentPlacement.RELATED))
 									.addGroup(gl_contentPane.createSequentialGroup()
-										.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+										.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
 										.addGap(1)))
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(bAddTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
@@ -584,10 +605,12 @@ public class MainFrame extends JFrame {
 									.addComponent(bModifyTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(bRemoveTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(bMoveTaskUp, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
-									.addGap(10)
-									.addComponent(bMoveTaskDown, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)))))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bMoveTaskDown, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bMoveTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)))))
 					.addGap(7))
 		);
 		gl_contentPane.setVerticalGroup(
@@ -603,23 +626,26 @@ public class MainFrame extends JFrame {
 								.addComponent(bTaskGroup)
 								.addComponent(lblNewLabel_4))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(bReplay)
-								.addComponent(lblNewLabel)
-								.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblNewLabel_1)
-								.addComponent(lblNewLabel_2))
-							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-								.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-									.addComponent(bCompile)
-									.addComponent(bRun)
-									.addComponent(bAddTask))
-								.addComponent(bModifyTask, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-								.addComponent(bRemoveTask)))
-						.addComponent(bMoveTaskDown)
-						.addComponent(bMoveTaskUp))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+										.addComponent(bReplay)
+										.addComponent(lblNewLabel)
+										.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblNewLabel_1)
+										.addComponent(lblNewLabel_2))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+										.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+											.addComponent(bCompile)
+											.addComponent(bRun)
+											.addComponent(bAddTask))
+										.addComponent(bModifyTask, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+										.addComponent(bRemoveTask)))
+								.addComponent(bMoveTask)))
+						.addComponent(bMoveTaskUp)
+						.addComponent(bMoveTaskDown))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPane.createSequentialGroup()

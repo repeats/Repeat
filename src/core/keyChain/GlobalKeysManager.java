@@ -12,8 +12,8 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import utilities.CodeConverter;
-import utilities.InterruptibleFunction;
 import utilities.Function;
+import utilities.ExceptableFunction;
 import utilities.RandomUtil;
 import core.config.Config;
 import core.config.Parser1_0;
@@ -78,7 +78,7 @@ public final class GlobalKeysManager {
 						@Override
 						public void run() {
 							try {
-								action.setExecuteTaskInGroup(new InterruptibleFunction<Integer, Void> () {
+								action.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
 									@Override
 									public Void apply(Integer d) throws InterruptedException {
 										if (currentTaskGroup == null) {

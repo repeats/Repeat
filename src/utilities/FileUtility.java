@@ -12,6 +12,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +39,28 @@ public class FileUtility {
 	 */
 	public static boolean fileExists(File f) {
 		return f.exists() && !f.isDirectory();
+	}
+
+	public static List<File> walk(String path) {
+		LinkedList<File> output = new LinkedList<File>();
+
+		File root = new File(path);
+		File[] list = root.listFiles();
+
+        if (list == null) {
+			return output;
+		}
+
+        for (File f : list) {
+            if (f.isDirectory()) {
+                output.addAll(walk(f.getAbsolutePath()));
+            }
+            else {
+            	output.addLast(f);
+            }
+        }
+
+        return output;
 	}
 
 	/**
