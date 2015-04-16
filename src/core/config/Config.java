@@ -23,12 +23,12 @@ import frontEnd.BackEndHolder;
 public class Config {
 
 	private static final String CONFIG_FILE_NAME = "config.json";
-	private static final String CURRENT_CONFIG_VERSION = "1.1";
+	private static final String CURRENT_CONFIG_VERSION = "1.2";
 
 	private DynamicCompilerFactory compilerFactory;
 	private final BackEndHolder backEnd;
 
-	public final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and should not be changed
+	public final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and must not be changed
 	private KeyChain RECORD;
 	private KeyChain REPLAY;
 	private KeyChain COMPILED_REPLAY;
@@ -51,6 +51,7 @@ public class Config {
 		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
 			new Parser1_0(),
 			new Parser1_1(),
+			new Parser1_2()
 		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;
@@ -77,12 +78,17 @@ public class Config {
 
 			if (!foundVersion) {
 				JOptionPane.showMessageDialog(null, "Config file is in unknown version " + version);
+				defaultExtract();
 			}
 		} else {
-			List<TaskGroup> taskGroups = backEnd.getTaskGroups();
-			taskGroups.add(new TaskGroup("default"));
-			backEnd.setCurrentTaskGroup(taskGroups.get(0));
+			defaultExtract();
 		}
+	}
+
+	private void defaultExtract() {
+		List<TaskGroup> taskGroups = backEnd.getTaskGroups();
+		taskGroups.add(new TaskGroup("default"));
+		backEnd.setCurrentTaskGroup(taskGroups.get(0));
 	}
 
 	public boolean writeConfig() {

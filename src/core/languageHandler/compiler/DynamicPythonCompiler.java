@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.FileUtility;
+import utilities.RandomUtil;
 import utilities.logging.ExceptionUtility;
 import core.controller.Core;
 import core.userDefinedTask.UserDefinedAction;
@@ -14,6 +15,7 @@ import core.userDefinedTask.UserDefinedAction;
 public class DynamicPythonCompiler implements DynamicCompiler {
 
 	private static final Logger LOGGER = Logger.getLogger(DynamicPythonCompiler.class.getName());
+	private static final String DUMMY_PREFIX = "PY_";
 	private File interpreter;
 
 	static {
@@ -35,18 +37,45 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 	}
 
 	@Override
-	public UserDefinedAction compile(final String source) {
-		if (!FileUtility.fileExists(interpreter)) {
-			LOGGER.severe("No interpreter found at " + interpreter.getAbsolutePath());
+	public UserDefinedAction compile(String source, File objectFile) {
+		try {
+			if (!FileUtility.fileExists(interpreter) || !interpreter.canExecute()) {
+				LOGGER.severe("No interpreter found at " + interpreter.getAbsolutePath());
+				return null;
+			}
+
+			if (!objectFile.getName().endsWith(".py")) {
+				LOGGER.warning("Python object file " + objectFile.getAbsolutePath() + "does not end with .py. Compiling from source code.");
+				return compile(source);
+			}
+
+			if (FileUtility.fileExists(objectFile)) {
+				return loadAction(objectFile);
+			} else {
+				if (FileUtility.writeToFile(source, objectFile, false)) {
+					return loadAction(objectFile);
+				} else {
+					LOGGER.warning("Cannot write source code to file " + objectFile.getAbsolutePath());
+					return null;
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Cannot compile source code...", e);
 			return null;
 		}
+	}
 
-		return new UserDefinedAction() {
+	@Override
+	public UserDefinedAction compile(String source) {
+		String fileName = DUMMY_PREFIX + RandomUtil.randomID();
+		File sourceFile = new File("core/" + fileName + ".py");
+		return compile(source, sourceFile);
+	}
+
+	private UserDefinedAction loadAction(final File sourceFile) {
+		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
-				File sourceFile = new File("custom_action.py");
-				FileUtility.writeToFile(source, sourceFile, false);
-
 				String[] cmd = { interpreter.getAbsolutePath(), "-u", sourceFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
 				pb.redirectOutput(Redirect.INHERIT);
@@ -64,14 +93,28 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 						p.destroy();
 					}
 					LOGGER.info("Task ended prematurely");
+				} catch (Exception e) {
+					LOGGER.log(Level.WARNING, "Execution encountered error...", e);
 				}
 			}
 		};
+		output.setSourcePath(sourceFile.getAbsolutePath());
+		return output;
 	}
 
 	@Override
 	public String getName() {
 		return "python";
+	}
+
+	@Override
+	public String getExtension() {
+		return ".py";
+	}
+
+	@Override
+	public String getObjectExtension() {
+		return ".py";
 	}
 
 	@Override
@@ -81,7 +124,6 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 
 	@Override
 	public void setRunArgs(String args) {
-		// TODO Auto-generated method stub
-
 	}
+
 }

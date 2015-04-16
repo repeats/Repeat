@@ -13,9 +13,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import utilities.ExceptableFunction;
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.ExceptableFunction;
 import utilities.NumberUtility;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
@@ -426,11 +426,21 @@ public class BackEndHolder {
 		//Load source if possible
 		if (row >= 0 && row < currentGroup.getTasks().size()) {
 			if (selectedTaskIndex != row) {
-				String sourcePath = currentGroup.getTasks().get(row).getSourcePath();
+				UserDefinedAction task = currentGroup.getTasks().get(row);
+				String sourcePath = task.getSourcePath();
 
 				StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
 				if (source != null) {
 					main.taSource.setText(source.toString());
+
+					if (!task.getCompiler().equals(getCompiler().getName())) {
+						if (task.getCompiler().equals("java")) {
+							main.rbmiCompileJava.setSelected(true);
+						} else if (task.getCompiler().equals("python")) {
+							main.rbmiCompilePython.setSelected(true);
+						}
+						refreshCompilingLanguage();
+					}
 				} else {
 					JOptionPane.showMessageDialog(main, "Cannot load source file " + sourcePath + ".\nTry recompiling and add again");
 				}
@@ -466,20 +476,20 @@ public class BackEndHolder {
 		List<File> files = FileUtility.walk(FileUtility.joinPath("data", "source"));
 		Set<String> allNames = new HashSet<>(new Function<File, String>() {
 			@Override
-			public String apply(File d) {
-				return d.getAbsolutePath();
+			public String apply(File file) {
+				return file.getAbsolutePath();
 			}
 		}.applyList(files));
 
 		Set<String> using = new HashSet<>();
-		for (TaskGroup g : taskGroups) {
+		for (TaskGroup group : taskGroups) {
 			using.addAll(new Function<UserDefinedAction, String>() {
 				@Override
-				public String apply(UserDefinedAction d) {
-					return d.getSourcePath();
+				public String apply(UserDefinedAction task) {
+					return task.getSourcePath();
 				}
 
-			}.applyList(g.getTasks()));
+			}.applyList(group.getTasks()));
 		}
 
 

@@ -1,6 +1,5 @@
 package core.config;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -9,9 +8,6 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import core.keyChain.KeyChain;
-import core.languageHandler.compiler.DynamicCompiler;
-import core.userDefinedTask.TaskGroup;
 
 public class Parser1_1 extends ConfigParser {
 
@@ -64,39 +60,16 @@ public class Parser1_1 extends ConfigParser {
 	@Override
 	protected boolean internalExtractData(Config config, JsonRootNode root) {
 		try {
-			JsonNode globalHotkey = root.getNode("global_hotkey");
-			config.setRECORD(KeyChain.parseJSON(globalHotkey.getArrayNode("record")));
-			config.setREPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay")));
-			config.setCOMPILED_REPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay_compiled")));
+			//Convert to 1_2
+			Parser1_2 parser = new Parser1_2();
+			JsonRootNode newRoot = parser.convertFromPreviousVersion(root);
 
-			for (JsonNode compilerNode : root.getArrayNode("compilers")) {
-				String name = compilerNode.getStringValue("name");
-				String path = compilerNode.getStringValue("path");
-				String runArgs = compilerNode.getStringValue("run_args");
-
-				DynamicCompiler compiler = config.compilerFactory().getCompiler(name);
-				if (compiler != null) {
-					compiler.setPath(new File(path));
-					compiler.setRunArgs(runArgs);
-				} else {
-					throw new IllegalStateException("Unknown compiler " + name);
-				}
+			if (newRoot != null) {
+				return parser.extractData(config, newRoot);
+			} else {
+				LOGGER.log(Level.WARNING, "Unable to convert to later version " + parser.getVersion());
+				return false;
 			}
-
-			List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();
-			taskGroups.clear();
-			for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
-				TaskGroup taskGroup = TaskGroup.parseJSON(config.compilerFactory(), taskGroupNode);
-				if (taskGroup != null) {
-					taskGroups.add(taskGroup);
-				}
-			}
-
-			if (taskGroups.isEmpty()) {
-				taskGroups.add(new TaskGroup("default"));
-			}
-			config.getBackEnd().setCurrentTaskGroup(taskGroups.get(0));
-			return true;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to parse json", e);
 			return false;

@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import utilities.FileUtility;
 import utilities.ExceptableFunction;
+import utilities.FileUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
@@ -109,7 +109,8 @@ public abstract class UserDefinedAction implements IJsonable {
 			String name = node.getStringValue("name");
 			KeyChain hotkey = KeyChain.parseJSON(node.getArrayNode("hotkey"));
 
-			StringBuffer sourceBuffer = FileUtility.readFromFile(new File(sourcePath));
+			File sourceFile = new File(sourcePath);
+			StringBuffer sourceBuffer = FileUtility.readFromFile(sourceFile);
 			String source = null;
 			if (sourceBuffer == null) {
 				JOptionPane.showMessageDialog(null, "Cannot get source at path " + sourcePath);
@@ -118,7 +119,9 @@ public abstract class UserDefinedAction implements IJsonable {
 				source = sourceBuffer.toString();
 			}
 
-			UserDefinedAction output = compiler.compile(source);
+			File objectFile = new File(FileUtility.joinPath("core", FileUtility.removeExtension(sourceFile).getName()));
+			objectFile = FileUtility.addExtension(objectFile, compiler.getObjectExtension());
+			UserDefinedAction output = compiler.compile(source, objectFile);
 			if (output == null) {
 				JOptionPane.showMessageDialog(null, "Compilation failed for task " + name + " with source at path " + sourcePath);
 				return null;

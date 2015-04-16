@@ -34,13 +34,62 @@ public class FileUtility {
 
 	/**
 	 * Check if file exists and is not a directory
-	 * @param f file to check
+	 * @param file file to check
 	 * @return if file exists
 	 */
-	public static boolean fileExists(File f) {
-		return f.exists() && !f.isDirectory();
+	public static boolean fileExists(File file) {
+		return file.exists() && !file.isDirectory();
 	}
 
+	/**
+	 * Change the name of the file
+	 * @param file file to rename
+	 * @param newName new name for the file
+	 * @return file with name renamed to newName
+	 */
+	public static File renameFile(File file, String newName) {
+		String absolutePath = file.getAbsolutePath();
+		String fileName = file.getName();
+		String newAbsolutePath = absolutePath.substring(0, absolutePath.lastIndexOf(fileName)) + newName;
+
+		return new File(newAbsolutePath);
+	}
+
+	/**
+	 * Remove the last extension of file. If no extension found then return the input file
+	 * E.g. a.out.log --> a.out
+	 * a.diff --> a
+	 * @param file file to remove extension
+	 * @return file with last extension removed
+	 */
+	public static File removeExtension(File file) {
+		String absolutePath = file.getAbsolutePath();
+		if (absolutePath.contains(".")) {
+			return new File(absolutePath.substring(0, absolutePath.lastIndexOf('.')));
+		} else {
+			return file;
+		}
+	}
+
+	/**
+	 * Append an extension to a file. If extension does not contain a dot, it will be automatically added
+	 * @param file file to add extension
+	 * @param extension extension to be add
+	 * @return file with extension: fileName.extension
+	 */
+	public static File addExtension(File file, String extension) {
+		if (extension.startsWith(".")) {
+			return new File(file.getAbsolutePath() + extension);
+		} else {
+			return new File(file.getAbsolutePath() + "." + extension);
+		}
+	}
+
+	/**
+	 * Recursively walk through the path and return all found files (not directory)
+	 * @param path path to be walked
+	 * @return list of files found. This does not include the directory names
+	 */
 	public static List<File> walk(String path) {
 		LinkedList<File> output = new LinkedList<File>();
 

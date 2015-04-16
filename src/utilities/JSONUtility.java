@@ -1,10 +1,17 @@
 package utilities;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import argo.format.JsonFormatter;
 import argo.format.PrettyJsonFormatter;
 import argo.jdom.JdomParser;
+import argo.jdom.JsonField;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
 
@@ -44,6 +51,43 @@ public class JSONUtility {
 	 */
 	public static boolean writeJson(JsonRootNode node, File file) {
 		return FileUtility.writeToFile(new StringBuffer(JSONUtility.jsonToString(node)), file, false);
+	}
+
+	/**
+	 * Same as replace children but apply for only one child
+	 * @param parent parent node
+	 * @param replacingKey the key which value is replaced
+	 * @param replacingChild the new child which will be in place of the old one
+	 * @return an instance of JsonNode with the old child with specified replacingKey replaced
+	 */
+	public static JsonNode replaceChild(JsonNode parent, String replacingKey, JsonNode replacingChild) {
+		Map<String, JsonNode> childMap = new HashMap<>();
+		childMap.put(replacingKey, replacingChild);
+		return replaceChildren(parent, childMap);
+	}
+
+	/**
+	 * Replace a set of children in a JSON object.
+	 * @param parent the parent node
+	 * @param replacingChildren the map key: newNode to replace. Key must exist in parent node beforehand
+	 * @return an instance of JsonNode with all children in replacing children replaced.
+	 */
+	public static JsonNode replaceChildren(JsonNode parent, Map<String, JsonNode> replacingChildren) {
+		List<JsonField> fields = new ArrayList<JsonField>();
+
+		for (JsonField field : parent.getFieldList()) {
+			String key = field.getName().getText();
+
+			if (parent.isNode(key)) {//Fail safe
+				if (replacingChildren.containsKey(key)) {
+					fields.add(JsonNodeFactories.field(key, replacingChildren.get(key)));
+				} else {
+					fields.add(field);
+				}
+			}
+		}
+
+		return JsonNodeFactories.object(fields);
 	}
 
 	/**
