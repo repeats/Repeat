@@ -3,7 +3,6 @@ package frontEnd;
 import java.awt.AWTException;
 import java.awt.Point;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -97,7 +96,7 @@ public class MainFrame extends JFrame {
 			LOGGER.warning("System tray is not supported!");
 			trayIcon = null;
 		} else {
-			trayIcon = new MinimizedFrame(Toolkit.getDefaultToolkit().getImage("Repeat.jpg"), backEnd);
+			trayIcon = new MinimizedFrame(BootStrapResources.TRAY_IMAGE, backEnd);
 		}
 
 		/*************************************************************************************/

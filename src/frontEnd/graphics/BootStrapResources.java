@@ -1,5 +1,6 @@
 package frontEnd.graphics;
 
+import java.awt.Image;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,32 +11,39 @@ import javax.swing.ImageIcon;
 public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
+	public static final Image TRAY_IMAGE;
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE;
 	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
 
 	static {
-		ADD = getImage("/toolbarButtonGraphics/general/Add24.gif");
-		EDIT = getImage("/toolbarButtonGraphics/general/Edit24.gif");
-		DELETE = getImage("/toolbarButtonGraphics/general/Delete24.gif");
+		TRAY_IMAGE = getImage("/frontEnd/graphics/Repeat.jpg");
 
-		MOVE = getImage("/toolbarButtonGraphics/general/Redo24.gif");
+		ADD = getIcon("/toolbarButtonGraphics/general/Add24.gif");
+		EDIT = getIcon("/toolbarButtonGraphics/general/Edit24.gif");
+		DELETE = getIcon("/toolbarButtonGraphics/general/Delete24.gif");
 
-		UP = getImage("/toolbarButtonGraphics/navigation/Up24.gif");
-		DOWN = getImage("/toolbarButtonGraphics/navigation/Down24.gif");
+		MOVE = getIcon("/toolbarButtonGraphics/general/Redo24.gif");
 
-		RECORD = getImage("/toolbarButtonGraphics/general/Stop16.gif");
-		STOP = getImage("/toolbarButtonGraphics/media/Stop16.gif");
+		UP = getIcon("/toolbarButtonGraphics/navigation/Up24.gif");
+		DOWN = getIcon("/toolbarButtonGraphics/navigation/Down24.gif");
 
-		PLAY = getImage("/toolbarButtonGraphics/media/Play16.gif");
+		RECORD = getIcon("/toolbarButtonGraphics/general/Stop16.gif");
+		STOP = getIcon("/toolbarButtonGraphics/media/Stop16.gif");
 
-		SELECT = getImage("/toolbarButtonGraphics/general/Preferences24.gif");
+		PLAY = getIcon("/toolbarButtonGraphics/media/Play16.gif");
+
+		SELECT = getIcon("/toolbarButtonGraphics/general/Preferences24.gif");
 	}
 
-	private static ImageIcon getImage(String resource) {
+	private static ImageIcon getIcon(String resource) {
+		return new ImageIcon(getImage(resource));
+	}
+
+	private static Image getImage(String resource) {
 		try {
-			return new ImageIcon(ImageIO.read(BootStrapResources.class.getResourceAsStream(resource)));
+			return ImageIO.read(BootStrapResources.class.getResourceAsStream(resource));
 		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "Cannot load resource " + resource, e);
+			LOGGER.log(Level.SEVERE, "Cannot load image " + resource, e);
 			return null;
 		}
 	}
