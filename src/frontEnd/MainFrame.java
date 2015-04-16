@@ -177,8 +177,19 @@ public class MainFrame extends JFrame {
 		JMenu mnNewMenu = new JMenu("File");
 		menuBar.add(mnNewMenu);
 
+		JMenuItem miForceExit = new JMenuItem("Force exit");
+		miForceExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (JOptionPane.showConfirmDialog(MainFrame.this,
+						"This will not save configuration. Do you really want to exit?", "Force exit",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				}
+			}
+		});
+
 		JMenuItem miExit = new JMenuItem("Exit");
-		miExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.ALT_MASK));
 		miExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -266,6 +277,7 @@ public class MainFrame extends JFrame {
 		mnNewMenu.add(miLoadSource);
 		mnNewMenu.add(miSaveSource);
 		mnNewMenu.add(miCleanSource);
+		mnNewMenu.add(miForceExit);
 		mnNewMenu.add(miExit);
 
 		ButtonGroup group = new ButtonGroup();
