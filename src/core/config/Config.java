@@ -22,7 +22,7 @@ import frontEnd.BackEndHolder;
 
 public class Config {
 
-	public static final String RELEASE_VERSION = "1.7.2";
+	public static final String RELEASE_VERSION = "1.7.3";
 	private static final String CONFIG_FILE_NAME = "config.json";
 	private static final String CURRENT_CONFIG_VERSION = "1.3";
 
