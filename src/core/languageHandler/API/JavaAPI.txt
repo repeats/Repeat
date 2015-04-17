@@ -1,0 +1,51 @@
+Repeat - Java API
+Updated 16th April 2015
+Author: Hoai Phuoc Truong
+
+**********************************************************************************************************
+
+I. Class method and attributes:
+	Use these anywhere in the method you define.
+	1) executeInGroup(int index): execute task with index number from the same task group. Invalid index 
+	does nothing
+
+II. Core API:
+	Use these anywhere with the controller variable: controller.<method_name>
+	1) mouse(): get MouseCore
+	2) keyBoarđ): get KeyboardCore
+	3) blockingWait(int milliseconds): wait for milliseconds before executing next command
+
+III. MouseCore API
+	Use these anywhere with mouse variable: mouse.<method_name>
+	1) getPosition()
+	2) getColor()
+	3) getColor(int x, int y)
+	4) click(int mask)
+	5) click(int mask, int delay)
+	6) leftClick();
+	7) leftClicK(int delay);
+	8) rightClick();
+	9) rightClick(int delay);
+	10) hold(int mask, int duration)
+	11) click(int mask, int x, int y)
+	12) click(int mask, Point p)
+	13) leftClick(int x, int y)
+	14) rightClick(int x, int y)
+	15) press(int mask)
+	16) release(int mask)
+	17) move(int newX, int newY)
+	18) moveBy(int amountX, int amountY)
+
+
+IV. KeyboardCore API
+	Use these anywhere with key variable: key.<method_name>
+	1) type(String string)
+	2) type(char c)
+	3) type(int key)
+	4) type(int...keys)
+	5) combination(int...keys)
+	6) hold(int key, int duration)
+	7) press(int key)
+	8) press(int...keys)
+	9) release(int key)
+	10) release(int...keys)

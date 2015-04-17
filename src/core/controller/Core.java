@@ -29,7 +29,7 @@ public final class Core {
 	}
 
 	/**
-	 * Unsafe method since not interruptible
+	 * Unsafe method since not interruptible. Use at own risk
 	 * @param duration duration for controller to wait
 	 * @param callBack action to perform after wait duration
 	 */

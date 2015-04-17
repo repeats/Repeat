@@ -2,15 +2,23 @@ package frontEnd.graphics;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import utilities.FileUtility;
+import core.config.Config;
+
 public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
+
+	private static final Map<String, String> LANGUAGE_API;
+
 	public static final Image TRAY_IMAGE;
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE;
 	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
@@ -33,6 +41,11 @@ public class BootStrapResources {
 		PLAY = getIcon("/toolbarButtonGraphics/media/Play16.gif");
 
 		SELECT = getIcon("/toolbarButtonGraphics/general/Preferences24.gif");
+
+		/*********************************************************************************/
+		LANGUAGE_API = new HashMap<>();
+		LANGUAGE_API.put("java", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
+		LANGUAGE_API.put("python", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
 	}
 
 	private static ImageIcon getIcon(String resource) {
@@ -49,14 +62,14 @@ public class BootStrapResources {
 	}
 
 	public static String getAbout() {
-		return "Created by HP Truong hptruong93@gmail.com.";
+		return "Repeat " + Config.RELEASE_VERSION + "\n"
+				+ "A tool to repeat yourself with some intelligence.\n"
+				+ "Created by HP Truong. Contact me at hptruong93@gmail.com.";
 	}
 
 	public static String getAPI(String language) {
-		if (language.equals("java")) {
-			return "";
-		} else if (language.equals("python")) {
-			return "";
+		if (LANGUAGE_API.containsKey(language)) {
+			return LANGUAGE_API.get(language);
 		} else {
 			return "";
 		}

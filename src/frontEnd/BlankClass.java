@@ -1,14 +1,18 @@
 package frontEnd;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+
+import utilities.FileUtility;
+import frontEnd.graphics.BootStrapResources;
 
 
 public class BlankClass {
 	public static void main(String[] args) throws IOException {
-		Path p  = Paths.get("data\\source\\java\\CC_1429150892613.java");
+		InputStream t = BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt");
+		System.out.println(t);
 
-		System.out.println(p.toFile().getPath());
+		String a = FileUtility.readFromStream(t).toString();
+		System.out.println(a);
 	}
 }

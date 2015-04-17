@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -255,6 +256,43 @@ public class FileUtility {
 				}
 			}
 		}
+		return output;
+	}
+
+	public static StringBuffer readFromStream(InputStream inputStream) {
+		StringBuffer output = new StringBuffer();
+		if (inputStream == null) {
+			return output;
+		}
+
+		InputStreamReader char_input = new InputStreamReader(inputStream, Charset.forName("UTF-8").newDecoder());
+		BufferedReader br = new BufferedReader(char_input);
+		try {
+			while (true) {
+	            String in = br.readLine();
+
+	            if (in == null) {
+	               break;
+	            }
+	            output.append(in).append("\n");
+	        }
+			return output;
+		} catch (IOException e) {
+			Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+		} finally {
+			try {
+				char_input.close();
+			} catch (IOException e) {
+				Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+			}
+
+			try {
+				br.close();
+			} catch (IOException e) {
+				Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, null, e);
+			}
+		}
+
 		return output;
 	}
 
