@@ -1,8 +1,6 @@
 package frontEnd;
 
 import java.awt.EventQueue;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +30,6 @@ public class Main {
 				System.exit(1);
 			}
 		}
-		Toolkit.getDefaultToolkit().setLockingKeyState(KeyEvent.VK_NUM_LOCK, false);
 
 		/*********************************************************************************/
 
