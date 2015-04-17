@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +58,6 @@ public class TaskGroupFrame extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowIconified(WindowEvent e) {
-				System.out.println("A");
 				TaskGroupFrame.this.setVisible(false);
 				TaskGroupFrame.this.setExtendedState(JFrame.NORMAL);
 			}
@@ -250,9 +250,7 @@ public class TaskGroupFrame extends JFrame {
 	private void moveGroupUp() {
 		int selected = tGroups.getSelectedRow();
 		if (selected >= 1) {
-			TaskGroup temp = backEnd.taskGroups.get(selected);
-			backEnd.taskGroups.set(selected, backEnd.taskGroups.get(selected - 1));
-			backEnd.taskGroups.set(selected - 1, temp);
+			Collections.swap(backEnd.taskGroups, selected, selected - 1);
 			renderTaskGroup();
 		}
 	}
@@ -260,9 +258,7 @@ public class TaskGroupFrame extends JFrame {
 	private void moveGroupDown() {
 		int selected = tGroups.getSelectedRow();
 		if (selected >= 0 && selected < backEnd.taskGroups.size() - 1) {
-			TaskGroup temp = backEnd.taskGroups.get(selected);
-			backEnd.taskGroups.set(selected, backEnd.taskGroups.get(selected + 1));
-			backEnd.taskGroups.set(selected + 1, temp);
+			Collections.swap(backEnd.taskGroups, selected, selected + 1);
 			renderTaskGroup();
 		}
 	}

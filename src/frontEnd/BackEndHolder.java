@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -270,9 +271,7 @@ public class BackEndHolder {
 	protected void moveTaskUp() {
 		int selected = main.tTasks.getSelectedRow();
 		if (selected >= 1) {
-			UserDefinedAction temp = currentGroup.getTasks().get(selected);
-			currentGroup.getTasks().set(selected, currentGroup.getTasks().get(selected - 1));
-			currentGroup.getTasks().set(selected - 1, temp);
+			Collections.swap(currentGroup.getTasks(), selected, selected - 1);
 			renderTasks();
 		}
 	}
@@ -280,9 +279,7 @@ public class BackEndHolder {
 	protected void moveTaskDown() {
 		int selected = main.tTasks.getSelectedRow();
 		if (selected >= 0 && selected < currentGroup.getTasks().size() - 1) {
-			UserDefinedAction temp = currentGroup.getTasks().get(selected);
-			currentGroup.getTasks().set(selected, currentGroup.getTasks().get(selected + 1));
-			currentGroup.getTasks().set(selected + 1, temp);
+			Collections.swap(currentGroup.getTasks(), selected, selected + 1);
 			renderTasks();
 		}
 	}
@@ -366,7 +363,19 @@ public class BackEndHolder {
 		if (!action.isEnabled()) {
 			keysManager.unregisterKey(action.getHotkey());
 		} else {
-			keysManager.registerKey(action.getHotkey(), action);
+			int confirm = JOptionPane.YES_OPTION;
+			KeyChain collision = keysManager.isKeyRegistered(action.getHotkey());
+			if (collision != null) {
+				confirm = JOptionPane.showConfirmDialog(main,
+					"Newly registered keychain \"" + action.getHotkey()
+					+ "\" will collide with previously registered keychain \"" + collision
+					+ "\"\nDo you really want to assign this key chain?",
+					"Key chain collision!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+
+			if (confirm == JOptionPane.YES_OPTION) {
+				keysManager.registerKey(action.getHotkey(), action);
+			}
 		}
 	}
 
