@@ -22,8 +22,9 @@ import frontEnd.BackEndHolder;
 
 public class Config {
 
+	public static final String RELEASE_VERSION = "1.7.2";
 	private static final String CONFIG_FILE_NAME = "config.json";
-	private static final String CURRENT_CONFIG_VERSION = "1.2";
+	private static final String CURRENT_CONFIG_VERSION = "1.3";
 
 	private DynamicCompilerFactory compilerFactory;
 	private final BackEndHolder backEnd;
@@ -51,7 +52,8 @@ public class Config {
 		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
 			new Parser1_0(),
 			new Parser1_1(),
-			new Parser1_2()
+			new Parser1_2(),
+			new Parser1_3()
 		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;

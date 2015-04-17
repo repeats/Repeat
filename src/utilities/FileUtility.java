@@ -12,6 +12,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -39,6 +41,22 @@ public class FileUtility {
 	 */
 	public static boolean fileExists(File file) {
 		return file.exists() && !file.isDirectory();
+	}
+
+	/**
+	 * Split a file into a list of directories ending with the file name
+	 * @param file file to split path
+	 * @return list of directories representing the file path, ending with the file name
+	 */
+	public static List<String> splitPath(File file) {
+		List<String> output = new ArrayList<>();
+		File current = file;
+		while (current != null) {
+			output.add(current.getName());
+			current = current.getParentFile();
+		}
+		Collections.reverse(output);
+		return output;
 	}
 
 	/**
@@ -113,7 +131,7 @@ public class FileUtility {
 	}
 
 	/**
-	 * Copy source file to destination file
+	 * Copy source file to destination file. Create directory if destination directory does not exist
 	 * @param source source file
 	 * @param dest destination file
 	 * @return if copy succeeded
