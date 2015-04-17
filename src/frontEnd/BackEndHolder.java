@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.logging.Level;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -192,6 +193,8 @@ public class BackEndHolder {
 						customFunction.action(core);
 					} catch (InterruptedException e) {//Stopped prematurely
 						return;
+					} catch (Exception e) {
+						LOGGER.log(Level.WARNING, "Exception caught while executing custom function", e);
 					}
 
 					switchRunningCompiledAction();

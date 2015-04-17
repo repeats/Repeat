@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jnativehook.NativeHookException;
@@ -99,6 +100,9 @@ public final class GlobalKeysManager {
 								action.action(controller);
 							} catch (InterruptedException e) {
 								LOGGER.info("Task ended prematurely");
+							} catch (Exception e) {
+								String name = action.getName() == null ? "" : action.getName();
+								LOGGER.log(Level.WARNING, "Exception while executing task " + name, e);
 							}
 
 							executions.remove(id);
