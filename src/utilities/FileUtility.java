@@ -259,6 +259,11 @@ public class FileUtility {
 		return output;
 	}
 
+	/**
+	 * Read plain text data from an InputStream
+	 * @param inputStream input stream to be read from
+	 * @return text data retrieved from stream
+	 */
 	public static StringBuffer readFromStream(InputStream inputStream) {
 		StringBuffer output = new StringBuffer();
 		if (inputStream == null) {

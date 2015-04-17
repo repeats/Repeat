@@ -64,7 +64,7 @@ public class BootStrapResources {
 	public static String getAbout() {
 		return "Repeat " + Config.RELEASE_VERSION + "\n"
 				+ "A tool to repeat yourself with some intelligence.\n"
-				+ "Created by HP Truong. Contact me at hptruong93@gmail.com.";
+				+ "Created by Hoai Phuoc Truong. Contact me at hptruong93@gmail.com.";
 	}
 
 	public static String getAPI(String language) {

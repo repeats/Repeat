@@ -48,7 +48,7 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (globalKeys.isKeyRegistered(code)) {
+				if (globalKeys.isKeyRegistered(code) != null) {
 					return true;
 				}
 
@@ -71,7 +71,7 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (globalKeys.isKeyRegistered(code)) {
+				if (globalKeys.isKeyRegistered(code) != null) {
 					return true;
 				}
 

@@ -3,6 +3,7 @@ package core.keyChain;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,26 @@ public class KeyChain implements IJsonable {
 
 	public KeyChain() {
 		this(new ArrayList<Integer>());
+	}
+
+	/**
+	 * Check if two KeyChain will collide when applied. Formally,
+	 * return true if triggering one KeyChain forces the other to be triggered. To trigger a KeyChain
+	 * is to press all the keys in this.keys in the given order, without releasing any key in the process.
+	 *
+	 * For example,
+	 * A + S + D collides with A + S, but not with S + D or D + S
+	 * Ctrl + Shift + C does not collide with Ctrl + C
+	 *
+	 * @param other other KeyChain to check for collision.
+	 * @return true if this key chain collides with the other key chain
+	 */
+	public boolean collideWith(KeyChain other) {
+		if (keys.size() > other.keys.size()) {
+			return Collections.indexOfSubList(keys, other.keys) == 0;
+		} else {
+			return Collections.indexOfSubList(other.keys, keys) == 0;
+		}
 	}
 
 	public List<Integer> getKeys() {

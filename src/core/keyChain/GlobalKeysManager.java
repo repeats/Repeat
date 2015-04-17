@@ -12,8 +12,8 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import utilities.CodeConverter;
-import utilities.Function;
 import utilities.ExceptableFunction;
+import utilities.Function;
 import utilities.RandomUtil;
 import core.config.Config;
 import core.config.Parser1_0;
@@ -140,11 +140,17 @@ public final class GlobalKeysManager {
 		this.currentTaskGroup = currentTaskGroup;
 	}
 
-	public boolean isKeyRegistered(KeyChain code) {
-		return actionMap.containsKey(code);
+	public KeyChain isKeyRegistered(KeyChain code) {
+		for (KeyChain existing : actionMap.keySet()) {
+			if (existing.collideWith(code)) {
+				return existing;
+			}
+		}
+
+		return null;
 	}
 
-	public boolean isKeyRegistered(int code) {
+	public KeyChain isKeyRegistered(int code) {
 		return isKeyRegistered(new KeyChain(code));
 	}
 

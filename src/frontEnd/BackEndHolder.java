@@ -215,7 +215,7 @@ public class BackEndHolder {
 		for (TaskGroup group : taskGroups) {
 			if (group.isEnabled()) {
 				for (UserDefinedAction task : group.getTasks()) {
-					if (task.isEnabled() && !keysManager.isKeyRegistered(task.getHotkey())) {
+					if (task.isEnabled() && keysManager.isKeyRegistered(task.getHotkey()) == null) {
 						keysManager.registerKey(task.getHotkey(), task);
 					}
 				}
@@ -338,10 +338,23 @@ public class BackEndHolder {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
 		KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);
 		if (newKeyChain != null) {
-			keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
+			int confirm = JOptionPane.YES_OPTION;
+			KeyChain collision = keysManager.isKeyRegistered(newKeyChain);
+			if (collision != null) {
+				confirm = JOptionPane.showConfirmDialog(main,
+					"Newly registered keychain \"" + newKeyChain
+					+ "\" will collide with previously registered keychain \"" + collision
+					+ "\"\nDo you really want to assign this key chain?",
+					"Key chain collision!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
 
-			action.setHotkey(newKeyChain);
-			main.tTasks.setValueAt(newKeyChain.toString(), row, 1);
+
+			if (confirm == JOptionPane.YES_OPTION) {
+				keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
+
+				action.setHotkey(newKeyChain);
+				main.tTasks.setValueAt(newKeyChain.toString(), row, 1);
+			}
 		}
 	}
 
