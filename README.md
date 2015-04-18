@@ -22,16 +22,17 @@ Known issues
 2. Some source code files are not getting cleaned up. However, they're all in the data/source folder
 3. Python language is not fully supported. I'll have to write a better controller (mouse & keyboard) library for python.
 4. If application is not initialized correctly, it may not exit and has to be killed
-5. Does not catch error if same hotkey is being used for different tasks. (i.e. you are responsible for not violating your hotkey assignment)
+5. <del> Does not catch error if hotkeys collide for different tasks. (i.e. you are responsible for not violating your hotkey assignment) </del> 1.7.3 --> Now give warnings, but still allow user to have overlapping hotkey.
 
 How to
 ======
-1. Record: Press record (default hotkey F9) to start recording and stop at any time by pressing the same button again (or press default recording button F9)
-2. Replay: Press replay (default hotkey F11) to start replaying and stop at any time by pressing the same button again (or press default replay button F11)
-3. Compile your code and play it: the buttons are right under the record and replay section. (F12 for play/stop compiled code)
-4. Manage your tasks: using the buttons on the right hand side of the windows to Add, Override, Remove or Reorganize (move up/down) your tasks.
-5. Change hotkey for your task: just left click on the hotkey column of your task's row in the table and input the new hotkey
-6. Manage task group: click on the button next to Task group on the top right corner at any time to manage the task group.
+1. Change global hotkeys: In menu Settings --> Hotkey
+2. Record: Press record (default hotkey F9) to start recording and stop at any time by pressing the same button again (or press default recording button F9)
+3. Replay: Press replay (default hotkey F11) to start replaying and stop at any time by pressing the same button again (or press default replay button F11)
+4. Compile your code and play it: the buttons are right under the record and replay section. (F12 for play/stop compiled code)
+5. Manage your tasks: using the buttons on the right hand side of the windows to Add, Override, Remove or Reorganize (move up/down) your tasks.
+6. Change hotkey for your task: just left click on the hotkey column of your task's row in the table and input the new hotkey
+7. Manage task group: click on the button next to Task group on the top right corner at any time to manage the task group.
 
 Code examples
 =============
