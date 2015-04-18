@@ -16,6 +16,10 @@ Disclaimer
 1. This is not a password storage program. Source code written is not encrypted.
 2. This program executes your own code. Use the advanced compile - replay feature carefully. Test your task before adding it to the list.
 
+Installation
+============
+Just download the [latest version](https://github.com/hptruong93/Repeat/releases/latest) and run the jar file. That's it! You may need appropriate priviliges since Repeat needs to control the mouse and keyboard.
+
 Known issues
 ============
 1. Home/End buttons can only be used if numlocks is off
