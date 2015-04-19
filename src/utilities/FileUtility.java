@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Provide file reading and writing utilities
@@ -58,6 +59,31 @@ public class FileUtility {
 		}
 		Collections.reverse(output);
 		return output;
+	}
+
+	/**
+	 * Get relative path of a file with respect to a working directory
+	 * @param workDirectory the directory that will be reference
+	 * @param target file whose path will be compared to that of the directory
+	 * @return relative path to the file from the directory. If no relative path exists, provide absolute path to file
+	 */
+	public static String getRelativePath(File workDirectory, File target) {
+		if (target.getAbsolutePath().startsWith(workDirectory.getAbsolutePath())) {
+			String relativePath = target.getAbsolutePath().substring(workDirectory.getAbsolutePath().length() + 1);
+			relativePath = relativePath.replaceAll(Pattern.quote(File.separator), "/");
+			return relativePath;
+		} else {
+			return target.getAbsolutePath();
+		}
+	}
+
+	/**
+	 * Get relative path of a file with respect to current working directory
+	 * @param target file whose path will be compared to that of current working directory
+	 * @return relative path to the file from current working directory. If no relative path exists, provide absolute path to file
+	 */
+	public static String getRelativePwdPath(File target) {
+		return getRelativePath(new File(""), target);
 	}
 
 	/**

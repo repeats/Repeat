@@ -511,7 +511,7 @@ public class BackEndHolder {
 			using.addAll(new Function<UserDefinedAction, String>() {
 				@Override
 				public String apply(UserDefinedAction task) {
-					return task.getSourcePath();
+					return new File(task.getSourcePath()).getAbsolutePath();
 				}
 
 			}.applyList(group.getTasks()));

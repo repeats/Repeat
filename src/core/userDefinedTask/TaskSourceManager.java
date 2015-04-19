@@ -19,15 +19,14 @@ public class TaskSourceManager {
 		} else {
 			sourceFileName = new File(task.getSourcePath()).getName();
 		}
-		File sourceFile = new File(FileUtility.joinPath("data", "source", task.getCompiler(), sourceFileName));;
+		File sourceFile = new File(FileUtility.joinPath("data", "source", task.getCompiler(), sourceFileName));
 
 		if (!FileUtility.writeToFile(source, sourceFile, false)) {
 			LOGGER.warning("Unable to write source to file " + sourceFile.getAbsolutePath());
 			return false;
 		}
 
-		task.setSourcePath(sourceFile.getAbsolutePath());
-
+		task.setSourcePath(FileUtility.getRelativePwdPath(sourceFile));
 		return true;
 	}
 

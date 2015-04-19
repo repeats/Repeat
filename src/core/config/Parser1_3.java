@@ -1,12 +1,11 @@
 package core.config;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
+import utilities.FileUtility;
 import utilities.Function;
 import utilities.JSONUtility;
 import argo.jdom.JsonNode;
@@ -33,7 +32,7 @@ public class Parser1_3 extends ConfigParser {
 	@Override
 	protected JsonRootNode internalConvertFromPreviousVersion(JsonRootNode previousVersion) {
 		try {
-			final String currentPath = Paths.get("").toAbsolutePath().toString();
+			final File currentPath = new File("");
 			JsonNode taskGroup = JsonNodeFactories.array(new Function<JsonNode, JsonNode>(){
 				@Override
 				public JsonNode apply(JsonNode taskGroup) {
@@ -42,14 +41,8 @@ public class Parser1_3 extends ConfigParser {
 								@Override
 								public JsonNode apply(JsonNode task) {
 									String sourcePath = task.getStringValue("source_path");
-
-									if (sourcePath.startsWith(currentPath)) {
-										String relativePath = sourcePath.substring(currentPath.length() + 1);
-										relativePath = relativePath.replaceAll(Pattern.quote(File.separator), "/");
-										return JSONUtility.replaceChild(task, "source_path", JsonNodeFactories.string(relativePath));
-									}
-
-									return task;
+									String relativePath = FileUtility.getRelativePath(currentPath, new File(sourcePath));
+									return JSONUtility.replaceChild(task, "source_path", JsonNodeFactories.string(relativePath));
 								}
 							}.applyList(taskGroup.getArrayNode("tasks"))));
 				}

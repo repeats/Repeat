@@ -42,6 +42,7 @@ public class Main {
 
 					frame.setVisible(true);
 				} catch (Exception e) {
+					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, ExceptionUtility.getStackTrace(e));
 					System.exit(2);
 				}
