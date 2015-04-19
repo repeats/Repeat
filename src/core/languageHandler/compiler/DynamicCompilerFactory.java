@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import utilities.FileUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
@@ -42,7 +43,7 @@ public class DynamicCompilerFactory implements IJsonable {
 		for (DynamicCompiler compiler :  compilers.values()) {
 			compilerList.add(JsonNodeFactories.object(
 					JsonNodeFactories.field("name", JsonNodeFactories.string(compiler.getName())),
-					JsonNodeFactories.field("path", JsonNodeFactories.string(compiler.getPath().getAbsolutePath())),
+					JsonNodeFactories.field("path", JsonNodeFactories.string(FileUtility.getRelativePwdPath(compiler.getPath()))),
 					JsonNodeFactories.field("run_args", JsonNodeFactories.string(compiler.getRunArgs()))
 					));
 		}
