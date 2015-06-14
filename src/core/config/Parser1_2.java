@@ -68,9 +68,9 @@ public class Parser1_2 extends ConfigParser {
 
 									return JSONUtility.replaceChild(task, "source_path", JsonNodeFactories.string(newFile.getAbsolutePath()));
 								}
-							}.applyList(taskGroup.getArrayNode("tasks"))));
+							}.map(taskGroup.getArrayNode("tasks"))));
 				}
-			}.applyList(previousVersion.getArrayNode("task_groups")));
+			}.map(previousVersion.getArrayNode("task_groups")));
 
 			JsonRootNode newRoot = JsonNodeFactories.object(
 					JsonNodeFactories.field("version", JsonNodeFactories.string(getVersion())),

@@ -57,12 +57,12 @@ public class TaskGroup implements IJsonable {
 			if (enabled) {
 				for (UserDefinedAction task : tasks) {
 					if (task.isEnabled()) {
-						keyManager.registerKey(task.getHotkey(), task);
+						keyManager.registerTask(task);
 					}
 				}
 			} else {
 				for (UserDefinedAction task : tasks) {
-					keyManager.unregisterKey(task.getHotkey());
+					keyManager.unregisterTask(task);
 				}
 			}
 		}

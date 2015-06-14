@@ -2,6 +2,7 @@ package frontEnd;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -53,7 +54,7 @@ public class HotkeySetting extends JFrame {
 				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
 				if (newKeyChain != null) {
-					backEnd.keysManager.reRegisterKey(newKeyChain, backEnd.config.getRECORD(), null);
+					backEnd.keysManager.reRegisterTask(backEnd.switchRecord, Arrays.asList(newKeyChain));
 					backEnd.config.setRECORD(newKeyChain);
 
 					tfRecord.setText(newKeyChain.toString());
@@ -71,7 +72,7 @@ public class HotkeySetting extends JFrame {
 				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
 				if (newKeyChain != null) {
-					backEnd.keysManager.reRegisterKey(newKeyChain, backEnd.config.getREPLAY(), null);
+					backEnd.keysManager.reRegisterTask(backEnd.switchReplay, Arrays.asList(newKeyChain));
 					backEnd.config.setREPLAY(newKeyChain);
 
 					tfReplay.setText(newKeyChain.toString());
@@ -90,7 +91,7 @@ public class HotkeySetting extends JFrame {
 				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
 				if (newKeyChain != null) {
-					backEnd.keysManager.reRegisterKey(newKeyChain, backEnd.config.getCOMPILED_REPLAY(), null);
+					backEnd.keysManager.reRegisterTask(backEnd.switchReplayCompiled, Arrays.asList(newKeyChain));
 					backEnd.config.setCOMPILED_REPLAY(newKeyChain);
 
 					tfCompiledReplay.setText(newKeyChain.toString());

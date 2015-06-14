@@ -1,6 +1,10 @@
 package core.userDefinedTask;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,11 +24,12 @@ import core.languageHandler.compiler.DynamicCompilerFactory;
 public abstract class UserDefinedAction implements IJsonable {
 
 	protected String name;
-	protected KeyChain hotkey;
+	protected Set<KeyChain> hotkeys;
 	protected String sourcePath;
 	protected String compilerName;
 	protected boolean enabled;
 	protected ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup;
+	protected KeyChain invokingKeyChain;
 
 	public UserDefinedAction() {
 		enabled = true;
@@ -41,19 +46,32 @@ public abstract class UserDefinedAction implements IJsonable {
 		this.name = name;
 	}
 
-	public void setHotkey(KeyChain hotkey) {
-		this.hotkey = hotkey;
+	public void setHotKeys(Set<KeyChain> hotkeys) {
+		this.hotkeys = hotkeys;
+	}
+
+	public Set<KeyChain> getHotkeys() {
+		if (hotkeys == null) {
+			hotkeys = new HashSet<KeyChain>();
+		}
+		return hotkeys;
+	}
+
+	/**
+	 * Retrieve a random key chain from the set of key chains. If there's no keychain for the task, return an empty key chain.
+	 * @return a random key chain from the set of key chains.
+	 */
+	public KeyChain getRepresentativeHotkey() {
+		Set<KeyChain> hotkeys = getHotkeys();
+		if (hotkeys == null || hotkeys.isEmpty()) {
+			return new KeyChain();
+		} else {
+			return hotkeys.iterator().next();
+		}
 	}
 
 	public String getName() {
 		return name;
-	}
-
-	public KeyChain getHotkey() {
-		if (hotkey == null) {
-			hotkey = new KeyChain();
-		}
-		return hotkey;
 	}
 
 	public String getSourcePath() {
@@ -80,18 +98,36 @@ public abstract class UserDefinedAction implements IJsonable {
 		this.enabled = enabled;
 	}
 
+	/**
+	 * This method is called to dynamically allow the current task to execute other tasks in group
+	 * @param executeTaskInGroup
+	 */
 	public void setExecuteTaskInGroup(ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup) {
 		this.executeTaskInGroup = executeTaskInGroup;
+	}
+
+	/**
+	 * This method is called to dynamically allow the current task to determine which key chain activated it among
+	 * its hotkeys
+	 * @param invokingKeyChain
+	 */
+	public void setInvokingKeyChain(KeyChain invokingKeyChain) {
+		this.invokingKeyChain = invokingKeyChain;
 	}
 
 	/***********************************************************************/
 	@Override
 	public final JsonRootNode jsonize() {
+		List<JsonNode> hotkeysJSON = new LinkedList<>();
+		for (KeyChain hotkey : getHotkeys()) {
+			hotkeysJSON.add(hotkey.jsonize());
+		}
+
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compilerName)),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
-				JsonNodeFactories.field("hotkey", getHotkey().jsonize()),
+				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(hotkeysJSON)),
 				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled))
 				);
 
@@ -107,7 +143,11 @@ public abstract class UserDefinedAction implements IJsonable {
 			}
 
 			String name = node.getStringValue("name");
-			KeyChain hotkey = KeyChain.parseJSON(node.getArrayNode("hotkey"));
+			List<JsonNode> hotkeyJSONs =  node.getArrayNode("hotkey");
+			Set<KeyChain> hotkeys = new HashSet<>();
+			for (JsonNode hotkeyJSON : hotkeyJSONs) {
+				hotkeys.add(KeyChain.parseJSON(hotkeyJSON.getArrayNode()));
+			}
 
 			File sourceFile = new File(sourcePath);
 			StringBuffer sourceBuffer = FileUtility.readFromFile(sourceFile);
@@ -132,7 +172,7 @@ public abstract class UserDefinedAction implements IJsonable {
 			output.sourcePath = sourcePath;
 			output.compilerName = compiler.getName();
 			output.name = name;
-			output.hotkey = hotkey;
+			output.hotkeys = hotkeys;
 			output.enabled = enabled;
 
 			return output;

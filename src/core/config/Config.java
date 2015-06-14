@@ -22,14 +22,14 @@ import frontEnd.BackEndHolder;
 
 public class Config {
 
-	public static final String RELEASE_VERSION = "1.7.3";
+	public static final String RELEASE_VERSION = "1.8.0";
 	private static final String CONFIG_FILE_NAME = "config.json";
-	private static final String CURRENT_CONFIG_VERSION = "1.3";
+	private static final String CURRENT_CONFIG_VERSION = "1.4";
 
 	private DynamicCompilerFactory compilerFactory;
 	private final BackEndHolder backEnd;
 
-	public final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and must not be changed
+	public static final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and must not be changed
 	private KeyChain RECORD;
 	private KeyChain REPLAY;
 	private KeyChain COMPILED_REPLAY;
@@ -53,7 +53,8 @@ public class Config {
 			new Parser1_0(),
 			new Parser1_1(),
 			new Parser1_2(),
-			new Parser1_3()
+			new Parser1_3(),
+			new Parser1_4()
 		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;

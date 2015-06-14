@@ -2,10 +2,13 @@ package core.keyChain;
 
 import globalListener.GlobalKeyListener;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +30,6 @@ public final class GlobalKeysManager {
 	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 
 	private final Core controller;
-	private final Config config;
 	private final Map<KeyChain, UserDefinedAction> actionMap = new HashMap<>();
 	private Function<Void, Boolean> disablingFunction = Function.falseFunction();
 	private final Map<String, Thread> executions;
@@ -38,7 +40,6 @@ public final class GlobalKeysManager {
 	public GlobalKeysManager(Config config, Core controller) {
 		this.controller = controller;
 		this.executions = new HashMap<>();
-		this.config = config;
 		this.currentKeyChain = new KeyChain();
 	}
 
@@ -49,14 +50,12 @@ public final class GlobalKeysManager {
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
 
-				if (code == config.HALT_TASK) {
+				if (code == Config.HALT_TASK) {
 					LinkedList<Thread> endings = new LinkedList<>();
-					for (Thread t : executions.values()) {
-						endings.addLast(t);
-					}
+					endings.addAll(executions.values());
 
 					for (Thread t : endings) {
-						while (t.isAlive()) {
+						while (t.isAlive() && t != Thread.currentThread()) {
 							LOGGER.info("Interrupting execution thread " + t);
 							t.interrupt();
 						}
@@ -79,6 +78,7 @@ public final class GlobalKeysManager {
 						@Override
 						public void run() {
 							try {
+								action.setInvokingKeyChain(currentKeyChain);
 								action.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
 									@Override
 									public Void apply(Integer d) throws InterruptedException {
@@ -124,7 +124,7 @@ public final class GlobalKeysManager {
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
 
-				if (code == config.HALT_TASK) {
+				if (code == Config.HALT_TASK) {
 					currentKeyChain.getKeys().clear();
 					return true;
 				}
@@ -144,9 +144,76 @@ public final class GlobalKeysManager {
 		this.currentTaskGroup = currentTaskGroup;
 	}
 
+	/**
+	 * Map all key chains of the current task to the action. Kick out all colliding tasks
+	 * @param action
+	 * @return List of currently registered tasks that collide with this newly registered task
+	 */
+	public Set<UserDefinedAction> registerTask(UserDefinedAction action) {
+		Set<KeyChain> collisions = areKeysRegistered(action.getHotkeys());
+		Set<UserDefinedAction> output = new HashSet<>();
+
+		for (KeyChain key : collisions) {
+			UserDefinedAction toRemove = actionMap.get(key);
+			if (toRemove != null) {
+				output.add(toRemove);
+			}
+		}
+
+		for (KeyChain key : action.getHotkeys()) {
+			registerKey(key, action);
+		}
+
+		return output;
+	}
+
+	public Set<UserDefinedAction> reRegisterTask(UserDefinedAction action, Collection<KeyChain> newKeyChains) {
+		unregisterTask(action);
+		action.getHotkeys().clear();
+		action.getHotkeys().addAll(newKeyChains);
+		return registerTask(action);
+	}
+
+	/**
+	 * Remove all bindings to the task's keyChains
+	 * @param action
+	 * @return if all keys are removed
+	 */
+	public boolean unregisterTask(UserDefinedAction action) {
+		for (KeyChain k : action.getHotkeys()) {
+			unregisterKey(k);
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param action
+	 * @return list of key chains that collide with the key chains of this task
+	 */
+	public Set<KeyChain> isTaskRegistered(UserDefinedAction action) {
+		return areKeysRegistered(action.getHotkeys());
+	}
+
+	/**
+	 * Check if an iterable of key chain are registered
+	 * @param codes
+	 * @return return all currently registered key chains that collide with the key chains in iterable
+	 */
+	public Set<KeyChain> areKeysRegistered(Collection<KeyChain> codes) {
+		Set<KeyChain> output = new HashSet<>();
+		for (KeyChain code : codes) {
+			KeyChain collision = isKeyRegistered(code);
+			if (collision != null) {
+				output.add(collision);
+			}
+		}
+		return output;
+	}
+
 	public KeyChain isKeyRegistered(KeyChain code) {
 		for (KeyChain existing : actionMap.keySet()) {
-			if (existing.collideWith(code)) {
+			if (existing.collideWith(code) && !existing.equals(code)) {
 				return existing;
 			}
 		}
@@ -158,16 +225,12 @@ public final class GlobalKeysManager {
 		return isKeyRegistered(new KeyChain(code));
 	}
 
-	public UserDefinedAction unregisterKey(KeyChain code) {
+	private UserDefinedAction unregisterKey(KeyChain code) {
 		return actionMap.remove(code);
 	}
 
-	public UserDefinedAction unregisterKey(int code) {
-		return unregisterKey(new KeyChain(code));
-	}
-
-	public UserDefinedAction registerKey(KeyChain code, UserDefinedAction action) {
-		if (code.getKeys().contains(config.HALT_TASK)) {
+	private UserDefinedAction registerKey(KeyChain code, UserDefinedAction action) {
+		if (code.getKeys().contains(Config.HALT_TASK)) {
 			return null;
 		}
 
@@ -175,27 +238,5 @@ public final class GlobalKeysManager {
 		actionMap.put(code, action);
 
 		return removal;
-	}
-
-	public UserDefinedAction registerKey(int code, UserDefinedAction action) {
-		return registerKey(new KeyChain(code), action);
-	}
-
-	public UserDefinedAction reRegisterKey(KeyChain code, KeyChain oldCode, UserDefinedAction action) {
-		UserDefinedAction output = unregisterKey(oldCode);
-
-		if (action == null && output != null) {
-			registerKey(code, output);
-		} else if (action != null) {
-			registerKey(code, action);
-		}
-
-		return output;
-	}
-
-	public UserDefinedAction reRegisterKey(int code, int oldCode, UserDefinedAction action) {
-		return reRegisterKey(new KeyChain(code),
-							 new KeyChain(oldCode),
-							 action);
 	}
 }

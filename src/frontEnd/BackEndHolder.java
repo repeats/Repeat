@@ -57,6 +57,7 @@ public class BackEndHolder {
 	protected final GlobalKeysManager keysManager;
 	protected final Config config;
 
+	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
 	protected boolean isRecording, isReplaying, isRunning;
 
 	protected final MainFrame main;
@@ -74,6 +75,27 @@ public class BackEndHolder {
 
 		selectedTaskIndex = -1;
 		taskManager = new TaskSourceManager();
+
+		switchRecord = new UserDefinedAction() {
+			@Override
+			public void action(Core controller) throws InterruptedException {
+				switchRecord();
+			}
+		};
+
+		switchReplay = new UserDefinedAction() {
+			@Override
+			public void action(Core controller) throws InterruptedException {
+				switchReplay();
+			}
+		};
+
+		switchReplayCompiled = new UserDefinedAction() {
+			@Override
+			public void action(Core controller) throws InterruptedException {
+				switchRunningCompiledAction();
+			}
+		};
 	}
 
 	protected void exit() {
@@ -83,6 +105,14 @@ public class BackEndHolder {
 		}
 
 		System.exit(0);
+	}
+
+	/*************************************************************************************************************/
+	/****************************************Main hotkeys*********************************************************/
+	protected void configureMainHotkeys() {
+		keysManager.reRegisterTask(switchRecord, Arrays.asList(config.getRECORD()));
+		keysManager.reRegisterTask(switchReplay, Arrays.asList(config.getREPLAY()));
+		keysManager.reRegisterTask(switchReplayCompiled, Arrays.asList(config.getCOMPILED_REPLAY()));
 	}
 
 	/*************************************************************************************************************/
@@ -219,8 +249,9 @@ public class BackEndHolder {
 		for (TaskGroup group : taskGroups) {
 			if (group.isEnabled()) {
 				for (UserDefinedAction task : group.getTasks()) {
-					if (task.isEnabled() && keysManager.isKeyRegistered(task.getHotkey()) == null) {
-						keysManager.registerKey(task.getHotkey(), task);
+					Set<KeyChain> collisions = keysManager.areKeysRegistered(task.getHotkeys());
+					if (task.isEnabled() && (collisions == null || collisions.isEmpty())) {
+						keysManager.registerTask(task);
 					}
 				}
 			}
@@ -231,7 +262,7 @@ public class BackEndHolder {
 	/*****************************************Task related********************************************************/
 
 	private void removeTask(UserDefinedAction task) {
-		keysManager.unregisterKey(task.getHotkey());
+		keysManager.unregisterTask(task);
 		if (!taskManager.removeTask(task)) {
 			JOptionPane.showMessageDialog(main, "Encountered error removing source file " + task.getSourcePath());
 		}
@@ -240,7 +271,6 @@ public class BackEndHolder {
 	protected void addCurrentTask() {
 		if (customFunction != null) {
 			customFunction.setName("New task");
-			customFunction.setHotkey(null);
 			currentGroup.getTasks().add(customFunction);
 
 			customFunction = null;
@@ -296,7 +326,7 @@ public class BackEndHolder {
 					public String apply(TaskGroup d) {
 						return d.getName();
 					}
-				}.applyList(taskGroups).toArray(new String[taskGroups.size()]), -1);
+				}.map(taskGroups).toArray(new String[taskGroups.size()]), -1);
 
 			if (newGroupIndex >= 0) {
 				TaskGroup destination = taskGroups.get(newGroupIndex);
@@ -322,10 +352,10 @@ public class BackEndHolder {
 
 			UserDefinedAction toRemove = currentGroup.getTasks().get(selected);
 			customFunction.setName(toRemove.getName());
-			customFunction.setHotkey(toRemove.getHotkey());
+			customFunction.setHotKeys(toRemove.getHotkeys());
 
 			removeTask(toRemove);
-			keysManager.registerKey(customFunction.getHotkey(), customFunction);
+			keysManager.registerTask(customFunction);
 			currentGroup.getTasks().set(selected, customFunction);
 
 			LOGGER.info("Successfully overridden task " + customFunction.getName());
@@ -336,50 +366,46 @@ public class BackEndHolder {
 
 	protected void changeHotkeyTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
-		KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(main);
-		if (newKeyChain != null) {
-			int confirm = JOptionPane.YES_OPTION;
-			KeyChain collision = keysManager.isKeyRegistered(newKeyChain);
-			if (collision != null) {
-				confirm = JOptionPane.showConfirmDialog(main,
-					"Newly registered keychain \"" + newKeyChain
-					+ "\" will collide with previously registered keychain \"" + collision
-					+ "\"\nDo you really want to assign this key chain?",
-					"Key chain collision!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		Set<KeyChain> newKeyChains = KeyChainInputPanel.getInputKeyChains(main, action.getHotkeys());
+		if (newKeyChains != null) {
+			Set<KeyChain> collisions = keysManager.areKeysRegistered(newKeyChains);
+			if (!collisions.isEmpty()) {
+				JOptionPane.showMessageDialog(main,
+					"Newly registered keychains "
+					+ "will collide with previously registered keychain \"" + collisions
+					+ "\"\nYou cannot assign this key chain unless you remove the conflicting key chain...",
+					"Key chain collision!", JOptionPane.WARNING_MESSAGE);
+				return;
 			}
 
+			keysManager.reRegisterTask(action, newKeyChains);
 
-			if (confirm == JOptionPane.YES_OPTION) {
-				keysManager.reRegisterKey(newKeyChain, action.getHotkey(), action);
-
-				action.setHotkey(newKeyChain);
-				main.tTasks.setValueAt(newKeyChain.toString(), row, 1);
-			}
+			KeyChain representative = action.getRepresentativeHotkey();
+			main.tTasks.setValueAt(representative.getKeys().isEmpty() ? "None" : representative.toString(), row, 1);
 		}
 	}
 
 	protected void switchEnableTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
+
+		if (action.isEnabled()) {
+			keysManager.unregisterTask(action);
+		} else {
+			Set<KeyChain> collisions = keysManager.areKeysRegistered(action.getHotkeys());
+			if (!collisions.isEmpty()) {
+				JOptionPane.showMessageDialog(main,
+					"One of the newly registered keychains"
+					+ " will collide with previously registered keychains \"" + collisions
+					+ "\"\nYou cannot assign this key chain unless you remove the conflicting key chain...",
+					"Key chain collision!", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+			keysManager.registerTask(action);
+		}
+
 		action.setEnabled(!action.isEnabled());
 		main.tTasks.setValueAt(action.isEnabled(), row, 2);
-
-		if (!action.isEnabled()) {
-			keysManager.unregisterKey(action.getHotkey());
-		} else {
-			int confirm = JOptionPane.YES_OPTION;
-			KeyChain collision = keysManager.isKeyRegistered(action.getHotkey());
-			if (collision != null) {
-				confirm = JOptionPane.showConfirmDialog(main,
-					"Newly registered keychain \"" + action.getHotkey()
-					+ "\" will collide with previously registered keychain \"" + collision
-					+ "\"\nDo you really want to assign this key chain?",
-					"Key chain collision!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			}
-
-			if (confirm == JOptionPane.YES_OPTION) {
-				keysManager.registerKey(action.getHotkey(), action);
-			}
-		}
 	}
 
 	protected void renderTasks() {
@@ -390,8 +416,10 @@ public class BackEndHolder {
 		int row = 0;
 		for (UserDefinedAction task : currentGroup.getTasks()) {
 			main.tTasks.setValueAt(task.getName(), row, 0);
-			if (task.getHotkey() != null && !task.getHotkey().getKeys().isEmpty()) {
-				main.tTasks.setValueAt(task.getHotkey().toString(), row, 1);
+
+			KeyChain representative = task.getRepresentativeHotkey();
+			if (representative != null && !representative.getKeys().isEmpty()) {
+				main.tTasks.setValueAt(representative.toString(), row, 1);
 			} else {
 				main.tTasks.setValueAt("None", row, 1);
 			}
@@ -412,10 +440,10 @@ public class BackEndHolder {
 		if (column == COLUMN_TASK_NAME && row >= 0) {
 			currentGroup.getTasks().get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
 		} else if (column == COLUMN_TASK_HOTKEY && row >= 0) {
-			if (e.getKeyCode() == config.HALT_TASK) {
+			if (e.getKeyCode() == Config.HALT_TASK) {
 				final UserDefinedAction action = currentGroup.getTasks().get(row);
-				keysManager.unregisterKey(action.getHotkey());
-				action.setHotkey(new KeyChain());
+				keysManager.unregisterTask(action);
+				action.getHotkeys().clear();
 				main.tTasks.setValueAt("None", row, column);
 			} else {
 				changeHotkeyTask(row);
@@ -504,7 +532,7 @@ public class BackEndHolder {
 			public String apply(File file) {
 				return file.getAbsolutePath();
 			}
-		}.applyList(files));
+		}.map(files));
 
 		Set<String> using = new HashSet<>();
 		for (TaskGroup group : taskGroups) {
@@ -514,7 +542,7 @@ public class BackEndHolder {
 					return new File(task.getSourcePath()).getAbsolutePath();
 				}
 
-			}.applyList(group.getTasks()));
+			}.map(group.getTasks()));
 		}
 
 

@@ -64,7 +64,7 @@ public class KeyChain implements IJsonable {
 			public String apply(Integer r) {
 				return KeyEvent.getKeyText(r);
 			}
-		}.applyList(keys), " + ");
+		}.map(keys), " + ");
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class KeyChain implements IJsonable {
 			public JsonNode apply(Integer r) {
 				return JsonNodeFactories.number(r);
 			}
-		}.applyList(keys);
+		}.map(keys);
 		return JsonNodeFactories.array(hotkeyChain);
 	}
 
@@ -121,7 +121,7 @@ public class KeyChain implements IJsonable {
 				public Integer apply(JsonNode d) {
 					return Integer.parseInt(d.getText());
 				}
-			}.applyList(list));
+			}.map(list));
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to parse KeyChain", e);
 			return null;

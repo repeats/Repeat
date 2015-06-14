@@ -8,14 +8,15 @@ I. Class method and attributes:
 	Use these anywhere in the method you define.
 	1) executeInGroup(int index): execute task with index number from the same task group. Invalid index 
 	does nothing
+	2) invokingKeyChain: store information about the key chain that invoked the task
 
-II. Core API:
+II. Core API: (variable controller of type Core) 
 	Use these anywhere with the controller variable: controller.<method_name>
 	1) mouse(): get MouseCore
 	2) keyBoarđ): get KeyboardCore
 	3) blockingWait(int milliseconds): wait for milliseconds before executing next command
 
-III. MouseCore API
+III. MouseCore API: (variable mouse of type MouseCore)
 	Use these anywhere with mouse variable: mouse.<method_name>
 	1) getPosition()
 	2) getColor()
@@ -37,7 +38,7 @@ III. MouseCore API
 	18) moveBy(int amountX, int amountY)
 
 
-IV. KeyboardCore API
+IV. KeyboardCore API: (variable key of type KeyboardCore)
 	Use these anywhere with key variable: key.<method_name>
 	1) type(String string)
 	2) type(char c)
@@ -49,3 +50,7 @@ IV. KeyboardCore API
 	8) press(int...keys)
 	9) release(int key)
 	10) release(int...keys)
+	
+V. KeyChain API: (variable invoker of type KeyChain)
+	Use these anywhere with key variable: invoker.<method_name>
+	1) getKeys(): return a list of integers representing the key chain that invoked this.

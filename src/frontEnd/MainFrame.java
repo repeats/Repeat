@@ -43,6 +43,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -56,9 +57,7 @@ import utilities.logging.OutStream;
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
 
-import core.controller.Core;
 import core.recorder.Recorder;
-import core.userDefinedTask.UserDefinedAction;
 import frontEnd.graphics.BootStrapResources;
 
 @SuppressWarnings("serial")
@@ -107,26 +106,8 @@ public class MainFrame extends JFrame {
 				return hotkey.isVisible();
 			}
 		});
-		backEnd.keysManager.registerKey(backEnd.config.getRECORD(), new UserDefinedAction() {
-			@Override
-			public void action(Core controller) throws InterruptedException {
-				backEnd.switchRecord();
-			}
-		});
 
-		backEnd.keysManager.registerKey(backEnd.config.getREPLAY(), new UserDefinedAction() {
-			@Override
-			public void action(Core controller) throws InterruptedException {
-				backEnd.switchReplay();
-			}
-		});
-
-		backEnd.keysManager.registerKey(backEnd.config.getCOMPILED_REPLAY(), new UserDefinedAction() {
-			@Override
-			public void action(Core controller) throws InterruptedException {
-				backEnd.switchRunningCompiledAction();
-			}
-		});
+		backEnd.configureMainHotkeys();
 		/*************************************************************************************/
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 759, 327);
@@ -426,10 +407,15 @@ public class MainFrame extends JFrame {
 		backEnd.executor.scheduleWithFixedDelay(new Runnable(){
 			@Override
 			public void run() {
-				Point p = backEnd.core.mouse().getPosition();
-				tfMousePosition.setText(p.x + ", " + p.y);
+				final Point p = backEnd.core.mouse().getPosition();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						tfMousePosition.setText(p.x + ", " + p.y);
+					}
+				});
 			}
-		}, 0, 200, TimeUnit.MILLISECONDS);
+		}, 0, 500, TimeUnit.MILLISECONDS);
 
 		bRecord = new JButton();
 		bRecord.setIcon(BootStrapResources.RECORD);
