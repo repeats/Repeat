@@ -32,6 +32,7 @@ public abstract class UserDefinedAction implements IJsonable {
 	protected KeyChain invokingKeyChain;
 
 	public UserDefinedAction() {
+		invokingKeyChain = new KeyChain();
 		enabled = true;
 	}
 
@@ -108,11 +109,12 @@ public abstract class UserDefinedAction implements IJsonable {
 
 	/**
 	 * This method is called to dynamically allow the current task to determine which key chain activated it among
-	 * its hotkeys
+	 * its hotkeys. This will only change the key chain definition of the current key chain, not substituting the real object
 	 * @param invokingKeyChain
 	 */
 	public void setInvokingKeyChain(KeyChain invokingKeyChain) {
-		this.invokingKeyChain = invokingKeyChain;
+		this.invokingKeyChain.getKeys().clear();
+		this.invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
 	}
 
 	/***********************************************************************/

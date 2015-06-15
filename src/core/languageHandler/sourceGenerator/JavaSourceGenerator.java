@@ -68,6 +68,7 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 		sb.append("import core.controller.MouseCore;\n");
 		sb.append("import core.controller.KeyboardCore;\n");
 		sb.append("import core.keyChain.KeyChain;\n");
+		sb.append("import java.util.List;\n");
 		sb.append("import static java.awt.event.KeyEvent.*;\n");
 		sb.append("import static java.awt.event.InputEvent.BUTTON1_MASK;\n");
 		sb.append("import static java.awt.event.InputEvent.BUTTON3_MASK;\n");
@@ -76,7 +77,7 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 		sb.append("    public void action(final Core controller) throws InterruptedException {\n");
 		sb.append("        KeyboardCore key = controller.keyBoard();\n");
 		sb.append("        MouseCore mouse = controller.mouse();\n");
-		sb.append("        KeyChain invoker = this.invokingKeyChain;\n");
+		sb.append("        List<Integer> invoker = this.invokingKeyChain.getKeys();\n");
 		sb.append("        /*Begin generated code*/\n");
 		sb.append(mainSource);
 		sb.append("    }\n");
