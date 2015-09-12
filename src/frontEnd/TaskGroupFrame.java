@@ -251,6 +251,7 @@ public class TaskGroupFrame extends JFrame {
 		int selected = tGroups.getSelectedRow();
 		if (selected >= 1) {
 			Collections.swap(backEnd.taskGroups, selected, selected - 1);
+			tGroups.setRowSelectionInterval(selected - 1, selected - 1);
 			renderTaskGroup();
 		}
 	}
@@ -259,6 +260,7 @@ public class TaskGroupFrame extends JFrame {
 		int selected = tGroups.getSelectedRow();
 		if (selected >= 0 && selected < backEnd.taskGroups.size() - 1) {
 			Collections.swap(backEnd.taskGroups, selected, selected + 1);
+			tGroups.setRowSelectionInterval(selected + 1, selected + 1);
 			renderTaskGroup();
 		}
 	}

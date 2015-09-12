@@ -22,6 +22,8 @@ import javax.tools.ToolProvider;
 import utilities.FileUtility;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 import core.userDefinedTask.UserDefinedAction;
 
 public class DynamicJavaCompiler implements DynamicCompiler {
@@ -192,12 +194,12 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	}
 
 	@Override
-	public String getRunArgs() {
-		return "";
+	public boolean parseCompilerSpecificArgs(JsonNode node) {
+		return true;
 	}
 
 	@Override
-	public void setRunArgs(String args) {
-
+	public JsonNode getCompilerSpecificArgs() {
+		return JsonNodeFactories.object();
 	}
 }

@@ -2,6 +2,7 @@ package core.languageHandler.compiler;
 
 import java.io.File;
 
+import argo.jdom.JsonNode;
 import core.userDefinedTask.UserDefinedAction;
 
 public interface DynamicCompiler {
@@ -14,6 +15,6 @@ public interface DynamicCompiler {
 	public abstract File getPath();
 	public abstract void setPath(File path);
 
-	public abstract String getRunArgs();
-	public abstract void setRunArgs(String args);
+	public abstract boolean parseCompilerSpecificArgs(JsonNode node);
+	public abstract JsonNode getCompilerSpecificArgs();
 }

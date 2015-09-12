@@ -22,9 +22,9 @@ import frontEnd.BackEndHolder;
 
 public class Config {
 
-	public static final String RELEASE_VERSION = "1.8.0";
+	public static final String RELEASE_VERSION = "1.8.1";
 	private static final String CONFIG_FILE_NAME = "config.json";
-	private static final String CURRENT_CONFIG_VERSION = "1.4";
+	private static final String CURRENT_CONFIG_VERSION = "1.5";
 
 	private DynamicCompilerFactory compilerFactory;
 	private final BackEndHolder backEnd;
@@ -54,7 +54,8 @@ public class Config {
 			new Parser1_1(),
 			new Parser1_2(),
 			new Parser1_3(),
-			new Parser1_4()
+			new Parser1_4(),
+			new Parser1_5()
 		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;
@@ -71,16 +72,22 @@ public class Config {
 
 			String version = root.getStringValue("version");
 			boolean foundVersion = false;
+			boolean extractResult = false;
 			for (ConfigParser parser : knownParsers) {
 				if (parser.getVersion().equals(version)) {
-					parser.extractData(this, root);
 					foundVersion = true;
+					extractResult = parser.extractData(this, root);
 					break;
 				}
 			}
 
 			if (!foundVersion) {
 				JOptionPane.showMessageDialog(null, "Config file is in unknown version " + version);
+				defaultExtract();
+			}
+
+			if (!extractResult) {
+				JOptionPane.showMessageDialog(null, "Cannot extract result with version " + version);
 				defaultExtract();
 			}
 		} else {

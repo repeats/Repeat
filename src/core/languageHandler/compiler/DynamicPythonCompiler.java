@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 import utilities.FileUtility;
 import utilities.RandomUtil;
 import utilities.logging.ExceptionUtility;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
 import core.userDefinedTask.UserDefinedAction;
 
@@ -17,12 +19,13 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 	private static final Logger LOGGER = Logger.getLogger(DynamicPythonCompiler.class.getName());
 	private static final String DUMMY_PREFIX = "PY_";
 	private File interpreter;
+	private File objectFileDirectory;
 
 	static {
 		LOGGER.setLevel(Level.ALL);
 	}
 
-	public DynamicPythonCompiler() {
+	public DynamicPythonCompiler(File objectFileDirectory) {
 		interpreter = new File("python.exe");
 	}
 
@@ -68,7 +71,7 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 	@Override
 	public UserDefinedAction compile(String source) {
 		String fileName = DUMMY_PREFIX + RandomUtil.randomID();
-		File sourceFile = new File("core/" + fileName + ".py");
+		File sourceFile = new File(FileUtility.joinPath(objectFileDirectory.getAbsolutePath(), fileName + this.getExtension()));
 		return compile(source, sourceFile);
 	}
 
@@ -118,12 +121,12 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 	}
 
 	@Override
-	public String getRunArgs() {
-		return "";
+	public boolean parseCompilerSpecificArgs(JsonNode node) {
+		return true;
 	}
 
 	@Override
-	public void setRunArgs(String args) {
+	public JsonNode getCompilerSpecificArgs() {
+		return JsonNodeFactories.object();
 	}
-
 }

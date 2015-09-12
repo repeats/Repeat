@@ -654,7 +654,6 @@ public class MainFrame extends JFrame {
 		);
 
 		tTasks = new JTable();
-		tTasks.setRowSelectionAllowed(false);
 		tTasks.setColumnSelectionAllowed(false);
 		tTasks.setModel(new DefaultTableModel(
 			new Object[][] {

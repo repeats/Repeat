@@ -305,6 +305,7 @@ public class BackEndHolder {
 		int selected = main.tTasks.getSelectedRow();
 		if (selected >= 1) {
 			Collections.swap(currentGroup.getTasks(), selected, selected - 1);
+			main.tTasks.setRowSelectionInterval(selected - 1, selected - 1);
 			renderTasks();
 		}
 	}
@@ -313,6 +314,7 @@ public class BackEndHolder {
 		int selected = main.tTasks.getSelectedRow();
 		if (selected >= 0 && selected < currentGroup.getTasks().size() - 1) {
 			Collections.swap(currentGroup.getTasks(), selected, selected + 1);
+			main.tTasks.setRowSelectionInterval(selected + 1, selected + 1);
 			renderTasks();
 		}
 	}

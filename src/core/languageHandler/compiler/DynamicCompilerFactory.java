@@ -1,5 +1,6 @@
 package core.languageHandler.compiler;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ public class DynamicCompilerFactory implements IJsonable {
 	public DynamicCompilerFactory() {
 		compilers = new HashMap<>();
 		compilers.put("java", new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
-		compilers.put("python", new DynamicPythonCompiler());
+		compilers.put("python", new DynamicPythonCompiler(new File("core")));
 	}
 
 	public DynamicCompiler getCompiler(String name) {
@@ -44,7 +45,7 @@ public class DynamicCompilerFactory implements IJsonable {
 			compilerList.add(JsonNodeFactories.object(
 					JsonNodeFactories.field("name", JsonNodeFactories.string(compiler.getName())),
 					JsonNodeFactories.field("path", JsonNodeFactories.string(FileUtility.getRelativePwdPath(compiler.getPath()))),
-					JsonNodeFactories.field("run_args", JsonNodeFactories.string(compiler.getRunArgs()))
+					JsonNodeFactories.field("compiler_specific_args", compiler.getCompilerSpecificArgs())
 					));
 		}
 
