@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -38,6 +39,7 @@ public class ControllerServer {
 	}
 
 	public void start() throws IOException {
+		setStop(false);
 		mainThread = new Thread(){
 			@Override
 			public void run() {
@@ -54,9 +56,14 @@ public class ControllerServer {
 		                final Socket socket;
 		                try {
 		                	socket = listener.accept();
-		                	LOGGER.info("New Client accepted");
+		                	LOGGER.info("New client accepted");
+		                } catch (SocketException e) {
+		                	if (!listener.isClosed()) {
+		                		LOGGER.severe("Socket exception when serving", e);
+		                	}
+		                	continue;
 		                } catch (IOException e) {
-		                	LOGGER.warning("IO Exception when starting serving", e);
+		                	LOGGER.severe("IO Exception when serving", e);
 		                	continue;
 		                }
 
@@ -68,8 +75,8 @@ public class ControllerServer {
 								try {
 									input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 									output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-								} catch (IOException e1) {
-									LOGGER.warning("IO Exception when open reader and writer for socket", e1);
+								} catch (IOException e) {
+									LOGGER.warning("IO Exception when open reader and writer for socket", e);
 									return;
 								}
 
@@ -80,6 +87,18 @@ public class ControllerServer {
 								} catch (Exception e) {
 									LOGGER.warning("Exception when serving client", e);
 								} finally {
+									try {
+										input.close();
+									} catch (IOException e) {
+										LOGGER.warning("IO Exception when closing input socket", e);
+									}
+
+									try {
+										output.close();
+									} catch (IOException e) {
+										LOGGER.warning("IO Exception when closing output socket", e);
+									}
+
 				                    try {
 										socket.close();
 									} catch (IOException e) {
@@ -137,8 +156,12 @@ public class ControllerServer {
 
 	public void stop() {
 		setStop(true);
-		while (mainThread.isAlive()) {
-			mainThread.interrupt();
+		if (listener != null) {
+			try {
+				listener.close();
+			} catch (IOException e) {
+				LOGGER.warning("Failed to close server socket", e);
+			}
 		}
 	}
 
