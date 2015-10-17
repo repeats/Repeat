@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.ConsoleHandler;
@@ -53,6 +54,7 @@ import org.jnativehook.NativeHookException;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.logging.OutStream;
+import utilities.swing.SwingUtil;
 
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
@@ -83,8 +85,9 @@ public class MainFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 * @throws NativeHookException
+	 * @throws IOException
 	 */
-	public MainFrame() throws NativeHookException {
+	public MainFrame() throws NativeHookException, IOException {
 		setTitle("Repeat");
 		backEnd = new BackEndHolder(this);
 		backEnd.config.loadConfig(null);
@@ -366,9 +369,9 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (rbmiCompileJava.isSelected()) {
-					JOptionPane.showMessageDialog(MainFrame.this, BootStrapResources.getAPI("java"));
+					SwingUtil.OptionPaneUtil.showString("Java API", BootStrapResources.getAPI("java"));
 				} else if (rbmiCompilePython.isSelected()) {
-					JOptionPane.showMessageDialog(MainFrame.this, BootStrapResources.getAPI("python"));
+					SwingUtil.OptionPaneUtil.showString("Python API", BootStrapResources.getAPI("python"));
 				}
 			}
 		});
@@ -377,7 +380,7 @@ public class MainFrame extends JFrame {
 		miAbout.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(MainFrame.this, BootStrapResources.getAbout());
+				SwingUtil.OptionPaneUtil.showString("About", BootStrapResources.getAbout());
 			}
 		});
 

@@ -11,7 +11,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -262,6 +264,14 @@ public class SwingUtil {
 			} else {
 				return -1;
 			}
+		}
+
+		public static void showString(String title, String content) {
+			JTextArea area = new JTextArea(content);
+			area.setEditable(false);
+			JScrollPane scroll = new JScrollPane(area);
+
+			JOptionPane.showMessageDialog(null, scroll, title, JOptionPane.INFORMATION_MESSAGE);
 		}
 
 		public static void showValues(String[] titles, String[] values) {

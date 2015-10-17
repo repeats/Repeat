@@ -65,6 +65,18 @@ public class KeyboardCore {
 	}
 
 	/**
+	 * Simulate keyboard type to type out an array of string in the respective order as appeared in array.
+	 * This types upper case letter by using SHIFT + lower case letter.
+	 * Almost every typeable character on ANSI keyboard is supported.
+	 * @param strings array of strings to be typed.
+	 */
+	public void type(String...strings) {
+		for (String s : strings) {
+			type(s);
+		}
+	}
+
+	/**
 	 * Simulate keyboard type to type out a character. This types upper case letter by using SHIFT + lower case letter.
 	 * Almost every typeable character on ANSI keyboard is supported.
 	 * @param c character to be typed

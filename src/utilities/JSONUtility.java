@@ -28,6 +28,19 @@ public class JSONUtility {
 	}
 
 	/**
+	 * Parse a json from a string
+	 * @param input the string representing the JSON object
+	 * @return the root node of the json object, or null if the string is of invalid syntax
+	 */
+	public static JsonRootNode jsonFromString(String input) {
+		try {
+			return new JdomParser().parse(input);
+		} catch (InvalidSyntaxException e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Read a JSON file and return a JSON object
 	 *
 	 * @param file
@@ -36,11 +49,7 @@ public class JSONUtility {
 	 */
 	public static JsonRootNode readJSON(File file) {
 		StringBuffer strings = FileUtility.readFromFile(file);
-		try {
-			return new JdomParser().parse(strings.toString());
-		} catch (InvalidSyntaxException e) {
-			return null;
-		}
+		return jsonFromString(strings.toString());
 	}
 
 	/**

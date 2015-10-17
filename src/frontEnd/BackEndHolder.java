@@ -3,6 +3,7 @@ package frontEnd;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompiler;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.recorder.Recorder;
+import core.server.ControllerServer;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
@@ -45,6 +47,7 @@ public class BackEndHolder {
 
 	protected Core core;
 	protected Recorder recorder;
+	protected ControllerServer controllerServer;
 
 	protected UserDefinedAction customFunction;
 
@@ -62,12 +65,14 @@ public class BackEndHolder {
 
 	protected final MainFrame main;
 
-	public BackEndHolder(MainFrame main) {
+	public BackEndHolder(MainFrame main) throws IOException {
 		this.main = main;
 		config = new Config(this);
 
 		executor = new ScheduledThreadPoolExecutor(10);
 		core = new Core();
+		controllerServer = new ControllerServer(core);
+
 		keysManager = new GlobalKeysManager(config, core);
 		recorder = new Recorder(core, keysManager);
 
@@ -75,6 +80,7 @@ public class BackEndHolder {
 
 		selectedTaskIndex = -1;
 		taskManager = new TaskSourceManager();
+
 
 		switchRecord = new UserDefinedAction() {
 			@Override
@@ -96,9 +102,13 @@ public class BackEndHolder {
 				switchRunningCompiledAction();
 			}
 		};
+
+		controllerServer.start();
 	}
 
 	protected void exit() {
+		controllerServer.stop();
+
 		if (!writeConfigFile()) {
 			JOptionPane.showMessageDialog(main, "Error saving configuration file.");
 			System.exit(2);
