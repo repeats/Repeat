@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import utilities.ExceptableFunction;
+import utilities.JSONUtility;
+import argo.jdom.JsonNodeFactories;
+import argo.jdom.JsonRootNode;
 
 import com.sun.istack.internal.logging.Logger;
 
@@ -22,6 +25,7 @@ public class ControllerServer {
 	private static final Logger LOGGER = Logger.getLogger(ControllerServer.class);
 
 	private static final int DEFAULT_PORT = 9999;
+	private static final int DEFAULT_TIMEOUT_MS = 1000;
 	private static final int MAX_THREAD_COUNT = 10;
 
 	private boolean isStopped;
@@ -56,6 +60,7 @@ public class ControllerServer {
 		                final Socket socket;
 		                try {
 		                	socket = listener.accept();
+		                	socket.setSoTimeout(DEFAULT_TIMEOUT_MS);
 		                	LOGGER.info("New client accepted");
 		                } catch (SocketException e) {
 		                	if (!listener.isClosed()) {
@@ -80,12 +85,14 @@ public class ControllerServer {
 									return;
 								}
 
-				                try {
-				                	process(input, output);
-				                } catch (IOException e) {
-				                	LOGGER.warning("IO Exception when serving client", e);
-								} catch (Exception e) {
-									LOGGER.warning("Exception when serving client", e);
+								try {
+									while (true) {
+										LOGGER.info("Doing it\n");
+										if (!processLoop(input, output)) {
+											break;
+										}
+									}
+									LOGGER.info("Finished\n");
 								} finally {
 									try {
 										input.close();
@@ -120,12 +127,37 @@ public class ControllerServer {
 		mainThread.start();
 	}
 
-	private void process(BufferedReader reader, BufferedWriter writer) throws IOException {
+	private boolean processLoop(BufferedReader reader, BufferedWriter writer) {
+		try {
+        	return process(reader, writer);
+        } catch (IOException e) {
+        	LOGGER.warning("IO Exception when serving client", e);
+        	return false;
+		} catch (Exception e) {
+			LOGGER.warning("Exception when serving client", e);
+			return false;
+		}
+	}
+
+	private boolean process(BufferedReader reader, BufferedWriter writer) throws IOException {
 		if (reader == null || writer == null) {
-			return;
+			return false;
 		}
 
+		/**
+		 * Create a blocking read waiting for the next communication
+		 */
+		int firstCharacter = reader.read();
+		if (firstCharacter == -1) {
+			return true;
+		}
+
+		/**
+		 * Build the request, remembering that
+		 */
 		StringBuilder builder = new StringBuilder();
+		builder.append(Character.toString((char) firstCharacter));
+
 		while (reader.ready()) {
 			int readValue = reader.read();
 			if (readValue != -1) {
@@ -136,22 +168,36 @@ public class ControllerServer {
 		}
 
 		List<ExceptableFunction<Void, Object, InterruptedException>> callings = RequestParser.parseRequest(builder.toString(), core);
-		for (ExceptableFunction<Void, Object, InterruptedException> calling : callings) {
-			try {
-				Object result = calling.apply(null);
-				if (result != null) {
-					writer.write("Success. " + result);
-				} else {
-					writer.write("Success.");
-				}
-			} catch (InterruptedException e) {
-				LOGGER.warning("Failed to execute function from client", e);
-				writer.write("Failure");
-			}
+		if (callings.size() == 0) {
+			JsonRootNode reply = JsonNodeFactories.object(
+					JsonNodeFactories.field("status", JsonNodeFactories.string("Terminating connection")),
+					JsonNodeFactories.field("result", JsonNodeFactories.string(""))
+					);
+			writer.write(JSONUtility.jsonToString(reply));
+			writer.flush();
+			return false;
 		}
 
+		for (ExceptableFunction<Void, Object, InterruptedException> calling : callings) {
+			JsonRootNode reply;
+			try {
+				Object result = calling.apply(null);
+				 reply = JsonNodeFactories.object(
+										JsonNodeFactories.field("status", JsonNodeFactories.string("Success")),
+										JsonNodeFactories.field("result", JsonNodeFactories.string(result + ""))
+										);
+			} catch (InterruptedException e) {
+				LOGGER.warning("Failed to execute function from client", e);
+				reply = JsonNodeFactories.object(
+										JsonNodeFactories.field("status", JsonNodeFactories.string("Failure")),
+										JsonNodeFactories.field("result", JsonNodeFactories.string(""))
+										);
+			}
+			writer.write(JSONUtility.jsonToString(reply));
+		}
 
 		writer.flush();
+		return true;
 	}
 
 	public void stop() {

@@ -186,6 +186,33 @@ public class RequestParser {
 				return null;
 			}
 		});
+
+		/**
+		 * System message: configuring the system
+		 */
+		deviceFunctions.put("system", new Function<Trio<Core, String, List<Object>>, ExceptableFunction<Void, Object, InterruptedException>>() {
+			@Override
+			public ExceptableFunction<Void, Object, InterruptedException> apply(Trio<Core, String, List<Object>> d) {
+//				final Core core = d.getA(); //Unused
+				final String action = d.getB();
+//				final List<Object> params = d.getC(); //Unused
+
+				switch (action) {
+				case "keepAlive":
+					return new ExceptableFunction<Void, Object, InterruptedException>() {
+						@Override
+						public Object apply(Void d) throws InterruptedException {
+							//Null function, intent is to keep connection alive
+							return null;
+						}
+					};
+				default:
+					break;
+				}
+
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -220,7 +247,13 @@ public class RequestParser {
 	 */
 	protected static List<ExceptableFunction<Void, Object, InterruptedException>> parseRequest(String request, Core core) {
 		List<ExceptableFunction<Void, Object, InterruptedException>> output = new LinkedList<>();
+
+		LOGGER.info("Parsing request: " + request);
 		JsonRootNode root = JSONUtility.jsonFromString(request);
+		if (root == null) {
+			return output;
+		}
+
 		List<JsonNode> actions = root.getNullableArrayNode("actions");
 		if (actions == null) {
 			return output;
