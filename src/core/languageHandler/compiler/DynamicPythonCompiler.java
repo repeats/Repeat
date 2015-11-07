@@ -1,32 +1,29 @@
 package core.languageHandler.compiler;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.FileUtility;
-import utilities.RandomUtil;
-import utilities.logging.ExceptionUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
+import core.ipc.client.AbstractIPCClient;
 import core.userDefinedTask.UserDefinedAction;
 
-public class DynamicPythonCompiler implements DynamicCompiler {
+public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 
-	private static final Logger LOGGER = Logger.getLogger(DynamicPythonCompiler.class.getName());
-	private static final String DUMMY_PREFIX = "PY_";
 	private File interpreter;
-	private File objectFileDirectory;
+	private final File objectFileDirectory;
 
-	static {
-		LOGGER.setLevel(Level.ALL);
+	{
+		getLogger().setLevel(Level.ALL);
 	}
 
-	public DynamicPythonCompiler(File objectFileDirectory) {
+	public DynamicPythonCompiler(AbstractIPCClient ipcClient, File objectFileDirectory) {
+		super(ipcClient);
 		interpreter = new File("python.exe");
+		this.objectFileDirectory = objectFileDirectory;
 	}
 
 	@Override
@@ -40,69 +37,23 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 	}
 
 	@Override
-	public UserDefinedAction compile(String source, File objectFile) {
-		try {
-			if (!FileUtility.fileExists(interpreter) || !interpreter.canExecute()) {
-				LOGGER.severe("No interpreter found at " + interpreter.getAbsolutePath());
-				return null;
-			}
-
-			if (!objectFile.getName().endsWith(".py")) {
-				LOGGER.warning("Python object file " + objectFile.getAbsolutePath() + "does not end with .py. Compiling from source code.");
-				return compile(source);
-			}
-
-			if (FileUtility.fileExists(objectFile)) {
-				return loadAction(objectFile);
-			} else {
-				if (FileUtility.writeToFile(source, objectFile, false)) {
-					return loadAction(objectFile);
-				} else {
-					LOGGER.warning("Cannot write source code to file " + objectFile.getAbsolutePath());
-					return null;
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Cannot compile source code...", e);
-			return null;
-		}
-	}
-
-	@Override
-	public UserDefinedAction compile(String source) {
-		String fileName = DUMMY_PREFIX + RandomUtil.randomID();
-		File sourceFile = new File(FileUtility.joinPath(objectFileDirectory.getAbsolutePath(), fileName + this.getExtension()));
-		return compile(source, sourceFile);
-	}
-
-	private UserDefinedAction loadAction(final File sourceFile) {
+	protected UserDefinedAction loadAction(final int id, final File sourceFile) {
 		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
-				String[] cmd = { interpreter.getAbsolutePath(), "-u", sourceFile.getPath() };
-				ProcessBuilder pb = new ProcessBuilder(cmd);
-				pb.redirectOutput(Redirect.INHERIT);
-				pb.redirectError(Redirect.INHERIT);
-
-		        Process p = null;
-				try {
-					p = pb.start();
-
-					p.waitFor();
-				} catch (IOException e) {
-					LOGGER.warning(ExceptionUtility.getStackTrace(e));
-				} catch (InterruptedException e) {
-					if (p != null) {
-						p.destroy();
-					}
-					LOGGER.info("Task ended prematurely");
-				} catch (Exception e) {
-					LOGGER.log(Level.WARNING, "Execution encountered error...", e);
+				boolean result = ipcClient.runTask(id, invokingKeyChain);
+				if (!result) {
+					getLogger().warning("Unable to run task with id = " + id);
 				}
 			}
 		};
 		output.setSourcePath(sourceFile.getAbsolutePath());
 		return output;
+	}
+
+	@Override
+	protected File getSourceFile(String compilingAction) {
+		return new File(FileUtility.joinPath(objectFileDirectory.getAbsolutePath(), compilingAction + this.getExtension()));
 	}
 
 	@Override
@@ -128,5 +79,25 @@ public class DynamicPythonCompiler implements DynamicCompiler {
 	@Override
 	public JsonNode getCompilerSpecificArgs() {
 		return JsonNodeFactories.object();
+	}
+
+	@Override
+	protected String getDummyPrefix() {
+		return "PY_";
+	}
+
+	@Override
+	public Logger getLogger() {
+		return Logger.getLogger(DynamicPythonCompiler.class.getName());
+	}
+
+	@Override
+	protected boolean checkRemoteCompilerSettings() {
+		if (!FileUtility.fileExists(interpreter) || !interpreter.canExecute()) {
+			getLogger().severe("No interpreter found at " + interpreter.getAbsolutePath());
+			return false;
+		}
+
+		return true;
 	}
 }

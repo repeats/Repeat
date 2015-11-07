@@ -2,7 +2,9 @@ package utilities;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import argo.saj.InvalidSyntaxException;
+import core.config.IJsonable;
 
 public class JSONUtility {
 
@@ -60,6 +63,41 @@ public class JSONUtility {
 	 */
 	public static boolean writeJson(JsonRootNode node, File file) {
 		return FileUtility.writeToFile(new StringBuffer(JSONUtility.jsonToString(node)), file, false);
+	}
+
+	/**
+	 * Convert a collection of jsonable objects to list of json objects
+	 * @param collection collection of jsonable objects implementing <class> IJsonable </class>
+	 * @return list of JSON objects converted from the input list. Underlying implementation is currently using LinkedList
+	 */
+	public static List<JsonNode> listToJson(Collection<? extends IJsonable> collection) {
+		List<JsonNode> jsonList = new LinkedList<>();
+		for (IJsonable item : collection) {
+			jsonList.add(item.jsonize());
+		}
+
+		return jsonList;
+	}
+
+	/**
+	 * Attempt to parse JSON from a list, then add all results to an output collection. This does not add
+	 * nodes that cannot be parsed (returning null)
+	 * @param nodes input list of json nodes
+	 * @param parser function to parse json node to the object
+	 * @param output the output collection where parsed objects will be added to
+	 * @return true if all JSON objects were successfully parsed, and false otherwise
+	 */
+	public static <E> boolean addAllJson(Collection<JsonNode> nodes, Function<JsonNode, E> parser, Collection<E> output) {
+		boolean success = true;
+		for (JsonNode node : nodes) {
+			E parsed = parser.apply(node);
+			success &= (parsed != null);
+			if (success) {
+				output.add(parsed);
+			}
+		}
+
+		return success;
 	}
 
 	/**

@@ -27,12 +27,16 @@ import com.sun.istack.internal.logging.Logger;
 
 import core.config.Config;
 import core.controller.Core;
+import core.ipc.client.AbstractIPCClient;
+import core.ipc.client.IPCClientManager;
+import core.ipc.server.ControllerServer;
 import core.keyChain.GlobalKeysManager;
 import core.keyChain.KeyChain;
-import core.languageHandler.compiler.DynamicCompiler;
+import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
+import core.languageHandler.compiler.DynamicCompilerManager;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
+import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.recorder.Recorder;
-import core.server.ControllerServer;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
@@ -48,6 +52,7 @@ public class BackEndHolder {
 	protected Core core;
 	protected Recorder recorder;
 	protected ControllerServer controllerServer;
+	protected IPCClientManager ipcClientFactory;
 
 	protected UserDefinedAction customFunction;
 
@@ -71,7 +76,9 @@ public class BackEndHolder {
 
 		executor = new ScheduledThreadPoolExecutor(10);
 		core = new Core();
+
 		controllerServer = new ControllerServer(core);
+		ipcClientFactory = new IPCClientManager();
 
 		keysManager = new GlobalKeysManager(config, core);
 		recorder = new Recorder(core, keysManager);
@@ -102,12 +109,39 @@ public class BackEndHolder {
 				switchRunningCompiledAction();
 			}
 		};
+	}
 
-		controllerServer.start();
+	/*************************************************************************************************************/
+	/************************************************Config*******************************************************/
+	protected void loadConfig(File file) {
+		config.loadConfig(file, ipcClientFactory);
+	}
+
+	/*************************************************************************************************************/
+	/************************************************IPC**********************************************************/
+
+	protected void initiateBackEndActivities() {
+		try {
+			controllerServer.start();
+		} catch (IOException e) {
+			LOGGER.severe("Cannot initiate IPC Server", e);
+		}
+
+		for (AbstractIPCClient service : ipcClientFactory.getAllClients()) {
+			try {
+				service.connect();
+			} catch (IOException e) {
+				LOGGER.warning("Unable to launch ipc client", e);
+			}
+		}
+	}
+
+	protected void stopBackEndActivities() {
+		controllerServer.stop();
 	}
 
 	protected void exit() {
-		controllerServer.stop();
+		stopBackEndActivities();
 
 		if (!writeConfigFile()) {
 			JOptionPane.showMessageDialog(main, "Error saving configuration file.");
@@ -499,9 +533,9 @@ public class BackEndHolder {
 					main.taSource.setText(source.toString());
 
 					if (!task.getCompiler().equals(getCompiler().getName())) {
-						if (task.getCompiler().equals("java")) {
+						if (task.getCompiler().equals(DynamicCompilerManager.JAVA_LANGUAGE)) {
 							main.rbmiCompileJava.setSelected(true);
-						} else if (task.getCompiler().equals("python")) {
+						} else if (task.getCompiler().equals(DynamicCompilerManager.PYTHON_LANGUAGE)) {
 							main.rbmiCompilePython.setSelected(true);
 						}
 						refreshCompilingLanguage();
@@ -521,10 +555,7 @@ public class BackEndHolder {
 		if (main.rbmiCompileJava.isSelected()) {
 			sb.append(new JavaSourceGenerator().getSource());
 		} else if (main.rbmiCompilePython.isSelected()) {
-			sb.append("import repeat_lib\n");
-			sb.append("if __name__ == \"__main__\":\n");
-			sb.append("    print \"Hello\"\n");
-			sb.append("    repeat_lib.mouseMoveBy(100, 0)");
+			sb.append(new PythonSourceGenerator().getSource());
 		}
 		main.taSource.setText(sb.toString());
 	}
@@ -584,7 +615,7 @@ public class BackEndHolder {
 	/*************************************************************************************************************/
 	/***************************************Source compilation****************************************************/
 
-	protected DynamicCompiler getCompiler() {
+	protected AbstractNativeDynamicCompiler getCompiler() {
 		if (main.rbmiCompileJava.isSelected()) {
 			return config.compilerFactory().getCompiler("java");
 		} else if (main.rbmiCompilePython.isSelected()) {
@@ -611,7 +642,7 @@ public class BackEndHolder {
 	protected void compileSource() {
 		String source = main.taSource.getText();
 
-		DynamicCompiler compiler = getCompiler();
+		AbstractNativeDynamicCompiler compiler = getCompiler();
 		UserDefinedAction createdInstance = compiler.compile(source);
 
 		if (createdInstance != null) {

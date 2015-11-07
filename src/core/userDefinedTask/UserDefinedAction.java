@@ -2,7 +2,6 @@ package core.userDefinedTask;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -12,16 +11,19 @@ import javax.swing.JOptionPane;
 
 import utilities.ExceptableFunction;
 import utilities.FileUtility;
+import utilities.Function;
+import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.ILoggable;
 import core.config.IJsonable;
 import core.controller.Core;
 import core.keyChain.KeyChain;
-import core.languageHandler.compiler.DynamicCompiler;
-import core.languageHandler.compiler.DynamicCompilerFactory;
+import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
+import core.languageHandler.compiler.DynamicCompilerManager;
 
-public abstract class UserDefinedAction implements IJsonable {
+public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	protected String name;
 	protected Set<KeyChain> hotkeys;
@@ -120,25 +122,19 @@ public abstract class UserDefinedAction implements IJsonable {
 	/***********************************************************************/
 	@Override
 	public final JsonRootNode jsonize() {
-		List<JsonNode> hotkeysJSON = new LinkedList<>();
-		for (KeyChain hotkey : getHotkeys()) {
-			hotkeysJSON.add(hotkey.jsonize());
-		}
-
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compilerName)),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
-				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(hotkeysJSON)),
+				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
 				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled))
 				);
-
 	}
 
-	public static UserDefinedAction parseJSON(DynamicCompilerFactory factory, JsonNode node) {
+	public static UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
 		try {
 			String sourcePath = node.getStringValue("source_path");
-			DynamicCompiler compiler = factory.getCompiler(node.getStringValue("compiler"));
+			AbstractNativeDynamicCompiler compiler = factory.getCompiler(node.getStringValue("compiler"));
 			if (compiler == null) {
 				JOptionPane.showMessageDialog(null, "Unknown compiler " + node.getStringValue("compiler"));
 				return null;
@@ -147,9 +143,12 @@ public abstract class UserDefinedAction implements IJsonable {
 			String name = node.getStringValue("name");
 			List<JsonNode> hotkeyJSONs =  node.getArrayNode("hotkey");
 			Set<KeyChain> hotkeys = new HashSet<>();
-			for (JsonNode hotkeyJSON : hotkeyJSONs) {
-				hotkeys.add(KeyChain.parseJSON(hotkeyJSON.getArrayNode()));
-			}
+			JSONUtility.addAllJson(hotkeyJSONs, new Function<JsonNode, KeyChain>(){
+				@Override
+				public KeyChain apply(JsonNode d) {
+					KeyChain value = KeyChain.parseJSON(d.getArrayNode());
+					return value;
+				}}, hotkeys);
 
 			File sourceFile = new File(sourcePath);
 			StringBuffer sourceBuffer = FileUtility.readFromFile(sourceFile);
@@ -184,4 +183,9 @@ public abstract class UserDefinedAction implements IJsonable {
 		}
 	}
 
+	@Override
+	public
+	final Logger getLogger() {
+		return Logger.getLogger(UserDefinedAction.class.getName());
+	}
 }

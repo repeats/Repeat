@@ -10,6 +10,7 @@ import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.languageHandler.compiler.DynamicCompilerManager;
 
 public class Parser1_2 extends ConfigParser {
 
@@ -43,7 +44,7 @@ public class Parser1_2 extends ConfigParser {
 									File newFile = null;
 									String newName = f.getName();
 
-									if (compiler.equals("java")) {
+									if (compiler.equals(DynamicCompilerManager.JAVA_LANGUAGE)) {
 										if (!newName.startsWith("CC_")) {
 											newName = "CC_" + newName;
 										}
@@ -51,7 +52,7 @@ public class Parser1_2 extends ConfigParser {
 										if (!newName.endsWith(".java")) {
 											newName += ".java";
 										}
-									} else if (compiler.equals("python")) {
+									} else if (compiler.equals(DynamicCompilerManager.PYTHON_LANGUAGE)) {
 										if (!newName.startsWith("PY_")) {
 											newName = "PY_" + newName;
 										}

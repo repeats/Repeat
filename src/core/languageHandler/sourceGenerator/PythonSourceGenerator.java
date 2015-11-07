@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import utilities.Function;
 import core.scheduler.SchedulingData;
+import frontEnd.graphics.BootStrapResources;
 
 public class PythonSourceGenerator extends AbstractSourceGenerator {
 
@@ -62,13 +63,9 @@ public class PythonSourceGenerator extends AbstractSourceGenerator {
 		}
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("import repeat_lib\n");
-
-		sb.append("if __name__ == \"__main__\":\n");
-		sb.append("    #Begin generated code\n");
+		sb.append(BootStrapResources.getNativeLanguageTemplate("python"));
 		sb.append(mainSource);
 
 		return sb.toString();
 	}
-
 }

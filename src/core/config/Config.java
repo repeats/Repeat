@@ -15,8 +15,9 @@ import argo.jdom.JsonRootNode;
 
 import com.sun.glass.events.KeyEvent;
 
+import core.ipc.client.IPCClientManager;
 import core.keyChain.KeyChain;
-import core.languageHandler.compiler.DynamicCompilerFactory;
+import core.languageHandler.compiler.DynamicCompilerManager;
 import core.userDefinedTask.TaskGroup;
 import frontEnd.BackEndHolder;
 
@@ -26,7 +27,7 @@ public class Config {
 	private static final String CONFIG_FILE_NAME = "config.json";
 	private static final String CURRENT_CONFIG_VERSION = "1.5";
 
-	private DynamicCompilerFactory compilerFactory;
+	private DynamicCompilerManager compilerFactory;
 	private final BackEndHolder backEnd;
 
 	public static final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and must not be changed
@@ -42,12 +43,12 @@ public class Config {
 		COMPILED_REPLAY = new KeyChain(KeyEvent.VK_F12);
 	}
 
-	public DynamicCompilerFactory compilerFactory() {
+	public DynamicCompilerManager compilerFactory() {
 		return compilerFactory;
 	}
 
-	public void loadConfig(File file) {
-		compilerFactory = new DynamicCompilerFactory();
+	public void loadConfig(File file, IPCClientManager ipcClientFactory) {
+		compilerFactory = new DynamicCompilerManager(ipcClientFactory);
 
 		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
 			new Parser1_0(),

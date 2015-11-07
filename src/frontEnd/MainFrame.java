@@ -59,6 +59,7 @@ import utilities.swing.SwingUtil;
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
 
+import core.languageHandler.compiler.DynamicCompilerManager;
 import core.recorder.Recorder;
 import frontEnd.graphics.BootStrapResources;
 
@@ -67,12 +68,14 @@ public class MainFrame extends JFrame {
 
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
-	private final BackEndHolder backEnd;
+	protected final BackEndHolder backEnd;
 
 	protected TrayIcon trayIcon;
 
 	protected HotkeySetting hotkey;
 	protected TaskGroupFrame taskGroup;
+	protected IpcFrame ipcs;
+
 	private final JPanel contentPane;
 	protected final JTextField tfRepeatCount;
 	protected final JTextField tfRepeatDelay;
@@ -90,9 +93,10 @@ public class MainFrame extends JFrame {
 	public MainFrame() throws NativeHookException, IOException {
 		setTitle("Repeat");
 		backEnd = new BackEndHolder(this);
-		backEnd.config.loadConfig(null);
+		backEnd.loadConfig(null);
 		hotkey = new HotkeySetting(backEnd);
 		taskGroup = new TaskGroupFrame(backEnd);
+		ipcs = new IpcFrame(backEnd);
 
 		if (!SystemTray.isSupported()) {
 			LOGGER.warning("System tray is not supported!");
@@ -238,7 +242,7 @@ public class MainFrame extends JFrame {
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				int returnVal = chooser.showOpenDialog(MainFrame.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					backEnd.config.loadConfig(chooser.getSelectedFile());
+					backEnd.loadConfig(chooser.getSelectedFile());
 				}
 			}
 		});
@@ -278,10 +282,19 @@ public class MainFrame extends JFrame {
 		});
 		mnNewMenu_2.add(mntmNewMenuItem);
 
+		JMenuItem mntmNewMenuItem_3 = new JMenuItem("Native modules...");
+		mntmNewMenuItem_3.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MainFrame.this.ipcs.setVisible(true);
+			}
+		});
+		mnNewMenu_2.add(mntmNewMenuItem_3);
+
 		JMenu mnNewMenu_3 = new JMenu("Compiling Language");
 		mnNewMenu_2.add(mnNewMenu_3);
 
-		rbmiCompileJava = new JRadioButtonMenuItem("Java");
+		rbmiCompileJava = new JRadioButtonMenuItem(DynamicCompilerManager.JAVA_LANGUAGE);
 		mnNewMenu_3.add(rbmiCompileJava);
 		rbmiCompileJava.setSelected(true);
 		rbmiCompileJava.addActionListener(new ActionListener() {
@@ -292,7 +305,7 @@ public class MainFrame extends JFrame {
 		});
 		group.add(rbmiCompileJava);
 
-		rbmiCompilePython = new JRadioButtonMenuItem("Python");
+		rbmiCompilePython = new JRadioButtonMenuItem(DynamicCompilerManager.PYTHON_LANGUAGE);
 		mnNewMenu_3.add(rbmiCompilePython);
 		rbmiCompilePython.addActionListener(new ActionListener() {
 			@Override
@@ -325,7 +338,7 @@ public class MainFrame extends JFrame {
 		mnNewMenu_1.add(mntmNewMenuItem_2);
 
 		JMenu mSetting = new JMenu("Setting");
-		JMenuItem miSetReplayHotkey = new JMenuItem("Hotkeys");
+		JMenuItem miSetReplayHotkey = new JMenuItem("Hotkeys...");
 		miSetReplayHotkey.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -334,7 +347,7 @@ public class MainFrame extends JFrame {
 		});
 		mSetting.add(miSetReplayHotkey);
 
-		JMenuItem miClassPath = new JMenuItem("Set compiler path");
+		JMenuItem miClassPath = new JMenuItem("Set compiler path...");
 		miClassPath.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -342,13 +355,13 @@ public class MainFrame extends JFrame {
 					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.compilerFactory().getCompiler("java").setPath(chooser.getSelectedFile());
+						backEnd.config.compilerFactory().getCompiler(DynamicCompilerManager.JAVA_LANGUAGE).setPath(chooser.getSelectedFile());
 					}
 				} else if (rbmiCompilePython.isSelected()) {
 					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.compilerFactory().getCompiler("python").setPath(chooser.getSelectedFile());
+						backEnd.config.compilerFactory().getCompiler(DynamicCompilerManager.PYTHON_LANGUAGE).setPath(chooser.getSelectedFile());
 					}
 				}
 

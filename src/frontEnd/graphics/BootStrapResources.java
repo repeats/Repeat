@@ -12,12 +12,14 @@ import javax.swing.ImageIcon;
 
 import utilities.FileUtility;
 import core.config.Config;
+import core.languageHandler.compiler.DynamicCompilerManager;
 
 public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
 
 	private static final Map<String, String> LANGUAGE_API;
+	private static final Map<String, String> NATIVE_LANGUAGE_TEMPLATES;
 
 	public static final Image TRAY_IMAGE;
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE;
@@ -44,8 +46,11 @@ public class BootStrapResources {
 
 		/*********************************************************************************/
 		LANGUAGE_API = new HashMap<>();
-		LANGUAGE_API.put("java", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
-		LANGUAGE_API.put("python", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
+		LANGUAGE_API.put(DynamicCompilerManager.JAVA_LANGUAGE, FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
+		LANGUAGE_API.put(DynamicCompilerManager.PYTHON_LANGUAGE, FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
+
+		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
+		NATIVE_LANGUAGE_TEMPLATES.put("python", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/python/template_repeat.py")).toString());
 	}
 
 	private static ImageIcon getIcon(String resource) {
@@ -70,6 +75,14 @@ public class BootStrapResources {
 	public static String getAPI(String language) {
 		if (LANGUAGE_API.containsKey(language)) {
 			return LANGUAGE_API.get(language);
+		} else {
+			return "";
+		}
+	}
+
+	public static String getNativeLanguageTemplate(String language) {
+		if (NATIVE_LANGUAGE_TEMPLATES.containsKey(language)) {
+			return NATIVE_LANGUAGE_TEMPLATES.get(language);
 		} else {
 			return "";
 		}

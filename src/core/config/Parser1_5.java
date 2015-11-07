@@ -10,7 +10,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.keyChain.KeyChain;
-import core.languageHandler.compiler.DynamicCompiler;
+import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
 import core.userDefinedTask.TaskGroup;
 
 public class Parser1_5 extends ConfigParser {
@@ -67,7 +67,7 @@ public class Parser1_5 extends ConfigParser {
 				String path = compilerNode.getStringValue("path");
 				JsonNode compilerSpecificArgs = compilerNode.getNode("compiler_specific_args");
 
-				DynamicCompiler compiler = config.compilerFactory().getCompiler(name);
+				AbstractNativeDynamicCompiler compiler = config.compilerFactory().getCompiler(name);
 				if (compiler != null) {
 					compiler.setPath(new File(path));
 					if (!compiler.parseCompilerSpecificArgs(compilerSpecificArgs)) {

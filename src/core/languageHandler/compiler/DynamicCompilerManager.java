@@ -11,22 +11,26 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
+import core.ipc.client.IPCClientManager;
 
-public class DynamicCompilerFactory implements IJsonable {
+public class DynamicCompilerManager implements IJsonable {
 
-	private final Map<String, DynamicCompiler> compilers;
+	public static final String JAVA_LANGUAGE = "java";
+	public static final String PYTHON_LANGUAGE = "python";
 
-	public DynamicCompilerFactory() {
+	private final Map<String, AbstractNativeDynamicCompiler> compilers;
+
+	public DynamicCompilerManager(IPCClientManager ipcClientFactory) {
 		compilers = new HashMap<>();
-		compilers.put("java", new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
-		compilers.put("python", new DynamicPythonCompiler(new File("core")));
+		compilers.put(JAVA_LANGUAGE, new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
+		compilers.put(PYTHON_LANGUAGE, new DynamicPythonCompiler(ipcClientFactory.getClient(PYTHON_LANGUAGE), new File("core")));
 	}
 
-	public DynamicCompiler getCompiler(String name) {
+	public AbstractNativeDynamicCompiler getCompiler(String name) {
 		return compilers.get(name);
 	}
 
-	public void addCompiler(String name, DynamicCompiler compiler) {
+	public void addCompiler(String name, AbstractNativeDynamicCompiler compiler) {
 		compilers.put(name,  compiler);
 	}
 
@@ -34,14 +38,14 @@ public class DynamicCompilerFactory implements IJsonable {
 		return compilers.containsKey(name);
 	}
 
-	public DynamicCompiler removeCompiler(String name) {
+	public AbstractNativeDynamicCompiler removeCompiler(String name) {
 		return compilers.remove(name);
 	}
 
 	@Override
 	public JsonRootNode jsonize() {
 		List<JsonNode> compilerList = new ArrayList<>();
-		for (DynamicCompiler compiler :  compilers.values()) {
+		for (AbstractNativeDynamicCompiler compiler :  compilers.values()) {
 			compilerList.add(JsonNodeFactories.object(
 					JsonNodeFactories.field("name", JsonNodeFactories.string(compiler.getName())),
 					JsonNodeFactories.field("path", JsonNodeFactories.string(FileUtility.getRelativePwdPath(compiler.getPath()))),

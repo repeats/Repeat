@@ -3,9 +3,11 @@ package core.languageHandler.compiler;
 import java.io.File;
 
 import argo.jdom.JsonNode;
+import core.ILoggable;
 import core.userDefinedTask.UserDefinedAction;
 
-public interface DynamicCompiler {
+public abstract class AbstractNativeDynamicCompiler implements ILoggable {
+
 	public abstract UserDefinedAction compile(String source);
 	public abstract UserDefinedAction compile(String source, File objectFile);
 	public abstract String getName();
@@ -17,4 +19,7 @@ public interface DynamicCompiler {
 
 	public abstract boolean parseCompilerSpecificArgs(JsonNode node);
 	public abstract JsonNode getCompilerSpecificArgs();
+
+	protected abstract File getSourceFile(String compilingAction);
+	protected abstract String getDummyPrefix();
 }

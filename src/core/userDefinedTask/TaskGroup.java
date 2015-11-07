@@ -10,7 +10,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
 import core.keyChain.GlobalKeysManager;
-import core.languageHandler.compiler.DynamicCompilerFactory;
+import core.languageHandler.compiler.DynamicCompilerManager;
 
 public class TaskGroup implements IJsonable {
 
@@ -82,7 +82,7 @@ public class TaskGroup implements IJsonable {
 				);
 	}
 
-	public static TaskGroup parseJSON(DynamicCompilerFactory factory, JsonNode node) {
+	public static TaskGroup parseJSON(DynamicCompilerManager factory, JsonNode node) {
 		try {
 			TaskGroup output = new TaskGroup("");
 			String name = node.getStringValue("name");

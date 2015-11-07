@@ -1,4 +1,4 @@
-package core.server;
+package core.ipc.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +18,41 @@ import com.sun.istack.internal.logging.Logger;
 
 import core.controller.Core;
 
-public class RequestParser {
+public class ServerRequestParser {
 
-	private static final Logger LOGGER = Logger.getLogger(RequestParser.class);
+	private static final Logger LOGGER = Logger.getLogger(ServerRequestParser.class);
+
+	/**
+	 * Each request can contain multiple actions, and take the form
+	 * {
+	 * 		"actions" : [action1, action2,...]
+	 * }
+	 *
+	 * Where action1, action2, ... are specific actions. They take the form
+	 * {
+	 * 		"device": deviceName,
+	 * 		"action": action,
+	 * 		"params": [param1, param2, ...]
+	 * }
+	 * where param is the list of input parameters the action can take
+	 *
+	 * The following table describes the possible actions
+	 * Note that \<type\>... denotes that the action can take infinitely many parameters of the specified type
+	 *  ________________________________________________________________________________________________________________________
+	 *	| Device   | Action      | Param1    | Param2 | Param3    | Description                                                 |
+	 *	|----------|-------------|-----------|--------|-----------|-------------------------------------------------------------|
+	 *	| mouse    | leftClick   | None      | None   | None      |	Left click at the current cursor position                   |
+	 *	| mouse    | leftClick   | int       | int    | None      | Left click at the position (param1, param2)                 |
+	 *	| mouse    | rightClick  | None      | None   | None      | Right click at the current cursor position                  |
+	 *	| mouse    | rightClick  | int       | int    | None      | Right click at the position (param1, param2)                |
+	 *	| mouse    | move        | int       | int    | None      | Move mouse cursor to position (param1, param2)              |
+	 *	| mouse    | moveBy      | int       | int    | None      | Move mouse cursor by (param1, param2) from current position |
+	 *	| keyboard | type        | int...    | None   | None      | Type keys sequentially (key code is from KeyEvent class)    |
+	 *	| keyboard | typeString  | string... | None   | None      | Type strings sequentially (cannot type special characters)  |
+	 *	| keyboard | combination | int...    | None   | None      | Perform a key combination                                   |
+	 *  | system   | keepAlive   | None      | None   | None      | Keep connection alive                                       |
+	 *  |__________|_____________|___________|________|___________|_____________________________________________________________|
+	 */
 	private static final Map<String, Function<Trio<Core, String, List<Object>>, ExceptableFunction<Void, Object, InterruptedException>>> deviceFunctions;
 
 	static {
@@ -228,16 +260,6 @@ public class RequestParser {
 	 * 				"device" : "mouse",
 	 * 				"action" : "leftClick",
 	 * 				"params" : null
-	 * 			},
-	 * 			{
-	 *				"device" : "keyboard",
-	 * 				"action" : "typeKey",
-	 * 				"params" : [1, 2, 3, 4, 5]
-	 * 			},
-	 * 			{
-	 *				"device" : "keyboard",
-	 * 				"action" : "typeString",
-	 * 				"params" : ["aaa"]
 	 * 			}
 	 * 		]
 	 * }
@@ -248,7 +270,7 @@ public class RequestParser {
 	protected static List<ExceptableFunction<Void, Object, InterruptedException>> parseRequest(String request, Core core) {
 		List<ExceptableFunction<Void, Object, InterruptedException>> output = new LinkedList<>();
 
-		LOGGER.info("Parsing request: " + request);
+//		LOGGER.info("Parsing request: " + request);
 		JsonRootNode root = JSONUtility.jsonFromString(request);
 		if (root == null) {
 			return output;
@@ -296,7 +318,7 @@ public class RequestParser {
 		return deviceFunctions.get(device).apply(new Trio<Core, String, List<Object>>(core, toDo, parsedParams));
 	}
 
-	private RequestParser() {
+	private ServerRequestParser() {
 		throw new UnsupportedOperationException("Cannot instantiate instance of this class");
 	}
 }

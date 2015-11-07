@@ -26,10 +26,8 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.userDefinedTask.UserDefinedAction;
 
-public class DynamicJavaCompiler implements DynamicCompiler {
+public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 
-	private static final Logger LOGGER = Logger.getLogger(DynamicJavaCompiler.class.getName());
-	private static final String DUMMY_CLASS_NAME_PREFIX = "CC_";
 	private static URLClassLoader classLoader;
 
 	private final String[] packageTree;
@@ -52,23 +50,23 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 		className = FileUtility.removeExtension(classFile).getName();
 
 		if (!classFile.getParentFile().getAbsolutePath().equals(new File(FileUtility.joinPath(packageTree)).getAbsolutePath())) {
-			LOGGER.warning("Class file " + classFile.getAbsolutePath() + "is not consistent with packageTree");
+			getLogger().warning("Class file " + classFile.getAbsolutePath() + "is not consistent with packageTree");
 		} else if (!classFile.getName().endsWith(".class")) {
-			LOGGER.warning("Java class file " + classFile.getAbsolutePath() + " does not end with .class. Compiling using source code");
+			getLogger().warning("Java class file " + classFile.getAbsolutePath() + " does not end with .class. Compiling using source code");
 			return compile(sourceCode);
 		} else if (!FileUtility.fileExists(classFile)) {
-			LOGGER.warning("Cannot find file " + classFile.getAbsolutePath() + ". Compiling using source code");
+			getLogger().warning("Cannot find file " + classFile.getAbsolutePath() + ". Compiling using source code");
 			return compile(sourceCode);
 		}
 
 		try {
 			UserDefinedAction output =  loadClass(className);
-			LOGGER.info("Skipped compilation and loaded object file.");
+			getLogger().info("Skipped compilation and loaded object file.");
 			className = null;
 			return output;
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException e) {
-			LOGGER.log(Level.WARNING, "Cannot load class file " + classFile.getAbsolutePath(), e);
-			LOGGER.info("Compiling using source code");
+			getLogger().log(Level.WARNING, "Cannot load class file " + classFile.getAbsolutePath(), e);
+			getLogger().info("Compiling using source code");
 			return compile(sourceCode);
 		}
 	}
@@ -79,23 +77,23 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 		System.setProperty("java.home", home.getAbsolutePath());
 
 		if (!sourceCode.contains("class " + defaultClassName)) {
-			LOGGER.warning("Cannot find class " + defaultClassName + " in source code.");
+			getLogger().warning("Cannot find class " + defaultClassName + " in source code.");
 			return null;
 		}
 
 
 		String newClassName = className;
 		if (newClassName == null) {
-			newClassName = DUMMY_CLASS_NAME_PREFIX + RandomUtil.randomID();
+			newClassName = getDummyPrefix() + RandomUtil.randomID();
 		}
 		sourceCode = sourceCode.replaceFirst("class " + defaultClassName, "class " + newClassName);
 
 		try {
-			File compiling = getCompilingFile(newClassName);
+			File compiling = getSourceFile(newClassName);
 	        if (compiling.getParentFile().exists() || compiling.getParentFile().mkdirs()) {
 	            try {
 	                if (!FileUtility.writeToFile(sourceCode, compiling, false)) {
-	                	LOGGER.warning("Cannot write source code to file.");
+	                	getLogger().warning("Cannot write source code to file.");
 	                	return null;
 	                }
 
@@ -103,7 +101,7 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 	                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 	                if (compiler == null) {
-	                	LOGGER.warning("No java compiler found. Set class path points to JDK in setting?");
+	                	getLogger().warning("No java compiler found. Set class path points to JDK in setting?");
 	                	return null;
 	                }
 	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
@@ -130,20 +128,20 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	                /********************************************************************************************* Compilation Requirements **/
 	                if (task.call()) {
 	                	UserDefinedAction output = loadClass(newClassName);
-                		LOGGER.info("Successfully compiled class " + defaultClassName);
+	                	getLogger().info("Successfully compiled class " + defaultClassName);
                 		return output;
 	                } else {
 	                    for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-	                    	LOGGER.warning("Error on line " + diagnostic.getLineNumber() +" in " + diagnostic.getSource().toUri() + "\n");
-	                    	LOGGER.warning(diagnostic.getMessage(Locale.US));
+	                    	getLogger().warning("Error on line " + diagnostic.getLineNumber() +" in " + diagnostic.getSource().toUri() + "\n");
+	                    	getLogger().warning(diagnostic.getMessage(Locale.US));
 	                    }
 	                }
 	                fileManager.close();
 	            } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException exp) {
-	            	LOGGER.log(Level.WARNING, "Error during compilation...", exp);
+	            	getLogger().log(Level.WARNING, "Error during compilation...", exp);
 	            }
 	        }
-	        LOGGER.warning("Cannot compile class " + defaultClassName);
+	        getLogger().warning("Cannot compile class " + defaultClassName);
 	        return null;
 		} finally {
 			className = null;
@@ -160,17 +158,18 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 //        LOGGER.info("Successfully loaded class " + loadClassName);
         classLoader.close();
         UserDefinedAction output = (UserDefinedAction) object;
-        output.setSourcePath(getCompilingFile(loadClassName).getAbsolutePath());
+        output.setSourcePath(getSourceFile(loadClassName).getAbsolutePath());
         return output;
 	}
 
-	private File getCompilingFile(String compileClass) {
+	@Override
+	protected File getSourceFile(String compileClass) {
 		return new File(FileUtility.joinPath(FileUtility.joinPath(packageTree), compileClass + ".java"));
 	}
 
 	@Override
 	public String getName() {
-		return "java";
+		return DynamicCompilerManager.JAVA_LANGUAGE;
 	}
 
 	@Override
@@ -201,5 +200,15 @@ public class DynamicJavaCompiler implements DynamicCompiler {
 	@Override
 	public JsonNode getCompilerSpecificArgs() {
 		return JsonNodeFactories.object();
+	}
+
+	@Override
+	protected String getDummyPrefix() {
+		return "CC_";
+	}
+
+	@Override
+	public Logger getLogger() {
+		return Logger.getLogger(DynamicJavaCompiler.class.getName());
 	}
 }

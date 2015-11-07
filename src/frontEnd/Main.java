@@ -36,16 +36,23 @@ public class Main {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					MainFrame frame = new MainFrame();
-					LOGGER.info("Successfully intialized application");
+				MainFrame frame = null;
 
+				try {
+					frame = new MainFrame();
+					LOGGER.info("Successfully intialized application");
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(null, ExceptionUtility.getStackTrace(e));
 					System.exit(2);
 				}
+
+				if (frame == null) {
+					return;
+				}
+
+				frame.backEnd.initiateBackEndActivities();
 			}
 		});
 	}

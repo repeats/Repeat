@@ -111,6 +111,7 @@ public class KeyChain implements IJsonable {
 				return JsonNodeFactories.number(r);
 			}
 		}.map(keys);
+
 		return JsonNodeFactories.array(hotkeyChain);
 	}
 
