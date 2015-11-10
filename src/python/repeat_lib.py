@@ -1,97 +1,24 @@
-import socket
 import json
+import os
+import traceback
+import time
+import imp
+
+import socket
 import threading
 import Queue
 
-import time
 
-class RequestGenerator(object):
-    def __init__(self, client_request_queue):
-        super(RequestGenerator, self).__init__()
-        self.client_request_queue = client_request_queue
-
-    def get_request(self):
-        return {
-                'actions' : [
-                        {
-                            'device': self.device,
-                            'action': self.action,
-                            'params' : self.params
-                        }
-                    ]
-                }
-
-    def send_request(self):
-        if self.client_request_queue is not None:
-            self.client_request_queue.put(self.get_request())
-
-class MouseRequest(RequestGenerator):
-    def __init__(self, client_request_queue):
-        super(MouseRequest, self).__init__(client_request_queue)
-        self.device = 'mouse'
-
-    def left_click(self, x = None, y = None):
-        self.action = 'leftClick'
-        if x is None or y is None:
-            self.params = []
-        else:
-            self.params = [x, y]
-
-        return self.send_request()
-
-    def right_click(self, x = None, y = None):
-        self.action = 'rightClick'
-        if x is None or y is None:
-            self.params = []
-        else:
-            self.params = [x, y]
-
-        return self.send_request()
-
-    def move(self, x, y):
-        self.action = 'move'
-        self.params = [x,y]
-        return self.send_request()
-
-    def move_by(self, x, y):
-        self.action = 'moveBy'
-        self.params = [x,y]
-        return self.send_request()
-
-class KeyboardRequest(RequestGenerator):
-    def __init__(self, client_request_queue):
-        super(KeyboardRequest, self).__init__(client_request_queue)
-        self.device = 'keyboard'
-
-    def type(self, keys):
-        self.action = 'type'
-        self.params = keys
-        return self.send_request()
-
-    def type_string(self, strings):
-        self.action = 'typeString'
-        self.params = strings
-        return self.send_request()
-
-    def combination(self, keys):
-        self.action = 'combination'
-        self.params = keys
-        return self.send_request()
-
-class SystemRequest(RequestGenerator):
-    def __init__(self, client_request_queue):
-        super(SystemRequest, self).__init__(client_request_queue)
-        self.device = 'system'
-        
-    def keep_alive(self):
-        self.action = 'keepAlive'
-        self.params = []
-        return self.send_request()
+import specifications
+import keyboard_request
+import mouse_request
+import system_host_request
+import system_client_request
 
 
 class RepeatClient(object):
     """Server will terminate connection if not received anything after this period of time"""
-    REPEAT_SERVER_TIMEOUT_SEC = 1
+    REPEAT_SERVER_TIMEOUT_SEC = 10
 
     """Client must send keep alive message to maintain the connection with server.
     Therefore the client timeout has to be less than server timeout"""
@@ -103,56 +30,188 @@ class RepeatClient(object):
         self.port = port
         self.socket = None
 
-        self.queue = Queue.Queue()
+        self.synchronization_events = {}
+        self.send_queue = Queue.Queue()
+        self.task_manager = TaskManager(self)
 
-        self.system = SystemRequest(self.queue)
-        self.mouse = MouseRequest(self.queue)
-        self.key = KeyboardRequest(self.queue)
+        self.system = system_host_request.SystemHostRequest(self)
+        self.system_client = system_client_request.SystemClientRequest(self)
+        self.mouse = mouse_request.MouseRequest(self)
+        self.key = keyboard_request.KeyboardRequest(self)
 
     def _clear_queue(self):
-        while not self.queue.empty():
-            self.queue.get()
+        while not self.send_queue.empty():
+            self.send_queue.get()
 
     def start(self):
         self._clear_queue()
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
+        
+        self.system_client.identify()
         print "Successfully started python client"
 
     def stop(self):
         self._clear_queue()
         self.socket.close()
 
-    def process(self):
+    def process_write(self):
         while True:
             data = None
             try:
-                data = self.queue.get(block = True, timeout = RepeatClient.REPEAT_CLIENT_TIMEOUT_SEC)
+                data = self.send_queue.get(block = True, timeout = RepeatClient.REPEAT_CLIENT_TIMEOUT_SEC)
             except Queue.Empty as e:
                 pass
 
             keep_alive = data is None
             if keep_alive:
-                data = self.system.keep_alive()                
+                self.system.keep_alive()
             else:
                 self.socket.sendall(json.dumps(data))
+
+    def process_read(self):
+        while True:
+            data = None
+            try:
                 data = self.socket.recv(1024)
+            except socket.error as se:
+                print traceback.format_exc()
+                break
+            except Exception as e:
+                print traceback.format_exc()
+
+            if data is not None and len(data.strip()) > 0:
+                try:
+                    parsed = json.loads(data)
+                    message_type = parsed['type']
+                    message_id = parsed['id']
+                    message_content = parsed['content']
+
+                    if message_id in self.synchronization_events:
+                        cv = self.synchronization_events.pop(message_id)
+                        cv.set()
+                    else:
+                        if message_type == 'task':
+                            reply = self.task_manager.process_message(message_id, message_content)
+                            if reply is not None:
+                                self.send_queue.put({
+                                        'type' : message_type,
+                                        'id' : message_id,
+                                        'content' : reply
+                                    })
+                        else:
+                            print "Unknown id %s. Drop message..." % message_id
+
+
+                except Exception as e:
+                    print traceback.format_exc()
+
+
+##############################################################################################################################
+def generate_reply(status, message):
+    return {
+        'status' : status,
+        'message' : message
+    }
+
+class UserDefinedTask(object):
+    def __init__(self, repeat_lib, file_name):
+        super(UserDefinedTask, self).__init__()
+        self.file_name = file_name
+        self.repeat_lib = repeat_lib
+        self.executing_module = None
+
+    """
+        invoker is the hotkey that invoke this action
+    """
+    def run(self, invoker):
+        print "Running task with file name %s" % self.file_name
+        parent_dir = os.path.dirname(self.file_name)
+        raw_file_name = os.path.basename(self.file_name)
+        raw_file_name = os.path.splitext(raw_file_name)[0] #Remove file extension
+
+        if self.executing_module is None:
+            self.executing_module = imp.load_source(raw_file_name, self.file_name)
+        self.executing_module.action(self.repeat_lib, invoker)
+
+class TaskManager(object):
+    def __init__(self, repeat_lib):
+        super(TaskManager, self).__init__()
+        assert repeat_lib is not None
+        self.repeat_lib = repeat_lib
+        self.tasks = {}
+        self.base_id = 0
+
+    def _next_id(self):
+        self.base_id += 1
+        return self.base_id
+
+    def process_message(self, message_id, message):
+        action = message['task_action']
+        params = message['params']
+
+        if action == 'create_task':
+            return self.create_task(*params)
+        elif action == 'run_task':
+            return self.run_task(*params)
+        elif action == 'remove_task':
+            return self.remove_task(*params)
+
+        return None
+
+    def sync_tasks(self):
+        pass
+
+    def create_task(self, file_name):
+        if not os.path.isfile(file_name):
+            return generate_reply(specifications.FAILURE, 'File %s does not exist' % file_name)
+        elif not os.access(file_name, os.X_OK):
+            return generate_reply(specifications.FAILURE, 'File %s is not executable' % file_name)
+
+        next_id = self._next_id()
+        self.tasks[next_id] = UserDefinedTask(self.repeat_lib, file_name)
+
+        return generate_reply(specifications.SUCCESS, {
+                'id' : next_id,
+                'file_name' : file_name
+            })
+
+    def run_task(self, task_id, hotkeys):
+        if task_id not in self.tasks:
+            return generate_reply(specifications.FAILURE, 'Cannot find task id %s' % task_id)
+        self.tasks[task_id].run(hotkeys)
+        return generate_reply(specifications.SUCCESS, {
+                'id' : task_id,
+                'file_name' : self.tasks[task_id].file_name
+            })
+
+    def remove_task(self, task_id):
+        if task_id not in self.tasks:
+            return generate_reply(specifications.SUCCESS, {
+                    'id' : task_id,
+                    'file_name' : ''
+                })
+
+        removing = self.tasks.pop(task_id)
+        return generate_reply(specifications.SUCCESS, {
+                'id' : task_id,
+                'file_name' : removing.file_name
+            })
+##############################################################################################################################
 
 if __name__ == "__main__":
     client = RepeatClient()
-    
-    def client_process():
-        client.start()
-        client.process()
-        client.stop()
 
-    client_thread = threading.Thread(target = client_process)
-    client_thread.start()
+    client.start()
 
-    time.sleep(2)
-    print "Passed sleep"
-    dd = KeyboardRequest()
-    client.queue.put(dd.type_string(['ddd', 'eee']))
+    write_thread = threading.Thread(target=client.process_write)
+    read_thread = threading.Thread(target=client.process_read)
 
-    print "Done"
+    write_thread.start()
+    read_thread.start()
+
+    # time.sleep(2.5)
+    # print "Starting"
+    # dd = keyboard_request.KeyboardRequest(client)
+    # dd.type_string(['aaa', 'bbb'])

@@ -88,6 +88,7 @@ public class IpcFrame extends JFrame {
 		        return column == 1;
 		    }
 		});
+
 		DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
 		centerRender.setHorizontalAlignment(SwingConstants.CENTER);
 		for (int i = 0 ; i < tIpc.getColumnCount(); i++) {

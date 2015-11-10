@@ -1,4 +1,4 @@
-package core.ipc.server;
+package core.ipc.repeatServer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,8 +9,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import com.sun.istack.internal.logging.Logger;
 
 import core.controller.Core;
+import core.ipcc.IIPCService;
 
-public class ControllerServer {
+public class ControllerServer implements IIPCService {
 
 	private static final Logger LOGGER = Logger.getLogger(ControllerServer.class);
 
@@ -19,12 +20,13 @@ public class ControllerServer {
 	private static final int MAX_THREAD_COUNT = 10;
 
 	private boolean isStopped;
-	private final ScheduledThreadPoolExecutor threadPool;
 	private int port;
+	private final ScheduledThreadPoolExecutor threadPool;
 	private ServerSocket listener;
 	private Thread mainThread;
 
 	private final Core core;
+
 
 	public ControllerServer(Core core) {
 		this.port = DEFAULT_PORT;
@@ -32,6 +34,7 @@ public class ControllerServer {
 		this.core = core;
 	}
 
+	@Override
 	public void start() throws IOException {
 		setStop(false);
 		mainThread = new Thread() {
@@ -76,6 +79,7 @@ public class ControllerServer {
 		mainThread.start();
 	}
 
+	@Override
 	public void stop() {
 		setStop(true);
 		if (listener != null) {
@@ -95,9 +99,27 @@ public class ControllerServer {
 		this.isStopped = isStopped;
 	}
 
-	public void changePort(int newPort) throws IOException {
-		this.stop();
+	@Override
+	public void setPort(int newPort) {
+		if (isRunning()) {
+			LOGGER.warning("Cannot change port while running");
+			return;
+		}
 		this.port = newPort;
-		this.start();
+	}
+
+	@Override
+	public boolean isRunning() {
+		return mainThread != null && mainThread.isAlive();
+	}
+
+	@Override
+	public int getPort() {
+		return port;
+	}
+
+	@Override
+	public String getName() {
+		return "Controller server";
 	}
 }

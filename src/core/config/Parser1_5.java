@@ -67,7 +67,7 @@ public class Parser1_5 extends ConfigParser {
 				String path = compilerNode.getStringValue("path");
 				JsonNode compilerSpecificArgs = compilerNode.getNode("compiler_specific_args");
 
-				AbstractNativeDynamicCompiler compiler = config.compilerFactory().getCompiler(name);
+				AbstractNativeDynamicCompiler compiler = config.getCompilerFactory().getCompiler(name);
 				if (compiler != null) {
 					compiler.setPath(new File(path));
 					if (!compiler.parseCompilerSpecificArgs(compilerSpecificArgs)) {
@@ -81,7 +81,7 @@ public class Parser1_5 extends ConfigParser {
 			List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();
 			taskGroups.clear();
 			for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
-				TaskGroup taskGroup = TaskGroup.parseJSON(config.compilerFactory(), taskGroupNode);
+				TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
 				if (taskGroup != null) {
 					taskGroups.add(taskGroup);
 				}

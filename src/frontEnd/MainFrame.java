@@ -59,7 +59,7 @@ import utilities.swing.SwingUtil;
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
 
-import core.languageHandler.compiler.DynamicCompilerManager;
+import core.languageHandler.Languages;
 import core.recorder.Recorder;
 import frontEnd.graphics.BootStrapResources;
 
@@ -294,7 +294,7 @@ public class MainFrame extends JFrame {
 		JMenu mnNewMenu_3 = new JMenu("Compiling Language");
 		mnNewMenu_2.add(mnNewMenu_3);
 
-		rbmiCompileJava = new JRadioButtonMenuItem(DynamicCompilerManager.JAVA_LANGUAGE);
+		rbmiCompileJava = new JRadioButtonMenuItem(Languages.JAVA.toString());
 		mnNewMenu_3.add(rbmiCompileJava);
 		rbmiCompileJava.setSelected(true);
 		rbmiCompileJava.addActionListener(new ActionListener() {
@@ -305,7 +305,7 @@ public class MainFrame extends JFrame {
 		});
 		group.add(rbmiCompileJava);
 
-		rbmiCompilePython = new JRadioButtonMenuItem(DynamicCompilerManager.PYTHON_LANGUAGE);
+		rbmiCompilePython = new JRadioButtonMenuItem(Languages.PYTHON.toString());
 		mnNewMenu_3.add(rbmiCompilePython);
 		rbmiCompilePython.addActionListener(new ActionListener() {
 			@Override
@@ -355,13 +355,13 @@ public class MainFrame extends JFrame {
 					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.compilerFactory().getCompiler(DynamicCompilerManager.JAVA_LANGUAGE).setPath(chooser.getSelectedFile());
+						backEnd.config.getCompilerFactory().getCompiler(Languages.JAVA.toString()).setPath(chooser.getSelectedFile());
 					}
 				} else if (rbmiCompilePython.isSelected()) {
 					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.compilerFactory().getCompiler(DynamicCompilerManager.PYTHON_LANGUAGE).setPath(chooser.getSelectedFile());
+						backEnd.config.getCompilerFactory().getCompiler(Languages.PYTHON.toString()).setPath(chooser.getSelectedFile());
 					}
 				}
 

@@ -11,19 +11,16 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
-import core.ipc.client.IPCClientManager;
+import core.languageHandler.Languages;
 
 public class DynamicCompilerManager implements IJsonable {
 
-	public static final String JAVA_LANGUAGE = "java";
-	public static final String PYTHON_LANGUAGE = "python";
-
 	private final Map<String, AbstractNativeDynamicCompiler> compilers;
 
-	public DynamicCompilerManager(IPCClientManager ipcClientFactory) {
+	public DynamicCompilerManager() {
 		compilers = new HashMap<>();
-		compilers.put(JAVA_LANGUAGE, new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
-		compilers.put(PYTHON_LANGUAGE, new DynamicPythonCompiler(ipcClientFactory.getClient(PYTHON_LANGUAGE), new File("core")));
+		compilers.put(Languages.JAVA.toString(), new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
+		compilers.put(Languages.PYTHON.toString(), new DynamicPythonCompiler(new File("core")));
 	}
 
 	public AbstractNativeDynamicCompiler getCompiler(String name) {

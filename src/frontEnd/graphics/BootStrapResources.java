@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 
 import utilities.FileUtility;
 import core.config.Config;
-import core.languageHandler.compiler.DynamicCompilerManager;
+import core.languageHandler.Languages;
 
 public class BootStrapResources {
 
@@ -22,7 +22,7 @@ public class BootStrapResources {
 	private static final Map<String, String> NATIVE_LANGUAGE_TEMPLATES;
 
 	public static final Image TRAY_IMAGE;
-	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE;
+	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE, REFRESH;
 	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
 
 	static {
@@ -33,6 +33,7 @@ public class BootStrapResources {
 		DELETE = getIcon("/toolbarButtonGraphics/general/Delete24.gif");
 
 		MOVE = getIcon("/toolbarButtonGraphics/general/Redo24.gif");
+		REFRESH = getIcon("/toolbarButtonGraphics/general/Refresh24.gif");
 
 		UP = getIcon("/toolbarButtonGraphics/navigation/Up24.gif");
 		DOWN = getIcon("/toolbarButtonGraphics/navigation/Down24.gif");
@@ -46,8 +47,8 @@ public class BootStrapResources {
 
 		/*********************************************************************************/
 		LANGUAGE_API = new HashMap<>();
-		LANGUAGE_API.put(DynamicCompilerManager.JAVA_LANGUAGE, FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
-		LANGUAGE_API.put(DynamicCompilerManager.PYTHON_LANGUAGE, FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
+		LANGUAGE_API.put(Languages.JAVA.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
+		LANGUAGE_API.put(Languages.PYTHON.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
 
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
 		NATIVE_LANGUAGE_TEMPLATES.put("python", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/python/template_repeat.py")).toString());

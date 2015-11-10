@@ -1,4 +1,4 @@
-package core.ipc.client;
+package core.ipc.repeatServer;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
@@ -14,7 +14,7 @@ import core.config.IJsonable;
  * @author hptruong93
  *
  */
-class ClientTask implements IJsonable {
+public class ClientTask implements IJsonable {
 	private static final Logger LOGGER = Logger.getLogger(ClientTask.class);
 
 	private final int id;

@@ -8,7 +8,6 @@ import utilities.FileUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
-import core.ipc.client.AbstractIPCClient;
 import core.userDefinedTask.UserDefinedAction;
 
 public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
@@ -20,8 +19,7 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 		getLogger().setLevel(Level.ALL);
 	}
 
-	public DynamicPythonCompiler(AbstractIPCClient ipcClient, File objectFileDirectory) {
-		super(ipcClient);
+	public DynamicPythonCompiler(File objectFileDirectory) {
 		interpreter = new File("python.exe");
 		this.objectFileDirectory = objectFileDirectory;
 	}
@@ -41,13 +39,15 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
-				boolean result = ipcClient.runTask(id, invokingKeyChain);
+				boolean result = remoteTaskManager.runTask(id, invokingKeyChain);
 				if (!result) {
 					getLogger().warning("Unable to run task with id = " + id);
 				}
 			}
 		};
 		output.setSourcePath(sourceFile.getAbsolutePath());
+
+		getLogger().info("Successfully loaded action from remote compiler with id = " + id);
 		return output;
 	}
 

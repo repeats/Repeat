@@ -27,13 +27,11 @@ import com.sun.istack.internal.logging.Logger;
 
 import core.config.Config;
 import core.controller.Core;
-import core.ipc.client.AbstractIPCClient;
-import core.ipc.client.IPCClientManager;
-import core.ipc.server.ControllerServer;
+import core.ipc.repeatServer.ControllerServer;
 import core.keyChain.GlobalKeysManager;
 import core.keyChain.KeyChain;
+import core.languageHandler.Languages;
 import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
-import core.languageHandler.compiler.DynamicCompilerManager;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.recorder.Recorder;
@@ -52,7 +50,6 @@ public class BackEndHolder {
 	protected Core core;
 	protected Recorder recorder;
 	protected ControllerServer controllerServer;
-	protected IPCClientManager ipcClientFactory;
 
 	protected UserDefinedAction customFunction;
 
@@ -60,7 +57,7 @@ public class BackEndHolder {
 	private TaskGroup currentGroup;
 
 	protected int selectedTaskIndex;
-	protected final TaskSourceManager taskManager;
+	protected final TaskSourceManager taskSourceManager;
 
 	protected final GlobalKeysManager keysManager;
 	protected final Config config;
@@ -78,7 +75,6 @@ public class BackEndHolder {
 		core = new Core();
 
 		controllerServer = new ControllerServer(core);
-		ipcClientFactory = new IPCClientManager();
 
 		keysManager = new GlobalKeysManager(config, core);
 		recorder = new Recorder(core, keysManager);
@@ -86,8 +82,7 @@ public class BackEndHolder {
 		taskGroups = new ArrayList<>();
 
 		selectedTaskIndex = -1;
-		taskManager = new TaskSourceManager();
-
+		taskSourceManager = new TaskSourceManager();
 
 		switchRecord = new UserDefinedAction() {
 			@Override
@@ -114,7 +109,7 @@ public class BackEndHolder {
 	/*************************************************************************************************************/
 	/************************************************Config*******************************************************/
 	protected void loadConfig(File file) {
-		config.loadConfig(file, ipcClientFactory);
+		config.loadConfig(file);
 	}
 
 	/*************************************************************************************************************/
@@ -125,14 +120,6 @@ public class BackEndHolder {
 			controllerServer.start();
 		} catch (IOException e) {
 			LOGGER.severe("Cannot initiate IPC Server", e);
-		}
-
-		for (AbstractIPCClient service : ipcClientFactory.getAllClients()) {
-			try {
-				service.connect();
-			} catch (IOException e) {
-				LOGGER.warning("Unable to launch ipc client", e);
-			}
 		}
 	}
 
@@ -307,7 +294,7 @@ public class BackEndHolder {
 
 	private void removeTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
-		if (!taskManager.removeTask(task)) {
+		if (!taskSourceManager.removeTask(task)) {
 			JOptionPane.showMessageDialog(main, "Encountered error removing source file " + task.getSourcePath());
 		}
 	}
@@ -533,9 +520,9 @@ public class BackEndHolder {
 					main.taSource.setText(source.toString());
 
 					if (!task.getCompiler().equals(getCompiler().getName())) {
-						if (task.getCompiler().equals(DynamicCompilerManager.JAVA_LANGUAGE)) {
+						if (task.getCompiler().equals(Languages.JAVA.toString())) {
 							main.rbmiCompileJava.setSelected(true);
-						} else if (task.getCompiler().equals(DynamicCompilerManager.PYTHON_LANGUAGE)) {
+						} else if (task.getCompiler().equals(Languages.PYTHON.toString())) {
 							main.rbmiCompilePython.setSelected(true);
 						}
 						refreshCompilingLanguage();
@@ -617,9 +604,9 @@ public class BackEndHolder {
 
 	protected AbstractNativeDynamicCompiler getCompiler() {
 		if (main.rbmiCompileJava.isSelected()) {
-			return config.compilerFactory().getCompiler("java");
+			return config.getCompilerFactory().getCompiler("java");
 		} else if (main.rbmiCompilePython.isSelected()) {
-			return config.compilerFactory().getCompiler("python");
+			return config.getCompilerFactory().getCompiler("python");
 		} else {
 			return null;
 		}
@@ -632,7 +619,7 @@ public class BackEndHolder {
 		} else if (main.rbmiCompilePython.isSelected()) {
 			main.bCompile.setText("Load source");
 			JOptionPane.showMessageDialog(main, "Using python interpreter at "
-					+ config.compilerFactory().getCompiler("python").getPath().getAbsolutePath(),
+					+ config.getCompilerFactory().getCompiler("python").getPath().getAbsolutePath(),
 					"Python interpreter not chosen", JOptionPane.OK_OPTION);
 		}
 
@@ -649,7 +636,7 @@ public class BackEndHolder {
 			customFunction = createdInstance;
 			customFunction.setCompiler(compiler.getName());
 
-			if (!taskManager.submitTask(customFunction, source)) {
+			if (!taskSourceManager.submitTask(customFunction, source)) {
 				JOptionPane.showMessageDialog(main, "Error writing source file...");
 			}
 		}

@@ -6,19 +6,16 @@ import java.util.logging.Level;
 import utilities.FileUtility;
 import utilities.RandomUtil;
 import argo.jdom.JsonNode;
-import core.ipc.client.AbstractIPCClient;
+import core.ipc.repeatServer.TaskProcessor;
+import core.ipc.repeatServer.TaskProcessorManager;
 import core.userDefinedTask.UserDefinedAction;
 
 public abstract class AbstractRemoteNativeDynamicCompiler extends AbstractNativeDynamicCompiler {
 
-	protected AbstractIPCClient ipcClient;
+	protected TaskProcessor remoteTaskManager;
 
 	{
 		getLogger().setLevel(Level.ALL);
-	}
-
-	protected AbstractRemoteNativeDynamicCompiler(AbstractIPCClient ipcClient) {
-		this.ipcClient = ipcClient;
 	}
 
 	@Override
@@ -30,6 +27,16 @@ public abstract class AbstractRemoteNativeDynamicCompiler extends AbstractNative
 
 	@Override
 	public final UserDefinedAction compile(String source, File objectFile) {
+		if (remoteTaskManager == null) {
+			TaskProcessor remoteManager = TaskProcessorManager.getProcessor(getName());
+			if (remoteManager == null) {
+				getLogger().warning("Does not have a remote compiler to work with...");
+				return null;
+			} else {
+				remoteTaskManager = remoteManager;
+			}
+		}
+
 		try {
 			if (!checkRemoteCompilerSettings()) {
 				getLogger().warning("Remote compiler check failed! Compilation ended prematurely.");
@@ -48,7 +55,7 @@ public abstract class AbstractRemoteNativeDynamicCompiler extends AbstractNative
 				}
 			}
 
-			int id = ipcClient.createTask(objectFile);
+			int id = remoteTaskManager.createTask(objectFile);
 			if (id == -1) {
 				getLogger().warning("Unable to create task from ipc client...");
 				return null;

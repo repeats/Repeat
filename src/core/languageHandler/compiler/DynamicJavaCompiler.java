@@ -24,6 +24,7 @@ import utilities.RandomUtil;
 import utilities.StringUtilities;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
+import core.languageHandler.Languages;
 import core.userDefinedTask.UserDefinedAction;
 
 public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
@@ -169,7 +170,7 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 
 	@Override
 	public String getName() {
-		return DynamicCompilerManager.JAVA_LANGUAGE;
+		return Languages.JAVA.toString();
 	}
 
 	@Override

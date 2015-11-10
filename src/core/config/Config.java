@@ -15,7 +15,6 @@ import argo.jdom.JsonRootNode;
 
 import com.sun.glass.events.KeyEvent;
 
-import core.ipc.client.IPCClientManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import core.userDefinedTask.TaskGroup;
@@ -43,12 +42,12 @@ public class Config {
 		COMPILED_REPLAY = new KeyChain(KeyEvent.VK_F12);
 	}
 
-	public DynamicCompilerManager compilerFactory() {
+	public DynamicCompilerManager getCompilerFactory() {
 		return compilerFactory;
 	}
 
-	public void loadConfig(File file, IPCClientManager ipcClientFactory) {
-		compilerFactory = new DynamicCompilerManager(ipcClientFactory);
+	public void loadConfig(File file) {
+		compilerFactory = new DynamicCompilerManager();
 
 		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
 			new Parser1_0(),
