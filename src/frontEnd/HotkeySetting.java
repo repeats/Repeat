@@ -31,7 +31,7 @@ public class HotkeySetting extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public HotkeySetting(final BackEndHolder backEnd) {
+	public HotkeySetting(final MainBackEndHolder backEnd) {
 		setResizable(false);
 		setTitle("Hotkey Setting");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);

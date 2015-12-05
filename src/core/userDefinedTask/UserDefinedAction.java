@@ -12,14 +12,15 @@ import javax.swing.JOptionPane;
 import utilities.ExceptableFunction;
 import utilities.FileUtility;
 import utilities.Function;
+import utilities.ILoggable;
 import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import core.ILoggable;
 import core.config.IJsonable;
 import core.controller.Core;
 import core.keyChain.KeyChain;
+import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
 
@@ -28,7 +29,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected String name;
 	protected Set<KeyChain> hotkeys;
 	protected String sourcePath;
-	protected String compilerName;
+	protected Language compiler;
 	protected boolean enabled;
 	protected ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup;
 	protected KeyChain invokingKeyChain;
@@ -81,16 +82,25 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		return sourcePath;
 	}
 
+	public String getSource() {
+		StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
+		if (source == null) {
+			return null;
+		}
+
+		return source.toString();
+	}
+
 	public void setSourcePath(String sourcePath) {
 		this.sourcePath = sourcePath;
 	}
 
-	public String getCompiler() {
-		return compilerName;
+	public Language getCompiler() {
+		return compiler;
 	}
 
-	public void setCompiler(String compiler) {
-		this.compilerName = compiler;
+	public void setCompiler(Language compiler) {
+		this.compiler = compiler;
 	}
 
 	public boolean isEnabled() {
@@ -120,11 +130,22 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	}
 
 	/***********************************************************************/
+	public UserDefinedAction recompile(AbstractNativeDynamicCompiler compiler, boolean clean) {
+		if (!clean) {
+			return this;
+		} else {
+			//TODO recompile the current task
+			getLogger().warning("Not supported");
+			return null;
+		}
+	}
+
+	/***********************************************************************/
 	@Override
 	public final JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
-				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compilerName)),
+				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compiler.toString())),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
 				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
 				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled))
@@ -162,7 +183,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 			File objectFile = new File(FileUtility.joinPath("core", FileUtility.removeExtension(sourceFile).getName()));
 			objectFile = FileUtility.addExtension(objectFile, compiler.getObjectExtension());
-			UserDefinedAction output = compiler.compile(source, objectFile);
+			UserDefinedAction output = compiler.compile(source, objectFile).getB();
 			if (output == null) {
 				JOptionPane.showMessageDialog(null, "Compilation failed for task " + name + " with source at path " + sourcePath);
 				return null;
@@ -171,7 +192,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 			boolean enabled = node.getBooleanValue("enabled");
 
 			output.sourcePath = sourcePath;
-			output.compilerName = compiler.getName();
+			output.compiler = compiler.getName();
 			output.name = name;
 			output.hotkeys = hotkeys;
 			output.enabled = enabled;
@@ -184,8 +205,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	}
 
 	@Override
-	public
-	final Logger getLogger() {
+	public final Logger getLogger() {
 		return Logger.getLogger(UserDefinedAction.class.getName());
 	}
 }

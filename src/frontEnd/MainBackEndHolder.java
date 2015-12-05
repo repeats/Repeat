@@ -3,7 +3,6 @@ package frontEnd;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,10 +15,12 @@ import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import staticResources.BootStrapResources;
 import utilities.ExceptableFunction;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.NumberUtility;
+import utilities.Pair;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
 
@@ -27,29 +28,32 @@ import com.sun.istack.internal.logging.Logger;
 
 import core.config.Config;
 import core.controller.Core;
+import core.ipc.repeatClient.IIPCService;
+import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
 import core.keyChain.GlobalKeysManager;
 import core.keyChain.KeyChain;
-import core.languageHandler.Languages;
+import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
+import core.languageHandler.compiler.DynamicCompilerOutput;
+import core.languageHandler.compiler.DynamicPythonCompiler;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.recorder.Recorder;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
-import frontEnd.graphics.BootStrapResources;
 
-public class BackEndHolder {
+public class MainBackEndHolder {
 
-	private static final Logger LOGGER = Logger.getLogger(BackEndHolder.class);
+	private static final Logger LOGGER = Logger.getLogger(MainBackEndHolder.class);
 
 	protected ScheduledThreadPoolExecutor executor;
 	protected Thread compiledExecutor;
 
 	protected Core core;
 	protected Recorder recorder;
-	protected ControllerServer controllerServer;
+	protected final ArrayList<IIPCService> ipcServices;
 
 	protected UserDefinedAction customFunction;
 
@@ -67,14 +71,19 @@ public class BackEndHolder {
 
 	protected final MainFrame main;
 
-	public BackEndHolder(MainFrame main) throws IOException {
+	public MainBackEndHolder(MainFrame main) {
 		this.main = main;
 		config = new Config(this);
 
-		executor = new ScheduledThreadPoolExecutor(10);
+		executor = new ScheduledThreadPoolExecutor(5);
 		core = new Core();
 
-		controllerServer = new ControllerServer(core);
+		ControllerServer controllerServer = new ControllerServer(core);
+		PythonIPCClientService pythonIPC = new PythonIPCClientService();
+
+		ipcServices = new ArrayList<>();
+		ipcServices.add(controllerServer);
+		ipcServices.add(pythonIPC);
 
 		keysManager = new GlobalKeysManager(config, core);
 		recorder = new Recorder(core, keysManager);
@@ -110,21 +119,17 @@ public class BackEndHolder {
 	/************************************************Config*******************************************************/
 	protected void loadConfig(File file) {
 		config.loadConfig(file);
+		((PythonIPCClientService)ipcServices.get(1)).setCompiler((DynamicPythonCompiler) config.getCompilerFactory().getCompiler(Language.PYTHON));;
 	}
 
 	/*************************************************************************************************************/
 	/************************************************IPC**********************************************************/
 
 	protected void initiateBackEndActivities() {
-		try {
-			controllerServer.start();
-		} catch (IOException e) {
-			LOGGER.severe("Cannot initiate IPC Server", e);
-		}
+
 	}
 
 	protected void stopBackEndActivities() {
-		controllerServer.stop();
 	}
 
 	protected void exit() {
@@ -278,12 +283,14 @@ public class BackEndHolder {
 		main.taskGroup.renderTaskGroup();
 
 		for (TaskGroup group : taskGroups) {
-			if (group.isEnabled()) {
-				for (UserDefinedAction task : group.getTasks()) {
-					Set<KeyChain> collisions = keysManager.areKeysRegistered(task.getHotkeys());
-					if (task.isEnabled() && (collisions == null || collisions.isEmpty())) {
-						keysManager.registerTask(task);
-					}
+			if (!group.isEnabled()) {
+				continue;
+			}
+
+			for (UserDefinedAction task : group.getTasks()) {
+				Set<KeyChain> collisions = keysManager.areKeysRegistered(task.getHotkeys());
+				if (task.isEnabled() && (collisions == null || collisions.isEmpty())) {
+					keysManager.registerTask(task);
 				}
 			}
 		}
@@ -420,8 +427,9 @@ public class BackEndHolder {
 
 	protected void switchEnableTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
+		action.setEnabled(!action.isEnabled());
 
-		if (action.isEnabled()) {
+		if (!action.isEnabled()) {
 			keysManager.unregisterTask(action);
 		} else {
 			Set<KeyChain> collisions = keysManager.areKeysRegistered(action.getHotkeys());
@@ -437,7 +445,6 @@ public class BackEndHolder {
 			keysManager.registerTask(action);
 		}
 
-		action.setEnabled(!action.isEnabled());
 		main.tTasks.setValueAt(action.isEnabled(), row, 2);
 	}
 
@@ -513,22 +520,21 @@ public class BackEndHolder {
 		if (row >= 0 && row < currentGroup.getTasks().size()) {
 			if (selectedTaskIndex != row) {
 				UserDefinedAction task = currentGroup.getTasks().get(row);
-				String sourcePath = task.getSourcePath();
+				String source = task.getSource();
 
-				StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
 				if (source != null) {
-					main.taSource.setText(source.toString());
-
 					if (!task.getCompiler().equals(getCompiler().getName())) {
-						if (task.getCompiler().equals(Languages.JAVA.toString())) {
+						if (task.getCompiler() == Language.JAVA) {
 							main.rbmiCompileJava.setSelected(true);
-						} else if (task.getCompiler().equals(Languages.PYTHON.toString())) {
+						} else if (task.getCompiler() == Language.PYTHON) {
 							main.rbmiCompilePython.setSelected(true);
 						}
 						refreshCompilingLanguage();
 					}
+
+					main.taSource.setText(source);
 				} else {
-					JOptionPane.showMessageDialog(main, "Cannot load source file " + sourcePath + ".\nTry recompiling and add again");
+					JOptionPane.showMessageDialog(main, "Cannot retrieve source code for task " + task.getName() + ".\nTry recompiling and add again");
 				}
 			}
 		}
@@ -604,9 +610,9 @@ public class BackEndHolder {
 
 	protected AbstractNativeDynamicCompiler getCompiler() {
 		if (main.rbmiCompileJava.isSelected()) {
-			return config.getCompilerFactory().getCompiler("java");
+			return config.getCompilerFactory().getCompiler(Language.JAVA);
 		} else if (main.rbmiCompilePython.isSelected()) {
-			return config.getCompilerFactory().getCompiler("python");
+			return config.getCompilerFactory().getCompiler(Language.PYTHON);
 		} else {
 			return null;
 		}
@@ -618,9 +624,8 @@ public class BackEndHolder {
 			main.bCompile.setText("Compile source");
 		} else if (main.rbmiCompilePython.isSelected()) {
 			main.bCompile.setText("Load source");
-			JOptionPane.showMessageDialog(main, "Using python interpreter at "
-					+ config.getCompilerFactory().getCompiler("python").getPath().getAbsolutePath(),
-					"Python interpreter not chosen", JOptionPane.OK_OPTION);
+			LOGGER.info("Using python interpreter at "
+					+ config.getCompilerFactory().getCompiler(Language.PYTHON).getPath().getAbsolutePath());
 		}
 
 		promptSource();
@@ -630,9 +635,11 @@ public class BackEndHolder {
 		String source = main.taSource.getText();
 
 		AbstractNativeDynamicCompiler compiler = getCompiler();
-		UserDefinedAction createdInstance = compiler.compile(source);
+		Pair<DynamicCompilerOutput, UserDefinedAction> compilationResult = compiler.compile(source);
+		DynamicCompilerOutput compilerStatus = compilationResult.getA();
+		UserDefinedAction createdInstance = compilationResult.getB();
 
-		if (createdInstance != null) {
+		if (compilerStatus == DynamicCompilerOutput.COMPILATION_SUCCESS) {
 			customFunction = createdInstance;
 			customFunction.setCompiler(compiler.getName());
 

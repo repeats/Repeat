@@ -1,5 +1,6 @@
 import json
 import os
+import signal
 import traceback
 import time
 import imp
@@ -20,6 +21,9 @@ class RepeatClient(object):
     """Server will terminate connection if not received anything after this period of time"""
     REPEAT_SERVER_TIMEOUT_SEC = 10
 
+    """Delimiter between messages (Receiver must receive at least one delimiter between two messages. However, two or more is also acceptable)"""
+    MESSAGE_DELIMITER = '\x02'
+
     """Client must send keep alive message to maintain the connection with server.
     Therefore the client timeout has to be less than server timeout"""
     REPEAT_CLIENT_TIMEOUT_SEC = REPEAT_SERVER_TIMEOUT_SEC * 0.8 
@@ -29,6 +33,7 @@ class RepeatClient(object):
         self.host = host
         self.port = port
         self.socket = None
+        self.is_terminated = False
 
         self.synchronization_events = {}
         self.send_queue = Queue.Queue()
@@ -57,7 +62,7 @@ class RepeatClient(object):
         self.socket.close()
 
     def process_write(self):
-        while True:
+        while not self.is_terminated:
             data = None
             try:
                 data = self.send_queue.get(block = True, timeout = RepeatClient.REPEAT_CLIENT_TIMEOUT_SEC)
@@ -68,10 +73,14 @@ class RepeatClient(object):
             if keep_alive:
                 self.system.keep_alive()
             else:
-                self.socket.sendall(json.dumps(data))
+                to_send = '%s%s%s%s%s' % (RepeatClient.MESSAGE_DELIMITER, RepeatClient.MESSAGE_DELIMITER, \
+                                            json.dumps(data), RepeatClient.MESSAGE_DELIMITER, RepeatClient.MESSAGE_DELIMITER)
+                self.socket.sendall(to_send)
+
+        print "Write process terminated..."
 
     def process_read(self):
-        while True:
+        while not self.is_terminated:
             data = None
             try:
                 data = self.socket.recv(1024)
@@ -89,23 +98,33 @@ class RepeatClient(object):
                     message_content = parsed['content']
 
                     if message_id in self.synchronization_events:
+                        print "unblocking event with id %s" % message_id
                         cv = self.synchronization_events.pop(message_id)
                         cv.set()
                     else:
                         if message_type == 'task':
-                            reply = self.task_manager.process_message(message_id, message_content)
-                            if reply is not None:
-                                self.send_queue.put({
-                                        'type' : message_type,
-                                        'id' : message_id,
-                                        'content' : reply
-                                    })
+                            def to_run():
+                                processing_id = message_id
+                                processing_content = message_content
+                                processing_type = message_type
+
+                                reply = self.task_manager.process_message(processing_id, processing_content)
+                                if reply is not None:
+                                    self.send_queue.put({
+                                            'type' : processing_type,
+                                            'id' : processing_id,
+                                            'content' : reply
+                                        })
+
+                            running = threading.Thread(target=to_run)
+                            running.start()
                         else:
                             print "Unknown id %s. Drop message..." % message_id
 
-
                 except Exception as e:
                     print traceback.format_exc()
+
+        print "Read process terminated..."
 
 
 ##############################################################################################################################
@@ -208,10 +227,18 @@ if __name__ == "__main__":
     write_thread = threading.Thread(target=client.process_write)
     read_thread = threading.Thread(target=client.process_read)
 
+    def terminate_repeat_client():
+        client.is_terminated = True
+        write_thread.join()
+        read_thread.join()
+    signal.signal(signal.SIGTERM, terminate_repeat_client)
+
     write_thread.start()
     read_thread.start()
 
-    # time.sleep(2.5)
-    # print "Starting"
-    # dd = keyboard_request.KeyboardRequest(client)
-    # dd.type_string(['aaa', 'bbb'])
+    try:
+        while True:
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print "Terminating repeat client..."
+        terminate_repeat_client()

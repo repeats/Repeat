@@ -1,4 +1,4 @@
-package core;
+package utilities;
 
 import java.util.logging.Logger;
 

@@ -1,14 +1,24 @@
 package frontEnd;
 
-import utilities.JSONUtility;
-import argo.jdom.JsonRootNode;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 
 public class BlankClass {
 	public static void main(String[] args) {
+		String cmd = "cmd.exe /c echo hello";
 
-		String x = "{\"status\": {\"file_name\": \"D\", \"id\": 1}}";
+		try {
+			StringBuffer output = new StringBuffer();
+			String line;
+			ProcessBuilder pb = new ProcessBuilder(cmd.split(" "));
+			pb.redirectOutput(Redirect.INHERIT);
+			pb.redirectError(Redirect.INHERIT);
+			Process p = pb.start();
 
-		JsonRootNode y = JSONUtility.jsonFromString(x);
-		System.out.println(y.getStringValue("status"));
+	    } catch (Exception err) {
+	    	System.out.println("Failed");
+	    	err.printStackTrace();
+	    }
 	}
 }

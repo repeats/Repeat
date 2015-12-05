@@ -11,24 +11,24 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
-import core.languageHandler.Languages;
+import core.languageHandler.Language;
 
 public class DynamicCompilerManager implements IJsonable {
 
-	private final Map<String, AbstractNativeDynamicCompiler> compilers;
+	private final Map<Language, AbstractNativeDynamicCompiler> compilers;
 
 	public DynamicCompilerManager() {
 		compilers = new HashMap<>();
-		compilers.put(Languages.JAVA.toString(), new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
-		compilers.put(Languages.PYTHON.toString(), new DynamicPythonCompiler(new File("core")));
+		compilers.put(Language.JAVA, new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
+		compilers.put(Language.PYTHON, new DynamicPythonCompiler(new File("core")));
 	}
 
-	public AbstractNativeDynamicCompiler getCompiler(String name) {
+	public AbstractNativeDynamicCompiler getCompiler(Language name) {
 		return compilers.get(name);
 	}
 
-	public void addCompiler(String name, AbstractNativeDynamicCompiler compiler) {
-		compilers.put(name,  compiler);
+	public AbstractNativeDynamicCompiler getCompiler(String name) {
+		return getCompiler(Language.identify(name));
 	}
 
 	public boolean hasCompiler(String name) {
@@ -44,7 +44,7 @@ public class DynamicCompilerManager implements IJsonable {
 		List<JsonNode> compilerList = new ArrayList<>();
 		for (AbstractNativeDynamicCompiler compiler :  compilers.values()) {
 			compilerList.add(JsonNodeFactories.object(
-					JsonNodeFactories.field("name", JsonNodeFactories.string(compiler.getName())),
+					JsonNodeFactories.field("name", JsonNodeFactories.string(compiler.getName().toString())),
 					JsonNodeFactories.field("path", JsonNodeFactories.string(FileUtility.getRelativePwdPath(compiler.getPath()))),
 					JsonNodeFactories.field("compiler_specific_args", compiler.getCompilerSpecificArgs())
 					));

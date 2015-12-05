@@ -18,7 +18,7 @@ import com.sun.glass.events.KeyEvent;
 import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import core.userDefinedTask.TaskGroup;
-import frontEnd.BackEndHolder;
+import frontEnd.MainBackEndHolder;
 
 public class Config {
 
@@ -27,14 +27,14 @@ public class Config {
 	private static final String CURRENT_CONFIG_VERSION = "1.5";
 
 	private DynamicCompilerManager compilerFactory;
-	private final BackEndHolder backEnd;
+	private final MainBackEndHolder backEnd;
 
 	public static final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and must not be changed
 	private KeyChain RECORD;
 	private KeyChain REPLAY;
 	private KeyChain COMPILED_REPLAY;
 
-	public Config(BackEndHolder backEnd) {
+	public Config(MainBackEndHolder backEnd) {
 		this.backEnd = backEnd;
 
 		RECORD = new KeyChain(KeyEvent.VK_F9);
@@ -162,7 +162,7 @@ public class Config {
 		setCOMPILED_REPLAY(new KeyChain(Arrays.asList(COMPILED_REPLAY)));
 	}
 
-	protected BackEndHolder getBackEnd() {
+	protected MainBackEndHolder getBackEnd() {
 		return backEnd;
 	}
 }

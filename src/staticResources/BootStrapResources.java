@@ -1,4 +1,4 @@
-package frontEnd.graphics;
+package staticResources;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 
 import utilities.FileUtility;
 import core.config.Config;
-import core.languageHandler.Languages;
+import core.languageHandler.Language;
 
 public class BootStrapResources {
 
@@ -26,7 +26,7 @@ public class BootStrapResources {
 	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
 
 	static {
-		TRAY_IMAGE = getImage("/frontEnd/graphics/Repeat.jpg");
+		TRAY_IMAGE = getImage("/staticResources/Repeat.jpg");
 
 		ADD = getIcon("/toolbarButtonGraphics/general/Add24.gif");
 		EDIT = getIcon("/toolbarButtonGraphics/general/Edit24.gif");
@@ -47,8 +47,8 @@ public class BootStrapResources {
 
 		/*********************************************************************************/
 		LANGUAGE_API = new HashMap<>();
-		LANGUAGE_API.put(Languages.JAVA.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
-		LANGUAGE_API.put(Languages.PYTHON.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
+		LANGUAGE_API.put(Language.JAVA.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
+		LANGUAGE_API.put(Language.PYTHON.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
 
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
 		NATIVE_LANGUAGE_TEMPLATES.put("python", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/python/template_repeat.py")).toString());

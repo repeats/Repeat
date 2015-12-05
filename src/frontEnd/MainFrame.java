@@ -51,6 +51,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.jnativehook.NativeHookException;
 
+import staticResources.BootStrapResources;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.logging.OutStream;
@@ -59,16 +60,15 @@ import utilities.swing.SwingUtil;
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
 
-import core.languageHandler.Languages;
+import core.languageHandler.Language;
 import core.recorder.Recorder;
-import frontEnd.graphics.BootStrapResources;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
 
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
 
-	protected final BackEndHolder backEnd;
+	protected final MainBackEndHolder backEnd;
 
 	protected TrayIcon trayIcon;
 
@@ -92,7 +92,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame() throws NativeHookException, IOException {
 		setTitle("Repeat");
-		backEnd = new BackEndHolder(this);
+		backEnd = new MainBackEndHolder(this);
 		backEnd.loadConfig(null);
 		hotkey = new HotkeySetting(backEnd);
 		taskGroup = new TaskGroupFrame(backEnd);
@@ -286,6 +286,7 @@ public class MainFrame extends JFrame {
 		mntmNewMenuItem_3.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				MainFrame.this.ipcs.ipcBackEndHolder.renderServices();
 				MainFrame.this.ipcs.setVisible(true);
 			}
 		});
@@ -294,7 +295,7 @@ public class MainFrame extends JFrame {
 		JMenu mnNewMenu_3 = new JMenu("Compiling Language");
 		mnNewMenu_2.add(mnNewMenu_3);
 
-		rbmiCompileJava = new JRadioButtonMenuItem(Languages.JAVA.toString());
+		rbmiCompileJava = new JRadioButtonMenuItem(Language.JAVA.toString());
 		mnNewMenu_3.add(rbmiCompileJava);
 		rbmiCompileJava.setSelected(true);
 		rbmiCompileJava.addActionListener(new ActionListener() {
@@ -305,7 +306,7 @@ public class MainFrame extends JFrame {
 		});
 		group.add(rbmiCompileJava);
 
-		rbmiCompilePython = new JRadioButtonMenuItem(Languages.PYTHON.toString());
+		rbmiCompilePython = new JRadioButtonMenuItem(Language.PYTHON.toString());
 		mnNewMenu_3.add(rbmiCompilePython);
 		rbmiCompilePython.addActionListener(new ActionListener() {
 			@Override
@@ -355,13 +356,13 @@ public class MainFrame extends JFrame {
 					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.getCompilerFactory().getCompiler(Languages.JAVA.toString()).setPath(chooser.getSelectedFile());
+						backEnd.config.getCompilerFactory().getCompiler(Language.JAVA).setPath(chooser.getSelectedFile());
 					}
 				} else if (rbmiCompilePython.isSelected()) {
 					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
 					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					if (chooser.showDialog(MainFrame.this, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.getCompilerFactory().getCompiler(Languages.PYTHON.toString()).setPath(chooser.getSelectedFile());
+						backEnd.config.getCompilerFactory().getCompiler(Language.PYTHON).setPath(chooser.getSelectedFile());
 					}
 				}
 

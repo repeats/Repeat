@@ -5,9 +5,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.FileUtility;
+import utilities.Pair;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
+import core.languageHandler.Language;
 import core.userDefinedTask.UserDefinedAction;
 
 public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
@@ -35,7 +37,7 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 	}
 
 	@Override
-	protected UserDefinedAction loadAction(final int id, final File sourceFile) {
+	protected Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final int id, final File sourceFile) {
 		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
@@ -48,7 +50,7 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 		output.setSourcePath(sourceFile.getAbsolutePath());
 
 		getLogger().info("Successfully loaded action from remote compiler with id = " + id);
-		return output;
+		return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_SUCCESS, output);
 	}
 
 	@Override
@@ -57,8 +59,8 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 	}
 
 	@Override
-	public String getName() {
-		return "python";
+	public Language getName() {
+		return Language.PYTHON;
 	}
 
 	@Override

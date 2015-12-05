@@ -1,8 +1,8 @@
 package core.ipc.repeatServer;
 
+import utilities.ILoggable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
-import core.ILoggable;
 
 abstract class AbstractMessageProcessor implements ILoggable {
 

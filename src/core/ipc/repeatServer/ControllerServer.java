@@ -5,22 +5,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-
-import com.sun.istack.internal.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import core.controller.Core;
-import core.ipcc.IIPCService;
+import core.ipc.repeatClient.IIPCService;
 
-public class ControllerServer implements IIPCService {
-
-	private static final Logger LOGGER = Logger.getLogger(ControllerServer.class);
+public class ControllerServer extends IIPCService {
 
 	private static final int DEFAULT_PORT = 9999;
 	private static final int DEFAULT_TIMEOUT_MS = 10000;
 	private static final int MAX_THREAD_COUNT = 10;
 
 	private boolean isStopped;
-	private int port;
 	private final ScheduledThreadPoolExecutor threadPool;
 	private ServerSocket listener;
 	private Thread mainThread;
@@ -29,13 +26,13 @@ public class ControllerServer implements IIPCService {
 
 
 	public ControllerServer(Core core) {
-		this.port = DEFAULT_PORT;
 		threadPool = new ScheduledThreadPoolExecutor(MAX_THREAD_COUNT);
 		this.core = core;
+		this.setPort(DEFAULT_PORT);
 	}
 
 	@Override
-	public void start() throws IOException {
+	protected void start() throws IOException {
 		setStop(false);
 		mainThread = new Thread() {
 			@Override
@@ -43,25 +40,25 @@ public class ControllerServer implements IIPCService {
 				try {
 					listener = new ServerSocket(port);
 				} catch (IOException e) {
-					LOGGER.severe("IO Exception when starting server", e);
+					getLogger().log(Level.SEVERE, "IO Exception when starting server", e);
 					return;
 				}
 
 				try {
 					while (!isStopped()) {
-						LOGGER.info("Waiting for client");
+						getLogger().info("Waiting for client");
 		                final Socket socket;
 		                try {
 		                	socket = listener.accept();
 		                	socket.setSoTimeout(DEFAULT_TIMEOUT_MS);
-		                	LOGGER.info("New client accepted: " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+		                	getLogger().info("New client accepted: " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
 		                } catch (SocketException e) {
 		                	if (!listener.isClosed()) {
-		                		LOGGER.severe("Socket exception when serving", e);
+		                		getLogger().log(Level.SEVERE, "Socket exception when serving", e);
 		                	}
 		                	continue;
 		                } catch (IOException e) {
-		                	LOGGER.severe("IO Exception when serving", e);
+		                	getLogger().log(Level.SEVERE, "IO Exception when serving", e);
 		                	continue;
 		                }
 
@@ -71,7 +68,7 @@ public class ControllerServer implements IIPCService {
 					try {
 						listener.close();
 					} catch (IOException e) {
-						LOGGER.severe("IO Exception when closing server", e);
+						getLogger().log(Level.SEVERE, "IO Exception when closing server", e);
 					}
 				}
 			}
@@ -86,7 +83,7 @@ public class ControllerServer implements IIPCService {
 			try {
 				listener.close();
 			} catch (IOException e) {
-				LOGGER.warning("Failed to close server socket", e);
+				getLogger().log(Level.SEVERE, "Failed to close server socket", e);
 			}
 		}
 	}
@@ -100,26 +97,17 @@ public class ControllerServer implements IIPCService {
 	}
 
 	@Override
-	public void setPort(int newPort) {
-		if (isRunning()) {
-			LOGGER.warning("Cannot change port while running");
-			return;
-		}
-		this.port = newPort;
-	}
-
-	@Override
 	public boolean isRunning() {
 		return mainThread != null && mainThread.isAlive();
 	}
 
 	@Override
-	public int getPort() {
-		return port;
+	public String getName() {
+		return "Controller server";
 	}
 
 	@Override
-	public String getName() {
-		return "Controller server";
+	public Logger getLogger() {
+		return Logger.getLogger(ControllerServer.class.getName());
 	}
 }

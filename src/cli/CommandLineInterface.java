@@ -8,7 +8,9 @@ import java.util.List;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.NumberUtility;
+import utilities.Pair;
 import core.controller.Core;
+import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.DynamicJavaCompiler;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.userDefinedTask.UserDefinedAction;
@@ -149,7 +151,10 @@ public class CommandLineInterface {
 				});
 
 				DynamicJavaCompiler compiler = new DynamicJavaCompiler("CustomAction", new String[] { "core" }, new String[] {});
-				UserDefinedAction action = compiler.compile(sourceGen.getSource());
+
+				Pair<DynamicCompilerOutput, UserDefinedAction> compilerResult = compiler.compile(sourceGen.getSource());
+				UserDefinedAction action = compilerResult.getB();
+
 				if (action != null) {
 					try {
 						action.action(new Core());

@@ -14,9 +14,9 @@ import java.awt.event.MouseEvent;
 
 public class MinimizedFrame extends TrayIcon {
 
-	private final BackEndHolder backEnd;
+	private final MainBackEndHolder backEnd;
 
-	public MinimizedFrame(Image image, final BackEndHolder backEnd) {
+	public MinimizedFrame(Image image, final MainBackEndHolder backEnd) {
 		super(image);
 
 		this.backEnd = backEnd;

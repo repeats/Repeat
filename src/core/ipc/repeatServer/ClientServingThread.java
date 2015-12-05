@@ -6,16 +6,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.sun.istack.internal.logging.Logger;
-
+import utilities.ILoggable;
 import core.controller.Core;
 
-class ClientServingThread implements Runnable {
-
-	private static final Logger LOGGER = Logger.getLogger(ControllerServer.class);
+class ClientServingThread implements Runnable, ILoggable {
 
 	private static final int MAX_RETRY = 100;
+
+	private static final int MESSAGE_DELIMITER = 0x02;
+
 
 	private Boolean stopped;
 	private final Socket socket;
@@ -47,7 +51,7 @@ class ClientServingThread implements Runnable {
 			writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			messageSender.setWriter(writer);
 		} catch (IOException e) {
-			LOGGER.warning("IO Exception when open reader and writer for socket", e);
+			getLogger().log(Level.WARNING, "IO Exception when open reader and writer for socket", e);
 			return;
 		}
 
@@ -57,26 +61,26 @@ class ClientServingThread implements Runnable {
 					break;
 				}
 			}
-			LOGGER.info("Finished\n");
+			getLogger().info("Finished\n");
 		} finally {
 			try {
 				reader.close();
 				reader = null;
 			} catch (IOException e) {
-				LOGGER.warning("IO Exception when closing input socket", e);
+				getLogger().log(Level.WARNING, "IO Exception when closing input socket", e);
 			}
 
 			try {
 				writer.close();
 				writer = null;
 			} catch (IOException e) {
-				LOGGER.warning("IO Exception when closing output socket", e);
+				getLogger().log(Level.WARNING, "IO Exception when closing output socket", e);
 			}
 
             try {
 				socket.close();
 			} catch (IOException e) {
-				LOGGER.warning("IO Exception when closing socket", e);
+				getLogger().log(Level.WARNING, "IO Exception when closing socket", e);
 			}
         }
 	}
@@ -85,10 +89,10 @@ class ClientServingThread implements Runnable {
 		try {
         	return process();
         } catch (IOException e) {
-        	LOGGER.warning("IO Exception when serving client", e);
+        	getLogger().log(Level.WARNING, "IO Exception when serving client", e);
         	return false;
 		} catch (Exception e) {
-			LOGGER.warning("Exception when serving client", e);
+			getLogger().log(Level.WARNING, "Exception when serving client", e);
 			return false;
 		}
 	}
@@ -98,15 +102,21 @@ class ClientServingThread implements Runnable {
 			return false;
 		}
 
-		StringBuilder message = getMessage();
-		if (message == null) {
+		List<StringBuilder> messages = getMessages();
+		if (messages == null || messages.size() == 0) {
 			return false;
 		}
 
-		return requestProcessor.processRequest(message.toString());
+		boolean result = true;
+
+		for (StringBuilder message : messages) {
+			result &= requestProcessor.processRequest(message.toString());
+		}
+
+		return result;
 	}
 
-	private StringBuilder getMessage() throws IOException {
+	private List<StringBuilder> getMessages() throws IOException {
 		/**
 		 * Create a blocking read waiting for the next communication
 		 */
@@ -114,9 +124,9 @@ class ClientServingThread implements Runnable {
 		if (firstCharacter == -1) {
 			retryCount++;
 			if (retryCount < MAX_RETRY) {
-				return new StringBuilder();
+				return null;
 			} else {
-				LOGGER.warning("Max retry reached.");
+				getLogger().log(Level.WARNING, "Max retry reached.");
 				return null;
 			}
 		}
@@ -124,18 +134,32 @@ class ClientServingThread implements Runnable {
 		/**
 		 * Build the request, remembering that
 		 */
+		List<StringBuilder> output = new LinkedList<>();
 		StringBuilder builder = new StringBuilder();
-		builder.append(Character.toString((char) firstCharacter));
+
+		if (firstCharacter != MESSAGE_DELIMITER) {
+			builder.append(Character.toString((char) firstCharacter));
+		}
 
 		while (reader.ready()) {
 			int readValue = reader.read();
 			if (readValue != -1) {
-				builder.append(Character.toString((char) readValue));
+				if (readValue == MESSAGE_DELIMITER) {
+					if (builder.length() != 0) {
+						output.add(builder);
+						builder = new StringBuilder();
+					}
+				} else {
+					builder.append(Character.toString((char) readValue));
+				}
 			} else {
+				if (builder.length() != 0) {
+					output.add(builder);
+				}
 				break;
 			}
 		}
-		return builder;
+		return output;
 	}
 
 	protected void stop() {
@@ -148,5 +172,10 @@ class ClientServingThread implements Runnable {
 		synchronized (stopped) {
 			return stopped;
 		}
+	}
+
+	@Override
+	public Logger getLogger() {
+		return Logger.getLogger(ControllerServer.class.getName());
 	}
 }

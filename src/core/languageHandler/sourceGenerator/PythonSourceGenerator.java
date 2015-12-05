@@ -2,9 +2,9 @@ package core.languageHandler.sourceGenerator;
 
 import java.util.logging.Logger;
 
+import staticResources.BootStrapResources;
 import utilities.Function;
 import core.scheduler.SchedulingData;
-import frontEnd.graphics.BootStrapResources;
 
 public class PythonSourceGenerator extends AbstractSourceGenerator {
 

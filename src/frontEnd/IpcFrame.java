@@ -1,5 +1,8 @@
 package frontEnd;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -13,18 +16,28 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import frontEnd.graphics.BootStrapResources;
+import staticResources.BootStrapResources;
 
 @SuppressWarnings("serial")
 public class IpcFrame extends JFrame {
 
+	protected static final int COLUMN_NAME = 0;
+	protected static final int COLUMN_PORT = 1;
+	protected static final int COLUMN_STATUS = 2;
+
 	private final JPanel contentPane;
-	private final JTable tIpc;
+	protected final JTable tIpc;
+	protected final MainBackEndHolder mainFrame;
+
+	protected IpcBackendHolder ipcBackEndHolder;
 
 	/**
 	 * Create the frame.
 	 */
-	public IpcFrame(final BackEndHolder mainFrame) {
+	public IpcFrame(final MainBackEndHolder mainFrame) {
+		this.mainFrame = mainFrame;
+		ipcBackEndHolder = new IpcBackendHolder(this);
+
 		setTitle("IPC Modules");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -33,16 +46,24 @@ public class IpcFrame extends JFrame {
 		setContentPane(contentPane);
 
 		JButton bStart = new JButton();
+		bStart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ipcBackEndHolder.startProcess();
+			}
+		});
 		bStart.setIcon(BootStrapResources.PLAY);
 		bStart.setToolTipText("Start this ipc service");
 
 		JButton bStop = new JButton();
+		bStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ipcBackEndHolder.stopProcess();
+			}
+		});
 		bStop.setIcon(BootStrapResources.STOP);
 		bStop.setToolTipText("Stop this ipc service");
-
-		JButton bRestart = new JButton();
-		bRestart.setIcon(BootStrapResources.MOVE);
-		bRestart.setToolTipText("Restart this ipc service");
 
 		JScrollPane scrollPane = new JScrollPane();
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -55,9 +76,7 @@ public class IpcFrame extends JFrame {
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(bStart)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(bStop)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(bRestart)))
+							.addComponent(bStop)))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
@@ -66,18 +85,15 @@ public class IpcFrame extends JFrame {
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(bStart, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-						.addComponent(bStop, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-						.addComponent(bRestart))
+						.addComponent(bStop, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 
 		tIpc = new JTable();
 		tIpc.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"Controller Server", "0", "Running"},
-				{null, null, null},
 			},
 			new String[] {
 				"Process", "Port", "Status"
@@ -94,6 +110,7 @@ public class IpcFrame extends JFrame {
 		for (int i = 0 ; i < tIpc.getColumnCount(); i++) {
 			tIpc.getColumnModel().getColumn(i).setCellRenderer(centerRender);
 		}
+		ipcBackEndHolder.renderServices();
 
 		tIpc.getColumnModel().getColumn(0).setPreferredWidth(103);
 		scrollPane.setViewportView(tIpc);

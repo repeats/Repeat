@@ -28,9 +28,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import staticResources.BootStrapResources;
 import utilities.swing.SwingUtil;
 import core.userDefinedTask.TaskGroup;
-import frontEnd.graphics.BootStrapResources;
 
 @SuppressWarnings("serial")
 public class TaskGroupFrame extends JFrame {
@@ -45,9 +45,9 @@ public class TaskGroupFrame extends JFrame {
 	private final JPanel contentPane;
 	protected final JTable tGroups;
 
-	private final BackEndHolder backEnd;
+	private final MainBackEndHolder backEnd;
 
-	public TaskGroupFrame(final BackEndHolder backEnd) {
+	public TaskGroupFrame(final MainBackEndHolder backEnd) {
 		this.backEnd = backEnd;
 
 		setTitle("Task group");

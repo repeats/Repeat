@@ -20,11 +20,13 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import utilities.FileUtility;
+import utilities.Pair;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
-import core.languageHandler.Languages;
+import core.languageHandler.Language;
+import core.userDefinedTask.DormantUserDefinedTask;
 import core.userDefinedTask.UserDefinedAction;
 
 public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
@@ -47,7 +49,7 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 	}
 
 	@Override
-	public UserDefinedAction compile(String sourceCode, File classFile) {
+	public Pair<DynamicCompilerOutput, UserDefinedAction> compile(String sourceCode, File classFile) {
 		className = FileUtility.removeExtension(classFile).getName();
 
 		if (!classFile.getParentFile().getAbsolutePath().equals(new File(FileUtility.joinPath(packageTree)).getAbsolutePath())) {
@@ -61,7 +63,7 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 		}
 
 		try {
-			UserDefinedAction output =  loadClass(className);
+			Pair<DynamicCompilerOutput, UserDefinedAction> output = loadClass(className);
 			getLogger().info("Skipped compilation and loaded object file.");
 			className = null;
 			return output;
@@ -73,15 +75,14 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 	}
 
 	@Override
-	public UserDefinedAction compile(String sourceCode) {
+	public Pair<DynamicCompilerOutput, UserDefinedAction> compile(String sourceCode) {
 		String originalPath = System.getProperty("java.home");
 		System.setProperty("java.home", home.getAbsolutePath());
 
 		if (!sourceCode.contains("class " + defaultClassName)) {
 			getLogger().warning("Cannot find class " + defaultClassName + " in source code.");
-			return null;
+			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_MISSING_PREFORMAT_ELEMENTS, null);
 		}
-
 
 		String newClassName = className;
 		if (newClassName == null) {
@@ -95,7 +96,7 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 	            try {
 	                if (!FileUtility.writeToFile(sourceCode, compiling, false)) {
 	                	getLogger().warning("Cannot write source code to file.");
-	                	return null;
+	                	return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(sourceCode));
 	                }
 
 	                /** Compilation Requirements *********************************************************************************************/
@@ -103,7 +104,7 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 	                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 	                if (compiler == null) {
 	                	getLogger().warning("No java compiler found. Set class path points to JDK in setting?");
-	                	return null;
+	                	return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode));
 	                }
 	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
 
@@ -128,7 +129,7 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 	                    compilationUnit);
 	                /********************************************************************************************* Compilation Requirements **/
 	                if (task.call()) {
-	                	UserDefinedAction output = loadClass(newClassName);
+	                	Pair<DynamicCompilerOutput, UserDefinedAction> output = loadClass(newClassName);
 	                	getLogger().info("Successfully compiled class " + defaultClassName);
                 		return output;
 	                } else {
@@ -143,24 +144,24 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 	            }
 	        }
 	        getLogger().warning("Cannot compile class " + defaultClassName);
-	        return null;
+	        return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_ERROR, null);
 		} finally {
 			className = null;
 			System.setProperty("java.home", originalPath);
 		}
 	}
 
-	private UserDefinedAction loadClass(String loadClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+	private Pair<DynamicCompilerOutput, UserDefinedAction> loadClass(String loadClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
 		classLoader = new URLClassLoader(new URL[]{new File("./").toURI().toURL()});
 
         Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + loadClassName);
         Object object = loadedClass.newInstance();
 
-//        LOGGER.info("Successfully loaded class " + loadClassName);
+        getLogger().log(Level.FINE, "Successfully loaded class " + loadClassName);
         classLoader.close();
         UserDefinedAction output = (UserDefinedAction) object;
         output.setSourcePath(getSourceFile(loadClassName).getAbsolutePath());
-        return output;
+        return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_SUCCESS, output);
 	}
 
 	@Override
@@ -169,8 +170,8 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 	}
 
 	@Override
-	public String getName() {
-		return Languages.JAVA.toString();
+	public Language getName() {
+		return Language.JAVA;
 	}
 
 	@Override
