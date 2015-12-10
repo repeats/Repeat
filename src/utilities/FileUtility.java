@@ -46,6 +46,15 @@ public class FileUtility {
 	}
 
 	/**
+	 * Split a path into a list of directories ending with the file name
+	 * @param path path to split
+	 * @return list of directories representing the file path, ending with the file name
+	 */
+	public static List<String> splitPath(String path) {
+		return splitPath(new File(path));
+	}
+
+	/**
 	 * Split a file into a list of directories ending with the file name
 	 * @param file file to split path
 	 * @return list of directories representing the file path, ending with the file name
@@ -59,6 +68,17 @@ public class FileUtility {
 		}
 		Collections.reverse(output);
 		return output;
+	}
+
+	/**
+	 * Get the file name given a relative or absolute path to the file
+	 * Path does not have to exist
+	 * @param path path to the file
+	 * @return file name (omitting the parent directories)
+	 */
+	public static String getFileName(String path) {
+		List<String> split = splitPath(path);
+		return split.get(split.size() - 1);
 	}
 
 	/**
@@ -422,7 +442,7 @@ public class FileUtility {
 	 * @param path2 second path
 	 * @return a path created by joining first path and second path
 	 */
-	public static String joinPath(String path1, String path2) {
+	private static String joinPath(String path1, String path2) {
 		File file1 = new File(path1);
 		File file2 = new File(file1, path2);
 		return file2.getPath();

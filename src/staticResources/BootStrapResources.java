@@ -2,6 +2,7 @@ package staticResources;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -47,11 +48,15 @@ public class BootStrapResources {
 
 		/*********************************************************************************/
 		LANGUAGE_API = new HashMap<>();
-		LANGUAGE_API.put(Language.JAVA.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/JavaAPI.txt")).toString());
-		LANGUAGE_API.put(Language.PYTHON.toString(), FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/core/languageHandler/API/PythonAPI.txt")).toString());
+		LANGUAGE_API.put(Language.JAVA.toString(), getFile("/core/languageHandler/API/JavaAPI.txt"));
+		LANGUAGE_API.put(Language.PYTHON.toString(), getFile("/core/languageHandler/API/PythonAPI.txt"));
 
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
-		NATIVE_LANGUAGE_TEMPLATES.put("python", FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream("/python/template_repeat.py")).toString());
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON.toString(), getFile("/python/template_repeat.py"));
+	}
+
+	public static void extractResources() throws IOException {
+		PythonResources.extractResources();
 	}
 
 	private static ImageIcon getIcon(String resource) {
@@ -65,6 +70,14 @@ public class BootStrapResources {
 			LOGGER.log(Level.SEVERE, "Cannot load image " + resource, e);
 			return null;
 		}
+	}
+
+	private static String getFile(String path) {
+		return FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream(path)).toString();
+	}
+
+	public static InputStream test() {
+		return BootStrapResources.class.getResourceAsStream("/python");
 	}
 
 	public static String getAbout() {

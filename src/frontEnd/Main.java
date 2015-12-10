@@ -2,6 +2,7 @@ package frontEnd;
 
 import java.awt.EventQueue;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -13,6 +14,7 @@ import javax.swing.SwingWorker;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
+import staticResources.BootStrapResources;
 import utilities.Function;
 import utilities.logging.ExceptionUtility;
 import utilities.logging.OutStream;
@@ -23,7 +25,7 @@ public class Main {
 	private static MainFrame createdFrame;
 
 	public static void main(String[] args) throws FileNotFoundException {
-
+		/*************************************************************************************/
 		// Get the logger for "org.jnativehook" and set the level to warning.
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 		logger.setLevel(Level.WARNING);
@@ -36,8 +38,17 @@ public class Main {
 				System.exit(1);
 			}
 		}
+		/*************************************************************************************/
+		/********************************Extracting resources*********************************/
+		try {
+			BootStrapResources.extractResources();
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "Cannot extract bootstrap resources.", e);
+			System.exit(1);
+		}
 
 		/*************************************************************************************/
+		/********************************Defining backend activities**************************/
 		final SwingWorker<Void, Void> backEndInitialization = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
@@ -72,6 +83,7 @@ public class Main {
 		};
 
 		/*************************************************************************************/
+		/********************************Start main program***********************************/
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
