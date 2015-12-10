@@ -9,7 +9,6 @@ import socket
 import threading
 import Queue
 
-
 import specifications
 import keyboard_request
 import mouse_request

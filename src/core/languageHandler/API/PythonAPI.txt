@@ -1,5 +1,15 @@
 Repeat - Python API
-Updated 16th April 2015
+Updated 10th December 2015
 Author: Hoai Phuoc Truong
 
 **********************************************************************************************************
+Core API
+	I) Mouse
+		1) left_click(x, y) : left click at a position. If neither x nor y is provided, left click at current position
+		2) right_click(x, y) : right click at a position. If neither x nor y is provided, right click at current position
+		3) move(x, y) : move mouse to a position (in pixel)
+		4) move_by(x, y) : move mouse by certain pixels
+	II) Key
+		1) type(keys) : type a series of keys sequentially. (e.g. type(1,2, 3))
+		2) type_string(strings) : type a series of strings sequentially (e.g. type_string("a", "bb")
+		3) combination(keys) : perform a combination (e.g. combination(VK_CTRL, VK_ALT, VL_DELETE)

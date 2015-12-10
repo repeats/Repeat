@@ -52,6 +52,11 @@ public class Main {
 		final SwingWorker<Void, Void> backEndInitialization = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
+				if (createdFrame == null) {
+					LOGGER.severe("Main frame is not created. Exitting...");
+					System.exit(2);
+				}
+
 				createdFrame.backEnd.loadConfig(null);
 
 				try {

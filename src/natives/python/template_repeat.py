@@ -1,6 +1,8 @@
 """
-    Refer to API to see how to use repeat_api
-    invoker is the hotkey that invoke this action
+	Refer to API to see how to use repeat_api
+	invoker is the hotkey (list of keys) that invoked this action
 """
-def action(repeat_lib, invoker):
-    pass
+def action(controller, invoker):
+	mouse = controller.mouse
+	key = controller.key
+	#Begin generated code
