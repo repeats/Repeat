@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import staticResources.BootStrapResources;
 import utilities.Function;
+import core.languageHandler.Language;
 import core.scheduler.SchedulingData;
 
 public class PythonSourceGenerator extends AbstractSourceGenerator {
@@ -63,7 +64,7 @@ public class PythonSourceGenerator extends AbstractSourceGenerator {
 		}
 
 		StringBuffer sb = new StringBuffer();
-		sb.append(BootStrapResources.getNativeLanguageTemplate("python"));
+		sb.append(BootStrapResources.getNativeLanguageTemplate(Language.PYTHON.toString()));
 		sb.append(mainSource);
 
 		return sb.toString();

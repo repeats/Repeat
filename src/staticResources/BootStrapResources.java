@@ -52,7 +52,7 @@ public class BootStrapResources {
 		LANGUAGE_API.put(Language.PYTHON.toString(), getFile("/core/languageHandler/API/PythonAPI.txt"));
 
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON.toString(), getFile("/python/template_repeat.py"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON.toString(), getFile("/natives/python/template_repeat.py"));
 	}
 
 	public static void extractResources() throws IOException {

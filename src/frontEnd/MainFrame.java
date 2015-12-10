@@ -678,7 +678,7 @@ public class MainFrame extends JFrame {
 		taSource.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (taSource.getText().length() == 0) {
+				if (taSource.getText().trim().length() == 0) {
 					backEnd.promptSource();
 				}
 			}

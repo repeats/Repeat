@@ -59,7 +59,6 @@ public class MainMessageSender implements ILoggable {
 	}
 
 	protected void setWriter(BufferedWriter writer) {
-		getLogger().info("Set to be " + writer);
 		this.writer = writer;
 	}
 
