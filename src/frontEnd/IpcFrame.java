@@ -2,6 +2,8 @@ package frontEnd;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -25,6 +27,7 @@ public class IpcFrame extends JFrame {
 	protected static final int COLUMN_PORT = 1;
 	protected static final int COLUMN_STATUS = 2;
 
+
 	private final JPanel contentPane;
 	protected final JTable tIpc;
 	protected final MainBackEndHolder mainFrame;
@@ -37,6 +40,17 @@ public class IpcFrame extends JFrame {
 	public IpcFrame(final MainBackEndHolder mainFrame) {
 		this.mainFrame = mainFrame;
 		ipcBackEndHolder = new IpcBackendHolder(this);
+		addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowGainedFocus(WindowEvent e) {
+				ipcBackEndHolder.periodicRefresh();
+			}
+
+			@Override
+			public void windowLostFocus(WindowEvent e) {
+				ipcBackEndHolder.stopPeriodicRefresh();
+			}
+		});
 
 		setTitle("IPC Modules");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);

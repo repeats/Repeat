@@ -1,6 +1,8 @@
 package frontEnd;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +13,7 @@ import core.ipc.IPCServiceManager;
 
 public class IpcBackendHolder implements ILoggable {
 	private final IpcFrame frame;
+	private ScheduledFuture<?> scheduled;
 
 	protected IpcBackendHolder(IpcFrame frame) {
 		this.frame = frame;
@@ -38,6 +41,24 @@ public class IpcBackendHolder implements ILoggable {
 			getLogger().log(Level.WARNING, "Unable to stop service...", e);
 		}
 		renderServices();
+	}
+
+	protected void periodicRefresh() {
+		if (scheduled != null) {
+			return;
+		}
+
+		scheduled = frame.mainFrame.executor.scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
+				renderServices();
+			}
+		}, 0, 1, TimeUnit.SECONDS);
+	}
+
+	protected void stopPeriodicRefresh() {
+		scheduled.cancel(false);
+		scheduled = null;
 	}
 
 	protected void renderServices() {
