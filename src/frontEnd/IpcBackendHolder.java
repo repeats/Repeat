@@ -6,7 +6,8 @@ import java.util.logging.Logger;
 
 import utilities.ILoggable;
 import utilities.swing.SwingUtil;
-import core.ipc.repeatClient.IIPCService;
+import core.ipc.IIPCService;
+import core.ipc.IPCServiceManager;
 
 public class IpcBackendHolder implements ILoggable {
 	private final IpcFrame frame;
@@ -41,9 +42,9 @@ public class IpcBackendHolder implements ILoggable {
 
 	protected void renderServices() {
 		SwingUtil.TableUtil.clearTable(frame.tIpc);
-		SwingUtil.TableUtil.ensureRowNumber(frame.tIpc, frame.mainFrame.ipcServices.size());
-		for (int i = 0; i < frame.mainFrame.ipcServices.size(); i++) {
-			IIPCService service = frame.mainFrame.ipcServices.get(i);
+		SwingUtil.TableUtil.setRowNumber(frame.tIpc, IPCServiceManager.IPC_SERVICE_COUNT);
+		for (int i = 0; i < IPCServiceManager.IPC_SERVICE_COUNT; i++) {
+			IIPCService service = IPCServiceManager.getIPCService(i);
 			frame.tIpc.setValueAt(service.getName(), i, IpcFrame.COLUMN_NAME);
 			frame.tIpc.setValueAt(service.getPort(), i, IpcFrame.COLUMN_PORT);
 			frame.tIpc.setValueAt(service.isRunning(), i, IpcFrame.COLUMN_STATUS);
@@ -52,11 +53,11 @@ public class IpcBackendHolder implements ILoggable {
 
 	private IIPCService getSelectedService() {
 		int selected = frame.tIpc.getSelectedRow();
-		if (selected < 0 || selected >= frame.mainFrame.ipcServices.size()) {
+		if (selected < 0 || selected >= IPCServiceManager.IPC_SERVICE_COUNT) {
 			return null;
 		}
 
-		IIPCService output = frame.mainFrame.ipcServices.get(selected);
+		IIPCService output = IPCServiceManager.getIPCService(selected);
 		return output;
 	}
 

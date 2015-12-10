@@ -1,4 +1,4 @@
-package core.ipc.repeatServer;
+package core.ipc.repeatServer.processors;
 
 import java.io.File;
 import java.util.HashMap;
@@ -9,22 +9,24 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.ipc.repeatServer.ClientTask;
+import core.ipc.repeatServer.MainMessageSender;
 import core.keyChain.KeyChain;
 
 public class TaskProcessor extends AbstractMessageProcessor {
 
-	private static final long EXECUTION_TIMEOUT_MS = 500;
+	private static final long EXECUTION_TIMEOUT_MS = 2000;
 	private final Map<Integer, ClientTask> tasks;
 	private final Map<Long, Reply> locks;
 
-	protected TaskProcessor(MainMessageSender messageSender) {
+	public TaskProcessor(MainMessageSender messageSender) {
 		super(messageSender);
 		this.tasks = new HashMap<>();
 		locks = new HashMap<>();
 	}
 
 	@Override
-	protected boolean process(String type, long id, JsonNode content) {
+	public boolean process(String type, long id, JsonNode content) {
 		if (locks.containsKey(id)) {
 			if (!verifyReplyContent(content)) {
 				getLogger().warning("Invalid reply." + content + ". Drop message!");

@@ -60,6 +60,7 @@ import utilities.swing.SwingUtil;
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
 
+import core.controller.Core;
 import core.languageHandler.Language;
 import core.recorder.Recorder;
 
@@ -148,13 +149,7 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void windowGainedFocus(WindowEvent e) {
-				if (taskGroup.isVisible()) {
-					taskGroup.setVisible(false);
-				}
-
-				if (hotkey.isVisible()) {
-					hotkey.setVisible(false);
-				}
+				backEnd.focusMainFrame();
 			}
 		});
 
@@ -352,20 +347,7 @@ public class MainFrame extends JFrame {
 		miClassPath.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (rbmiCompileJava.isSelected()) {
-					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
-					chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					if (chooser.showDialog(MainFrame.this, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.getCompilerFactory().getCompiler(Language.JAVA).setPath(chooser.getSelectedFile());
-					}
-				} else if (rbmiCompilePython.isSelected()) {
-					JFileChooser chooser = new JFileChooser(backEnd.getCompiler().getPath());
-					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					if (chooser.showDialog(MainFrame.this, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
-						backEnd.config.getCompilerFactory().getCompiler(Language.PYTHON).setPath(chooser.getSelectedFile());
-					}
-				}
-
+				backEnd.changeCompilerPath();
 			}
 		});
 		mSetting.add(miClassPath);
@@ -424,7 +406,7 @@ public class MainFrame extends JFrame {
 		backEnd.executor.scheduleWithFixedDelay(new Runnable(){
 			@Override
 			public void run() {
-				final Point p = backEnd.core.mouse().getPosition();
+				final Point p = Core.getInstance().mouse().getPosition();
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {

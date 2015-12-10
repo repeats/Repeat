@@ -1,8 +1,9 @@
-package core.ipc.repeatServer;
+package core.ipc.repeatServer.processors;
 
 import utilities.ILoggable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
+import core.ipc.repeatServer.MainMessageSender;
 
 abstract class AbstractMessageProcessor implements ILoggable {
 
@@ -15,7 +16,7 @@ abstract class AbstractMessageProcessor implements ILoggable {
 		this.messageSender = messageSender;
 	}
 
-	protected abstract boolean process(String type, long id, JsonNode content) throws InterruptedException;
+	public abstract boolean process(String type, long id, JsonNode content) throws InterruptedException;
 	protected abstract boolean verifyMessageContent(JsonNode content);
 
 	protected boolean verifyReplyContent(JsonNode content) {

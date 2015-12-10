@@ -98,7 +98,6 @@ class RepeatClient(object):
                     message_content = parsed['content']
 
                     if message_id in self.synchronization_events:
-                        print "unblocking event with id %s" % message_id
                         cv = self.synchronization_events.pop(message_id)
                         cv.set()
                     else:

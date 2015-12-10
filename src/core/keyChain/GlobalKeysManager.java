@@ -12,6 +12,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
@@ -29,7 +32,6 @@ public final class GlobalKeysManager {
 
 	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 
-	private final Core controller;
 	private final Map<KeyChain, UserDefinedAction> actionMap = new HashMap<>();
 	private Function<Void, Boolean> disablingFunction = Function.falseFunction();
 	private final Map<String, Thread> executions;
@@ -37,8 +39,7 @@ public final class GlobalKeysManager {
 
 	private TaskGroup currentTaskGroup;
 
-	public GlobalKeysManager(Config config, Core controller) {
-		this.controller = controller;
+	public GlobalKeysManager(Config config) {
 		this.executions = new HashMap<>();
 		this.currentKeyChain = new KeyChain();
 	}
@@ -89,7 +90,7 @@ public final class GlobalKeysManager {
 										List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
 
 										if (d >= 0 && d < tasks.size()) {
-											currentTaskGroup.getTasks().get(d).action(controller);
+											currentTaskGroup.getTasks().get(d).action(Core.getInstance());
 										} else {
 											LOGGER.warning("Index out of bound. Cannot execute given task with index " + d + " given task group only has " + tasks.size() + " elements.");
 										}
@@ -97,7 +98,7 @@ public final class GlobalKeysManager {
 										return null;
 									}
 								});
-								action.action(controller);
+								action.action(Core.getInstance());
 							} catch (InterruptedException e) {
 								LOGGER.info("Task ended prematurely");
 							} catch (Exception e) {
@@ -223,6 +224,14 @@ public final class GlobalKeysManager {
 
 	public KeyChain isKeyRegistered(int code) {
 		return isKeyRegistered(new KeyChain(code));
+	}
+
+	public static void showCollisionWarning(JFrame parent, Set<KeyChain> keys) {
+		JOptionPane.showMessageDialog(parent,
+				"Newly registered keychains "
+				+ "will collide with previously registered keychain \"" + keys
+				+ "\"\nYou cannot assign this key chain unless you remove the conflicting key chain...",
+				"Key chain collision!", JOptionPane.WARNING_MESSAGE);
 	}
 
 	private UserDefinedAction unregisterKey(KeyChain code) {

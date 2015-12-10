@@ -8,7 +8,7 @@ import argo.jdom.JsonNode;
 import core.languageHandler.Language;
 import core.userDefinedTask.UserDefinedAction;
 
-public abstract class AbstractNativeDynamicCompiler implements ILoggable {
+public abstract class AbstractNativeCompiler implements ILoggable {
 
 	public abstract Pair<DynamicCompilerOutput, UserDefinedAction> compile(String source);
 	public abstract Pair<DynamicCompilerOutput, UserDefinedAction> compile(String source, File objectFile);

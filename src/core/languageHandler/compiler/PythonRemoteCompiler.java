@@ -12,7 +12,7 @@ import core.controller.Core;
 import core.languageHandler.Language;
 import core.userDefinedTask.UserDefinedAction;
 
-public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
+public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 	private File interpreter;
 	private final File objectFileDirectory;
@@ -21,7 +21,7 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 		getLogger().setLevel(Level.ALL);
 	}
 
-	public DynamicPythonCompiler(File objectFileDirectory) {
+	public PythonRemoteCompiler(File objectFileDirectory) {
 		interpreter = new File("python.exe");
 		this.objectFileDirectory = objectFileDirectory;
 	}
@@ -37,7 +37,7 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 	}
 
 	@Override
-	protected Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final int id, final File sourceFile) {
+	protected Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final int id, final String source, final File sourceFile) {
 		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
@@ -45,6 +45,14 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 				if (!result) {
 					getLogger().warning("Unable to run task with id = " + id);
 				}
+			}
+
+			@Override
+			public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
+				Pair<DynamicCompilerOutput, UserDefinedAction> recompiled = PythonRemoteCompiler.this.compile(source);
+				UserDefinedAction output = recompiled.getB();
+				output.syncContent(this);
+				return output;
 			}
 		};
 		output.setSourcePath(sourceFile.getAbsolutePath());
@@ -90,7 +98,7 @@ public class DynamicPythonCompiler extends AbstractRemoteNativeDynamicCompiler {
 
 	@Override
 	public Logger getLogger() {
-		return Logger.getLogger(DynamicPythonCompiler.class.getName());
+		return Logger.getLogger(PythonRemoteCompiler.class.getName());
 	}
 
 	@Override

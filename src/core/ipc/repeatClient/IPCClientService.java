@@ -4,6 +4,8 @@ import java.io.File;
 
 import com.sun.istack.internal.logging.Logger;
 
+import core.ipc.IIPCService;
+
 public abstract class IPCClientService extends IIPCService {
 	private static final Logger LOGGER = Logger.getLogger(IPCClientService.class);
 

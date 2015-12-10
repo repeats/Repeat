@@ -11,13 +11,13 @@ import utilities.NumberUtility;
 import utilities.Pair;
 import core.controller.Core;
 import core.languageHandler.compiler.DynamicCompilerOutput;
-import core.languageHandler.compiler.DynamicJavaCompiler;
+import core.languageHandler.compiler.JavaNativeCompiler;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.userDefinedTask.UserDefinedAction;
 
 public class CommandLineInterface {
 	public static void main(String[] args) {
-		final Core core = new Core();
+		final Core core = Core.getInstance();
 
 		TerminalState mouseMove = new TerminalState() {
 			@Override
@@ -150,14 +150,14 @@ public class CommandLineInterface {
 					}
 				});
 
-				DynamicJavaCompiler compiler = new DynamicJavaCompiler("CustomAction", new String[] { "core" }, new String[] {});
+				JavaNativeCompiler compiler = new JavaNativeCompiler("CustomAction", new String[] { "core" }, new String[] {});
 
 				Pair<DynamicCompilerOutput, UserDefinedAction> compilerResult = compiler.compile(sourceGen.getSource());
 				UserDefinedAction action = compilerResult.getB();
 
 				if (action != null) {
 					try {
-						action.action(new Core());
+						action.action(Core.getInstance());
 					} catch (InterruptedException e) {
 						System.out.println("Executed ended prematurely...");
 						return false;

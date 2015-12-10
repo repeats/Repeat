@@ -9,13 +9,15 @@ import java.util.logging.Logger;
 
 public final class Core {
 
+	private static final Core SINGLETON_INSTANCE = new Core();
+
 	private final ScheduledThreadPoolExecutor executor;
 	private Robot controller;
 
 	private final MouseCore mouse;
 	private final KeyboardCore keyboard;
 
-	public Core() {
+	private Core() {
 		try {
 			controller = new Robot();
 		} catch (AWTException e) {
@@ -26,6 +28,10 @@ public final class Core {
 		executor = new ScheduledThreadPoolExecutor(10);
 		mouse = new MouseCore(controller);
 		keyboard = new KeyboardCore(controller);
+	}
+
+	public static Core getInstance() {
+		return SINGLETON_INSTANCE;
 	}
 
 	/**

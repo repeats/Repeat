@@ -1,4 +1,4 @@
-package core.ipc.repeatServer;
+package core.ipc.repeatServer.processors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,20 +10,21 @@ import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;
 import core.controller.Core;
+import core.ipc.repeatServer.MainMessageSender;
 
 public class ServerMainProcessor implements ILoggable {
 
-	protected static final String TYPE_ACTION = "action";
-	protected static final String TYPE_TASK = "task";
-	protected static final String TYPE_SYSTEM_HOST = "system_host";
-	protected static final String TYPE_SYSTEM_CLIENT = "system_client";
+	public static final String TYPE_ACTION = "action";
+	public static final String TYPE_TASK = "task";
+	public static final String TYPE_SYSTEM_HOST = "system_host";
+	public static final String TYPE_SYSTEM_CLIENT = "system_client";
 
 	private final Map<String, AbstractMessageProcessor> messageProcesssors;
 	private final ControllerRequestProcessor actionProcessor;
 	private final TaskProcessor taskProcessor;
 	private final SystemRequestProcessor systemProcessor;
 
-	protected ServerMainProcessor(Core core, MainMessageSender messageSender) {
+	public ServerMainProcessor(Core core, MainMessageSender messageSender) {
 		messageProcesssors = new HashMap<>();
 
 		actionProcessor = new ControllerRequestProcessor(messageSender, core);
@@ -42,14 +43,14 @@ public class ServerMainProcessor implements ILoggable {
 	 * @param core Core controller that will execute the action
 	 * @return list of actions need to perform in order
 	 */
-	protected boolean processRequest(String message) {
+	public boolean processRequest(String message) {
 		JsonRootNode root = JSONUtility.jsonFromString(message);
 		if (root == null || !verifyMessage(root)) {
 			getLogger().warning("Invalid messaged received " + message);
 			return false;
 		}
 
-		System.out.println("Receive " + message);
+		getLogger().fine("Receive " + message);
 		String type = root.getStringValue("type");
 		long id = Long.parseLong(root.getNumberValue("id"));
 		JsonNode content = root.getNode("content");

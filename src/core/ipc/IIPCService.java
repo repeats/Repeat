@@ -1,4 +1,4 @@
-package core.ipc.repeatClient;
+package core.ipc;
 
 import java.io.IOException;
 

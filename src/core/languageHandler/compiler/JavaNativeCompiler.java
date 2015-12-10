@@ -29,7 +29,7 @@ import core.languageHandler.Language;
 import core.userDefinedTask.DormantUserDefinedTask;
 import core.userDefinedTask.UserDefinedAction;
 
-public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
+public class JavaNativeCompiler extends AbstractNativeCompiler {
 
 	private static URLClassLoader classLoader;
 
@@ -40,7 +40,7 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 
 	private File home;
 
-	public DynamicJavaCompiler(String className, String[] packageTree, String[] classPaths) {
+	public JavaNativeCompiler(String className, String[] packageTree, String[] classPaths) {
 		this.packageTree = packageTree;
 		this.defaultClassName = className;
 		this.classPaths = classPaths;
@@ -211,6 +211,6 @@ public class DynamicJavaCompiler extends AbstractNativeDynamicCompiler {
 
 	@Override
 	public Logger getLogger() {
-		return Logger.getLogger(DynamicJavaCompiler.class.getName());
+		return Logger.getLogger(JavaNativeCompiler.class.getName());
 	}
 }

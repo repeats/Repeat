@@ -7,13 +7,13 @@ import utilities.FileUtility;
 import utilities.Pair;
 import utilities.RandomUtil;
 import argo.jdom.JsonNode;
-import core.ipc.repeatServer.TaskProcessor;
-import core.ipc.repeatServer.TaskProcessorManager;
+import core.ipc.repeatServer.processors.TaskProcessor;
+import core.ipc.repeatServer.processors.TaskProcessorManager;
 import core.languageHandler.Language;
 import core.userDefinedTask.DormantUserDefinedTask;
 import core.userDefinedTask.UserDefinedAction;
 
-public abstract class AbstractRemoteNativeDynamicCompiler extends AbstractNativeDynamicCompiler {
+public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompiler {
 
 	protected TaskProcessor remoteTaskManager;
 
@@ -30,15 +30,13 @@ public abstract class AbstractRemoteNativeDynamicCompiler extends AbstractNative
 
 	@Override
 	public final Pair<DynamicCompilerOutput, UserDefinedAction> compile(String source, File objectFile) {
-		if (remoteTaskManager == null) {
-			TaskProcessor remoteManager = TaskProcessorManager.getProcessor(getName());
-			if (remoteManager == null) {
-				getLogger().warning("Does not have a remote compiler to work with...");
-				return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(source));
-			} else {
-				remoteTaskManager = remoteManager;
-			}
+		TaskProcessor remoteManager = TaskProcessorManager.getProcessor(getName());
+		if (remoteManager == null) {
+			getLogger().warning("Does not have a remote compiler to work with...");
+			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(source));
 		}
+
+		remoteTaskManager = remoteManager;
 
 		try {
 			if (!checkRemoteCompilerSettings()) {
@@ -63,7 +61,7 @@ public abstract class AbstractRemoteNativeDynamicCompiler extends AbstractNative
 				getLogger().warning("Unable to create task from ipc client...");
 				return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_ERROR, null);
 			}
-			return loadAction(id, objectFile);
+			return loadAction(id, source, objectFile);
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Cannot compile source code...", e);
 			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_ERROR, null);
@@ -72,7 +70,7 @@ public abstract class AbstractRemoteNativeDynamicCompiler extends AbstractNative
 
 	protected abstract boolean checkRemoteCompilerSettings();
 
-	protected abstract Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(int id, File objectFile);
+	protected abstract Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(int id, String source, File objectFile);
 
 	@Override
 	public abstract Language getName();

@@ -21,7 +21,7 @@ import core.config.IJsonable;
 import core.controller.Core;
 import core.keyChain.KeyChain;
 import core.languageHandler.Language;
-import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
+import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
 
 public abstract class UserDefinedAction implements IJsonable, ILoggable {
@@ -130,7 +130,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	}
 
 	/***********************************************************************/
-	public UserDefinedAction recompile(AbstractNativeDynamicCompiler compiler, boolean clean) {
+	public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
 		if (!clean) {
 			return this;
 		} else {
@@ -138,6 +138,14 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 			getLogger().warning("Not supported");
 			return null;
 		}
+	}
+
+	public final void syncContent(UserDefinedAction other) {
+		this.sourcePath = other.sourcePath;
+		this.compiler = other.compiler;
+		this.name = other.name;
+		this.hotkeys = other.hotkeys;
+		this.enabled = other.enabled;
 	}
 
 	/***********************************************************************/
@@ -155,7 +163,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	public static UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
 		try {
 			String sourcePath = node.getStringValue("source_path");
-			AbstractNativeDynamicCompiler compiler = factory.getCompiler(node.getStringValue("compiler"));
+			AbstractNativeCompiler compiler = factory.getCompiler(node.getStringValue("compiler"));
 			if (compiler == null) {
 				JOptionPane.showMessageDialog(null, "Unknown compiler " + node.getStringValue("compiler"));
 				return null;

@@ -15,19 +15,19 @@ import core.languageHandler.Language;
 
 public class DynamicCompilerManager implements IJsonable {
 
-	private final Map<Language, AbstractNativeDynamicCompiler> compilers;
+	private final Map<Language, AbstractNativeCompiler> compilers;
 
 	public DynamicCompilerManager() {
 		compilers = new HashMap<>();
-		compilers.put(Language.JAVA, new DynamicJavaCompiler("CustomAction", new String[]{"core"}, new String[]{}));
-		compilers.put(Language.PYTHON, new DynamicPythonCompiler(new File("core")));
+		compilers.put(Language.JAVA, new JavaNativeCompiler("CustomAction", new String[]{"core"}, new String[]{}));
+		compilers.put(Language.PYTHON, new PythonRemoteCompiler(new File("core")));
 	}
 
-	public AbstractNativeDynamicCompiler getCompiler(Language name) {
+	public AbstractNativeCompiler getCompiler(Language name) {
 		return compilers.get(name);
 	}
 
-	public AbstractNativeDynamicCompiler getCompiler(String name) {
+	public AbstractNativeCompiler getCompiler(String name) {
 		return getCompiler(Language.identify(name));
 	}
 
@@ -35,14 +35,14 @@ public class DynamicCompilerManager implements IJsonable {
 		return compilers.containsKey(name);
 	}
 
-	public AbstractNativeDynamicCompiler removeCompiler(String name) {
+	public AbstractNativeCompiler removeCompiler(String name) {
 		return compilers.remove(name);
 	}
 
 	@Override
 	public JsonRootNode jsonize() {
 		List<JsonNode> compilerList = new ArrayList<>();
-		for (AbstractNativeDynamicCompiler compiler :  compilers.values()) {
+		for (AbstractNativeCompiler compiler :  compilers.values()) {
 			compilerList.add(JsonNodeFactories.object(
 					JsonNodeFactories.field("name", JsonNodeFactories.string(compiler.getName().toString())),
 					JsonNodeFactories.field("path", JsonNodeFactories.string(FileUtility.getRelativePwdPath(compiler.getPath()))),

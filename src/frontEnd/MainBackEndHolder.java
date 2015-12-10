@@ -3,6 +3,7 @@ package frontEnd;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -28,15 +30,16 @@ import com.sun.istack.internal.logging.Logger;
 
 import core.config.Config;
 import core.controller.Core;
-import core.ipc.repeatClient.IIPCService;
+import core.ipc.IPCServiceManager;
+import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
-import core.ipc.repeatServer.ControllerServer;
+import core.ipc.repeatServer.processors.TaskProcessorManager;
 import core.keyChain.GlobalKeysManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.Language;
-import core.languageHandler.compiler.AbstractNativeDynamicCompiler;
+import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerOutput;
-import core.languageHandler.compiler.DynamicPythonCompiler;
+import core.languageHandler.compiler.PythonRemoteCompiler;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.recorder.Recorder;
@@ -51,17 +54,13 @@ public class MainBackEndHolder {
 	protected ScheduledThreadPoolExecutor executor;
 	protected Thread compiledExecutor;
 
-	protected Core core;
 	protected Recorder recorder;
-	protected final ArrayList<IIPCService> ipcServices;
 
 	protected UserDefinedAction customFunction;
 
 	protected final List<TaskGroup> taskGroups;
 	private TaskGroup currentGroup;
-
 	protected int selectedTaskIndex;
-	protected final TaskSourceManager taskSourceManager;
 
 	protected final GlobalKeysManager keysManager;
 	protected final Config config;
@@ -76,22 +75,12 @@ public class MainBackEndHolder {
 		config = new Config(this);
 
 		executor = new ScheduledThreadPoolExecutor(5);
-		core = new Core();
 
-		ControllerServer controllerServer = new ControllerServer(core);
-		PythonIPCClientService pythonIPC = new PythonIPCClientService();
-
-		ipcServices = new ArrayList<>();
-		ipcServices.add(controllerServer);
-		ipcServices.add(pythonIPC);
-
-		keysManager = new GlobalKeysManager(config, core);
-		recorder = new Recorder(core, keysManager);
+		keysManager = new GlobalKeysManager(config);
+		recorder = new Recorder(keysManager);
 
 		taskGroups = new ArrayList<>();
-
 		selectedTaskIndex = -1;
-		taskSourceManager = new TaskSourceManager();
 
 		switchRecord = new UserDefinedAction() {
 			@Override
@@ -113,23 +102,64 @@ public class MainBackEndHolder {
 				switchRunningCompiledAction();
 			}
 		};
+
+		TaskProcessorManager.setProcessorIdentifyCallback(new Function<Language, Void>(){
+			@Override
+			public Void apply(Language language) {
+				for (TaskGroup group : taskGroups) {
+					List<UserDefinedAction> tasks = group.getTasks();
+					for (int i = 0; i < tasks.size(); i++) {
+						UserDefinedAction task = tasks.get(i);
+						if (task.getCompiler() != language) {
+							continue;
+						}
+
+						AbstractNativeCompiler compiler = config.getCompilerFactory().getCompiler(task.getCompiler());
+						UserDefinedAction recompiled = task.recompile(compiler, false);
+						if (recompiled == null) {
+							continue;
+						}
+
+						tasks.set(i, recompiled);
+
+						if (recompiled.isEnabled()) {
+							if (keysManager.isTaskRegistered(recompiled).isEmpty()) {
+								keysManager.registerTask(recompiled);
+							}
+						}
+					}
+				}
+				renderTasks();
+				return null;
+			}
+		});
 	}
 
 	/*************************************************************************************************************/
 	/************************************************Config*******************************************************/
 	protected void loadConfig(File file) {
 		config.loadConfig(file);
-		((PythonIPCClientService)ipcServices.get(1)).setCompiler((DynamicPythonCompiler) config.getCompilerFactory().getCompiler(Language.PYTHON));;
+
+		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
+		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
 	}
 
 	/*************************************************************************************************************/
 	/************************************************IPC**********************************************************/
-
 	protected void initiateBackEndActivities() {
-
+		try {
+			IPCServiceManager.initiateServices();
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Unable to launch ipcs.", e);
+		}
 	}
 
 	protected void stopBackEndActivities() {
+		try {
+			IPCServiceManager.stopServices();
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Unable to stop ipcs.", e);
+		}
 	}
 
 	protected void exit() {
@@ -248,7 +278,7 @@ public class MainBackEndHolder {
 								List<UserDefinedAction> tasks = currentGroup.getTasks();
 
 								if (d >= 0 && d < tasks.size()) {
-									currentGroup.getTasks().get(d).action(core);
+									currentGroup.getTasks().get(d).action(Core.getInstance());
 								} else {
 									LOGGER.warning("Index out of bound. Cannot execute given task with index " + d + " given task group only has " + tasks.size() + " elements.");
 								}
@@ -256,7 +286,7 @@ public class MainBackEndHolder {
 								return null;
 							}
 						});
-						customFunction.action(core);
+						customFunction.action(Core.getInstance());
 					} catch (InterruptedException e) {//Stopped prematurely
 						return;
 					} catch (Exception e) {
@@ -289,7 +319,7 @@ public class MainBackEndHolder {
 
 			for (UserDefinedAction task : group.getTasks()) {
 				Set<KeyChain> collisions = keysManager.areKeysRegistered(task.getHotkeys());
-				if (task.isEnabled() && (collisions == null || collisions.isEmpty())) {
+				if (task.isEnabled() && (collisions.isEmpty())) {
 					keysManager.registerTask(task);
 				}
 			}
@@ -301,7 +331,7 @@ public class MainBackEndHolder {
 
 	private void removeTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
-		if (!taskSourceManager.removeTask(task)) {
+		if (!TaskSourceManager.removeTask(task)) {
 			JOptionPane.showMessageDialog(main, "Encountered error removing source file " + task.getSourcePath());
 		}
 	}
@@ -410,11 +440,7 @@ public class MainBackEndHolder {
 		if (newKeyChains != null) {
 			Set<KeyChain> collisions = keysManager.areKeysRegistered(newKeyChains);
 			if (!collisions.isEmpty()) {
-				JOptionPane.showMessageDialog(main,
-					"Newly registered keychains "
-					+ "will collide with previously registered keychain \"" + collisions
-					+ "\"\nYou cannot assign this key chain unless you remove the conflicting key chain...",
-					"Key chain collision!", JOptionPane.WARNING_MESSAGE);
+				GlobalKeysManager.showCollisionWarning(main, collisions);
 				return;
 			}
 
@@ -434,11 +460,7 @@ public class MainBackEndHolder {
 		} else {
 			Set<KeyChain> collisions = keysManager.areKeysRegistered(action.getHotkeys());
 			if (!collisions.isEmpty()) {
-				JOptionPane.showMessageDialog(main,
-					"One of the newly registered keychains"
-					+ " will collide with previously registered keychains \"" + collisions
-					+ "\"\nYou cannot assign this key chain unless you remove the conflicting key chain...",
-					"Key chain collision!", JOptionPane.WARNING_MESSAGE);
+				GlobalKeysManager.showCollisionWarning(main, collisions);
 				return;
 			}
 
@@ -608,7 +630,7 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/***************************************Source compilation****************************************************/
 
-	protected AbstractNativeDynamicCompiler getCompiler() {
+	protected AbstractNativeCompiler getCompiler() {
 		if (main.rbmiCompileJava.isSelected()) {
 			return config.getCompilerFactory().getCompiler(Language.JAVA);
 		} else if (main.rbmiCompilePython.isSelected()) {
@@ -631,10 +653,28 @@ public class MainBackEndHolder {
 		promptSource();
 	}
 
+	protected void changeCompilerPath() {
+		if (main.rbmiCompileJava.isSelected()) {
+			JFileChooser chooser = new JFileChooser(getCompiler().getPath());
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			if (chooser.showDialog(main, "Set Java home") == JFileChooser.APPROVE_OPTION) {
+				config.getCompilerFactory().getCompiler(Language.JAVA).setPath(chooser.getSelectedFile());
+			}
+		} else if (main.rbmiCompilePython.isSelected()) {
+			JFileChooser chooser = new JFileChooser(getCompiler().getPath());
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			if (chooser.showDialog(main, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = chooser.getSelectedFile();
+				config.getCompilerFactory().getCompiler(Language.PYTHON).setPath(selectedFile);
+				((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(selectedFile);
+			}
+		}
+	}
+
 	protected void compileSource() {
 		String source = main.taSource.getText();
 
-		AbstractNativeDynamicCompiler compiler = getCompiler();
+		AbstractNativeCompiler compiler = getCompiler();
 		Pair<DynamicCompilerOutput, UserDefinedAction> compilationResult = compiler.compile(source);
 		DynamicCompilerOutput compilerStatus = compilationResult.getA();
 		UserDefinedAction createdInstance = compilationResult.getB();
@@ -643,7 +683,7 @@ public class MainBackEndHolder {
 			customFunction = createdInstance;
 			customFunction.setCompiler(compiler.getName());
 
-			if (!taskSourceManager.submitTask(customFunction, source)) {
+			if (!TaskSourceManager.submitTask(customFunction, source)) {
 				JOptionPane.showMessageDialog(main, "Error writing source file...");
 			}
 		}
@@ -668,6 +708,22 @@ public class MainBackEndHolder {
 		if (state) {
 			main.tfRepeatCount.setText("1");
 			main.tfRepeatDelay.setText("0");
+		}
+	}
+
+	/*************************************************************************************************************/
+	/***************************************JFrame operations*****************************************************/
+	protected void focusMainFrame() {
+		if (main.taskGroup.isVisible()) {
+			main.taskGroup.setVisible(false);
+		}
+
+		if (main.hotkey.isVisible()) {
+			main.hotkey.setVisible(false);
+		}
+
+		if (main.ipcs.isVisible()) {
+			main.ipcs.setVisible(false);
 		}
 	}
 

@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 
 import utilities.ILoggable;
 import core.controller.Core;
+import core.ipc.repeatServer.processors.ServerMainProcessor;
 
 class ClientServingThread implements Runnable, ILoggable {
 
 	private static final int MAX_RETRY = 100;
 
 	private static final int MESSAGE_DELIMITER = 0x02;
-
 
 	private Boolean stopped;
 	private final Socket socket;
@@ -61,7 +61,7 @@ class ClientServingThread implements Runnable, ILoggable {
 					break;
 				}
 			}
-			getLogger().info("Finished\n");
+			getLogger().info("Client serving thread on socket on remote port " + socket.getPort() + " is terminated\n");
 		} finally {
 			try {
 				reader.close();

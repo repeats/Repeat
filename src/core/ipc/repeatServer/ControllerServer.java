@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.LinkedList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import core.controller.Core;
-import core.ipc.repeatClient.IIPCService;
+import core.ipc.IIPCService;
 
 public class ControllerServer extends IIPCService {
 
@@ -19,21 +20,20 @@ public class ControllerServer extends IIPCService {
 
 	private boolean isStopped;
 	private final ScheduledThreadPoolExecutor threadPool;
+	private final LinkedList<ClientServingThread> clientServingThreads;
 	private ServerSocket listener;
 	private Thread mainThread;
 
-	private final Core core;
-
-
-	public ControllerServer(Core core) {
+	public ControllerServer() {
 		threadPool = new ScheduledThreadPoolExecutor(MAX_THREAD_COUNT);
-		this.core = core;
+		clientServingThreads = new LinkedList<>();
 		this.setPort(DEFAULT_PORT);
 	}
 
 	@Override
 	protected void start() throws IOException {
 		setStop(false);
+
 		mainThread = new Thread() {
 			@Override
 			public void run() {
@@ -45,8 +45,8 @@ public class ControllerServer extends IIPCService {
 				}
 
 				try {
+					getLogger().info("Waiting for client connections...");
 					while (!isStopped()) {
-						getLogger().info("Waiting for client");
 		                final Socket socket;
 		                try {
 		                	socket = listener.accept();
@@ -62,7 +62,9 @@ public class ControllerServer extends IIPCService {
 		                	continue;
 		                }
 
-		                threadPool.submit(new ClientServingThread(core, socket));
+		                ClientServingThread newClient = new ClientServingThread(Core.getInstance(), socket);
+		                clientServingThreads.add(newClient);
+		                threadPool.submit(newClient);
 		            }
 				} finally {
 					try {
@@ -71,6 +73,13 @@ public class ControllerServer extends IIPCService {
 						getLogger().log(Level.SEVERE, "IO Exception when closing server", e);
 					}
 				}
+
+				getLogger().log(Level.INFO, "Controller server terminating...");
+				for (ClientServingThread clientThread : clientServingThreads) {
+					clientThread.stop();
+				}
+				clientServingThreads.clear();
+				getLogger().log(Level.INFO, "Controller server terminated!");
 			}
 		};
 		mainThread.start();

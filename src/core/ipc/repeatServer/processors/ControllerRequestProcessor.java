@@ -1,4 +1,4 @@
-package core.ipc.repeatServer;
+package core.ipc.repeatServer.processors;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import utilities.IterableUtility;
 import argo.jdom.JsonNode;
 import core.controller.Core;
+import core.ipc.repeatServer.MainMessageSender;
 
 class ControllerRequestProcessor extends AbstractMessageProcessor {
 
@@ -22,7 +23,7 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	}
 
 	@Override
-	protected boolean process(String type, long id, JsonNode content) throws InterruptedException {
+	public boolean process(String type, long id, JsonNode content) throws InterruptedException {
 		final String device = content.getStringValue("device");
 		String action = content.getStringValue("action");
 

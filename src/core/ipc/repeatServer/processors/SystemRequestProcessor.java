@@ -1,9 +1,10 @@
-package core.ipc.repeatServer;
+package core.ipc.repeatServer.processors;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
+import core.ipc.repeatServer.MainMessageSender;
 
 public class SystemRequestProcessor extends AbstractMessageProcessor {
 
@@ -15,7 +16,7 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 	}
 
 	@Override
-	protected boolean process(String type, long id, JsonNode content) {
+	public boolean process(String type, long id, JsonNode content) {
 		if (!verifyMessageContent(content)) {
 			getLogger().warning("Error in verifying message content " + content);
 			return false;
@@ -35,6 +36,7 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 					getLogger().warning("Unexpected identity to have 2 params.");
 					return false;
 				}
+
 				JsonNode nameNode = paramNodes.get(0);
 				if (!nameNode.isStringValue()) {
 					getLogger().warning("Identity must be a string.");

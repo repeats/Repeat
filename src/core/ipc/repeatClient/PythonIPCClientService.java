@@ -3,51 +3,52 @@ package core.ipc.repeatClient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.ProcessBuilder.Redirect;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import staticResources.PythonResources;
-import core.languageHandler.compiler.DynamicPythonCompiler;
 
 public class PythonIPCClientService extends IPCClientService {
 
 	private static final long TIMEOUT_MS = 5000;
-	protected DynamicPythonCompiler compiler;
 
-	private Thread mainThread;
+	private Thread mainThread, forceDestroyThread;
 	private Process mainProcess;
 	private BufferedReader input;
 
 	@Override
 	public void start() throws IOException {
-		final String[] cmd = { compiler.getPath().getAbsolutePath(), PythonResources.PYTHON_IPC_CLIENT.getAbsolutePath() };
+		final String[] cmd = { executingProgram.getAbsolutePath(), "-u", PythonResources.PYTHON_IPC_CLIENT.getAbsolutePath() };
 
-		mainThread = new Thread(){
+		mainThread = new Thread() {
 			@Override
 			public void run() {
 				try {
 					String line;
 					ProcessBuilder processBuilder = new ProcessBuilder(cmd);
-					processBuilder.redirectOutput(Redirect.INHERIT);
-					processBuilder.redirectError(Redirect.INHERIT);
+					processBuilder.redirectErrorStream(true);
 					mainProcess = processBuilder.start();
 
 					input = new BufferedReader(new InputStreamReader(mainProcess.getInputStream()));
 
-					do {
-						line = input.readLine();
-						if (line == null) {
-							break;
+					while ((line = input.readLine()) != null) {
+						String trimmed = line.trim();
+						if (trimmed.length() == 0) {
+							continue;
 						}
 
-						getLogger().info(line);
-						getLogger().info("\n");
-					} while (true);
+						getLogger().info(trimmed);
+					}
 
-					input.close();
+					mainProcess.waitFor();
 			    } catch (Exception e) {
 			    	getLogger().log(Level.WARNING, "Encounter exception while running process: " + cmd[0] + cmd[1], e);
+			    } finally {
+			    	try {
+						input.close();
+					} catch (IOException e) {
+						getLogger().log(Level.WARNING, "Failed to close input stream for python ipc client", e);
+					}
 			    }
 			}
 		};
@@ -57,30 +58,44 @@ public class PythonIPCClientService extends IPCClientService {
 
 	@Override
 	public void stop() throws IOException {
-		input.close();
-		mainProcess.destroy();
-
-		try {
-			Thread.sleep(TIMEOUT_MS);
-		} catch (InterruptedException e) {
-			getLogger().log(Level.WARNING, "Interrupted while waiting for process to terminate", e);
+		if (forceDestroyThread != null) {
+			getLogger().info("Waiting for " + getName() + " to terminate...");
+			return;
 		}
 
-		mainProcess.destroyForcibly();
+		forceDestroyThread = new Thread() {
+			@Override
+			public void run() {
+				mainProcess.destroy();
+				getLogger().info("Destroyed");
+
+				try {
+					Thread.sleep(TIMEOUT_MS);
+				} catch (InterruptedException e) {
+					getLogger().log(Level.WARNING, "Interrupted while waiting for " + getName() + " to terminate", e);
+				}
+
+				if (mainProcess.isAlive()) {
+					getLogger().info("Forcing " + getName() + " termination");
+					mainProcess.destroyForcibly();
+				}
+			}
+		};
+		forceDestroyThread.start();
 	}
 
 	@Override
 	public boolean isRunning() {
-		return mainThread != null && mainThread.isAlive();
+		boolean result = mainThread != null && mainThread.isAlive();
+		if (!result) {
+			forceDestroyThread = null;
+		}
+		return result;
 	}
 
 	@Override
 	public String getName() {
 		return "Python IPC client";
-	}
-
-	public void setCompiler(DynamicPythonCompiler compiler) {
-		this.compiler = compiler;
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public class TaskSourceManager {
 
 	private static final Logger LOGGER = Logger.getLogger(TaskSourceManager.class);
 
-	public boolean submitTask(UserDefinedAction task, String source) {
+	public static boolean submitTask(UserDefinedAction task, String source) {
 		String sourceFileName = null;
 		if (task.getSourcePath() == null || task.getSourcePath().equals("")) {
 			LOGGER.warning("Cannot submit task. No source file found...");
@@ -30,7 +30,7 @@ public class TaskSourceManager {
 		return true;
 	}
 
-	public boolean removeTask(UserDefinedAction task) {
+	public static boolean removeTask(UserDefinedAction task) {
 		File sourceFile = new File(task.getSourcePath());
 		return FileUtility.removeFile(sourceFile);
 	}

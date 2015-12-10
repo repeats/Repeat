@@ -11,19 +11,16 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 
-class MainMessageSender implements ILoggable {
+public class MainMessageSender implements ILoggable {
 
 	private long idCount;
 	private BufferedWriter writer;
 
-	protected MainMessageSender() {}
-
-	protected MainMessageSender(BufferedWriter writer) {
-		this.writer = writer;
+	protected MainMessageSender() {
 		idCount = 1L;
 	}
 
-	protected long sendMessage(String type, JsonNode content) {
+	public long sendMessage(String type, JsonNode content) {
 		long id = newID();
 		if (sendMessage(type, id, content)) {
 			return id;
@@ -32,7 +29,7 @@ class MainMessageSender implements ILoggable {
 		}
 	}
 
-	protected boolean sendMessage(String type, long id, JsonNode content) {
+	public boolean sendMessage(String type, long id, JsonNode content) {
 		JsonRootNode toSend = getMessage(type, id, content);
 
 		synchronized (this) {
@@ -62,6 +59,7 @@ class MainMessageSender implements ILoggable {
 	}
 
 	protected void setWriter(BufferedWriter writer) {
+		getLogger().info("Set to be " + writer);
 		this.writer = writer;
 	}
 

@@ -35,7 +35,8 @@ public class Recorder {
 
 	private HashMap<Integer, AbstractSourceGenerator> sourceGenerators;
 
-	public Recorder(final Core controller, final GlobalKeysManager globalKeys) {
+	public Recorder(final GlobalKeysManager globalKeys) {
+		final Core controller = Core.getInstance();
 		taskScheduler = new TaskScheduler();
 
 		sourceGenerators = new HashMap<>();
