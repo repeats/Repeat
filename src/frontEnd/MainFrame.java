@@ -16,10 +16,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,8 +50,6 @@ import org.jnativehook.NativeHookException;
 
 import staticResources.BootStrapResources;
 import utilities.FileUtility;
-import utilities.Function;
-import utilities.logging.OutStream;
 import utilities.swing.SwingUtil;
 
 import commonTools.AreaClickerTool;
@@ -91,10 +86,9 @@ public class MainFrame extends JFrame {
 	 * @throws NativeHookException
 	 * @throws IOException
 	 */
-	public MainFrame() throws NativeHookException, IOException {
+	public MainFrame() throws IOException {
 		setTitle("Repeat");
 		backEnd = new MainBackEndHolder(this);
-		backEnd.loadConfig(null);
 		hotkey = new HotkeySetting(backEnd);
 		taskGroup = new TaskGroupFrame(backEnd);
 		ipcs = new IpcFrame(backEnd);
@@ -106,16 +100,6 @@ public class MainFrame extends JFrame {
 			trayIcon = new MinimizedFrame(BootStrapResources.TRAY_IMAGE, backEnd);
 		}
 
-		/*************************************************************************************/
-		backEnd.keysManager.startGlobalListener();
-		backEnd.keysManager.setDisablingFunction(new Function<Void, Boolean>(){
-			@Override
-			public Boolean apply(Void r) {
-				return hotkey.isVisible();
-			}
-		});
-
-		backEnd.configureMainHotkeys();
 		/*************************************************************************************/
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 759, 327);
@@ -705,18 +689,5 @@ public class MainFrame extends JFrame {
 		taStatus.setEditable(false);
 
 		scrollPane_1.setViewportView(taStatus);
-
-		/*************************************************************************************/
-		backEnd.renderTaskGroup();
-		backEnd.renderTasks();
-
-		PrintStream printStream = new PrintStream(new OutStream(taStatus));
-		System.setOut(printStream);
-		System.setErr(printStream);
-		for (Handler handler : Logger.getLogger("").getHandlers()) {
-			Logger.getLogger("").removeHandler(handler);
-		}
-		Logger.getLogger("").addHandler(new ConsoleHandler());
-		/*************************************************************************************/
 	}
 }
