@@ -34,7 +34,13 @@ public class MainMessageSender implements ILoggable {
 
 		synchronized (this) {
 			try {
-				writer.write(JSONUtility.jsonToString(toSend));
+				String message = String.format("%s%s%s%s%s",
+									ClientServingThread.MESSAGE_DELIMITER,
+									ClientServingThread.MESSAGE_DELIMITER,
+									JSONUtility.jsonToString(toSend),
+									ClientServingThread.MESSAGE_DELIMITER,
+									ClientServingThread.MESSAGE_DELIMITER);
+				writer.write(message);
 				writer.flush();
 			} catch (IOException e) {
 				getLogger().log(Level.WARNING, "Exception while writing message", e);

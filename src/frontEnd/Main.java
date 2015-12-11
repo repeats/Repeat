@@ -28,7 +28,7 @@ public class Main {
 		/*************************************************************************************/
 		// Get the logger for "org.jnativehook" and set the level to warning.
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-		logger.setLevel(Level.WARNING);
+		logger.setLevel(Level.SEVERE);
 
 		if (!GlobalScreen.isNativeHookRegistered()) {
 			try {

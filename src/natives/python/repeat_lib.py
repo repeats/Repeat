@@ -43,6 +43,8 @@ class RepeatClient(object):
         self.mouse = mouse_request.MouseRequest(self)
         self.key = keyboard_request.KeyboardRequest(self)
 
+        self._previous_message = []
+
     def _clear_queue(self):
         while not self.send_queue.empty():
             self.send_queue.get()
@@ -78,6 +80,19 @@ class RepeatClient(object):
 
         print "Write process terminated..."
 
+    def _extract_messages(self, received_data):
+        output = []
+        print received_data
+        for char in received_data:
+            if char == RepeatClient.MESSAGE_DELIMITER:
+                if len(self._previous_message) > 0:
+                    output.append(''.join(self._previous_message))
+                    del self._previous_message[:]
+            else:
+                self._previous_message.append(char)
+
+        return output
+
     def process_read(self):
         while not self.is_terminated:
             data = None
@@ -89,9 +104,13 @@ class RepeatClient(object):
             except Exception as e:
                 print traceback.format_exc()
 
-            if data is not None and len(data.strip()) > 0:
+            if data is None or len(data.strip()) == 0:
+                continue
+
+            messages = self._extract_messages(data)
+            for message in messages:
                 try:
-                    parsed = json.loads(data)
+                    parsed = json.loads(message)
                     message_type = parsed['type']
                     message_id = parsed['id']
                     message_content = parsed['content']

@@ -19,7 +19,7 @@ class ClientServingThread implements Runnable, ILoggable {
 
 	private static final int MAX_RETRY = 100;
 
-	private static final int MESSAGE_DELIMITER = 0x02;
+	protected static final char MESSAGE_DELIMITER = 0x02;
 
 	private Boolean stopped;
 	private final Socket socket;

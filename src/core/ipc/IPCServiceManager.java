@@ -39,7 +39,7 @@ public final class IPCServiceManager {
 		} catch (InterruptedException e) {
 		}
 
-		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).startRunning();
+//		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).startRunning();
 	}
 
 	public static void stopServices() throws IOException {
