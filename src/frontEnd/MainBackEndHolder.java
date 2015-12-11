@@ -649,8 +649,14 @@ public class MainBackEndHolder {
 			main.bCompile.setText("Compile source");
 		} else if (main.rbmiCompilePython.isSelected()) {
 			main.bCompile.setText("Load source");
-			LOGGER.info("Using python interpreter at "
-					+ config.getCompilerFactory().getCompiler(Language.PYTHON).getPath().getAbsolutePath());
+			File interpreter = config.getCompilerFactory().getCompiler(Language.PYTHON).getPath();
+			if (!interpreter.canExecute()) {
+				JOptionPane.showMessageDialog(main, "Current interpreter " +
+						interpreter.getName() + " is not executable", "Non-executable interpreter", JOptionPane.WARNING_MESSAGE);
+			} else {
+				LOGGER.info("Using python interpreter at "
+					+ interpreter.getAbsolutePath());
+			}
 		}
 
 		promptSource();
@@ -667,6 +673,11 @@ public class MainBackEndHolder {
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			if (chooser.showDialog(main, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = chooser.getSelectedFile();
+				if (!selectedFile.canExecute()) {
+					JOptionPane.showMessageDialog(main,
+							"Chosen file " + selectedFile.getName() + " is not executable", "Invalid choice", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
 				config.getCompilerFactory().getCompiler(Language.PYTHON).setPath(selectedFile);
 				((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(selectedFile);
 			}
