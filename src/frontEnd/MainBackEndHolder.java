@@ -12,10 +12,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+
+import org.jnativehook.GlobalScreen;
 
 import staticResources.BootStrapResources;
 import utilities.ExceptableFunction;
@@ -25,9 +28,6 @@ import utilities.NumberUtility;
 import utilities.Pair;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
-
-import com.sun.istack.internal.logging.Logger;
-
 import core.config.Config;
 import core.controller.Core;
 import core.ipc.IPCServiceManager;
@@ -49,7 +49,7 @@ import core.userDefinedTask.UserDefinedAction;
 
 public class MainBackEndHolder {
 
-	private static final Logger LOGGER = Logger.getLogger(MainBackEndHolder.class);
+	private static final Logger LOGGER = Logger.getLogger(MainBackEndHolder.class.getName());
 
 	protected ScheduledThreadPoolExecutor executor;
 	protected Thread compiledExecutor;
@@ -183,7 +183,6 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/****************************************Record and replay****************************************************/
-
 	protected void switchRecord() {
 		if (!isRecording) {//Start record
 			recorder.clear();
@@ -690,9 +689,34 @@ public class MainBackEndHolder {
 	}
 
 	/*************************************************************************************************************/
+	/***************************************Configurations********************************************************/
 	//Write config file
 	protected boolean writeConfigFile() {
 		return config.writeConfig();
+	}
+
+	protected void switchDebugLevel() {
+		Level debugLevel = Level.WARNING;
+
+		if (main.rbmiDebugSevere.isSelected()) {
+			debugLevel = Level.SEVERE;
+		} else if (main.rbmiDebugWarning.isSelected()) {
+			debugLevel = Level.WARNING;
+		} else if (main.rbmiDebugInfo.isSelected()) {
+			debugLevel = Level.INFO;
+		} else if (main.rbmiDebugFine.isSelected()) {
+			debugLevel = Level.FINE;
+		}
+		config.setNativeHookDebugLevel(debugLevel);
+
+		// Get the logger for "org.jnativehook" and set the level to appropriate level.
+		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		logger.setLevel(config.getNativeHookDebugLevel());
+	}
+
+	protected void switchTrayIconUse() {
+		boolean trayIconEnabled = main.cbmiUseTrayIcon.isSelected();
+		config.setUseTrayIcon(trayIconEnabled);
 	}
 
 	/*************************************************************************************************************/

@@ -26,9 +26,9 @@ public class Main {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		/*************************************************************************************/
-		// Get the logger for "org.jnativehook" and set the level to warning.
+		// Get the logger for "org.jnativehook" and set the level to WARNING to begin with.
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-		logger.setLevel(Level.SEVERE);
+		logger.setLevel(Level.WARNING);
 
 		if (!GlobalScreen.isNativeHookRegistered()) {
 			try {
@@ -82,7 +82,7 @@ public class Main {
 				Logger.getLogger("").addHandler(new ConsoleHandler());
 				/*************************************************************************************/
 
-				createdFrame.backEnd.initiateBackEndActivities();
+//				createdFrame.backEnd.initiateBackEndActivities();
 				return null;
 			}
 		};

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import argo.format.JsonFormatter;
 import argo.format.PrettyJsonFormatter;
@@ -15,6 +16,7 @@ import argo.jdom.JsonField;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import argo.jdom.JsonStringNode;
 import argo.saj.InvalidSyntaxException;
 import core.config.IJsonable;
 
@@ -98,6 +100,24 @@ public class JSONUtility {
 		}
 
 		return success;
+	}
+
+	/**
+	 * Add a child to the current json node
+	 * @param original the original json node where the new child will be added
+	 * @param key the key of the child that will be added
+	 * @param value json node value of the added child
+	 * @return the json node with the added child, or null if operation failed
+	 */
+	public static JsonNode addChild(JsonNode original, String key, JsonNode value) {
+		Map<JsonStringNode, JsonNode> existingFields = original.getFields();
+		Map<JsonStringNode, JsonNode> newMap = new HashMap<>();
+		for (Entry<JsonStringNode, JsonNode> entry : existingFields.entrySet()) {
+			newMap.put(entry.getKey(), entry.getValue());
+		}
+
+		newMap.put(JsonNodeFactories.string(key), value);
+		return JsonNodeFactories.object(newMap);
 	}
 
 	/**

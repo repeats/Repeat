@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.swing.JOptionPane;
 
@@ -22,9 +23,12 @@ import frontEnd.MainBackEndHolder;
 
 public class Config {
 
-	public static final String RELEASE_VERSION = "1.8.1";
+	public static final String RELEASE_VERSION = "2.0";
 	private static final String CONFIG_FILE_NAME = "config.json";
-	private static final String CURRENT_CONFIG_VERSION = "1.5";
+	private static final String CURRENT_CONFIG_VERSION = "1.6";
+
+	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
+	private static final boolean DEFAULT_TRAY_ICON_USE = true;
 
 	private DynamicCompilerManager compilerFactory;
 	private final MainBackEndHolder backEnd;
@@ -34,8 +38,13 @@ public class Config {
 	private KeyChain REPLAY;
 	private KeyChain COMPILED_REPLAY;
 
+	private boolean useTrayIcon;
+	private Level nativeHookDebugLevel;
+
 	public Config(MainBackEndHolder backEnd) {
 		this.backEnd = backEnd;
+		useTrayIcon = DEFAULT_TRAY_ICON_USE;
+		nativeHookDebugLevel = DEFAULT_NATIVE_HOOK_DEBUG_LEVEL;
 
 		RECORD = new KeyChain(KeyEvent.VK_F9);
 		REPLAY = new KeyChain(KeyEvent.VK_F11);
@@ -55,7 +64,8 @@ public class Config {
 			new Parser1_2(),
 			new Parser1_3(),
 			new Parser1_4(),
-			new Parser1_5()
+			new Parser1_5(),
+			new Parser1_6()
 		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;
@@ -109,6 +119,12 @@ public class Config {
 
 		JsonRootNode root = JsonNodeFactories.object(
 				JsonNodeFactories.field("version", JsonNodeFactories.string(CURRENT_CONFIG_VERSION)),
+				JsonNodeFactories.field("global_settings", JsonNodeFactories.object(
+						JsonNodeFactories.field("debug", JsonNodeFactories.object(
+								JsonNodeFactories.field("level", JsonNodeFactories.string(nativeHookDebugLevel.toString()))
+								)),
+						JsonNodeFactories.field("tray_icon_enabled", JsonNodeFactories.booleanNode(useTrayIcon))
+						)),
 				JsonNodeFactories.field("compilers", compilerFactory.jsonize()),
 				JsonNodeFactories.field("task_groups", JsonNodeFactories.array(taskNodes)),
 				JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
@@ -144,10 +160,6 @@ public class Config {
 		}
 	}
 
-	public void setREPLAY(int REPLAY) {
-		setREPLAY(new KeyChain(Arrays.asList(REPLAY)));
-	}
-
 	public KeyChain getCOMPILED_REPLAY() {
 		return COMPILED_REPLAY;
 	}
@@ -158,8 +170,20 @@ public class Config {
 		}
 	}
 
-	public void setCOMPILED_REPLAY(int COMPILED_REPLAY) {
-		setCOMPILED_REPLAY(new KeyChain(Arrays.asList(COMPILED_REPLAY)));
+	public boolean isUseTrayIcon() {
+		return useTrayIcon;
+	}
+
+	public void setUseTrayIcon(boolean useTrayIcon) {
+		this.useTrayIcon = useTrayIcon;
+	}
+
+	public Level getNativeHookDebugLevel() {
+		return nativeHookDebugLevel;
+	}
+
+	public void setNativeHookDebugLevel(Level nativeHookDebugLevel) {
+		this.nativeHookDebugLevel = nativeHookDebugLevel;
 	}
 
 	protected MainBackEndHolder getBackEnd() {

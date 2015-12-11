@@ -82,7 +82,6 @@ class RepeatClient(object):
 
     def _extract_messages(self, received_data):
         output = []
-        print received_data
         for char in received_data:
             if char == RepeatClient.MESSAGE_DELIMITER:
                 if len(self._previous_message) > 0:
@@ -119,25 +118,27 @@ class RepeatClient(object):
                         cv = self.synchronization_events.pop(message_id)
                         cv.set()
                     else:
-                        if message_type == 'task':
-                            def to_run():
-                                processing_id = message_id
-                                processing_content = message_content
-                                processing_type = message_type
-
-                                reply = self.task_manager.process_message(processing_id, processing_content)
-                                if reply is not None:
-                                    self.send_queue.put({
-                                            'type' : processing_type,
-                                            'id' : processing_id,
-                                            'content' : reply
-                                        })
-
-                            running = threading.Thread(target=to_run)
-                            running.start()
-                        else:
+                        if message_type != 'task':
                             print "Unknown id %s. Drop message..." % message_id
+                            continue
 
+                        def to_run():
+                            processing_id = message_id
+                            processing_content = message_content
+                            processing_type = message_type
+
+                            reply = self.task_manager.process_message(processing_id, processing_content)
+                            if reply is None:
+                                return
+
+                            self.send_queue.put({
+                                    'type' : processing_type,
+                                    'id' : processing_id,
+                                    'content' : reply
+                                })
+
+                        running = threading.Thread(target=to_run)
+                        running.start()
                 except Exception as e:
                     print traceback.format_exc()
 

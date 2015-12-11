@@ -35,6 +35,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -78,6 +79,8 @@ public class MainFrame extends JFrame {
 	protected JButton bRecord, bReplay, bCompile, bRun, bTaskGroup;
 	protected JTextArea taSource, taStatus;
 	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython;
+	protected JRadioButtonMenuItem rbmiDebugSevere, rbmiDebugWarning, rbmiDebugInfo, rbmiDebugFine;
+	protected JCheckBoxMenuItem cbmiUseTrayIcon;
 	private final JTextField tfMousePosition;
 	protected final JTable tTasks;
 
@@ -112,7 +115,7 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void windowIconified(WindowEvent e) {
-				if (trayIcon == null) {
+				if (trayIcon == null || !backEnd.config.isUseTrayIcon()) {
 					return;
 				}
 
@@ -246,7 +249,8 @@ public class MainFrame extends JFrame {
 		mnNewMenu.add(miForceExit);
 		mnNewMenu.add(miExit);
 
-		ButtonGroup group = new ButtonGroup();
+		ButtonGroup bGroupLanguage = new ButtonGroup();
+		ButtonGroup bGroupDebugLevel = new ButtonGroup();
 
 		JMenu mnNewMenu_2 = new JMenu("Tool");
 		menuBar.add(mnNewMenu_2);
@@ -283,7 +287,7 @@ public class MainFrame extends JFrame {
 				backEnd.refreshCompilingLanguage();
 			}
 		});
-		group.add(rbmiCompileJava);
+		bGroupLanguage.add(rbmiCompileJava);
 
 		rbmiCompilePython = new JRadioButtonMenuItem(Language.PYTHON.toString());
 		mnNewMenu_3.add(rbmiCompilePython);
@@ -293,7 +297,7 @@ public class MainFrame extends JFrame {
 				backEnd.refreshCompilingLanguage();
 			}
 		});
-		group.add(rbmiCompilePython);
+		bGroupLanguage.add(rbmiCompilePython);
 		mntmNewMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
 
 		JMenu mnNewMenu_1 = new JMenu("Common Tools");
@@ -340,6 +344,63 @@ public class MainFrame extends JFrame {
 
 		final JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Record Mouse Click Only");
 		mSetting.add(chckbxmntmNewCheckItem);
+
+		JSeparator separator = new JSeparator();
+		mSetting.add(separator);
+
+		JMenu mnNewMenu_4 = new JMenu("Debug Level");
+		mSetting.add(mnNewMenu_4);
+
+		rbmiDebugSevere = new JRadioButtonMenuItem("SEVERE");
+		rbmiDebugSevere.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.switchDebugLevel();
+			}
+		});
+		rbmiDebugSevere.setSelected(true);
+		mnNewMenu_4.add(rbmiDebugSevere);
+
+		rbmiDebugWarning = new JRadioButtonMenuItem("WARNING");
+		rbmiDebugWarning.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.switchDebugLevel();
+			}
+		});
+		mnNewMenu_4.add(rbmiDebugWarning);
+
+		rbmiDebugInfo = new JRadioButtonMenuItem("INFO");
+		rbmiDebugInfo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.switchDebugLevel();
+			}
+		});
+		mnNewMenu_4.add(rbmiDebugInfo);
+
+		rbmiDebugFine = new JRadioButtonMenuItem("FINE");
+		rbmiDebugFine.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.switchDebugLevel();
+			}
+		});
+		mnNewMenu_4.add(rbmiDebugFine);
+
+		bGroupDebugLevel.add(rbmiDebugSevere);
+		bGroupDebugLevel.add(rbmiDebugWarning);
+		bGroupDebugLevel.add(rbmiDebugInfo);
+		bGroupDebugLevel.add(rbmiDebugFine);
+
+		cbmiUseTrayIcon = new JCheckBoxMenuItem("Use tray icon");
+		cbmiUseTrayIcon.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.switchTrayIconUse();
+			}
+		});
+		mSetting.add(cbmiUseTrayIcon);
 
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
