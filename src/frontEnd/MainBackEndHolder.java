@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 
 import org.jnativehook.GlobalScreen;
@@ -142,6 +143,9 @@ public class MainBackEndHolder {
 
 		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
+
+		applyDebugLevel();
+		renderTrayIconUse();
 	}
 
 	/*************************************************************************************************************/
@@ -653,14 +657,13 @@ public class MainBackEndHolder {
 	}
 
 	protected void changeCompilerPath() {
+		JFileChooser chooser = new JFileChooser(getCompiler().getPath());
 		if (main.rbmiCompileJava.isSelected()) {
-			JFileChooser chooser = new JFileChooser(getCompiler().getPath());
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			if (chooser.showDialog(main, "Set Java home") == JFileChooser.APPROVE_OPTION) {
 				config.getCompilerFactory().getCompiler(Language.JAVA).setPath(chooser.getSelectedFile());
 			}
 		} else if (main.rbmiCompilePython.isSelected()) {
-			JFileChooser chooser = new JFileChooser(getCompiler().getPath());
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			if (chooser.showDialog(main, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = chooser.getSelectedFile();
@@ -695,23 +698,41 @@ public class MainBackEndHolder {
 		return config.writeConfig();
 	}
 
-	protected void switchDebugLevel() {
-		Level debugLevel = Level.WARNING;
+	private final Level[] DEBUG_LEVELS = {Level.SEVERE, Level.WARNING, Level.INFO, Level.FINE};
 
-		if (main.rbmiDebugSevere.isSelected()) {
-			debugLevel = Level.SEVERE;
-		} else if (main.rbmiDebugWarning.isSelected()) {
-			debugLevel = Level.WARNING;
-		} else if (main.rbmiDebugInfo.isSelected()) {
-			debugLevel = Level.INFO;
-		} else if (main.rbmiDebugFine.isSelected()) {
-			debugLevel = Level.FINE;
+	protected void applyDebugLevel() {
+		Level debugLevel = config.getNativeHookDebugLevel();
+		final JRadioButtonMenuItem[] buttons = {main.rbmiDebugSevere, main.rbmiDebugWarning, main.rbmiDebugInfo, main.rbmiDebugFine};
+
+		for (int i = 0; i < DEBUG_LEVELS.length; i++) {
+			if (debugLevel == DEBUG_LEVELS[i]) {
+				buttons[i].setSelected(true);
+				break;
+			}
+		}
+	}
+
+	protected void changeDebugLevel() {
+		Level debugLevel = Level.WARNING;
+		final JRadioButtonMenuItem[] buttons = {main.rbmiDebugSevere, main.rbmiDebugWarning, main.rbmiDebugInfo, main.rbmiDebugFine};
+
+		for (int i = 0; i < DEBUG_LEVELS.length; i++) {
+			if (buttons[i].isSelected()) {
+				debugLevel = DEBUG_LEVELS[i];
+				break;
+			}
 		}
 		config.setNativeHookDebugLevel(debugLevel);
 
 		// Get the logger for "org.jnativehook" and set the level to appropriate level.
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 		logger.setLevel(config.getNativeHookDebugLevel());
+	}
+
+	protected void renderTrayIconUse() {
+		if (config.isUseTrayIcon()) {
+			main.cbmiUseTrayIcon.setSelected(true);
+		}
 	}
 
 	protected void switchTrayIconUse() {

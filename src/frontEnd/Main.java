@@ -82,7 +82,7 @@ public class Main {
 				Logger.getLogger("").addHandler(new ConsoleHandler());
 				/*************************************************************************************/
 
-//				createdFrame.backEnd.initiateBackEndActivities();
+				createdFrame.backEnd.initiateBackEndActivities();
 				return null;
 			}
 		};

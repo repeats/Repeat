@@ -355,7 +355,7 @@ public class MainFrame extends JFrame {
 		rbmiDebugSevere.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.switchDebugLevel();
+				backEnd.changeDebugLevel();
 			}
 		});
 		rbmiDebugSevere.setSelected(true);
@@ -365,7 +365,7 @@ public class MainFrame extends JFrame {
 		rbmiDebugWarning.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.switchDebugLevel();
+				backEnd.changeDebugLevel();
 			}
 		});
 		mnNewMenu_4.add(rbmiDebugWarning);
@@ -374,7 +374,7 @@ public class MainFrame extends JFrame {
 		rbmiDebugInfo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.switchDebugLevel();
+				backEnd.changeDebugLevel();
 			}
 		});
 		mnNewMenu_4.add(rbmiDebugInfo);
@@ -383,7 +383,7 @@ public class MainFrame extends JFrame {
 		rbmiDebugFine.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.switchDebugLevel();
+				backEnd.changeDebugLevel();
 			}
 		});
 		mnNewMenu_4.add(rbmiDebugFine);
