@@ -249,6 +249,8 @@ if __name__ == "__main__":
         client.is_terminated = True
         write_thread.join()
         read_thread.join()
+        client.stop()
+
     signal.signal(signal.SIGTERM, terminate_repeat_client)
 
     write_thread.start()

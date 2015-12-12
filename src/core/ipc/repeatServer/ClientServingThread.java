@@ -77,12 +77,12 @@ class ClientServingThread implements Runnable, ILoggable {
 				getLogger().log(Level.WARNING, "IO Exception when closing output socket", e);
 			}
 
-            try {
+			try {
 				socket.close();
 			} catch (IOException e) {
 				getLogger().log(Level.WARNING, "IO Exception when closing socket", e);
 			}
-        }
+		}
 	}
 
 	private boolean processLoop() {
