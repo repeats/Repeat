@@ -18,6 +18,11 @@ public class PythonIPCClientService extends IPCClientService {
 
 	@Override
 	public void start() throws IOException {
+		if (!executingProgram.canExecute()) {
+			getLogger().warning("Launcher " + executingProgram.getAbsolutePath() + " is not executable.");
+			return;
+		}
+
 		final String[] cmd = { executingProgram.getAbsolutePath(), "-u", PythonResources.PYTHON_IPC_CLIENT.getAbsolutePath() };
 
 		mainThread = new Thread() {

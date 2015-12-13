@@ -31,6 +31,7 @@ import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
 import core.config.Config;
 import core.controller.Core;
+import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
@@ -650,12 +651,15 @@ public class MainBackEndHolder {
 		} else if (main.rbmiCompilePython.isSelected()) {
 			main.bCompile.setText("Load source");
 			File interpreter = config.getCompilerFactory().getCompiler(Language.PYTHON).getPath();
-			if (!interpreter.canExecute()) {
-				JOptionPane.showMessageDialog(main, "Current interpreter " +
-						interpreter.getName() + " is not executable", "Non-executable interpreter", JOptionPane.WARNING_MESSAGE);
-			} else {
-				LOGGER.info("Using python interpreter at "
-					+ interpreter.getAbsolutePath());
+			LOGGER.info("Using python interpreter at " + interpreter.getAbsolutePath());
+			IIPCService pythonIPCService = IPCServiceManager.getIPCService(IPCServiceName.PYTHON);
+
+			if (!pythonIPCService.isRunning()) {
+				try {
+					pythonIPCService.startRunning();
+				} catch (IOException e) {
+					LOGGER.log(Level.WARNING, "Encountered exception launching ipc", e);
+				}
 			}
 		}
 
