@@ -32,16 +32,20 @@ public final class GlobalKeysManager {
 
 	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 
-	private final Map<KeyChain, UserDefinedAction> actionMap = new HashMap<>();
-	private Function<Void, Boolean> disablingFunction = Function.falseFunction();
+	private final Config config;
+	private final Map<KeyChain, UserDefinedAction> actionMap;
+	private Function<Void, Boolean> disablingFunction;
 	private final Map<String, Thread> executions;
 	private final KeyChain currentKeyChain;
 
 	private TaskGroup currentTaskGroup;
 
 	public GlobalKeysManager(Config config) {
+		this.config = config;
+		this.actionMap = new HashMap<>();
 		this.executions = new HashMap<>();
 		this.currentKeyChain = new KeyChain();
+		disablingFunction = Function.falseFunction();
 	}
 
 	public void startGlobalListener() throws NativeHookException {
@@ -51,18 +55,8 @@ public final class GlobalKeysManager {
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
 
-				if (code == Config.HALT_TASK) {
-					LinkedList<Thread> endings = new LinkedList<>();
-					endings.addAll(executions.values());
-
-					for (Thread t : endings) {
-						while (t.isAlive() && t != Thread.currentThread()) {
-							LOGGER.info("Interrupting execution thread " + t);
-							t.interrupt();
-						}
-					}
-					executions.clear();
-
+				if (code == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
+					haltAllTasks();
 					return true;
 				}
 
@@ -73,48 +67,48 @@ public final class GlobalKeysManager {
 				currentKeyChain.getKeys().add(code);
 
 				final UserDefinedAction action = actionMap.get(currentKeyChain);
-				if (action != null) {
-					final String id = RandomUtil.randomID();
-					Thread execution = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								action.setInvokingKeyChain(currentKeyChain);
-								action.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
-									@Override
-									public Void apply(Integer d) throws InterruptedException {
-										if (currentTaskGroup == null) {
-											LOGGER.warning("Task group is null. Cannot execute given task with index " + d);
-											return null;
-										}
-										List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
-
-										if (d >= 0 && d < tasks.size()) {
-											currentTaskGroup.getTasks().get(d).action(Core.getInstance());
-										} else {
-											LOGGER.warning("Index out of bound. Cannot execute given task with index " + d + " given task group only has " + tasks.size() + " elements.");
-										}
-
-										return null;
-									}
-								});
-								action.action(Core.getInstance());
-							} catch (InterruptedException e) {
-								LOGGER.info("Task ended prematurely");
-							} catch (Exception e) {
-								String name = action.getName() == null ? "" : action.getName();
-								LOGGER.log(Level.WARNING, "Exception while executing task " + name, e);
-							}
-
-							executions.remove(id);
-						}
-					});
-
-					executions.put(id, execution);
-					execution.start();
-
+				if (action == null) {
 					return true;
 				}
+
+				final String id = RandomUtil.randomID();
+				Thread execution = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							action.setInvokingKeyChain(currentKeyChain);
+							action.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
+								@Override
+								public Void apply(Integer taskIndex) throws InterruptedException {
+									if (currentTaskGroup == null) {
+										LOGGER.warning("Task group is null. Cannot execute given task with index " + taskIndex);
+										return null;
+									}
+									List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
+
+									if (taskIndex >= 0 && taskIndex < tasks.size()) {
+										currentTaskGroup.getTasks().get(taskIndex).action(Core.getInstance());
+									} else {
+										LOGGER.warning("Index out of bound. Cannot execute given task with index " + taskIndex + " given task group only has " + tasks.size() + " elements.");
+									}
+
+									return null;
+								}
+							});
+							action.action(Core.getInstance());
+						} catch (InterruptedException e) {
+							LOGGER.info("Task ended prematurely");
+						} catch (Exception e) {
+							String name = action.getName() == null ? "" : action.getName();
+							LOGGER.log(Level.WARNING, "Exception while executing task " + name, e);
+						}
+
+						executions.remove(id);
+					}
+				});
+
+				executions.put(id, execution);
+				execution.start();
 
 				return true;
 			}
@@ -232,6 +226,22 @@ public final class GlobalKeysManager {
 				+ "will collide with previously registered keychain \"" + keys
 				+ "\"\nYou cannot assign this key chain unless you remove the conflicting key chain...",
 				"Key chain collision!", JOptionPane.WARNING_MESSAGE);
+	}
+
+	/**
+	 * Interrupt all currently executing tasks, and clear the record of all executing tasks
+	 */
+	public void haltAllTasks() {
+		LinkedList<Thread> endingThreads = new LinkedList<>();
+		endingThreads.addAll(executions.values());
+
+		for (Thread thread : endingThreads) {
+			while (thread.isAlive() && thread != Thread.currentThread()) {
+				LOGGER.info("Interrupting execution thread " + thread);
+				thread.interrupt();
+			}
+		}
+		executions.clear();
 	}
 
 	private UserDefinedAction unregisterKey(KeyChain code) {

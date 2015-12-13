@@ -36,7 +36,8 @@ public class Parser1_6 extends ConfigParser {
 									JsonNodeFactories.field("level", JsonNodeFactories.string(Level.WARNING.toString()))
 							)
 					),
-					JsonNodeFactories.field("tray_icon_enabled", JsonNodeFactories.booleanNode(true))
+					JsonNodeFactories.field("tray_icon_enabled", JsonNodeFactories.booleanNode(true)),
+					JsonNodeFactories.field("enabled_halt_by_key", JsonNodeFactories.booleanNode(true))
 					);
 
 			JsonNode newNode = JSONUtility.addChild(previousVersion, "global_settings", globalSettings);
@@ -52,6 +53,7 @@ public class Parser1_6 extends ConfigParser {
 		try {
 			JsonNode globalSettings = root.getNode("global_settings");
 			config.setUseTrayIcon(globalSettings.getBooleanValue("tray_icon_enabled"));
+			config.setEnabledHaltingKeyPressed(globalSettings.getBooleanValue("enabled_halt_by_key"));
 			config.setNativeHookDebugLevel(Level.parse(globalSettings.getNode("debug").getStringValue("level")));
 
 			JsonNode globalHotkey = root.getNode("global_hotkey");

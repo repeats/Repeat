@@ -146,7 +146,7 @@ public class MainBackEndHolder {
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
 
 		applyDebugLevel();
-		renderTrayIconUse();
+		renderSettings();
 	}
 
 	/*************************************************************************************************************/
@@ -744,15 +744,22 @@ public class MainBackEndHolder {
 		logger.setLevel(config.getNativeHookDebugLevel());
 	}
 
-	protected void renderTrayIconUse() {
-		if (config.isUseTrayIcon()) {
-			main.cbmiUseTrayIcon.setSelected(true);
-		}
+	protected void renderSettings() {
+		main.cbmiUseTrayIcon.setSelected(config.isUseTrayIcon());
+		main.cbmiHaltByKey.setSelected(config.isEnabledHaltingKeyPressed());
 	}
 
 	protected void switchTrayIconUse() {
 		boolean trayIconEnabled = main.cbmiUseTrayIcon.isSelected();
 		config.setUseTrayIcon(trayIconEnabled);
+	}
+
+	protected void haltAllTasks() {
+		keysManager.haltAllTasks();
+	}
+
+	protected void switchHaltByKey() {
+		config.setEnabledHaltingKeyPressed(main.cbmiHaltByKey.isSelected());
 	}
 
 	/*************************************************************************************************************/

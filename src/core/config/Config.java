@@ -39,12 +39,15 @@ public class Config {
 	private KeyChain COMPILED_REPLAY;
 
 	private boolean useTrayIcon;
+	private boolean enabledHaltingKeyPressed;
 	private Level nativeHookDebugLevel;
+
 
 	public Config(MainBackEndHolder backEnd) {
 		this.backEnd = backEnd;
 		useTrayIcon = DEFAULT_TRAY_ICON_USE;
-		nativeHookDebugLevel = DEFAULT_NATIVE_HOOK_DEBUG_LEVEL;
+		this.enabledHaltingKeyPressed = true;
+		this.nativeHookDebugLevel = DEFAULT_NATIVE_HOOK_DEBUG_LEVEL;
 
 		RECORD = new KeyChain(KeyEvent.VK_F9);
 		REPLAY = new KeyChain(KeyEvent.VK_F11);
@@ -123,7 +126,8 @@ public class Config {
 						JsonNodeFactories.field("debug", JsonNodeFactories.object(
 								JsonNodeFactories.field("level", JsonNodeFactories.string(nativeHookDebugLevel.toString()))
 								)),
-						JsonNodeFactories.field("tray_icon_enabled", JsonNodeFactories.booleanNode(useTrayIcon))
+						JsonNodeFactories.field("tray_icon_enabled", JsonNodeFactories.booleanNode(useTrayIcon)),
+						JsonNodeFactories.field("enabled_halt_by_key", JsonNodeFactories.booleanNode(enabledHaltingKeyPressed))
 						)),
 				JsonNodeFactories.field("compilers", compilerFactory.jsonize()),
 				JsonNodeFactories.field("task_groups", JsonNodeFactories.array(taskNodes)),
@@ -188,5 +192,13 @@ public class Config {
 
 	protected MainBackEndHolder getBackEnd() {
 		return backEnd;
+	}
+
+	public boolean isEnabledHaltingKeyPressed() {
+		return enabledHaltingKeyPressed;
+	}
+
+	public void setEnabledHaltingKeyPressed(boolean enabledHaltingKeyPressed) {
+		this.enabledHaltingKeyPressed = enabledHaltingKeyPressed;
 	}
 }

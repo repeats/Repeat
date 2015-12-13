@@ -80,7 +80,7 @@ public class MainFrame extends JFrame {
 	protected JTextArea taSource, taStatus;
 	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython;
 	protected JRadioButtonMenuItem rbmiDebugSevere, rbmiDebugWarning, rbmiDebugInfo, rbmiDebugFine;
-	protected JCheckBoxMenuItem cbmiUseTrayIcon;
+	protected JCheckBoxMenuItem cbmiUseTrayIcon, cbmiHaltByKey;
 	private final JTextField tfMousePosition;
 	protected final JTable tTasks;
 
@@ -263,6 +263,15 @@ public class MainFrame extends JFrame {
 				backEnd.generateSource();
 			}
 		});
+
+		JMenuItem miHaltAllTasks = new JMenuItem("Halt all tasks");
+		miHaltAllTasks.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.haltAllTasks();
+			}
+		});
+		mnNewMenu_2.add(miHaltAllTasks);
 		mnNewMenu_2.add(mntmNewMenuItem);
 
 		JMenuItem mntmNewMenuItem_3 = new JMenuItem("Native modules...");
@@ -344,6 +353,15 @@ public class MainFrame extends JFrame {
 
 		final JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Record Mouse Click Only");
 		mSetting.add(chckbxmntmNewCheckItem);
+
+		cbmiHaltByKey = new JCheckBoxMenuItem("Halt task by ESC");
+		cbmiHaltByKey.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.switchHaltByKey();
+			}
+		});
+		mSetting.add(cbmiHaltByKey);
 
 		JSeparator separator = new JSeparator();
 		mSetting.add(separator);
