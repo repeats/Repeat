@@ -91,6 +91,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame() throws IOException {
 		setTitle("Repeat");
+		setIconImage(BootStrapResources.TRAY_IMAGE);
 		backEnd = new MainBackEndHolder(this);
 		hotkey = new HotkeySetting(backEnd);
 		taskGroup = new TaskGroupFrame(backEnd);
