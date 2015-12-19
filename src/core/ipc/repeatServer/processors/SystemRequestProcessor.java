@@ -6,6 +6,25 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import core.ipc.repeatServer.MainMessageSender;
 
+/**
+ * This class represents the message processor for any system action.
+ *
+ * A received message from the lower layer (central processor) will have the following JSON contents:
+ * {
+ * 		"device": reserved field. Must be empty string,
+ * 		"action": action depending on the type parsed by lower layer,
+ * 		"params": parameters for this action
+ * }
+ *
+ * The possible actions for system_host are:
+ * 1) Keep alive : keep this connection alive. If this is not received frequently, the system will terminate connection to client
+ *
+ * The possible actions for system client are:
+ * 1) identify(name) : identify the client system as the remote compiler for a certain language.
+ *
+ * @author HP Truong
+ *
+ */
 public class SystemRequestProcessor extends AbstractMessageProcessor {
 
 	private final ServerMainProcessor holder;

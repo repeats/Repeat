@@ -11,6 +11,18 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 
+/**
+ * This class sends messages to the ipc client
+ * A generic message will have the following JSON format:
+ * {
+ * 		"id" : id of the message as integer,
+ * 		"type" : type of the message as string. See {@link core.ipc.repeatServer.processors.ServerMainProcessor}
+ * 		"content" : JSON content of the message (determined by upper layer)
+ * }
+ *
+ * @author HP Truong
+ *
+ */
 public class MainMessageSender implements ILoggable {
 
 	private long idCount;

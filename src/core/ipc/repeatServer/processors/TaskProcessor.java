@@ -13,6 +13,38 @@ import core.ipc.repeatServer.ClientTask;
 import core.ipc.repeatServer.MainMessageSender;
 import core.keyChain.KeyChain;
 
+/**
+ * This class represents the message processor for all task action.
+ *
+ * This module can initiate certain activities on the client:
+ * 1) create task:
+ * {
+ * 		"task_action": "create_task",
+ * 		"params" : [absolute path to the source file as string]
+ * }
+ *
+ * 2) remove task:
+ * {
+ * 		"task_action": "remove_task",
+ * 		"params" : [task id as integer]
+ * }
+ *
+ * 3) run task
+ * {
+ * 		"task_action": "run_task",
+ * 		"params": [task id as integer]
+ * }
+ *
+ * All these activities will be initiated by sending a message to client, and
+ * wait on the replying message with the following JSON format
+ * {
+ * 		"status" : status of the action on client side,
+ * 		"message" : information/debug message
+ * }
+ *
+ * @author HP Truong
+ *
+ */
 public class TaskProcessor extends AbstractMessageProcessor {
 
 	private static final long EXECUTION_TIMEOUT_MS = 2000;

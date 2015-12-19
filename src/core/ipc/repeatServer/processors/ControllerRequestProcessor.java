@@ -10,6 +10,48 @@ import argo.jdom.JsonNode;
 import core.controller.Core;
 import core.ipc.repeatServer.MainMessageSender;
 
+/**
+ * This class represents the message processor for action request received from client.
+ *
+ * The central processor is responsible for extraction of message id and type
+ * A received message from the lower layer (central processor) will have the following JSON contents:
+ * {
+ *		"device": a string from the set {"mouse", "keyboard"},
+ *		"action" : a string specifying action,
+ *		"params" : a list of parameters for this action
+ * }
+ *
+ *************************************************************************
+ * The following actions are supported for mouse:
+ * 1a) left_click(): left click at the current mouse position
+ * 1b) left_click(int): left click with delay in ms
+ * 1c) left_click(int, int): left click at a position
+ *
+ * 2a) right_click(): right click at the current mouse position
+ * 2b) right_click(int): right click with delay in ms
+ * 2c) right_click(int, int): right click at a position
+ *
+ * 3) move(int, int): move mouse to a certain position
+ * 4) move_by(int, int): move mouse by a certain distance (in pixel)
+ *
+ *************************************************************************
+ * The following actions are supported for keyboard:
+ * 1) type(key_values...) : type a series of keys sequentially. The int value is the same as defined in java.awt.KeyEvent class
+ * 2) type_string(strings...) : type a series of strings sequentially.
+ * 3) combination(key_values...) : perform a key combination
+ *
+ *************************************************************************
+ *
+ * Once the action has been performed successfully, a reply message will be sent using the same id received.
+ * The received message has the following JSON format in content:
+ * {
+ * 		"status" : operation status of the action (either SUCCESS or FAILURE),
+ * 		"message" : information/debug message if applicable
+ * }
+ *
+ * @author HP Truong
+ *
+ */
 class ControllerRequestProcessor extends AbstractMessageProcessor {
 
 	private static final String DEVICE_MOUSE = "mouse";

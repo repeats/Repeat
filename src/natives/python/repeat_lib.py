@@ -25,7 +25,7 @@ class RepeatClient(object):
 
     """Client must send keep alive message to maintain the connection with server.
     Therefore the client timeout has to be less than server timeout"""
-    REPEAT_CLIENT_TIMEOUT_SEC = REPEAT_SERVER_TIMEOUT_SEC * 0.8 
+    REPEAT_CLIENT_TIMEOUT_SEC = REPEAT_SERVER_TIMEOUT_SEC * 0.8
 
     def __init__(self, host = 'localhost', port = 9999):
         super(RepeatClient, self).__init__()

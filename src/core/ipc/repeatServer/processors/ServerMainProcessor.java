@@ -12,6 +12,27 @@ import argo.jdom.JsonRootNode;
 import core.controller.Core;
 import core.ipc.repeatServer.MainMessageSender;
 
+/**
+ * This class represents the central message processor.
+ * There are four types of messages received from the client:
+ * 1) action: See {@link core.ipc.repeatServer.processors.ControllerRequestProcessor}
+ * 2) task: See {@link core.ipc.repeatServer.processors.TaskProcessor}
+ * 3) system_host: See {@link core.ipc.repeatServer.processors.SystemRequestProcessor}
+ * 4) system_client: See {@link core.ipc.repeatServer.processors.SystemRequestProcessor}
+ *
+ * A generic message received from client will have the following JSON format:
+ * {
+ * 		"type" : one of the four types above,
+ * 		"id" : message id,
+ * 		"content" : content to be processed by the upper layer
+ * }
+ *
+ * Note that it is essential for a message sent with id X be replied with message of the same id from client.
+ * Conversely, a message received from client with id X should also be replied with the same id to client.
+ *
+ * @author HP Truong
+ *
+ */
 public class ServerMainProcessor implements ILoggable {
 
 	public static final String TYPE_ACTION = "action";
