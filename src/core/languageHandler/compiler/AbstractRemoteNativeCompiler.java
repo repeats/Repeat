@@ -29,10 +29,10 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 	}
 
 	@Override
-	public final Pair<DynamicCompilerOutput, UserDefinedAction> compile(String source, File objectFile) {
+	public final Pair<DynamicCompilerOutput, UserDefinedAction> compile(String source, File sourceFile) {
 		TaskProcessor remoteManager = TaskProcessorManager.getProcessor(getName());
 		if (remoteManager == null) {
-			getLogger().warning("Does not have a remote compiler to work with...");
+			getLogger().warning("Does not have a remote compiler to work with " + getName());
 			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(source));
 		}
 
@@ -44,24 +44,24 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 				return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISCONFIGURED, new DormantUserDefinedTask(source));
 			}
 
-			if (!objectFile.getName().endsWith(getObjectExtension())) {
-				getLogger().warning("Object file " + objectFile.getAbsolutePath() + "does not end with " + getObjectExtension() + ". Compiling from source code.");
+			if (!sourceFile.getName().endsWith(getExtension())) {
+				getLogger().warning("Source file " + sourceFile.getAbsolutePath() + " does not end with " + getExtension() + ". Compiling from source code.");
 				return compile(source);
 			}
 
-			if (!FileUtility.fileExists(objectFile)) {
-				if (!FileUtility.writeToFile(source, objectFile, false)) {
-					getLogger().warning("Cannot write source code to file " + objectFile.getAbsolutePath());
+			if (!FileUtility.fileExists(sourceFile)) {
+				if (!FileUtility.writeToFile(source, sourceFile, false)) {
+					getLogger().warning("Cannot write source code to file " + sourceFile.getAbsolutePath());
 					return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(source));
 				}
 			}
 
-			int id = remoteTaskManager.createTask(objectFile);
+			int id = remoteTaskManager.createTask(sourceFile);
 			if (id == -1) {
 				getLogger().warning("Unable to create task from ipc client...");
 				return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_ERROR, null);
 			}
-			return loadAction(id, source, objectFile);
+			return loadAction(id, source, sourceFile);
 		} catch (Exception e) {
 			getLogger().log(Level.WARNING, "Cannot compile source code...", e);
 			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_ERROR, null);

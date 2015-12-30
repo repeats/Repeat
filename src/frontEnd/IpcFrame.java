@@ -27,7 +27,6 @@ public class IpcFrame extends JFrame {
 	protected static final int COLUMN_PORT = 1;
 	protected static final int COLUMN_STATUS = 2;
 
-
 	private final JPanel contentPane;
 	protected final JTable tIpc;
 	protected final MainBackEndHolder mainFrame;

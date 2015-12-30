@@ -12,15 +12,13 @@ import utilities.CodeConverter;
 import utilities.Function;
 import core.controller.Core;
 import core.keyChain.GlobalKeysManager;
+import core.languageHandler.Language;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.scheduler.SchedulingData;
 
 public class Recorder {
-
-	public static final int JAVA_LANGUAGE = 0;
-	public static final int PYTHON_LANGUAGE = 1;
 
 	public static final int MODE_NORMAL = 0;
 	public static final int MODE_MOUSE_CLICK_ONLY = 1;
@@ -33,15 +31,15 @@ public class Recorder {
 	private GlobalKeyListener keyListener;
 	private GlobalMouseListener mouseListener;
 
-	private HashMap<Integer, AbstractSourceGenerator> sourceGenerators;
+	private HashMap<Language, AbstractSourceGenerator> sourceGenerators;
 
 	public Recorder(final GlobalKeysManager globalKeys) {
 		final Core controller = Core.getInstance();
 		taskScheduler = new TaskScheduler();
 
 		sourceGenerators = new HashMap<>();
-		sourceGenerators.put(JAVA_LANGUAGE, new JavaSourceGenerator());
-		sourceGenerators.put(PYTHON_LANGUAGE, new PythonSourceGenerator());
+		sourceGenerators.put(Language.JAVA, new JavaSourceGenerator());
+		sourceGenerators.put(Language.PYTHON, new PythonSourceGenerator());
 
 		/*************************************************************************************************/
 		keyListener = new GlobalKeyListener();
@@ -213,7 +211,7 @@ public class Recorder {
 		taskScheduler.clearTasks();
 	}
 
-	public String getGeneratedCode(int language) {
+	public String getGeneratedCode(Language language) {
 		AbstractSourceGenerator generator = sourceGenerators.get(language);
 		if (generator != null) {
 			return generator.getSource();

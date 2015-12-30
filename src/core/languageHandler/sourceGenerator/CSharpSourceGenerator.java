@@ -7,16 +7,16 @@ import utilities.Function;
 import core.languageHandler.Language;
 import core.scheduler.SchedulingData;
 
-public class PythonSourceGenerator extends AbstractSourceGenerator {
+public class CSharpSourceGenerator extends AbstractSourceGenerator {
 
-	private static final Logger LOGGER = Logger.getLogger(PythonSourceGenerator.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(CSharpSourceGenerator.class.getName());
 
-	public PythonSourceGenerator() {
+	public CSharpSourceGenerator() {
 		super();
 		this.sourceScheduler.setSleepSource(new Function<Long, String>() {
 			@Override
 			public String apply(Long r) {
-				return TAB + "time.sleep(" + (r / 1000.0) + ")\n";
+				return "";
 			}
 		});
 	}
@@ -26,33 +26,33 @@ public class PythonSourceGenerator extends AbstractSourceGenerator {
 		String mid = "";
 		if (device.equals("mouse")) {
 			if (action.equals("move")) {
-				mid = "repeat_lib.mouse_move(" + param[0] + ", " + param[1] +")\n";
+				mid = "controller.mouse().move(" + param[0] + ", " + param[1] +");\n";
 			} else if (action.equals("moveBy")) {
-				mid = "repeat_lib.mouse_move_by(" + param[0] + ", " + param[1] +")\n";
+				mid = "controller.mouse().moveBy(" + param[0] + ", " + param[1] +");\n";
 			} else if (action.equals("click")) {
-				mid = "repeat_lib.mouse_click(" + param[0] + ")\n";
+				mid = "controller.mouse().click(" + param[0] + ");\n";
 			} else if (action.equals("press")) {
-				mid = "repeat_lib.mouse_press(" + param[0] + ")\n";
+				mid = "controller.mouse().press(" + param[0] + ");\n";
 			} else if (action.equals("release")) {
-				mid = "repeat_lib.mouse_release(" + param[0] + ")\n";
+				mid = "controller.mouse().release(" + param[0] + ");\n";
 			} else {
 				return false;
 			}
 		} else if (device.equals("keyBoard")) {
 			if (action.equals("type")) {
-				mid = "repeat_lib.key_type(" + param[0] + ")\n";
+				mid = "controller.keyBoard().type(" + param[0] + ");\n";
 			} else if (action.equals("press")) {
-				mid = "repeat_lib.key_press(" + param[0] + ")\n";
+				mid = "controller.keyBoard().press(" + param[0] + ");\n";
 			} else if (action.equals("release")) {
-				mid = "repeat_lib.key_release(" + param[0] + ")\n";
+				mid = "controller.keyBoard().release(" + param[0] + ");\n";
 			} else {
 				return false;
 			}
 		} else if (action.equals("wait")) {
-			mid = "repeat_lib.blockingWait(" + param[0] + ")\n";
+			mid = "controller.blockingWait(" + param[0] + ");\n";
 		}
 
-		return sourceScheduler.addTask(new SchedulingData<String>(time, TAB + mid));
+		return sourceScheduler.addTask(new SchedulingData<String>(time, FOUR_TAB + mid));
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class PythonSourceGenerator extends AbstractSourceGenerator {
 		}
 
 		StringBuffer sb = new StringBuffer();
-		sb.append(BootStrapResources.getNativeLanguageTemplate(Language.PYTHON));
+		sb.append(BootStrapResources.getNativeLanguageTemplate(Language.CSHARP));
 		sb.append(mainSource);
 
 		return sb.toString();

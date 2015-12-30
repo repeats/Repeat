@@ -14,7 +14,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
@@ -31,7 +30,6 @@ import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
 import core.config.Config;
 import core.controller.Core;
-import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
@@ -42,8 +40,7 @@ import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.PythonRemoteCompiler;
-import core.languageHandler.sourceGenerator.JavaSourceGenerator;
-import core.languageHandler.sourceGenerator.PythonSourceGenerator;
+import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.recorder.Recorder;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskSourceManager;
@@ -152,6 +149,8 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/************************************************IPC**********************************************************/
 	protected void initiateBackEndActivities() {
+
+
 		try {
 			IPCServiceManager.initiateServices();
 		} catch (IOException e) {
@@ -543,27 +542,26 @@ public class MainBackEndHolder {
 
 	private void loadSource(int row) {
 		//Load source if possible
-		if (row >= 0 && row < currentGroup.getTasks().size()) {
-			if (selectedTaskIndex != row) {
-				UserDefinedAction task = currentGroup.getTasks().get(row);
-				String source = task.getSource();
-
-				if (source != null) {
-					if (!task.getCompiler().equals(getCompiler().getName())) {
-						if (task.getCompiler() == Language.JAVA) {
-							main.rbmiCompileJava.setSelected(true);
-						} else if (task.getCompiler() == Language.PYTHON) {
-							main.rbmiCompilePython.setSelected(true);
-						}
-						refreshCompilingLanguage();
-					}
-
-					main.taSource.setText(source);
-				} else {
-					JOptionPane.showMessageDialog(main, "Cannot retrieve source code for task " + task.getName() + ".\nTry recompiling and add again");
-				}
-			}
+		if (row < 0 || row >= currentGroup.getTasks().size()) {
+			return;
 		}
+		if (selectedTaskIndex == row) {
+			return;
+		}
+
+		UserDefinedAction task = currentGroup.getTasks().get(row);
+		String source = task.getSource();
+
+		if (source == null) {
+			JOptionPane.showMessageDialog(main, "Cannot retrieve source code for task " + task.getName() + ".\nTry recompiling and add again");
+			return;
+		}
+
+		if (!task.getCompiler().equals(getCompiler().getName())) {
+			main.languageSelection.get(task.getCompiler()).setSelected(true);
+		}
+
+		main.taSource.setText(source);
 	}
 
 	/*************************************************************************************************************/
@@ -571,20 +569,12 @@ public class MainBackEndHolder {
 
 	protected void promptSource() {
 		StringBuffer sb = new StringBuffer();
-		if (main.rbmiCompileJava.isSelected()) {
-			sb.append(new JavaSourceGenerator().getSource());
-		} else if (main.rbmiCompilePython.isSelected()) {
-			sb.append(new PythonSourceGenerator().getSource());
-		}
+		sb.append(AbstractSourceGenerator.getReferenceSource(getSelectedLanguage()));
 		main.taSource.setText(sb.toString());
 	}
 
 	protected void generateSource() {
-		if (main.rbmiCompileJava.isSelected()) {
-			main.taSource.setText(recorder.getGeneratedCode(Recorder.JAVA_LANGUAGE));
-		} else if (main.rbmiCompilePython.isSelected()) {
-			main.taSource.setText(recorder.getGeneratedCode(Recorder.PYTHON_LANGUAGE));
-		}
+		main.taSource.setText(recorder.getGeneratedCode(getSelectedLanguage()));
 	}
 
 	protected void cleanUnusedSource() {
@@ -634,58 +624,28 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/***************************************Source compilation****************************************************/
 
-	protected AbstractNativeCompiler getCompiler() {
-		if (main.rbmiCompileJava.isSelected()) {
-			return config.getCompilerFactory().getCompiler(Language.JAVA);
-		} else if (main.rbmiCompilePython.isSelected()) {
-			return config.getCompilerFactory().getCompiler(Language.PYTHON);
-		} else {
-			return null;
+	protected Language getSelectedLanguage() {
+		for (JRadioButtonMenuItem rbmi : main.rbmiSelection.keySet()) {
+			if (rbmi.isSelected()) {
+				return main.rbmiSelection.get(rbmi);
+			}
 		}
+
+		throw new IllegalStateException("Undefined state. No language selected.");
+	}
+
+	protected AbstractNativeCompiler getCompiler() {
+		return config.getCompilerFactory().getCompiler(getSelectedLanguage());
 	}
 
 	protected void refreshCompilingLanguage() {
 		customFunction = null;
-		if (main.rbmiCompileJava.isSelected()) {
-			main.bCompile.setText("Compile source");
-		} else if (main.rbmiCompilePython.isSelected()) {
-			main.bCompile.setText("Load source");
-			File interpreter = config.getCompilerFactory().getCompiler(Language.PYTHON).getPath();
-			LOGGER.info("Using python interpreter at " + interpreter.getAbsolutePath());
-			IIPCService pythonIPCService = IPCServiceManager.getIPCService(IPCServiceName.PYTHON);
-
-			if (!pythonIPCService.isRunning()) {
-				try {
-					pythonIPCService.startRunning();
-				} catch (IOException e) {
-					LOGGER.log(Level.WARNING, "Encountered exception launching ipc", e);
-				}
-			}
-		}
-
+		getCompiler().changeCompilationButton(main.bCompile);
 		promptSource();
 	}
 
 	protected void changeCompilerPath() {
-		JFileChooser chooser = new JFileChooser(getCompiler().getPath());
-		if (main.rbmiCompileJava.isSelected()) {
-			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			if (chooser.showDialog(main, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-				config.getCompilerFactory().getCompiler(Language.JAVA).setPath(chooser.getSelectedFile());
-			}
-		} else if (main.rbmiCompilePython.isSelected()) {
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			if (chooser.showDialog(main, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = chooser.getSelectedFile();
-				if (!selectedFile.canExecute()) {
-					JOptionPane.showMessageDialog(main,
-							"Chosen file " + selectedFile.getName() + " is not executable", "Invalid choice", JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				config.getCompilerFactory().getCompiler(Language.PYTHON).setPath(selectedFile);
-				((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(selectedFile);
-			}
-		}
+		getCompiler().promptChangePath(main);
 	}
 
 	protected void compileSource() {
@@ -696,13 +656,15 @@ public class MainBackEndHolder {
 		DynamicCompilerOutput compilerStatus = compilationResult.getA();
 		UserDefinedAction createdInstance = compilationResult.getB();
 
-		if (compilerStatus == DynamicCompilerOutput.COMPILATION_SUCCESS) {
-			customFunction = createdInstance;
-			customFunction.setCompiler(compiler.getName());
+		if (compilerStatus != DynamicCompilerOutput.COMPILATION_SUCCESS) {
+			return;
+		}
 
-			if (!TaskSourceManager.submitTask(customFunction, source)) {
-				JOptionPane.showMessageDialog(main, "Error writing source file...");
-			}
+		customFunction = createdInstance;
+		customFunction.setCompiler(compiler.getName());
+
+		if (!TaskSourceManager.submitTask(customFunction, source)) {
+			JOptionPane.showMessageDialog(main, "Error writing source file...");
 		}
 	}
 

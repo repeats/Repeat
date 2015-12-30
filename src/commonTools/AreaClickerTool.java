@@ -1,6 +1,6 @@
 package commonTools;
 
-import core.recorder.Recorder;
+import core.languageHandler.Language;
 
 public class AreaClickerTool extends RepeatTool {
 
@@ -12,13 +12,13 @@ public class AreaClickerTool extends RepeatTool {
 	}
 
 	@Override
-	protected boolean isSupported(int language) {
-		return language == Recorder.JAVA_LANGUAGE;
+	protected boolean isSupported(Language language) {
+		return language == Language.JAVA;
 	}
 
 	@Override
-	protected String getBodySource(int language) {
-		if (language == Recorder.JAVA_LANGUAGE) {
+	protected String getBodySource(Language language) {
+		if (language == Language.JAVA) {
 			StringBuilder output = new StringBuilder();
 			output.append(TWO_TAB + "Point topLeft = new Point(0,0);\n");
 			output.append(TWO_TAB + "Point bottomRight = new Point(20,20);\n");

@@ -16,6 +16,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,11 +80,14 @@ public class MainFrame extends JFrame {
 	protected final JTextField tfRepeatDelay;
 	protected JButton bRecord, bReplay, bCompile, bRun, bTaskGroup;
 	protected JTextArea taSource, taStatus;
-	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython;
+	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython, rbmiCompileCS;
 	protected JRadioButtonMenuItem rbmiDebugSevere, rbmiDebugWarning, rbmiDebugInfo, rbmiDebugFine;
 	protected JCheckBoxMenuItem cbmiUseTrayIcon, cbmiHaltByKey;
 	private final JTextField tfMousePosition;
 	protected final JTable tTasks;
+
+	protected final Map<Language, JRadioButtonMenuItem> languageSelection;
+	protected final Map<JRadioButtonMenuItem, Language> rbmiSelection;
 
 	/**
 	 * Create the frame.
@@ -92,6 +97,9 @@ public class MainFrame extends JFrame {
 	public MainFrame() throws IOException {
 		setTitle("Repeat");
 		setIconImage(BootStrapResources.TRAY_IMAGE);
+		languageSelection = new HashMap<>();
+		rbmiSelection = new HashMap<>();
+
 		backEnd = new MainBackEndHolder(this);
 		hotkey = new HotkeySetting(backEnd);
 		taskGroup = new TaskGroupFrame(backEnd);
@@ -308,6 +316,26 @@ public class MainFrame extends JFrame {
 			}
 		});
 		bGroupLanguage.add(rbmiCompilePython);
+
+		rbmiCompileCS = new JRadioButtonMenuItem("C#");
+		rbmiCompileCS.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.refreshCompilingLanguage();
+			}
+		});
+		mnNewMenu_3.add(rbmiCompileCS);
+		bGroupLanguage.add(rbmiCompileCS);
+
+		languageSelection.put(Language.JAVA, rbmiCompileJava);
+		languageSelection.put(Language.PYTHON, rbmiCompilePython);
+		languageSelection.put(Language.CSHARP, rbmiCompileCS);
+
+		rbmiSelection.put(rbmiCompileJava, Language.JAVA);
+		rbmiSelection.put(rbmiCompilePython, Language.PYTHON);
+		rbmiSelection.put(rbmiCompileCS, Language.CSHARP);
+
+
 		mntmNewMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
 
 		JMenu mnNewMenu_1 = new JMenu("Common Tools");
@@ -317,7 +345,7 @@ public class MainFrame extends JFrame {
 		mntmNewMenuItem_1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				taSource.setText(new ClickerTool().getSource(Recorder.JAVA_LANGUAGE));
+				taSource.setText(new ClickerTool().getSource(Language.JAVA));
 			}
 		});
 		mnNewMenu_1.add(mntmNewMenuItem_1);
@@ -326,7 +354,7 @@ public class MainFrame extends JFrame {
 		mntmNewMenuItem_2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				taSource.setText(new AreaClickerTool().getSource(Recorder.JAVA_LANGUAGE));
+				taSource.setText(new AreaClickerTool().getSource(Language.JAVA));
 			}
 		});
 		mnNewMenu_1.add(mntmNewMenuItem_2);
@@ -428,11 +456,8 @@ public class MainFrame extends JFrame {
 		miAPI.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (rbmiCompileJava.isSelected()) {
-					SwingUtil.OptionPaneUtil.showString("Java API", BootStrapResources.getAPI("java"));
-				} else if (rbmiCompilePython.isSelected()) {
-					SwingUtil.OptionPaneUtil.showString("Python API", BootStrapResources.getAPI("python"));
-				}
+				Language selected = backEnd.getSelectedLanguage();
+				SwingUtil.OptionPaneUtil.showString(selected.toString() + " API", BootStrapResources.getAPI(selected));
 			}
 		});
 

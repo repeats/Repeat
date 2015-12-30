@@ -2,6 +2,9 @@ package core.languageHandler.compiler;
 
 import java.io.File;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
 import utilities.ILoggable;
 import utilities.Pair;
 import argo.jdom.JsonNode;
@@ -25,4 +28,9 @@ public abstract class AbstractNativeCompiler implements ILoggable {
 	protected abstract File getSourceFile(String compilingAction);
 	protected abstract String getDummyPrefix();
 
+	/*******************************************************************/
+	/************************Swing components***************************/
+	/*******************************************************************/
+	public abstract void promptChangePath(JFrame parent);
+	public abstract void changeCompilationButton(JButton bCompile);
 }

@@ -1,6 +1,6 @@
 Repeat - Java API
 Updated 16th April 2015
-Author: Hoai Phuoc Truong
+Author: HP Truong
 
 **********************************************************************************************************
 

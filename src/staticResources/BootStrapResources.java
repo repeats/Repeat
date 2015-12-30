@@ -19,8 +19,8 @@ public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
 
-	private static final Map<String, String> LANGUAGE_API;
-	private static final Map<String, String> NATIVE_LANGUAGE_TEMPLATES;
+	private static final Map<Language, String> LANGUAGE_API;
+	private static final Map<Language, String> NATIVE_LANGUAGE_TEMPLATES;
 
 	public static final Image TRAY_IMAGE;
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE, REFRESH;
@@ -48,11 +48,13 @@ public class BootStrapResources {
 
 		/*********************************************************************************/
 		LANGUAGE_API = new HashMap<>();
-		LANGUAGE_API.put(Language.JAVA.toString(), getFile("/core/languageHandler/API/JavaAPI.txt"));
-		LANGUAGE_API.put(Language.PYTHON.toString(), getFile("/core/languageHandler/API/PythonAPI.txt"));
+		LANGUAGE_API.put(Language.JAVA, getFile("/core/languageHandler/API/JavaAPI.txt"));
+		LANGUAGE_API.put(Language.PYTHON, getFile("/core/languageHandler/API/PythonAPI.txt"));
+		LANGUAGE_API.put(Language.CSHARP, getFile("/core/languageHandler/API/CSharpAPI.txt"));
 
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON.toString(), getFile("/natives/python/template_repeat.py"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON, getFile("/natives/python/template_repeat.py"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/natives/csharp/TemplateRepeat.cs"));
 	}
 
 	public static void extractResources() throws IOException {
@@ -86,7 +88,7 @@ public class BootStrapResources {
 				+ "Created by Hoai Phuoc Truong. Contact me at hptruong93@gmail.com.";
 	}
 
-	public static String getAPI(String language) {
+	public static String getAPI(Language language) {
 		if (LANGUAGE_API.containsKey(language)) {
 			return LANGUAGE_API.get(language);
 		} else {
@@ -94,7 +96,7 @@ public class BootStrapResources {
 		}
 	}
 
-	public static String getNativeLanguageTemplate(String language) {
+	public static String getNativeLanguageTemplate(Language language) {
 		if (NATIVE_LANGUAGE_TEMPLATES.containsKey(language)) {
 			return NATIVE_LANGUAGE_TEMPLATES.get(language);
 		} else {

@@ -2,9 +2,11 @@ package core.languageHandler;
 
 public enum Language {
 	JAVA("java"),
-    PYTHON("python")
+    PYTHON("python"),
+    CSHARP("C#"),
     ;
 
+	public static Language[] ALL_LANGUAGES = {JAVA, PYTHON, CSHARP};
     private final String text;
 
     /**
@@ -20,12 +22,11 @@ public enum Language {
     }
 
     public static Language identify(String name) {
-    	if (name.equals(JAVA.toString())) {
-    		return JAVA;
-    	} else if (name.equals(PYTHON.toString())) {
-    		return PYTHON;
-    	} else {
-    		return null;
+    	for (Language language : ALL_LANGUAGES) {
+    		if (name.equals(language.toString())) {
+    			return language;
+    		}
     	}
+    	return null;
     }
 }

@@ -12,6 +12,9 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -212,5 +215,24 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	@Override
 	public Logger getLogger() {
 		return Logger.getLogger(JavaNativeCompiler.class.getName());
+	}
+
+	/*******************************************************************/
+	/************************Swing components***************************/
+	/*******************************************************************/
+
+	@Override
+	public void promptChangePath(JFrame parent) {
+		JFileChooser chooser = new JFileChooser(getPath());
+
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if (chooser.showDialog(parent, "Set Java home") == JFileChooser.APPROVE_OPTION) {
+			setPath(chooser.getSelectedFile());
+		}
+	}
+
+	@Override
+	public void changeCompilationButton(JButton bCompile) {
+		bCompile.setText("Compile source");
 	}
 }

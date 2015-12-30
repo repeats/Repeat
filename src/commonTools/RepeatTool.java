@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import utilities.StringUtilities;
-import core.recorder.Recorder;
+import core.languageHandler.Language;
 
 public abstract class RepeatTool {
 
@@ -21,36 +21,33 @@ public abstract class RepeatTool {
 		imports.add("import core.controller.Core;");
 	}
 
-	public String getSource(int language) {
+	public String getSource(Language language) {
 		if (isSupported(language)) {
 			return "package core;\n"
 					+ StringUtilities.join(imports, "\n") + "\n\n"
 					+ getHeader(language) + getBodySource(language) + getFooter(language);
 		} else {
-			return null;
+			return "";
 		}
 	}
 
-	protected String getHeader(int language) {
-		switch (language) {
-		case Recorder.JAVA_LANGUAGE:
+	protected String getHeader(Language language) {
+		if (language == Language.JAVA) {
 			return "public class CustomAction extends UserDefinedAction {\n"
 					+ "    public void action(final Core controller) throws InterruptedException {\n";
-		default:
-			return null;
+		} else {
+			return "";
 		}
 	}
 
-	protected String getFooter(int language) {
-		switch (language) {
-		case Recorder.JAVA_LANGUAGE:
+	protected String getFooter(Language language) {
+		if (language == Language.JAVA) {
 			return "    }\n}";
-		default:
-			return null;
+		} else {
+			return "";
 		}
-
 	}
 
-	protected abstract boolean isSupported(int language);
-	protected abstract String getBodySource(int language);
+	protected abstract boolean isSupported(Language language);
+	protected abstract String getBodySource(Language language);
 }

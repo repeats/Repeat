@@ -21,7 +21,7 @@ class RequestGenerator(object):
                 'content' : {
                             'device': self.device,
                             'action': self.action,
-                            'params' : self.params
+                            'parameters' : self.params
                     }
                 }
 
@@ -34,7 +34,8 @@ class RequestGenerator(object):
         event = threading.Event()
         self.client.synchronization_events[new_id] = event
 
-        self.client.send_queue.put(self.get_request(new_id))
+        sending = self.get_request(new_id)
+        self.client.send_queue.put(sending)
 
         if blocking_wait:
             if not event.wait(RequestGenerator.REQUEST_TIMEOUT):

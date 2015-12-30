@@ -1,9 +1,12 @@
 package core.ipc;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
+import core.languageHandler.Language;
 
 public final class IPCServiceManager {
 
@@ -12,11 +15,26 @@ public final class IPCServiceManager {
 	public static final int IPC_SERVICE_COUNT = 2;
 	private static final long INTER_SERVICE_BOOT_TIME_MS = 2000;
 	private static final IIPCService[] ipcServices;
+	private static final Map<Language, Integer> ipcByLanugage;
 
 	static {
 		ipcServices = new IIPCService[IPC_SERVICE_COUNT];
 		ipcServices[IPCServiceName.CONTROLLER_SERVER.value()] =  new ControllerServer();
 		ipcServices[IPCServiceName.PYTHON.value()] = new PythonIPCClientService();
+
+		ipcByLanugage = new HashMap<>();
+		ipcByLanugage.put(Language.JAVA, -1);
+		ipcByLanugage.put(Language.PYTHON, 1);
+		ipcByLanugage.put(Language.CSHARP, 2);
+	}
+
+	public static IIPCService getIPCService(Language name) {
+		int index = ipcByLanugage.get(name);
+		if (index >= 0) {
+			return ipcServices[index];
+		} else {
+			return null;
+		}
 	}
 
 	public static IIPCService getIPCService(IPCServiceName name) {

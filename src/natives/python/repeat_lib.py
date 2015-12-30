@@ -186,7 +186,7 @@ class TaskManager(object):
 
     def process_message(self, message_id, message):
         action = message['task_action']
-        params = message['params']
+        params = message['parameters']
 
         if action == 'create_task':
             return self.create_task(*params)

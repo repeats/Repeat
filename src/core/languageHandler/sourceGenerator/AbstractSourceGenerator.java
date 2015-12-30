@@ -1,6 +1,10 @@
 package core.languageHandler.sourceGenerator;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import core.languageHandler.Language;
 
 public abstract class AbstractSourceGenerator {
 
@@ -11,6 +15,22 @@ public abstract class AbstractSourceGenerator {
 	protected static final String TWO_TAB = TAB + TAB;
 	protected static final String THREE_TAB = TWO_TAB + TAB;
 	protected static final String FOUR_TAB = THREE_TAB + TAB;
+
+	private static final Map<Language, AbstractSourceGenerator> REFERENCE_SOURCES;
+	static {
+		REFERENCE_SOURCES = new HashMap<>();
+		REFERENCE_SOURCES.put(Language.JAVA, new JavaSourceGenerator());
+		REFERENCE_SOURCES.put(Language.PYTHON, new PythonSourceGenerator());
+		REFERENCE_SOURCES.put(Language.CSHARP, new CSharpSourceGenerator());
+	}
+
+	public static String getReferenceSource(Language language) {
+		AbstractSourceGenerator generator = REFERENCE_SOURCES.get(language);
+		if (generator != null) {
+			return generator.getSource();
+		}
+		return null;
+	}
 
 	public AbstractSourceGenerator() {
 		source = new StringBuffer();

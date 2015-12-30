@@ -1,6 +1,6 @@
 Repeat - Python API
 Updated 10th December 2015
-Author: Hoai Phuoc Truong
+Author: HP Truong
 
 **********************************************************************************************************
 Core API

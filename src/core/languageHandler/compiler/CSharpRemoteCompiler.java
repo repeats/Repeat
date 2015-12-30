@@ -1,12 +1,10 @@
 package core.languageHandler.compiler;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -15,35 +13,31 @@ import utilities.Pair;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
-import core.ipc.IIPCService;
-import core.ipc.IPCServiceManager;
-import core.ipc.IPCServiceName;
-import core.ipc.repeatClient.PythonIPCClientService;
 import core.languageHandler.Language;
 import core.userDefinedTask.UserDefinedAction;
 
-public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
+public class CSharpRemoteCompiler extends AbstractRemoteNativeCompiler {
 
-	private File interpreter;
 	private final File objectFileDirectory;
+	private File path;
 
 	{
 		getLogger().setLevel(Level.ALL);
 	}
 
-	public PythonRemoteCompiler(File objectFileDirectory) {
-		interpreter = new File("python.exe");
+	public CSharpRemoteCompiler(File objectFileDirectory) {
 		this.objectFileDirectory = objectFileDirectory;
+		path = new File(".");
 	}
 
 	@Override
 	public void setPath(File file) {
-		interpreter = file;
+		this.path = file;
 	}
 
 	@Override
 	public File getPath() {
-		return interpreter;
+		return path;
 	}
 
 	@Override
@@ -59,7 +53,7 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 			@Override
 			public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
-				Pair<DynamicCompilerOutput, UserDefinedAction> recompiled = PythonRemoteCompiler.this.compile(source);
+				Pair<DynamicCompilerOutput, UserDefinedAction> recompiled = CSharpRemoteCompiler.this.compile(source);
 				UserDefinedAction output = recompiled.getB();
 				output.syncContent(this);
 				return output;
@@ -78,17 +72,17 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 	@Override
 	public Language getName() {
-		return Language.PYTHON;
+		return Language.CSHARP;
 	}
 
 	@Override
 	public String getExtension() {
-		return ".py";
+		return ".cs";
 	}
 
 	@Override
 	public String getObjectExtension() {
-		return ".py";
+		return ".dll";
 	}
 
 	@Override
@@ -103,21 +97,16 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 	@Override
 	protected String getDummyPrefix() {
-		return "PY_";
+		return "CS_";
 	}
 
 	@Override
 	public Logger getLogger() {
-		return Logger.getLogger(PythonRemoteCompiler.class.getName());
+		return Logger.getLogger(CSharpRemoteCompiler.class.getName());
 	}
 
 	@Override
 	protected boolean checkRemoteCompilerSettings() {
-		if (!FileUtility.fileExists(interpreter) || !interpreter.canExecute()) {
-			getLogger().severe("No interpreter found at " + interpreter.getAbsolutePath());
-			return false;
-		}
-
 		return true;
 	}
 
@@ -127,33 +116,11 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 	@Override
 	public void promptChangePath(JFrame parent) {
-		JFileChooser chooser = new JFileChooser(getPath());
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(parent, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = chooser.getSelectedFile();
-			if (!selectedFile.canExecute()) {
-				JOptionPane.showMessageDialog(parent,
-						"Chosen file " + selectedFile.getName() + " is not executable", "Invalid choice", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			setPath(selectedFile);
-			((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(selectedFile);
-		}
+		JOptionPane.showMessageDialog(parent, "Operation not supported", "C# path", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	@Override
 	public void changeCompilationButton(JButton bCompile) {
-		bCompile.setText("Load source");
-		File interpreter = getPath();
-		getLogger().info("Using python interpreter at " + interpreter.getAbsolutePath());
-		IIPCService pythonIPCService = IPCServiceManager.getIPCService(IPCServiceName.PYTHON);
-
-		if (!pythonIPCService.isRunning()) {
-			try {
-				pythonIPCService.startRunning();
-			} catch (IOException e) {
-				getLogger().log(Level.WARNING, "Encountered exception launching ipc", e);
-			}
-		}
+		bCompile.setText("Compile source");
 	}
 }

@@ -11,20 +11,31 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import sun.misc.Launcher;
+import frontEnd.BlankClass;
+
 /**
  * Provide file reading and writing utilities
  * This is a static class. No instance should be created
- * @author VDa
+ * @author HP Truong
  *
  */
 public class FileUtility {
@@ -433,6 +444,52 @@ public class FileUtility {
 			return file.delete();
 		} else {
 			return true;
+		}
+	}
+
+	/**
+	 *
+	 * @param destination
+	 * @throws IOException
+	 */
+	public static void extractFromCurrentJar(String path, File destination, Function<String, Boolean> filteringFunction) throws IOException {
+		final File jarFile = new File(BlankClass.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+
+		if (jarFile.isFile()) {// Run with JAR file
+		    final JarFile jar = new JarFile(jarFile);
+		    final Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+		    while(entries.hasMoreElements()) {
+		    	JarEntry entry = entries.nextElement();
+		        String name = entry.getName();
+		        if (!name.startsWith(path + "/")) { //filter according to the path
+		        	continue;
+		        }
+
+		        if (!filteringFunction.apply(name)) {
+		        	continue;
+		        }
+
+		        InputStream inputStream = jar.getInputStream(entry);
+		        Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), FileUtility.getFileName(name)));
+		        Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+		    }
+		    jar.close();
+		} else { // Run with IDE
+		    final URL url = Launcher.class.getResource("/" + path);
+		    if (url != null) {
+		        try {
+		            final File apps = new File(url.toURI());
+		            for (File app : apps.listFiles()) {
+		            	if (!filteringFunction.apply(app.getAbsolutePath())) {
+				        	continue;
+				        }
+		                Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), app.getName()));
+		                Files.copy(app.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+		            }
+		        } catch (URISyntaxException ex) {
+		            // never happens
+		        }
+		    }
 		}
 	}
 

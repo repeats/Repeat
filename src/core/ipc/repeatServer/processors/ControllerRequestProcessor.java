@@ -18,7 +18,7 @@ import core.ipc.repeatServer.MainMessageSender;
  * {
  *		"device": a string from the set {"mouse", "keyboard"},
  *		"action" : a string specifying action,
- *		"params" : a list of parameters for this action
+ *		"parameters" : a list of parameters for this action
  * }
  *
  *************************************************************************
@@ -69,7 +69,7 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 		final String device = content.getStringValue("device");
 		String action = content.getStringValue("action");
 
-		List<Object> parsedParams = parseParams(content.getArrayNode("params"));
+		List<Object> parsedParams = parseParams(content.getArrayNode("parameters"));
 
 		if (device.equals(DEVICE_MOUSE)) {
 			return mouseAction(type, id, action, parsedParams);
@@ -217,7 +217,7 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 				(content.getStringValue("device").equals("mouse") ||
 					content.getStringValue("device").equals("keyboard")) &&
 				content.isStringValue("action") &&
-				content.isArrayNode("params");
+				content.isArrayNode("parameters");
 	}
 
 	@Override

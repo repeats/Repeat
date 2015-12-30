@@ -20,19 +20,19 @@ import core.keyChain.KeyChain;
  * 1) create task:
  * {
  * 		"task_action": "create_task",
- * 		"params" : [absolute path to the source file as string]
+ * 		"parameters" : [absolute path to the source file as string]
  * }
  *
  * 2) remove task:
  * {
  * 		"task_action": "remove_task",
- * 		"params" : [task id as integer]
+ * 		"parameters" : [task id as integer]
  * }
  *
  * 3) run task
  * {
  * 		"task_action": "run_task",
- * 		"params": [task id as integer]
+ * 		"parameters": [task id as integer]
  * }
  *
  * All these activities will be initiated by sending a message to client, and
@@ -85,7 +85,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 	public int createTask(File file) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string("create_task")),
-				JsonNodeFactories.field("params",
+				JsonNodeFactories.field("parameters",
 					JsonNodeFactories.array(
 						JsonNodeFactories.string(file.getAbsolutePath())
 					)
@@ -106,7 +106,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 	public boolean runTask(int id, KeyChain invoker) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string("run_task")),
-				JsonNodeFactories.field("params",
+				JsonNodeFactories.field("parameters",
 					JsonNodeFactories.array(
 						JsonNodeFactories.number(id),
 						invoker.jsonize()
@@ -121,7 +121,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 	public boolean removeTask(int id) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string("remove_task")),
-				JsonNodeFactories.field("params",
+				JsonNodeFactories.field("parameters",
 					JsonNodeFactories.array(JsonNodeFactories.number(id))
 				)
 			);
@@ -171,7 +171,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 	@Override
 	protected boolean verifyMessageContent(JsonNode content) {
 		return content.isStringValue("task_action") &&
-				content.isArrayNode("params");
+				content.isArrayNode("parameters");
 	}
 
 	@Override

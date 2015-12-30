@@ -13,7 +13,7 @@ import core.ipc.repeatServer.MainMessageSender;
  * {
  * 		"device": reserved field. Must be empty string,
  * 		"action": action depending on the type parsed by lower layer,
- * 		"params": parameters for this action
+ * 		"parameters": parameters for this action
  * }
  *
  * The possible actions for system_host are:
@@ -43,7 +43,7 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 
 		String device = content.getStringValue("device");
 		String action = content.getStringValue("action");
-		List<JsonNode> paramNodes = content.getArrayNode("params"); //Unused
+		List<JsonNode> paramNodes = content.getArrayNode("parameters"); //Unused
 
 		if (type.equals(ServerMainProcessor.TYPE_SYSTEM_HOST)) {
 			if (action.equals("keep_alive")) {
@@ -52,7 +52,7 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 		} else if (type.equals(ServerMainProcessor.TYPE_SYSTEM_CLIENT)) {
 			if (action.equals("identify")) {
 				if (paramNodes.size() != 1) {
-					getLogger().warning("Unexpected identity to have 2 params.");
+					getLogger().warning("Unexpected identity to have 2 parameters.");
 					return false;
 				}
 
@@ -77,7 +77,7 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 		return content.isStringValue("device") &&
 				content.getStringValue("device").startsWith("system") &&
 				content.isStringValue("action") &&
-				content.isArrayNode("params");
+				content.isArrayNode("parameters");
 	}
 
 	@Override

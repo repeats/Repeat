@@ -28,6 +28,7 @@ public final class TaskProcessorManager {
 	public static void identifyProcessor(String language, TaskProcessor processor) {
 		final Language identified = Language.identify(language);
 		if (identified != null) {
+			getLogger().info("Identified remote compiler " + language);
 			taskManagers.put(identified, processor);
 
 			if (callBack != null) {

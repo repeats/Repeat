@@ -1,17 +1,17 @@
 package commonTools;
 
-import core.recorder.Recorder;
+import core.languageHandler.Language;
 
 public class ClickerTool extends RepeatTool {
 
 	@Override
-	protected boolean isSupported(int language) {
-		return language == Recorder.JAVA_LANGUAGE;
+	protected boolean isSupported(Language language) {
+		return language == Language.JAVA;
 	}
 
 	@Override
-	protected String getBodySource(int language) {
-		if (language == Recorder.JAVA_LANGUAGE) {
+	protected String getBodySource(Language language) {
+		if (language == Language.JAVA) {
 			StringBuilder output = new StringBuilder();
 			output.append(TWO_TAB + "for (int i = 0; ; i++) {\n");
 			output.append(THREE_TAB + "controller.mouse().leftClick();\n");
