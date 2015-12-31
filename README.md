@@ -40,26 +40,6 @@ How to
 
 Code examples
 =============
-
-Open Gmail and facebook (assume you're already in Firefox/Chrome)
------------------------------------------------------------------
-    /* Write your code beneath "Begin generated code" */
-    controller.blockingWaít(100); //To make sure the hotkey has been fully released
-    key.combination(VK_CONTROL, VK_T);
-    key.type("gmail.com");
-    controller.blockingWait(100);
-    key.combination(VK_CONTROL, VK_T);
-    key.type("facebook.com");
-
-Open Microsoft Word (assume you're using Windows)
--------------------------------------------------
-     /* Write your code beneath "Begin generated code" */
-    controller.blockingWaít(100); //To make sure the hotkey has been fully released
-    key.combination(VK_CONTROL, VK_R);
-    controller.blockingWait(100);
-    key.type("winword");
-    key.type(VK_ENTER);
-
 Type out 100! = 1 * 2 * 3 * ... * 100
 -------------------------------------
     /* Write your code beneath "Begin generated code" */
