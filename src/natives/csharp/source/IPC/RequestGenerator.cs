@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Repeat.IPC {
-    abstract class RequestGenerator {
+    public abstract class RequestGenerator {
         private const int REQUEST_TIMEOUT = 1;
 
         private static int id = 1;

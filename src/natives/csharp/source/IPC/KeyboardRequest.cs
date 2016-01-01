@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Repeat.IPC {
-    class KeyboardRequest : RequestGenerator {
+    public class KeyboardRequest : RequestGenerator {
 
         public KeyboardRequest(RepeatClient client) : base(client) {
             this.Type = "action";

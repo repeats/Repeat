@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Repeat.ipc {
-    class RepeatClient {
+    public class RepeatClient {
 
         private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private const int MAX_BUFFER_SIZE = 1024;
@@ -30,8 +30,8 @@ namespace Repeat.ipc {
 
         protected SystemClientRequest systemClient;
         protected SystemHostRequest systemHost;
-        protected MouseRequest mouse;
-        protected KeyboardRequest key;
+        public MouseRequest mouse { get; private set; }
+        public KeyboardRequest key { get; private set; }
 
         public RepeatClient() {
             synchronizationEvents = new Dictionary<int, AutoResetEvent>();
@@ -50,16 +50,21 @@ namespace Repeat.ipc {
             byte[] received = new byte[MAX_BUFFER_SIZE];
             while (!IsTerminated) {
                 try {
+                    if (!IsConnected()) {
+                        logger.Info("Socket not connected. Terminating...");
+                        this.IsTerminated = true;
+                        break;
+                    }
                     int size = socket.Receive(received);
                     messageProcessor.process(received, size);
                 } catch (ThreadInterruptedException) {
                     logger.Info("Read thread interrupted. Terminating...");
-                    Console.WriteLine("Read thread interrupted. Terminating...");
+                    break;
                 } catch (Exception e) {
                     logger.Warn("Exception while receving data.", e);
                 }
             }
-            Console.WriteLine("Read thread terminated.");
+            logger.Info("Read thread terminated.");
         }
 
         private void WriteThread() {
@@ -79,7 +84,6 @@ namespace Repeat.ipc {
                         socket.Send(rawData);
                     } catch (ThreadInterruptedException) {
                         logger.Info("Write thread interrupted. Terminating...");
-                        Console.WriteLine("Write thread interrupted. Terminating...");
                     } catch (Exception e) {
                         logger.Warn("Exception while sending message.", e);
                     }
@@ -87,7 +91,7 @@ namespace Repeat.ipc {
                     systemHost.KeepAlive();
                 }
             }
-            Console.WriteLine("Write thread terminated.");
+            logger.Info("Write thread terminated.");
         }
 
         public void StartRunning() {
@@ -105,8 +109,13 @@ namespace Repeat.ipc {
             socket.ReceiveBufferSize = MAX_BUFFER_SIZE;
             logger.Info("Establishing connection to " + host);
 
-            socket.Connect(host, 9999);
-            logger.Info("Connection established.");
+            try {
+                socket.Connect(host, 9999);
+                logger.Info("Connection established.");
+            } catch (SocketException) {
+                logger.Fatal("Unable to connect to Repeat server. Terminating...");
+                return;
+            }
 
             systemClient.Identify();
 
@@ -137,6 +146,17 @@ namespace Repeat.ipc {
         public bool IsRunning() {
             return (readThread != null && writeThread != null) && 
                 (readThread.IsAlive || writeThread.IsAlive);
+        }
+
+        private bool IsConnected() {
+            if (socket == null) {
+                return false;
+            }
+            try {
+                return !(socket.Poll(1, SelectMode.SelectRead) && socket.Available == 0);
+            } catch (SocketException) {
+                return false; 
+            }
         }
     }
 }

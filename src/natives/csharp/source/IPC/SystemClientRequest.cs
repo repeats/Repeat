@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Repeat.IPC {
-    class SystemClientRequest : RequestGenerator {
+    public class SystemClientRequest : RequestGenerator {
 
         public SystemClientRequest(RepeatClient client) : base(client) {
             this.Type = "system_client";

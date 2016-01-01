@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Repeat.ipc {
-    class MessageProcessor {
+    public class MessageProcessor {
 
         protected internal RepeatClient client;
         private StringBuilder currentMessage;
@@ -16,7 +16,7 @@ namespace Repeat.ipc {
 
         public MessageProcessor(RepeatClient client) {
             this.client = client;
-            this.taskManager = new TaskManager();
+            this.taskManager = new TaskManager(client);
             currentMessage = new StringBuilder();
         }
 
@@ -44,7 +44,6 @@ namespace Repeat.ipc {
         }
 
         protected internal string internalProcess(string message) {
-            Console.WriteLine("Processing " + message);
             JObject parsedMessage = JObject.Parse(message);
 
             string type = "";

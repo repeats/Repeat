@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Repeat.IPC {
-    class MouseRequest : RequestGenerator {
+    public class MouseRequest : RequestGenerator {
 
         public MouseRequest(RepeatClient client) : base(client) {
             this.Type = "action";

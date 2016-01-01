@@ -149,8 +149,6 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/************************************************IPC**********************************************************/
 	protected void initiateBackEndActivities() {
-
-
 		try {
 			IPCServiceManager.initiateServices();
 		} catch (IOException e) {

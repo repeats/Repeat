@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Repeat.IPC {
-    class SystemHostRequest : RequestGenerator {
+    public class SystemHostRequest : RequestGenerator {
 
         public SystemHostRequest(RepeatClient client) : base(client) {
             this.Type = "system_host";

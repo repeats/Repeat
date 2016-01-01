@@ -8,19 +8,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Repeat.compiler;
+using Repeat.ipc;
+using log4net;
 
 namespace Repeat.userDefinedAction {
     class TaskManager {
+
+        private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private const string SUCCESS = "Success";
         private const string FAILURE = "Failure";
 
         private int idCount;
+        private RepeatClient client;
         private CSCompiler compiler;
         private UserDefinedAction emptyAction;
         private Dictionary<int, UserDefinedAction> actions;
 
-        public TaskManager() {
+        public TaskManager(RepeatClient client) {
+            this.client = client;
             this.idCount = 0;
             this.compiler = new CSCompiler(".");
             actions = new Dictionary<int, UserDefinedAction>();
@@ -44,8 +50,15 @@ namespace Repeat.userDefinedAction {
                 JObject result = CreateTask(fileName);
                 return result;
             } else if (action == "run_task") {
-                int taskID = parameters.Children().First().Value<int>();
-                return RunTask(taskID);
+                JEnumerable<JToken> parameterList = parameters.Children();
+                int taskID = parameterList.First().Value<int>();
+                JArray hotKeysJSON = parameterList.Skip(1).First().Value<JArray>();
+                List<int> hotkeys = new List<int>();
+                foreach (JToken token in hotKeysJSON.Children()) {
+                    hotkeys.Add(token.Value<int>());
+                }
+
+                return RunTask(taskID, hotkeys);
             } else if (action == "remove_task") {
                 int taskID = parameters.Children().First().Value<int>();
                 return RemoveTask(taskID);
@@ -54,10 +67,18 @@ namespace Repeat.userDefinedAction {
             }
         }
 
-        private JObject RunTask(int id) {
+        private JObject RunTask(int id, List<int> invoker) {
             UserDefinedAction toDo;
             if (actions.TryGetValue(id, out toDo)) {
-                toDo.Action();
+                toDo.controller = this.client;
+                toDo.invoker = invoker;
+
+                try {
+                    toDo.Action();
+                } catch (Exception e) {
+                    return GenerateReply(FAILURE, "Encountered exception while executing task\n" + e.StackTrace);
+                }
+                
                 return GenerateReply(SUCCESS, GenerateTaskReply(id, toDo));
             } else {
                 return GenerateReply(FAILURE, "Unknown action with id " + id);
@@ -73,14 +94,19 @@ namespace Repeat.userDefinedAction {
                     return GenerateReply(FAILURE, "Unreadable file " + filePath);
                 }
 
-                UserDefinedAction action = compiler.Compile(sourceCode);
+                UserDefinedAction action = null;
+                try {
+                    action = compiler.Compile(sourceCode);
+                } catch (Exception e) {
+                    logger.Warn("Unable to compile source code\n" + e.StackTrace);
+                }
                 if (action == null) {
                     return GenerateReply(FAILURE, "Cannot compile file " + filePath);
                 } else {
                     idCount++;
                     actions[idCount] = action;
                     action.FileName = filePath;
-                    Console.WriteLine("Done");
+                    logger.Info("Successfully compiled source code.");
                     return GenerateReply(SUCCESS, GenerateTaskReply(idCount, action));
                 }
             }

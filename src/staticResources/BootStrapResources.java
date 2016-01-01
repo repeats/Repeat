@@ -21,6 +21,7 @@ public class BootStrapResources {
 
 	private static final Map<Language, String> LANGUAGE_API;
 	private static final Map<Language, String> NATIVE_LANGUAGE_TEMPLATES;
+	private static final Map<Language, AbstractNativeBootstrapResource> NATIVE_BOOTSTRAP_RESOURCES;
 
 	public static final Image TRAY_IMAGE;
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE, REFRESH;
@@ -52,13 +53,28 @@ public class BootStrapResources {
 		LANGUAGE_API.put(Language.PYTHON, getFile("/core/languageHandler/API/PythonAPI.txt"));
 		LANGUAGE_API.put(Language.CSHARP, getFile("/core/languageHandler/API/CSharpAPI.txt"));
 
+		/*********************************************************************************/
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON, getFile("/natives/python/template_repeat.py"));
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/natives/csharp/TemplateRepeat.cs"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/natives/csharp/source/TemplateRepeat.cs"));
+
+		/*********************************************************************************/
+		NATIVE_BOOTSTRAP_RESOURCES = new HashMap<>();
+		NATIVE_BOOTSTRAP_RESOURCES.put(Language.PYTHON, new PythonResources());
+		NATIVE_BOOTSTRAP_RESOURCES.put(Language.CSHARP, new CSharpResources());
+	}
+
+	public static AbstractNativeBootstrapResource getBootstrapResource(Language language) {
+		return NATIVE_BOOTSTRAP_RESOURCES.get(language);
 	}
 
 	public static void extractResources() throws IOException {
-		PythonResources.extractResources();
+		for (Language language : Language.ALL_LANGUAGES) {
+			AbstractNativeBootstrapResource resource = NATIVE_BOOTSTRAP_RESOURCES.get(language);
+			if (resource != null) {
+				resource.extractResources();
+			}
+		}
 	}
 
 	private static ImageIcon getIcon(String resource) {

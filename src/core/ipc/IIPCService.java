@@ -8,7 +8,7 @@ public abstract class IIPCService implements ILoggable {
 
 	protected int port;
 
-	public void startRunning() throws IOException {
+	public final void startRunning() throws IOException {
 		if (!isRunning()) {
 			start();
 		} else {
@@ -16,7 +16,7 @@ public abstract class IIPCService implements ILoggable {
 		}
 	}
 
-	public void stopRunning() throws IOException {
+	public final void stopRunning() throws IOException {
 		if (!isRunning()) {
 			return;
 		}
