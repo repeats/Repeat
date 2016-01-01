@@ -25,6 +25,7 @@ import utilities.ExceptableFunction;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.NumberUtility;
+import utilities.OSIdentifier;
 import utilities.Pair;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
@@ -705,6 +706,9 @@ public class MainBackEndHolder {
 	}
 
 	protected void renderSettings() {
+		if (!OSIdentifier.IS_WINDOWS) {
+			main.rbmiCompileCS.setEnabled(false);
+		}
 		main.cbmiUseTrayIcon.setSelected(config.isUseTrayIcon());
 		main.cbmiHaltByKey.setSelected(config.isEnabledHaltingKeyPressed());
 	}

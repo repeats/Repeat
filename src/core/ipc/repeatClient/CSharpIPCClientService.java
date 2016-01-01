@@ -3,6 +3,7 @@ package core.ipc.repeatClient;
 import java.util.logging.Logger;
 
 import staticResources.BootStrapResources;
+import utilities.OSIdentifier;
 import core.languageHandler.Language;
 
 public class CSharpIPCClientService extends IPCClientService {
@@ -23,6 +24,11 @@ public class CSharpIPCClientService extends IPCClientService {
 
 	@Override
 	protected String[] getLaunchCmd() {
-		return new String[] { executingProgram.getAbsolutePath() };
+		if (OSIdentifier.IS_WINDOWS) {
+			return new String[] { executingProgram.getAbsolutePath() };
+		} else {
+			getLogger().info("C# compiler disabled. This only runs on Windows operating system.");
+			return null;
+		}
 	}
 }
