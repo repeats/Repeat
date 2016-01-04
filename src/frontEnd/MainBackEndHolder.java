@@ -1,5 +1,6 @@
 package frontEnd;
 
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +23,7 @@ import javax.swing.SwingUtilities;
 import org.jnativehook.GlobalScreen;
 
 import staticResources.BootStrapResources;
+import utilities.DateUtility;
 import utilities.ExceptableFunction;
 import utilities.FileUtility;
 import utilities.Function;
@@ -150,6 +153,31 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/************************************************IPC**********************************************************/
 	protected void initiateBackEndActivities() {
+		executor.scheduleWithFixedDelay(new Runnable(){
+			@Override
+			public void run() {
+				final Point p = Core.getInstance().mouse().getPosition();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						main.tfMousePosition.setText(p.x + ", " + p.y);
+					}
+				});
+			}
+		}, 0, 500, TimeUnit.MILLISECONDS);
+
+		executor.scheduleWithFixedDelay(new Runnable(){
+			@Override
+			public void run() {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						renderTasks();
+					}
+				});
+			}
+		}, 0, 1, TimeUnit.SECONDS);
+
 		try {
 			IPCServiceManager.initiateServices();
 		} catch (IOException e) {
@@ -449,7 +477,7 @@ public class MainBackEndHolder {
 			keysManager.reRegisterTask(action, newKeyChains);
 
 			KeyChain representative = action.getRepresentativeHotkey();
-			main.tTasks.setValueAt(representative.getKeys().isEmpty() ? "None" : representative.toString(), row, 1);
+			main.tTasks.setValueAt(representative.getKeys().isEmpty() ? "None" : representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
 		}
 	}
 
@@ -469,7 +497,7 @@ public class MainBackEndHolder {
 			keysManager.registerTask(action);
 		}
 
-		main.tTasks.setValueAt(action.isEnabled(), row, 2);
+		main.tTasks.setValueAt(action.isEnabled(), row, MainFrame.TTASK_COLUMN_ENABLED);
 	}
 
 	protected void renderTasks() {
@@ -479,16 +507,18 @@ public class MainBackEndHolder {
 
 		int row = 0;
 		for (UserDefinedAction task : currentGroup.getTasks()) {
-			main.tTasks.setValueAt(task.getName(), row, 0);
+			main.tTasks.setValueAt(task.getName(), row, MainFrame.TTASK_COLUMN_TASK_NAME);
 
 			KeyChain representative = task.getRepresentativeHotkey();
 			if (representative != null && !representative.getKeys().isEmpty()) {
-				main.tTasks.setValueAt(representative.toString(), row, 1);
+				main.tTasks.setValueAt(representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
 			} else {
-				main.tTasks.setValueAt("None", row, 1);
+				main.tTasks.setValueAt("None", row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
 			}
 
-			main.tTasks.setValueAt(task.isEnabled(), row, 2);
+			main.tTasks.setValueAt(task.isEnabled(), row, MainFrame.TTASK_COLUMN_ENABLED);
+			main.tTasks.setValueAt(task.getStatistics().getCount(), row, MainFrame.TTASK_COLUMN_USE_COUNT);
+			main.tTasks.setValueAt(DateUtility.calendarToDateString(task.getStatistics().getLastUse()), row, MainFrame.TTASK_COLUMN_LAST_USE);
 			row++;
 		}
 	}
@@ -497,13 +527,9 @@ public class MainBackEndHolder {
 		int row = main.tTasks.getSelectedRow();
 		int column = main.tTasks.getSelectedColumn();
 
-		final int COLUMN_TASK_NAME = 0;
-		final int COLUMN_TASK_HOTKEY = 1;
-		final int COLUMN_ENABLED = 2;
-
-		if (column == COLUMN_TASK_NAME && row >= 0) {
+		if (column == MainFrame.TTASK_COLUMN_TASK_NAME && row >= 0) {
 			currentGroup.getTasks().get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
-		} else if (column == COLUMN_TASK_HOTKEY && row >= 0) {
+		} else if (column == MainFrame.TTASK_COLUMN_TASK_HOTKEY && row >= 0) {
 			if (e.getKeyCode() == Config.HALT_TASK) {
 				final UserDefinedAction action = currentGroup.getTasks().get(row);
 				keysManager.unregisterTask(action);
@@ -512,7 +538,7 @@ public class MainBackEndHolder {
 			} else {
 				changeHotkeyTask(row);
 			}
-		} else if (column == COLUMN_ENABLED && row >= 0) {
+		} else if (column == MainFrame.TTASK_COLUMN_ENABLED && row >= 0) {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				switchEnableTask(row);
 			}
@@ -526,12 +552,9 @@ public class MainBackEndHolder {
 		int row = main.tTasks.getSelectedRow();
 		int column = main.tTasks.getSelectedColumn();
 
-		final int COLUMN_TASK_HOTKEY = 1;
-		final int COLUMN_ENABLED = 2;
-
-		if (column == COLUMN_TASK_HOTKEY && row >= 0) {
+		if (column == MainFrame.TTASK_COLUMN_TASK_HOTKEY && row >= 0) {
 			changeHotkeyTask(row);
-		} else if (column == COLUMN_ENABLED && row >= 0) {
+		} else if (column == MainFrame.TTASK_COLUMN_ENABLED && row >= 0) {
 			switchEnableTask(row);
 		}
 
@@ -669,7 +692,7 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/***************************************Configurations********************************************************/
-	//Write config file
+	//Write configuration file
 	protected boolean writeConfigFile() {
 		return config.writeConfig();
 	}

@@ -157,7 +157,7 @@ public class CommandLineInterface {
 
 				if (action != null) {
 					try {
-						action.action(Core.getInstance());
+						action.trackedAction(Core.getInstance());
 					} catch (InterruptedException e) {
 						System.out.println("Executed ended prematurely...");
 						return false;

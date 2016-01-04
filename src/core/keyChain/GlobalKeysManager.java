@@ -87,7 +87,7 @@ public final class GlobalKeysManager {
 									List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
 
 									if (taskIndex >= 0 && taskIndex < tasks.size()) {
-										currentTaskGroup.getTasks().get(taskIndex).action(Core.getInstance());
+										currentTaskGroup.getTasks().get(taskIndex).trackedAction(Core.getInstance());
 									} else {
 										LOGGER.warning("Index out of bound. Cannot execute given task with index " + taskIndex + " given task group only has " + tasks.size() + " elements.");
 									}
@@ -95,7 +95,7 @@ public final class GlobalKeysManager {
 									return null;
 								}
 							});
-							action.action(Core.getInstance());
+							action.trackedAction(Core.getInstance());
 						} catch (InterruptedException e) {
 							LOGGER.info("Task ended prematurely");
 						} catch (Exception e) {

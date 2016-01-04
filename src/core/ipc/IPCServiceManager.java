@@ -3,6 +3,7 @@ package core.ipc;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import core.ipc.repeatClient.CSharpIPCClientService;
 import core.ipc.repeatClient.PythonIPCClientService;
@@ -11,7 +12,7 @@ import core.languageHandler.Language;
 
 public final class IPCServiceManager {
 
-//	private static final Logger LOGGER = Logger.getLogger(IPCServiceManager.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(IPCServiceManager.class.getName());
 
 	public static final int IPC_SERVICE_COUNT = 3;
 	private static final long INTER_SERVICE_BOOT_TIME_MS = 2000;
@@ -53,7 +54,10 @@ public final class IPCServiceManager {
 
 	public static void initiateServices() throws IOException {
 		for (IPCServiceName name : IPCServiceName.ALL_SERVICE_NAMES) {
-			IPCServiceManager.getIPCService(name).startRunning();
+			IIPCService service = IPCServiceManager.getIPCService(name);
+			service.startRunning();
+			LOGGER.info("Starting ipc service " + service.getName());
+
 			try {
 				Thread.sleep(INTER_SERVICE_BOOT_TIME_MS);
 			} catch (InterruptedException e) {

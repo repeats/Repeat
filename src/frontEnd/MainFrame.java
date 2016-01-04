@@ -1,7 +1,6 @@
 package frontEnd;
 
 import java.awt.AWTException;
-import java.awt.Point;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
@@ -18,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,7 +42,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -58,14 +55,19 @@ import utilities.swing.SwingUtil;
 import commonTools.AreaClickerTool;
 import commonTools.ClickerTool;
 
-import core.controller.Core;
 import core.languageHandler.Language;
 import core.recorder.Recorder;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
 
+
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
+	protected static final int TTASK_COLUMN_TASK_NAME = 0;
+	protected static final int TTASK_COLUMN_TASK_HOTKEY = 1;
+	protected static final int TTASK_COLUMN_ENABLED = 2;
+	protected static final int TTASK_COLUMN_USE_COUNT = 3;
+	protected static final int TTASK_COLUMN_LAST_USE = 4;
 
 	protected final MainBackEndHolder backEnd;
 
@@ -83,7 +85,7 @@ public class MainFrame extends JFrame {
 	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython, rbmiCompileCS;
 	protected JRadioButtonMenuItem rbmiDebugSevere, rbmiDebugWarning, rbmiDebugInfo, rbmiDebugFine;
 	protected JCheckBoxMenuItem cbmiUseTrayIcon, cbmiHaltByKey;
-	private final JTextField tfMousePosition;
+	protected final JTextField tfMousePosition;
 	protected final JTable tTasks;
 
 	protected final Map<Language, JRadioButtonMenuItem> languageSelection;
@@ -492,18 +494,7 @@ public class MainFrame extends JFrame {
 		tfMousePosition.setColumns(10);
 		tfMousePosition.setEditable(false);
 
-		backEnd.executor.scheduleWithFixedDelay(new Runnable(){
-			@Override
-			public void run() {
-				final Point p = Core.getInstance().mouse().getPosition();
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						tfMousePosition.setText(p.x + ", " + p.y);
-					}
-				});
-			}
-		}, 0, 500, TimeUnit.MILLISECONDS);
+
 
 		bRecord = new JButton();
 		bRecord.setIcon(BootStrapResources.RECORD);
@@ -747,7 +738,7 @@ public class MainFrame extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Name", "Key chain", "Enabled"
+				"Name", "Key chain", "Enabled", "Use count", "Last used"
 			}
 		){
 			@Override

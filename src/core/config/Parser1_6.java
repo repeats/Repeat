@@ -1,7 +1,5 @@
 package core.config;
 
-import java.io.File;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,9 +7,6 @@ import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import core.keyChain.KeyChain;
-import core.languageHandler.compiler.AbstractNativeCompiler;
-import core.userDefinedTask.TaskGroup;
 
 public class Parser1_6 extends ConfigParser {
 
@@ -51,46 +46,16 @@ public class Parser1_6 extends ConfigParser {
 	@Override
 	protected boolean internalExtractData(Config config, JsonRootNode root) {
 		try {
-			JsonNode globalSettings = root.getNode("global_settings");
-			config.setUseTrayIcon(globalSettings.getBooleanValue("tray_icon_enabled"));
-			config.setEnabledHaltingKeyPressed(globalSettings.getBooleanValue("enabled_halt_by_key"));
-			config.setNativeHookDebugLevel(Level.parse(globalSettings.getNode("debug").getStringValue("level")));
+			//Convert to 1_7
+			Parser1_7 parser = new Parser1_7();
+			JsonRootNode newRoot = parser.convertFromPreviousVersion(root);
 
-			JsonNode globalHotkey = root.getNode("global_hotkey");
-			config.setRECORD(KeyChain.parseJSON(globalHotkey.getArrayNode("record")));
-			config.setREPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay")));
-			config.setCOMPILED_REPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay_compiled")));
-
-			for (JsonNode compilerNode : root.getArrayNode("compilers")) {
-				String name = compilerNode.getStringValue("name");
-				String path = compilerNode.getStringValue("path");
-				JsonNode compilerSpecificArgs = compilerNode.getNode("compiler_specific_args");
-
-				AbstractNativeCompiler compiler = config.getCompilerFactory().getCompiler(name);
-				if (compiler != null) {
-					compiler.setPath(new File(path));
-					if (!compiler.parseCompilerSpecificArgs(compilerSpecificArgs)) {
-						LOGGER.log(Level.WARNING, "Compiler " + name + " was unable to parse its specific arguments.");
-					}
-				} else {
-					throw new IllegalStateException("Unknown compiler " + name);
-				}
+			if (newRoot != null) {
+				return parser.extractData(config, newRoot);
+			} else {
+				LOGGER.log(Level.WARNING, "Unable to convert to later version " + parser.getVersion());
+				return false;
 			}
-
-			List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();
-			taskGroups.clear();
-			for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
-				TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
-				if (taskGroup != null) {
-					taskGroups.add(taskGroup);
-				}
-			}
-
-			if (taskGroups.isEmpty()) {
-				taskGroups.add(new TaskGroup("default"));
-			}
-			config.getBackEnd().setCurrentTaskGroup(taskGroups.get(0));
-			return true;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to parse json", e);
 			return false;

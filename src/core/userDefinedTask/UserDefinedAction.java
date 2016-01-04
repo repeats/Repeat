@@ -26,6 +26,8 @@ import core.languageHandler.compiler.DynamicCompilerManager;
 
 public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
+	private static final Logger LOGGER = Logger.getLogger(UserDefinedAction.class.getName());
+
 	protected String name;
 	protected Set<KeyChain> hotkeys;
 	protected String sourcePath;
@@ -33,9 +35,11 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected boolean enabled;
 	protected ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup;
 	protected KeyChain invokingKeyChain;
+	protected UsageStatistics statistics;
 
 	public UserDefinedAction() {
 		invokingKeyChain = new KeyChain();
+		statistics = new UsageStatistics();
 		enabled = true;
 	}
 
@@ -45,6 +49,19 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * @throws InterruptedException
 	 */
 	public abstract void action(Core controller) throws InterruptedException;
+
+	/**
+	 * Perform the action and track the statistics related to this action.
+	 * @param controller
+	 * @throws InterruptedException
+	 */
+	public final void trackedAction(Core controller) throws InterruptedException {
+		long time = System.currentTimeMillis();
+		statistics.useNow();
+		action(controller);
+		time = System.currentTimeMillis() - time;
+		statistics.updateAverageExecutionTime(time);
+	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -111,6 +128,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		this.enabled = enabled;
 	}
 
+	public UsageStatistics getStatistics() {
+		return statistics;
+	}
+
 	/**
 	 * This method is called to dynamically allow the current task to execute other tasks in group
 	 * @param executeTaskInGroup
@@ -156,7 +177,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compiler.toString())),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
 				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
-				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled))
+				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled)),
+				JsonNodeFactories.field("statistics", statistics.jsonize())
 				);
 	}
 
@@ -197,7 +219,17 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				return null;
 			}
 
+			UsageStatistics statistics = UsageStatistics.parseJSON(node.getNode("statistics"));
+			if (statistics != null) {
+				output.statistics = statistics;
+			} else {
+				output.statistics.createNow();
+				LOGGER.warning("Unable to retrieve statistics for task " + name);
+			}
+
 			boolean enabled = node.getBooleanValue("enabled");
+
+
 
 			output.sourcePath = sourcePath;
 			output.compiler = compiler.getName();

@@ -140,6 +140,9 @@ public class JSONUtility {
 	 * @return an instance of JsonNode with all children in replacing children replaced.
 	 */
 	public static JsonNode replaceChildren(JsonNode parent, Map<String, JsonNode> replacingChildren) {
+		if (parent == null) {
+			return null;
+		}
 		List<JsonField> fields = new ArrayList<JsonField>();
 
 		for (JsonField field : parent.getFieldList()) {

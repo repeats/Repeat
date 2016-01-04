@@ -23,9 +23,9 @@ import frontEnd.MainBackEndHolder;
 
 public class Config {
 
-	public static final String RELEASE_VERSION = "2.0";
+	public static final String RELEASE_VERSION = "2.1";
 	private static final String CONFIG_FILE_NAME = "config.json";
-	private static final String CURRENT_CONFIG_VERSION = "1.6";
+	private static final String CURRENT_CONFIG_VERSION = "1.7";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
@@ -68,7 +68,8 @@ public class Config {
 			new Parser1_3(),
 			new Parser1_4(),
 			new Parser1_5(),
-			new Parser1_6()
+			new Parser1_6(),
+			new Parser1_7()
 		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;

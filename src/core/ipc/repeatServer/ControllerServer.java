@@ -33,6 +33,7 @@ public class ControllerServer extends IIPCService {
 	@Override
 	protected void start() throws IOException {
 		setStop(false);
+		System.out.println("here");
 
 		mainThread = new Thread() {
 			@Override
