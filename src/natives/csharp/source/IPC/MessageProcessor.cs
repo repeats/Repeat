@@ -72,7 +72,7 @@ namespace Repeat.ipc {
                     );
                 return replyMessage.ToString();
             } else {
-                Console.WriteLine("Uknown id {0}. Drop message...", id);
+                //Console.WriteLine("Uknown id {0}. Drop message...", id);
                 return null;
             }
         }

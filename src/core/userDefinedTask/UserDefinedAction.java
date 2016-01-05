@@ -132,6 +132,12 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		return statistics;
 	}
 
+	public void override(UserDefinedAction other) {
+		setName(other.getName());
+		setHotKeys(other.getHotkeys());
+		this.statistics = other.statistics;
+	}
+
 	/**
 	 * This method is called to dynamically allow the current task to execute other tasks in group
 	 * @param executeTaskInGroup

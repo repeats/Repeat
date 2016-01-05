@@ -451,8 +451,7 @@ public class MainBackEndHolder {
 			}
 
 			UserDefinedAction toRemove = currentGroup.getTasks().get(selected);
-			customFunction.setName(toRemove.getName());
-			customFunction.setHotKeys(toRemove.getHotkeys());
+			customFunction.override(toRemove);
 
 			removeTask(toRemove);
 			keysManager.registerTask(customFunction);
