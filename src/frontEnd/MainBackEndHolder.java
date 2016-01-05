@@ -172,11 +172,18 @@ public class MainBackEndHolder {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
+						long time = 0;
+						for (TaskGroup group : taskGroups) {
+							for (UserDefinedAction action : group.getTasks()) {
+								time += action.getStatistics().getTotalExecutionTime();
+							}
+						}
+						main.lSecondsSaved.setText((time/1000f) + "");
 						renderTasks();
 					}
 				});
 			}
-		}, 0, 1, TimeUnit.SECONDS);
+		}, 0, 1500, TimeUnit.MILLISECONDS);
 
 		try {
 			IPCServiceManager.initiateServices();
@@ -614,10 +621,8 @@ public class MainBackEndHolder {
 				public String apply(UserDefinedAction task) {
 					return new File(task.getSourcePath()).getAbsolutePath();
 				}
-
 			}.map(group.getTasks()));
 		}
-
 
 		allNames.removeAll(using);
 		if (allNames.size() == 0) {

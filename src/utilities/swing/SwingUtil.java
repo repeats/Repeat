@@ -1,5 +1,6 @@
 package utilities.swing;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -266,11 +267,30 @@ public class SwingUtil {
 			}
 		}
 
+		/**
+		 * Display a string (can be long) inside a message dialogue
+		 * @param title title for the display message
+		 * @param content the string to be displayed
+		 */
 		public static void showString(String title, String content) {
 			JTextArea area = new JTextArea(content);
 			area.setEditable(false);
 			JScrollPane scroll = new JScrollPane(area);
+			scroll.setPreferredSize(new Dimension(500, 300));
+			JOptionPane.showMessageDialog(null, scroll, title, JOptionPane.INFORMATION_MESSAGE);
+		}
 
+		/**
+		 * Display a string (can be long) inside a message dialogue
+		 * @param title title for the display message
+		 * @param content the string to be displayed
+		 * @param dimension preferred dimension of the message dialogue
+		 */
+		public static void showString(String title, String content, Dimension dimension) {
+			JTextArea area = new JTextArea(content);
+			area.setEditable(false);
+			JScrollPane scroll = new JScrollPane(area);
+			scroll.setPreferredSize(dimension);
 			JOptionPane.showMessageDialog(null, scroll, title, JOptionPane.INFORMATION_MESSAGE);
 		}
 
@@ -279,26 +299,18 @@ public class SwingUtil {
 				return;
 			}
 
-			JTextField[] textFields = new JTextField[titles.length];
-
-			JPanel mainPanel = new JPanel();
-			mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+			JTable table = new JTable();
+			table.setModel(new DefaultTableModel(
+				new Object[][] {},
+				new String[] {" ", " "}
+			));
+			SwingUtil.TableUtil.ensureRowNumber(table, titles.length);
 
 			for (int i = 0; i < titles.length; i++) {
-				JPanel myPanel = new JPanel();
-				if (titles[i] != null) {
-					myPanel.add(new JLabel(titles[i]));
-				} else {
-					myPanel.add(new JLabel(i + ")"));
-				}
-
-				textFields[i] = new JTextField(10);
-				textFields[i].setText(values[i]);
-				textFields[i].setEditable(false);
-
-				myPanel.add(textFields[i]);
-				mainPanel.add(myPanel);
+				table.setValueAt(titles[i], i, 0);
+				table.setValueAt(values[i], i, 1);
 			}
+			JScrollPane mainPanel = new JScrollPane(table);
 
 			JOptionPane.showMessageDialog(null, mainPanel,
 					"Enter values", JOptionPane.OK_OPTION);
@@ -309,26 +321,18 @@ public class SwingUtil {
 				return -1;
 			}
 
-			JTextField[] textFields = new JTextField[titles.length];
-
-			JPanel mainPanel = new JPanel();
-			mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+			JTable table = new JTable();
+			table.setModel(new DefaultTableModel(
+				new Object[][] {},
+				new String[] {" ", " "}
+			));
+			SwingUtil.TableUtil.ensureRowNumber(table, titles.length);
 
 			for (int i = 0; i < titles.length; i++) {
-				JPanel myPanel = new JPanel();
-				if (titles[i] != null) {
-					myPanel.add(new JLabel(titles[i]));
-				} else {
-					myPanel.add(new JLabel(i + ")"));
-				}
-
-				textFields[i] = new JTextField();
-				textFields[i].setText(values[i]);
-				textFields[i].setEditable(false);
-
-				myPanel.add(textFields[i]);
-				mainPanel.add(myPanel);
+				table.setValueAt(titles[i], i, 0);
+				table.setValueAt(values[i], i, 1);
 			}
+			JScrollPane mainPanel = new JScrollPane(table);
 
 			return JOptionPane.showConfirmDialog(null, mainPanel,
 					confirmTitle, JOptionPane.YES_NO_OPTION);
