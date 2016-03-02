@@ -445,7 +445,7 @@ public class MainBackEndHolder {
 				return;
 			}
 
-			if (!(currentGroup.isEnabled() ^ destination.isEnabled())) {
+			if (currentGroup.isEnabled() ^ destination.isEnabled()) {
 				JOptionPane.showMessageDialog(main, "Two groups must be both enabled or disabled to move...");
 				return;
 			}
