@@ -51,6 +51,7 @@ import org.jnativehook.NativeHookException;
 
 import staticResources.BootStrapResources;
 import utilities.FileUtility;
+import utilities.swing.LinedTextArea;
 import utilities.swing.SwingUtil;
 
 import commonTools.AreaClickerTool;
@@ -531,7 +532,7 @@ public class MainFrame extends JFrame {
 
 		JLabel lblNewLabel_2 = new JLabel("ms");
 
-		JScrollPane scrollPane = new JScrollPane();
+		JScrollPane scrollPane = new LinedTextArea(taSource);
 
 		bRun = new JButton("Run Compiled Action");
 		bRun.addActionListener(new ActionListener() {
@@ -793,7 +794,6 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		scrollPane.setViewportView(taSource);
 		contentPane.setLayout(gl_contentPane);
 	}
 }
