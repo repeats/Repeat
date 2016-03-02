@@ -435,17 +435,25 @@ public class MainBackEndHolder {
 					}
 				}.map(taskGroups).toArray(new String[taskGroups.size()]), -1);
 
-			if (newGroupIndex >= 0) {
-				TaskGroup destination = taskGroups.get(newGroupIndex);
-				if (destination == currentGroup) {
-					JOptionPane.showMessageDialog(main, "Cannot move to the same group...");
-					return;
-				}
-				UserDefinedAction toMove = currentGroup.getTasks().remove(selected);
-				destination.getTasks().add(toMove);
-
-				renderTasks();
+			if (newGroupIndex < 0) {
+				return;
 			}
+
+			TaskGroup destination = taskGroups.get(newGroupIndex);
+			if (destination == currentGroup) {
+				JOptionPane.showMessageDialog(main, "Cannot move to the same group...");
+				return;
+			}
+
+			if (!(currentGroup.isEnabled() ^ destination.isEnabled())) {
+				JOptionPane.showMessageDialog(main, "Two groups must be both enabled or disabled to move...");
+				return;
+			}
+
+			UserDefinedAction toMove = currentGroup.getTasks().remove(selected);
+			destination.getTasks().add(toMove);
+
+			renderTasks();
 		}
 	}
 
@@ -473,25 +481,27 @@ public class MainBackEndHolder {
 	protected void changeHotkeyTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
 		Set<KeyChain> newKeyChains = KeyChainInputPanel.getInputKeyChains(main, action.getHotkeys());
-		if (newKeyChains != null) {
-			Set<KeyChain> collisions = keysManager.areKeysRegistered(newKeyChains);
-			if (!collisions.isEmpty()) {
-				GlobalKeysManager.showCollisionWarning(main, collisions);
-				return;
-			}
-
-			keysManager.reRegisterTask(action, newKeyChains);
-
-			KeyChain representative = action.getRepresentativeHotkey();
-			main.tTasks.setValueAt(representative.getKeys().isEmpty() ? "None" : representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
+		if (newKeyChains == null) {
+			return;
 		}
+
+		Set<KeyChain> collisions = keysManager.areKeysRegistered(newKeyChains);
+		if (!collisions.isEmpty()) {
+			GlobalKeysManager.showCollisionWarning(main, collisions);
+			return;
+		}
+
+		keysManager.reRegisterTask(action, newKeyChains);
+
+		KeyChain representative = action.getRepresentativeHotkey();
+		main.tTasks.setValueAt(representative.getKeys().isEmpty() ? "None" : representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
 	}
 
 	protected void switchEnableTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
-		action.setEnabled(!action.isEnabled());
 
 		if (!action.isEnabled()) {
+			action.setEnabled(!action.isEnabled());
 			keysManager.unregisterTask(action);
 		} else {
 			Set<KeyChain> collisions = keysManager.areKeysRegistered(action.getHotkeys());
@@ -500,6 +510,7 @@ public class MainBackEndHolder {
 				return;
 			}
 
+			action.setEnabled(!action.isEnabled());
 			keysManager.registerTask(action);
 		}
 

@@ -69,7 +69,7 @@ public class KeyChain implements IJsonable {
 
 	@Override
 	public int hashCode() {
-		return keys.hashCode();
+		return this.toString().hashCode();
 	}
 
 	@Override

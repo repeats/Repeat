@@ -208,7 +208,7 @@ public final class GlobalKeysManager {
 
 	public KeyChain isKeyRegistered(KeyChain code) {
 		for (KeyChain existing : actionMap.keySet()) {
-			if (existing.collideWith(code) && !existing.equals(code)) {
+			if (existing.collideWith(code) && existing != code) {
 				return existing;
 			}
 		}

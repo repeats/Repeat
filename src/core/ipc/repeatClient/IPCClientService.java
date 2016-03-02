@@ -77,7 +77,7 @@ public abstract class IPCClientService extends IIPCService {
 			    	try {
 						input.close();
 					} catch (IOException e) {
-						getLogger().log(Level.WARNING, "Failed to close input stream for python ipc client", e);
+						getLogger().log(Level.WARNING, "Failed to close input stream for " + getName(), e);
 					}
 			    }
 			}
