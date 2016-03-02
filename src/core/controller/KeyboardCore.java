@@ -24,11 +24,11 @@ public class KeyboardCore {
 				KeyEvent.VK_MINUS, KeyEvent.VK_EQUALS, KeyEvent.VK_COMMA,
 				KeyEvent.VK_PERIOD, KeyEvent.VK_SLASH, KeyEvent.VK_BACK_SLASH,
 				KeyEvent.VK_OPEN_BRACKET, KeyEvent.VK_CLOSE_BRACKET,
-				KeyEvent.VK_SEMICOLON, KeyEvent.VK_QUOTE };
+				KeyEvent.VK_SEMICOLON, KeyEvent.VK_QUOTE, KeyEvent.VK_BACK_QUOTE };
 
 		Character[] inputs = new Character[] { '!', '@', '#', '$', '%', '^',
 				'&', '*', '(', ')', '_', '+', '<', '>', '?', '|', '{', '}',
-				':', '"' };
+				':', '"' , '~'};
 
 		for (int i = 0; i < inputs.length; i++) {
 			final int index = i;
@@ -86,8 +86,28 @@ public class KeyboardCore {
 			typeAlphabetic(c);
 		} else if (charShiftType.containsKey(c)) {
 			charShiftType.get(c).apply(controller);
-		} else {
+		} else if (!typeSpecialChar(c)) {
 			typeUnknown(c);
+		}
+	}
+
+	/**
+	 * Simulate keyboard to type out a special character. There are only several special characters supported.
+	 * @param c the special character to be typed out
+	 * @return if the character is supported by this method
+	 */
+	private boolean typeSpecialChar(char c) {
+		switch (c) {
+		case '\t':
+			controller.keyPress(KeyEvent.VK_TAB);
+			controller.keyRelease(KeyEvent.VK_TAB);
+			return true;
+		case '\n':
+			controller.keyPress(KeyEvent.VK_ENTER);
+			controller.keyRelease(KeyEvent.VK_ENTER);
+			return true;
+		default:
+			return false;
 		}
 	}
 
