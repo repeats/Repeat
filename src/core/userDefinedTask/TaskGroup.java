@@ -2,6 +2,7 @@ package core.userDefinedTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,6 +11,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.IJsonable;
 import core.keyChain.GlobalKeysManager;
+import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerManager;
 
 public class TaskGroup implements IJsonable {
@@ -49,22 +51,32 @@ public class TaskGroup implements IJsonable {
 	}
 
 	public void setEnabled(boolean enabled, GlobalKeysManager keyManager) {
-		setEnabled(enabled);
-
 		if (keyManager == null) {
 			return;
 		} else {
 			if (enabled) {
 				for (UserDefinedAction task : tasks) {
 					if (task.isEnabled()) {
-						keyManager.registerTask(task);
+						Set<KeyChain> collisions = keyManager.isTaskRegistered(task);
+						if (collisions.isEmpty()) {
+							keyManager.registerTask(task);
+						} else {//Revert everything and exit
+							unregisterAll(keyManager);
+							GlobalKeysManager.showCollisionWarning(null, collisions);
+							return;
+						}
 					}
 				}
 			} else {
-				for (UserDefinedAction task : tasks) {
-					keyManager.unregisterTask(task);
-				}
+				unregisterAll(keyManager);
 			}
+			setEnabled(enabled);
+		}
+	}
+
+	private void unregisterAll(GlobalKeysManager keyManager) {
+		for (UserDefinedAction task : tasks) {
+			keyManager.unregisterTask(task);
 		}
 	}
 

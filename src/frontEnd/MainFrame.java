@@ -616,7 +616,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		JLabel lblNewLabel_5 = new JLabel("Seconds saved");
+		JLabel lblNewLabel_5 = new JLabel("Execution time (s)");
 
 		lSecondsSaved = new JLabel("0");
 
