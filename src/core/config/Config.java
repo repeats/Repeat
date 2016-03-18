@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
 import utilities.FileUtility;
+import utilities.ILoggable;
 import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
@@ -21,10 +23,11 @@ import core.languageHandler.compiler.DynamicCompilerManager;
 import core.userDefinedTask.TaskGroup;
 import frontEnd.MainBackEndHolder;
 
-public class Config {
+public class Config implements ILoggable {
 
 	public static final String RELEASE_VERSION = "2.2.1";
 	private static final String CONFIG_FILE_NAME = "config.json";
+	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
 	private static final String CURRENT_CONFIG_VERSION = "1.7";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
@@ -58,19 +61,29 @@ public class Config {
 		return compilerFactory;
 	}
 
+	private ConfigParser getLatestConfigParser(String version) {
+		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
+				new Parser1_0(),
+				new Parser1_1(),
+				new Parser1_2(),
+				new Parser1_3(),
+				new Parser1_4(),
+				new Parser1_5(),
+				new Parser1_6(),
+				new Parser1_7()
+			});
+
+		for (ConfigParser parser : knownParsers) {
+			if (parser.getVersion().equals(version)) {
+				return parser;
+			}
+		}
+
+		return null;
+	}
+
 	public void loadConfig(File file) {
 		compilerFactory = new DynamicCompilerManager();
-
-		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
-			new Parser1_0(),
-			new Parser1_1(),
-			new Parser1_2(),
-			new Parser1_3(),
-			new Parser1_4(),
-			new Parser1_5(),
-			new Parser1_6(),
-			new Parser1_7()
-		});
 
 		File configFile = file == null ? new File(CONFIG_FILE_NAME) : file;
 		if (FileUtility.fileExists(configFile)) {
@@ -85,15 +98,13 @@ public class Config {
 			}
 
 			String version = root.getStringValue("version");
-			boolean foundVersion = false;
+			ConfigParser parser = getLatestConfigParser(version);
+			boolean foundVersion = parser != null;
 			boolean extractResult = false;
-			for (ConfigParser parser : knownParsers) {
-				if (parser.getVersion().equals(version)) {
-					foundVersion = true;
-					extractResult = parser.extractData(this, root);
-					break;
-				}
+			if (foundVersion) {
+				extractResult = parser.extractData(this, root);
 			}
+
 
 			if (!foundVersion) {
 				JOptionPane.showMessageDialog(null, "Config file is in unknown version " + version);
@@ -138,7 +149,42 @@ public class Config {
 						JsonNodeFactories.field("replay_compiled", COMPILED_REPLAY.jsonize())
 				)));
 
-		return FileUtility.writeToFile(JSONUtility.jsonToString(root), new File(CONFIG_FILE_NAME), false);
+		return JSONUtility.writeJson(root, new File(CONFIG_FILE_NAME));
+	}
+
+	public boolean exportTasksConfig(File destination) {
+		List<JsonNode> taskNodes = new ArrayList<>();
+		for (TaskGroup group : backEnd.getTaskGroups()) {
+			taskNodes.add(group.jsonize());
+		}
+
+		JsonRootNode root = JsonNodeFactories.object(
+				JsonNodeFactories.field("version", JsonNodeFactories.string(CURRENT_CONFIG_VERSION)),
+				JsonNodeFactories.field("task_groups", JsonNodeFactories.array(taskNodes)));
+		String fullPath = FileUtility.joinPath(destination.getAbsolutePath(), EXPORTED_CONFIG_FILE_NAME);
+		return JSONUtility.writeJson(root, new File(fullPath));
+	}
+
+	public boolean importTaskConfig() {
+		File configFile = new File(EXPORTED_CONFIG_FILE_NAME);
+		if (!configFile.isFile()) {
+			getLogger().warning("Config file does not exist " + configFile.getAbsolutePath());
+			return false;
+		}
+		JsonRootNode root = JSONUtility.readJSON(configFile);
+		if (root == null) {
+			getLogger().warning("Unable to import config file " + configFile.getAbsolutePath());
+			return false;
+		}
+		String version = root.getStringValue("version");
+		ConfigParser parser = getLatestConfigParser(version);
+		if (parser == null) {
+			getLogger().warning("Uknown version " + version);
+			return false;
+		}
+
+		boolean result = parser.importData(this, root);
+		return result;
 	}
 
 	public KeyChain getRECORD() {
@@ -201,5 +247,10 @@ public class Config {
 
 	public void setEnabledHaltingKeyPressed(boolean enabledHaltingKeyPressed) {
 		this.enabledHaltingKeyPressed = enabledHaltingKeyPressed;
+	}
+
+	@Override
+	public Logger getLogger() {
+		return Logger.getLogger(Config.class.getName());
 	}
 }

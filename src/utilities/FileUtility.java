@@ -189,6 +189,25 @@ public class FileUtility {
 	}
 
 	/**
+	 *
+	 * @param sourceDirectory
+	 * @param destDirectory
+	 * @return
+	 */
+	public static boolean moveFiles(File sourceDirectory, File destDirectory) {
+		if (!sourceDirectory.isDirectory() || !destDirectory.isDirectory()) {
+			return false;
+		}
+
+		boolean result = true;
+		for (File f : sourceDirectory.listFiles()) {
+			String name = f.getName();
+			result &= f.renameTo(new File(FileUtility.joinPath(destDirectory.getAbsolutePath(), name)));
+		}
+		return result;
+	}
+
+	/**
 	 * Copy source file to destination file. Create directory if destination directory does not exist
 	 * @param source source file
 	 * @param dest destination file
@@ -196,7 +215,7 @@ public class FileUtility {
 	 */
 	public static boolean copyFile(File source, File dest) {
 		File parentDest = dest.getParentFile();
-		System.out.println(parentDest.getAbsolutePath());
+
 		if (!parentDest.exists()) {
 			if (!createDirectory(parentDest.getAbsolutePath())) {
 				return false;
@@ -210,6 +229,27 @@ public class FileUtility {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	/**
+	 * Delete a file or directory. FOLLOW symlink
+	 * @param toDelete file to delete
+	 * @return if delete successful
+	 */
+	public static boolean deleteFile(File toDelete) {
+		boolean result = true;
+		if (toDelete.isDirectory()) {
+			for (File c : toDelete.listFiles()) {
+				result &= deleteFile(c);
+			}
+		}
+
+		if (!toDelete.delete()) {
+			Logger.getLogger(FileUtility.class.getName()).log(Level.SEVERE, "Cannot delete file " + toDelete.getAbsolutePath());
+			return false;
+		}
+
+		return result;
 	}
 
 	/**
@@ -314,6 +354,15 @@ public class FileUtility {
 			}
 		}
 		return output;
+	}
+
+	/**
+	 * Read a plain text file.
+	 * @param filePath path to the file
+	 * @return text content of the file
+	 */
+	public static StringBuffer readFromFile(String filePath) {
+		return readFromFile(new File(filePath));
 	}
 
 	/**

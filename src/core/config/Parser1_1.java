@@ -75,4 +75,10 @@ public class Parser1_1 extends ConfigParser {
 			return false;
 		}
 	}
+
+	@Override
+	protected boolean importData(Config config, JsonRootNode data) {
+		LOGGER.warning("Unsupported import data at version " + getVersion());
+		return false;
+	}
 }

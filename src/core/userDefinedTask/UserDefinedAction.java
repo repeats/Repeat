@@ -100,7 +100,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	}
 
 	public String getSource() {
-		StringBuffer source = FileUtility.readFromFile(new File(sourcePath));
+		StringBuffer source = FileUtility.readFromFile(sourcePath);
 		if (source == null) {
 			return null;
 		}

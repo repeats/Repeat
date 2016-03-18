@@ -34,4 +34,6 @@ public class TaskSourceManager {
 		File sourceFile = new File(task.getSourcePath());
 		return FileUtility.removeFile(sourceFile);
 	}
+
+	private TaskSourceManager() {}
 }

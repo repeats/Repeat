@@ -247,9 +247,45 @@ public class MainFrame extends JFrame {
 
 		mnNewMenu.add(miLoadConfig);
 		mnNewMenu.add(miSaveConfig);
+
+		JSeparator separator_2 = new JSeparator();
+		mnNewMenu.add(separator_2);
 		mnNewMenu.add(miLoadSource);
 		mnNewMenu.add(miSaveSource);
 		mnNewMenu.add(miCleanSource);
+
+		JMenuItem mntmNewMenuItem_4 = new JMenuItem("Import...");
+		mntmNewMenuItem_4.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int returnVal = chooser.showOpenDialog(MainFrame.this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = chooser.getSelectedFile();
+					backEnd.importTasks(file);
+				}
+			}
+		});
+		mnNewMenu.add(mntmNewMenuItem_4);
+
+		JMenuItem mntmNewMenuItem_5 = new JMenuItem("Export...");
+		mntmNewMenuItem_5.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int returnVal = chooser.showOpenDialog(MainFrame.this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = chooser.getSelectedFile();
+					backEnd.exportTasks(file);
+				}
+			}
+		});
+		mnNewMenu.add(mntmNewMenuItem_5);
+
+		JSeparator separator_1 = new JSeparator();
+		mnNewMenu.add(separator_1);
 		mnNewMenu.add(miForceExit);
 		mnNewMenu.add(miExit);
 

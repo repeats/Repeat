@@ -30,6 +30,7 @@ import utilities.Function;
 import utilities.NumberUtility;
 import utilities.OSIdentifier;
 import utilities.Pair;
+import utilities.ZipUtility;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
 import core.config.Config;
@@ -614,6 +615,43 @@ public class MainBackEndHolder {
 
 	protected void generateSource() {
 		main.taSource.setText(recorder.getGeneratedCode(getSelectedLanguage()));
+	}
+
+	protected void importTasks(File inputFile) {
+		ZipUtility.unZipFile(inputFile.getAbsolutePath(), ".");
+		FileUtility.moveFiles(new File("tmp"), new File("."));
+
+		boolean result = config.importTaskConfig();
+		FileUtility.deleteFile(new File("tmp"));
+
+		if (result) {
+			JOptionPane.showMessageDialog(main, "Successfully imported tasks");
+		} else {
+			JOptionPane.showMessageDialog(main, "Encountered error while importing tasks");
+		}
+	}
+
+	protected void exportTasks(File outputDirectory) {
+		File destination = new File(FileUtility.joinPath(outputDirectory.getAbsolutePath(), "tmp"));
+		String zipPath = FileUtility.joinPath(outputDirectory.getAbsolutePath(), "repeat_export.zip");
+
+		FileUtility.createDirectory(destination.getAbsolutePath());
+		config.exportTasksConfig(destination);
+		//Now create a zip file containing all source codes together with the config file
+		for (TaskGroup group : taskGroups) {
+			for (UserDefinedAction task : group.getTasks()) {
+				File sourceFile = new File(task.getSourcePath());
+				String destPath = FileUtility.joinPath(destination.getAbsolutePath(), FileUtility.getRelativePwdPath(sourceFile));
+				File destFile = new File(destPath);
+				FileUtility.copyFile(sourceFile, destFile);
+			}
+		}
+
+		File zipFile = new File(zipPath);
+		ZipUtility.zipDir(destination, zipFile);
+		FileUtility.deleteFile(destination);
+
+		JOptionPane.showMessageDialog(main, "Data exported to " + zipPath);
 	}
 
 	protected void cleanUnusedSource() {

@@ -52,4 +52,6 @@ abstract class ConfigParser {
 		return internalExtractData(config, data);
 	}
 	protected abstract boolean internalExtractData(Config config, JsonRootNode data);
+
+	protected abstract boolean importData(Config config, JsonRootNode data);
 }
