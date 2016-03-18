@@ -234,7 +234,7 @@ public class TaskGroupFrame extends JFrame {
 		if (selected >= 0) {
 			TaskGroup removed = backEnd.taskGroups.remove(selected);
 
-			if (backEnd.taskGroups.size() <= 1) {
+			if (backEnd.taskGroups.size() < 1) {
 				backEnd.taskGroups.add(new TaskGroup("default"));
 			}
 
