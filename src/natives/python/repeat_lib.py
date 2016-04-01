@@ -6,6 +6,7 @@ import time
 import imp
 
 import socket
+import select
 import threading
 import Queue
 
@@ -25,7 +26,7 @@ class RepeatClient(object):
 
     """Client must send keep alive message to maintain the connection with server.
     Therefore the client timeout has to be less than server timeout"""
-    REPEAT_CLIENT_TIMEOUT_SEC = REPEAT_SERVER_TIMEOUT_SEC * 0.8
+    REPEAT_CLIENT_TIMEOUT_SEC = REPEAT_SERVER_TIMEOUT_SEC * 0.3
 
     def __init__(self, host = 'localhost', port = 9999):
         super(RepeatClient, self).__init__()
@@ -54,7 +55,7 @@ class RepeatClient(object):
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
-        
+
         self.system_client.identify()
         print "Successfully started python client"
 
@@ -96,7 +97,11 @@ class RepeatClient(object):
         while not self.is_terminated:
             data = None
             try:
-                data = self.socket.recv(1024)
+                ready = select.select([self.socket], [], [], RepeatClient.REPEAT_CLIENT_TIMEOUT_SEC)
+                if ready[0]:
+                    data = self.socket.recv(1024)
+                else:
+                    data = None
             except socket.error as se:
                 print traceback.format_exc()
                 break
