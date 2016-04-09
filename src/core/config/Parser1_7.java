@@ -111,13 +111,16 @@ public class Parser1_7 extends ConfigParser {
 
 	@Override
 	protected boolean importData(Config config, JsonRootNode root) {
+		boolean result = true;
+
 		List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();
 		for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
 			TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
+			result &= taskGroup != null;
 			if (taskGroup != null) {
 				taskGroups.add(taskGroup);
 			}
 		}
-		return false;
+		return result;
 	}
 }

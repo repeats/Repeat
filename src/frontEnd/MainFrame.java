@@ -106,16 +106,16 @@ public class MainFrame extends JFrame {
 		rbmiSelection = new HashMap<>();
 
 		backEnd = new MainBackEndHolder(this);
-		hotkey = new HotkeySetting(backEnd);
-		taskGroup = new TaskGroupFrame(backEnd);
-		ipcs = new IpcFrame(backEnd);
-
 		if (!SystemTray.isSupported()) {
 			LOGGER.warning("System tray is not supported!");
 			trayIcon = null;
 		} else {
 			trayIcon = new MinimizedFrame(BootStrapResources.TRAY_IMAGE, backEnd);
 		}
+
+		hotkey = new HotkeySetting(backEnd);
+		taskGroup = new TaskGroupFrame(backEnd);
+		ipcs = new IpcFrame(backEnd);
 
 		/*************************************************************************************/
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

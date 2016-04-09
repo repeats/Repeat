@@ -187,6 +187,13 @@ public class TaskGroupFrame extends JFrame {
 			}
 		});
 
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowActivated(WindowEvent e) {
+				renderTaskGroup();
+			}
+		});
+
 		DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
 		centerRender.setHorizontalAlignment(SwingConstants.CENTER);
 		for (int i = 0 ; i < tGroups.getColumnCount(); i++) {
