@@ -1,6 +1,7 @@
 package core.controller;
 
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
@@ -14,6 +15,7 @@ import utilities.Function;
 public class KeyboardCore {
 
 	private static final HashMap<Character, Function<Robot, Void>> charShiftType;
+	private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
 	static {
 		charShiftType = new HashMap<>();
@@ -159,6 +161,22 @@ public class KeyboardCore {
 	}
 
 	/**
+	 * Type a key multiple times
+	 * @param key integer representing the key as specified in java.awt.events.KeyEvent class
+	 * @param count number of times to repeat the typing
+	 * @throws InterruptedException
+	 */
+	public void typeRepeat(int key, int count) throws InterruptedException {
+		if (count <= 0) {
+			return;
+		}
+
+		for (int i = 0; i < count; i++) {
+			type(key);
+		}
+	}
+
+	/**
 	 * Type a combination of keys. E.g. control + C, control + alt + delete
 	 * @param keys the array of keys that form the combination in the order. Key integers are as specified in {@link java.awt.event.KeyEvent} class
 	 */
@@ -187,7 +205,7 @@ public class KeyboardCore {
 	}
 
 	/**
-	 * Press a key
+	 * Press a key. The keys are held down after the method finishes.
 	 * @param key the integer representing the key to be pressed. See {@link java.awt.event.KeyEvent} class for these integers
 	 */
 	public void press(int key) {
@@ -195,7 +213,7 @@ public class KeyboardCore {
 	}
 
 	/**
-	 * Press a series of key
+	 * Press a series of key. The key is held down after the method finishes.
 	 * @param keys the array of keys to be pressed. See {@link java.awt.event.KeyEvent} class for these integers
 	 */
 	public void press(int...keys) {
@@ -213,12 +231,21 @@ public class KeyboardCore {
 	}
 
 	/**
-	 * Release a series key
+	 * Release a series of key
 	 * @param keys the array of keys to be released. See {@link java.awt.event.KeyEvent} class for these integers
 	 */
 	public void release(int...keys) {
 		for (int key : keys) {
 			release(key);
 		}
+	}
+
+	/**
+	 * Check if a key is on (in locked state).
+	 * @param key key to check if on E.g. VK_CAPS_LOCk, VK_NUM_LOCK
+	 * @return if key locking state is on
+	 */
+	public boolean isLocked(int key) {
+		return toolkit.getLockingKeyState(key);
 	}
 }

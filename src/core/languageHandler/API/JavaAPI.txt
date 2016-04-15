@@ -23,19 +23,23 @@ III. MouseCore API: (variable mouse of type MouseCore)
     3) getColor(int x, int y)
     4) click(int mask)
     5) click(int mask, int delay)
-    6) leftClick();
-    7) leftClicK(int delay);
-    8) rightClick();
-    9) rightClick(int delay);
-    10) hold(int mask, int duration)
-    11) click(int mask, int x, int y)
-    12) click(int mask, Point p)
-    13) leftClick(int x, int y)
-    14) rightClick(int x, int y)
-    15) press(int mask)
-    16) release(int mask)
-    17) move(int newX, int newY)
-    18) moveBy(int amountX, int amountY)
+    6) leftClick()
+    7) move(int newX, int newY)
+    8) drag(int sourceX, int sourceY, int destX, int destY)
+    9) moveBy(int amountX, int amountY)
+    10) dragBy(int amountX, int amountY)
+    11) leftClicK(int delay);
+    12) rightClick();
+    13) rightClick(int delay);
+    14) hold(int mask, int duration)
+    15) click(int mask, int x, int y)
+    16) click(int mask, Point p)
+    17) leftClick(int x, int y)
+    18) rightClick(int x, int y)
+    19) press(int mask)
+    20) release(int mask)
+    21) move(int newX, int newY)
+    22) moveBy(int amountX, int amountY)
 
 
 IV. KeyboardCore API: (variable key of type KeyboardCore)
@@ -44,12 +48,14 @@ IV. KeyboardCore API: (variable key of type KeyboardCore)
     2) type(char c)
     3) type(int key)
     4) type(int...keys)
-    5) combination(int...keys)
-    6) hold(int key, int duration)
-    7) press(int key)
-    8) press(int...keys)
-    9) release(int key)
-    10) release(int...keys)
+    5) typeRepeat(int key, int count);
+    6) combination(int...keys)
+    7) hold(int key, int duration)
+    8) press(int key)
+    9) press(int...keys)
+    10) release(int key)
+    11) release(int...keys)
+    12) isLocked(int key)
     
 V. KeyChain API: (variable invoker of type KeyChain)
     Use these anywhere with key variable: invoker.<method_name>

@@ -205,13 +205,38 @@ public class MouseCore {
 	}
 
 	/**
+	 * Drag a mouse from a point to another point (i.e. left mask down during mouse movement)
+	 * @param sourceX x coordinate of the beginning point
+	 * @param sourceY y coordinate of the beginning point
+	 * @param destX x coordinate of the end point
+	 * @param destY y coordinate of the end point
+	 */
+	public void drag(int sourceX, int sourceY, int destX, int destY) {
+		move(sourceX, sourceY);
+		press(InputEvent.BUTTON1_MASK);
+		move(destX, destY);
+		release(InputEvent.BUTTON1_MASK);
+	}
+
+	/**
 	 * Move mouse by a certain amount
 	 * @param amountX x amount to move mouse by
 	 * @param amountY y amount to move mouse by
 	 */
 	public void moveBy(int amountX, int amountY) {
 		Point p = getPosition();
-		controller.mouseMove(p.x + amountX, p.y + amountY);
+		move(p.x + amountX, p.y + amountY);
+	}
+
+	/**
+	 * Drag a mouse from by a distance (i.e. left mask down during mouse movement)
+	 * @param sourceX x coordinate of the beginning point
+	 * @param sourceY y coordinate of the beginning point
+	 */
+	public void dragBy(int amountX, int amountY) {
+		press(InputEvent.BUTTON1_MASK);
+		moveBy(amountX, amountY);
+		release(InputEvent.BUTTON1_MASK);
 	}
 
 	/**

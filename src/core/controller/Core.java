@@ -38,7 +38,9 @@ public final class Core {
 	 * Unsafe method since not interruptible. Use at own risk
 	 * @param duration duration for controller to wait
 	 * @param callBack action to perform after wait duration
+	 * @deprecated unsafe and difficult use of callback
 	 */
+	@Deprecated
 	protected void wait(int duration, Runnable callBack) {
 		executor.schedule(callBack, duration, TimeUnit.MILLISECONDS);
 	}
@@ -50,6 +52,15 @@ public final class Core {
 	 */
 	public void blockingWait(int duration) throws InterruptedException {
 		Thread.sleep(duration);
+	}
+
+	/**
+	 * A short alias for blockingWait
+	 * @param duration wait duration in milliseconds
+	 * @throws InterruptedException
+	 */
+	public void delay(int duration) throws InterruptedException {
+		blockingWait(duration);
 	}
 
 	/**
