@@ -63,15 +63,15 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		statistics.updateAverageExecutionTime(time);
 	}
 
-	public void setName(String name) {
+	public final void setName(String name) {
 		this.name = name;
 	}
 
-	public void setHotKeys(Set<KeyChain> hotkeys) {
+	public final void setHotKeys(Set<KeyChain> hotkeys) {
 		this.hotkeys = hotkeys;
 	}
 
-	public Set<KeyChain> getHotkeys() {
+	public final Set<KeyChain> getHotkeys() {
 		if (hotkeys == null) {
 			hotkeys = new HashSet<KeyChain>();
 		}
@@ -82,7 +82,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * Retrieve a random key chain from the set of key chains. If there's no keychain for the task, return an empty key chain.
 	 * @return a random key chain from the set of key chains.
 	 */
-	public KeyChain getRepresentativeHotkey() {
+	public final KeyChain getRepresentativeHotkey() {
 		Set<KeyChain> hotkeys = getHotkeys();
 		if (hotkeys == null || hotkeys.isEmpty()) {
 			return new KeyChain();
@@ -91,11 +91,11 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		}
 	}
 
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
-	public String getSourcePath() {
+	public final String getSourcePath() {
 		return sourcePath;
 	}
 
@@ -108,15 +108,15 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		return source.toString();
 	}
 
-	public void setSourcePath(String sourcePath) {
+	public final void setSourcePath(String sourcePath) {
 		this.sourcePath = sourcePath;
 	}
 
-	public Language getCompiler() {
+	public final Language getCompiler() {
 		return compiler;
 	}
 
-	public void setCompiler(Language compiler) {
+	public final void setCompiler(Language compiler) {
 		this.compiler = compiler;
 	}
 
@@ -128,11 +128,11 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		this.enabled = enabled;
 	}
 
-	public UsageStatistics getStatistics() {
+	public final UsageStatistics getStatistics() {
 		return statistics;
 	}
 
-	public void override(UserDefinedAction other) {
+	public final void override(UserDefinedAction other) {
 		setName(other.getName());
 		setHotKeys(other.getHotkeys());
 		this.statistics = other.statistics;
@@ -142,7 +142,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * This method is called to dynamically allow the current task to execute other tasks in group
 	 * @param executeTaskInGroup
 	 */
-	public void setExecuteTaskInGroup(ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup) {
+	public final void setExecuteTaskInGroup(ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup) {
 		this.executeTaskInGroup = executeTaskInGroup;
 	}
 
@@ -151,7 +151,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * its hotkeys. This will only change the key chain definition of the current key chain, not substituting the real object
 	 * @param invokingKeyChain
 	 */
-	public void setInvokingKeyChain(KeyChain invokingKeyChain) {
+	public final void setInvokingKeyChain(KeyChain invokingKeyChain) {
 		this.invokingKeyChain.getKeys().clear();
 		this.invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
 	}
@@ -188,7 +188,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				);
 	}
 
-	public static UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
+	public static final UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
 		try {
 			String sourcePath = node.getStringValue("source_path");
 			AbstractNativeCompiler compiler = factory.getCompiler(node.getStringValue("compiler"));
