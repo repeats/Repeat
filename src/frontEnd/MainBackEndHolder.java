@@ -474,6 +474,7 @@ public class MainBackEndHolder {
 			currentGroup.getTasks().set(selected, customFunction);
 
 			LOGGER.info("Successfully overridden task " + customFunction.getName());
+			customFunction = null;
 		} else {
 			JOptionPane.showMessageDialog(main, "Select a task to override");
 		}
