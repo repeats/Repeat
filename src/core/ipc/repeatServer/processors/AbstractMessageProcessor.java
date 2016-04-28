@@ -24,8 +24,16 @@ abstract class AbstractMessageProcessor implements ILoggable {
 				content.isNode("message");
 	}
 
+	protected boolean success(String type, long id, String message) {
+		return messageSender.sendMessage(type, id, generateReply(SUCCESS_STATUS, message));
+	}
+
+	protected boolean success(String type, long id, JsonNode message) {
+		return messageSender.sendMessage(type, id, generateReply(SUCCESS_STATUS, message));
+	}
+
 	protected boolean success(String type, long id) {
-		return messageSender.sendMessage(type, id, generateReply(SUCCESS_STATUS, ""));
+		return success(type, id, "");
 	}
 
 	protected boolean failure(String type, long id, String message) {

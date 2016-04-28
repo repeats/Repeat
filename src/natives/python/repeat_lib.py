@@ -35,7 +35,7 @@ class RepeatClient(object):
         self.socket = None
         self.is_terminated = False
 
-        self.synchronization_events = {}
+        self.synchronization_objects = {}
         self.send_queue = Queue.Queue()
         self.task_manager = TaskManager(self)
 
@@ -119,8 +119,13 @@ class RepeatClient(object):
                     message_id = parsed['id']
                     message_content = parsed['content']
 
-                    if message_id in self.synchronization_events:
-                        cv = self.synchronization_events.pop(message_id)
+                    if message_id in self.synchronization_objects:
+                        returned_object = parsed['content']['message']
+                        cv = self.synchronization_objects.pop(message_id)
+
+                        if len(returned_object) > 0: #Give the output of this to the caller
+                            self.synchronization_objects[message_id] = returned_object
+
                         cv.set()
                     else:
                         if message_type != 'task':

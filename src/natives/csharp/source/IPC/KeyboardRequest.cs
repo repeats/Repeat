@@ -17,21 +17,21 @@ namespace Repeat.IPC {
             Action = "type";
             ClearParams();
             ParamInt.AddRange(keyCodes);
-            return SendRequest();
+            return SendRequest() == null ? false : true;
         }
 
         public bool DoType(params string[] strings) {
             Action = "type_string";
             ClearParams();
             ParamStrings.AddRange(strings);
-            return SendRequest();
+            return SendRequest() == null ? false : true;
         }
 
         public bool Combination(params int[] keyCodes) {
             Action = "combination";
             ClearParams();
             ParamInt.AddRange(keyCodes);
-            return SendRequest();
+            return SendRequest() == null ? false : true;
         }
     }
 }

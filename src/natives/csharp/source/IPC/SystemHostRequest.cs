@@ -17,7 +17,7 @@ namespace Repeat.IPC {
             Action = "keep_alive";
             ClearParams();
 
-            return SendRequest(blockingWait: false);
+            return SendRequest(blockingWait: false) == null ? false : true;
         }
     }
 }

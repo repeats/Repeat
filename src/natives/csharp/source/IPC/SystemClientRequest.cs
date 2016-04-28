@@ -18,7 +18,7 @@ namespace Repeat.IPC {
             ClearParams();
 
             ParamStrings.Add("C#");
-            return SendRequest();
+            return SendRequest() == null ? false : true;
         }
     }
 }

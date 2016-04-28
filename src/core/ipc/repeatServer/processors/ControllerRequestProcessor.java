@@ -1,5 +1,7 @@
 package core.ipc.repeatServer.processors;
 
+import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.logging.Logger;
 
 import utilities.IterableUtility;
 import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
 import core.ipc.repeatServer.MainMessageSender;
 
@@ -33,6 +36,13 @@ import core.ipc.repeatServer.MainMessageSender;
  *
  * 3) move(int, int): move mouse to a certain position
  * 4) move_by(int, int): move mouse by a certain distance (in pixel)
+ *
+ * 5) drag(int, int, int, int): drag mouse from a point to another point (i.e. leftClick at the starting point, then move mouse to end point, then release mouse)
+ * 6) drag_by(int, int): drag mouse by a certain distance
+ *
+ * 7) get_position(): get position of the mouse
+ * 8) get_color(): get the color (RGB) of the current pixel at which the mouse is pointing
+ * 9) get_color(int, int): get the color (RGB) of the pixel at the location
  *
  *************************************************************************
  * The following actions are supported for keyboard:
@@ -122,6 +132,35 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 				return failure(type, id, "Unable to move mouse by with " + params.size() + " parameters.");
 			}
 			return success(type, id);
+		} else if (action.equals("drag")) {
+			if (params.size() == 4) {
+				core.mouse().drag(params.get(0), params.get(1), params.get(2), params.get(3));
+			} else {
+				return failure(type, id, "Unable to drag mouse by with " + params.size() + " parameters.");
+			}
+			return success(type, id);
+		} else if (action.equals("drag_by")) {
+			if (params.size() == 2) {
+				core.mouse().dragBy(params.get(0), params.get(1));
+			} else {
+				return failure(type, id, "Unable to drag mouse by with " + params.size() + " parameters.");
+			}
+			return success(type, id);
+		} else if (action.equals("get_position")) {
+			Point p = core.mouse().getPosition();
+			return success(type, id, JsonNodeFactories.array(JsonNodeFactories.number(p.x), JsonNodeFactories.number(p.y)));
+		} else if (action.equals("get_color")) {
+			Point p = null;
+			if (params.size() == 0) {
+				p = core.mouse().getPosition();
+			} else if (params.size() == 2) {
+				p = new Point(params.get(0), params.get(1));
+			}
+			Color color = core.mouse().getColor(p);
+
+			return success(type, id, JsonNodeFactories.array(	JsonNodeFactories.number(color.getRed()),
+																JsonNodeFactories.number(color.getGreen()),
+																JsonNodeFactories.number(color.getBlue())));
 		} else {
 			return unsupportedAction(type, id, action);
 		}

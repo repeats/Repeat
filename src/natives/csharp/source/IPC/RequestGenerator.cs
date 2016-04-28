@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Repeat.ipc;
 using Repeat.utilities;
 using System;
@@ -10,7 +12,9 @@ using System.Threading.Tasks;
 
 namespace Repeat.IPC {
     public abstract class RequestGenerator {
-        private const int REQUEST_TIMEOUT = 1;
+        private static readonly ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private const int REQUEST_TIMEOUT_MS = 1000;
 
         private static int id = 1;
         protected RepeatClient client;
@@ -73,7 +77,7 @@ namespace Repeat.IPC {
             return result;
         }
 
-        protected bool SendRequest(bool blockingWait = true) {
+        protected JToken SendRequest(bool blockingWait = true) {
             int assignedID;
             string request = getRequest(out assignedID);
 
@@ -86,12 +90,23 @@ namespace Repeat.IPC {
             client.sendQueue.Enqueue(request);
             client.sendSignal.Set();
 
-            if (blockingWait) {
-                bool result = replySignal.WaitOne(REQUEST_TIMEOUT);
-                client.synchronizationEvents.Remove(assignedID);
-                return result;
-            } else {
+            if (!blockingWait) {
                 return true;
+            }
+
+            bool result = replySignal.WaitOne(REQUEST_TIMEOUT_MS);
+            client.synchronizationEvents.Remove(assignedID);
+            if (!result) {
+                logger.Error("Timeout on sending request. Returning null for operation.");
+                return null;
+            }
+
+            JToken returnedObject = null;
+            if (client.returnedObjects.TryGetValue(assignedID, out returnedObject)) {
+                client.returnedObjects.Remove(assignedID);
+                return returnedObject;
+            } else {
+                return null;
             }
         }
     }

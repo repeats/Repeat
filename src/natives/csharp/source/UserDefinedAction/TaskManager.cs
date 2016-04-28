@@ -68,6 +68,7 @@ namespace Repeat.userDefinedAction {
         }
 
         private JObject RunTask(int id, List<int> invoker) {
+            Console.WriteLine("Doing id " + id);
             UserDefinedAction toDo;
             if (actions.TryGetValue(id, out toDo)) {
                 toDo.controller = this.client;

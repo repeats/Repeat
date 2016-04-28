@@ -49,6 +49,7 @@ namespace Repeat.ipc {
             string type = "";
             int id = -1;
             JToken content = null;
+            JObject contentObject = null;
             foreach (JProperty property in parsedMessage.Properties()) {
                 if (property.Name == "type") {
                     type = (string) property.Value;
@@ -56,15 +57,22 @@ namespace Repeat.ipc {
                     id = (int) System.Convert.ChangeType(property.Value.ToString(), typeof(int));
                 } else if (property.Name == "content") {
                     content = property.Value;
+                    contentObject = content.Value<JObject>();
                 }
             }
 
             AutoResetEvent signalling;
             if (client.synchronizationEvents.TryGetValue(id, out signalling)) {
+                Console.WriteLine("AAAAAAAAAAAAAAAA " + id);
+                JToken replyToken = contentObject.GetValue("message");
+                //Place the reply object for the client to use
+                client.returnedObjects.Add(id, replyToken);
+
+                //After setting the signal client will remove the signal from the sync pool
                 signalling.Set();
                 return null;
             } else if (type == "task") {
-                JObject result = taskManager.ProcessMessage(content.Value<JObject>());
+                JObject result = taskManager.ProcessMessage(contentObject);
                 JObject replyMessage = new JObject(
                     new JProperty("type", type),
                     new JProperty("id", id),

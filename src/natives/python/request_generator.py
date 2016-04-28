@@ -26,20 +26,26 @@ class RequestGenerator(object):
                 }
 
     def send_request(self, blocking_wait = True):
-        if self.client is None or self.client.synchronization_events is None or self.client.send_queue is None:
-            return False
+        if self.client is None or self.client.synchronization_objects is None or self.client.send_queue is None:
+            return None
 
         new_id = RequestGenerator._gen_id()
-        
+
         event = threading.Event()
-        self.client.synchronization_events[new_id] = event
+        events_pool = self.client.synchronization_objects
+
+        events_pool[new_id] = event
 
         sending = self.get_request(new_id)
         self.client.send_queue.put(sending)
 
         if blocking_wait:
             if not event.wait(RequestGenerator.REQUEST_TIMEOUT):
-                print "Timeout for this request"
-                return False
+                print "Timeout for this request id {0]".format(new_id)
+                return None
 
-        return True
+        if new_id in events_pool and events_pool[new_id] is not event:
+            returned_object = events_pool.pop(new_id)
+            return returned_object
+        else:
+            return None

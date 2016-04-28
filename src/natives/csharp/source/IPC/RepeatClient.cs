@@ -1,4 +1,5 @@
 ﻿using log4net;
+using Newtonsoft.Json.Linq;
 using Repeat.IPC;
 using System;
 using System.Collections.Concurrent;
@@ -23,6 +24,7 @@ namespace Repeat.ipc {
         private Thread readThread, writeThread;
 
         public Dictionary<int, AutoResetEvent> synchronizationEvents;
+        public Dictionary<int, JToken> returnedObjects;
         public ConcurrentQueue<string> sendQueue;
         public AutoResetEvent sendSignal;
 
@@ -35,6 +37,8 @@ namespace Repeat.ipc {
 
         public RepeatClient() {
             synchronizationEvents = new Dictionary<int, AutoResetEvent>();
+            returnedObjects = new Dictionary<int, JToken>();
+
             sendQueue = new ConcurrentQueue<string>();
             sendSignal = new AutoResetEvent(false);
 
