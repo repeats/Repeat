@@ -72,7 +72,7 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 		sb.append("import static java.awt.event.KeyEvent.*;\n");
 		sb.append("import static java.awt.event.InputEvent.BUTTON1_MASK;\n");
 		sb.append("import static java.awt.event.InputEvent.BUTTON3_MASK;\n");
-		sb.append("import utilities.swing.SwingUtil.OptionPaneUtil;");
+		sb.append("import utilities.swing.SwingUtil.OptionPaneUtil;\n");
 
 		sb.append("public class CustomAction extends UserDefinedAction {\n");
 		sb.append("    public void action(final Core controller) throws InterruptedException {\n");
