@@ -63,7 +63,6 @@ namespace Repeat.ipc {
 
             AutoResetEvent signalling;
             if (client.synchronizationEvents.TryGetValue(id, out signalling)) {
-                Console.WriteLine("AAAAAAAAAAAAAAAA " + id);
                 JToken replyToken = contentObject.GetValue("message");
                 //Place the reply object for the client to use
                 client.returnedObjects.Add(id, replyToken);
