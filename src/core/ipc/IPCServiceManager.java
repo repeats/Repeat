@@ -2,9 +2,13 @@ package core.ipc;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import utilities.Function;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 import core.ipc.repeatClient.CSharpIPCClientService;
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
@@ -27,8 +31,8 @@ public final class IPCServiceManager {
 
 		ipcByLanugage = new HashMap<>();
 		ipcByLanugage.put(Language.JAVA, -1);
-		ipcByLanugage.put(Language.PYTHON, 1);
-		ipcByLanugage.put(Language.CSHARP, 2);
+		ipcByLanugage.put(Language.PYTHON, IPCServiceName.PYTHON.value());
+		ipcByLanugage.put(Language.CSHARP, IPCServiceName.CSHARP.value());
 	}
 
 	public static IIPCService getIPCService(Language name) {
@@ -55,6 +59,9 @@ public final class IPCServiceManager {
 	public static void initiateServices() throws IOException {
 		for (IPCServiceName name : IPCServiceName.ALL_SERVICE_NAMES) {
 			IIPCService service = IPCServiceManager.getIPCService(name);
+			if (!service.isLaunchAtStartup()) {
+				continue;
+			}
 			service.startRunning();
 			LOGGER.info("Starting ipc service " + service.getName());
 
@@ -78,6 +85,35 @@ public final class IPCServiceManager {
 				}
 			} while (service.isRunning());
 		}
+	}
+
+	public static boolean parseJSON(List<JsonNode> ipcSettings) {
+		for (JsonNode language : ipcSettings) {
+			String name = language.getStringValue("name");
+			boolean launchAtStartup = language.getBooleanValue("launch_at_startup");
+			Language currentLanguage = Language.identify(name);
+			IIPCService service = IPCServiceManager.getIPCService(currentLanguage);
+			if (service != null) {
+				service.setLaunchAtStartup(launchAtStartup);
+			}
+		}
+		return true;
+	}
+
+	public static JsonNode jsonize() {
+		return JsonNodeFactories.array(
+				new Function<Language, JsonNode>() {
+					@Override
+					public JsonNode apply(Language l) {
+						IIPCService service = getIPCService(l);
+
+						return JsonNodeFactories.object(
+								JsonNodeFactories.field("name", JsonNodeFactories.string(l.toString())),
+								JsonNodeFactories.field("launch_at_startup", JsonNodeFactories.booleanNode(service == null ? false : service.isLaunchAtStartup()))
+								);
+					}
+				}.map(Language.ALL_LANGUAGES)
+			);
 	}
 
 	private IPCServiceManager() {}

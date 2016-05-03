@@ -2,6 +2,8 @@ package frontEnd;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
@@ -26,6 +28,7 @@ public class IpcFrame extends JFrame {
 	protected static final int COLUMN_NAME = 0;
 	protected static final int COLUMN_PORT = 1;
 	protected static final int COLUMN_STATUS = 2;
+	protected static final int COLUMN_LAUCNH_AT_STARTUP = 3;
 
 	private final JPanel contentPane;
 	protected final JTable tIpc;
@@ -105,18 +108,22 @@ public class IpcFrame extends JFrame {
 		);
 
 		tIpc = new JTable();
+		tIpc.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				ipcBackEndHolder.mouseReleasedIPCTable(e);
+			}
+		});
 		tIpc.setModel(new DefaultTableModel(
 			new Object[][] {
+				{null, null, null, null},
 			},
 			new String[] {
-				"Process", "Port", "Status"
+				"Process", "Port", "Running", "Launch at startup"
 			}
-		){
-			@Override
-		    public boolean isCellEditable(int row, int column) {
-		        return column == 1;
-		    }
-		});
+		));
+		tIpc.getColumnModel().getColumn(0).setPreferredWidth(103);
+		tIpc.getColumnModel().getColumn(3).setPreferredWidth(115);
 
 		DefaultTableCellRenderer centerRender = new DefaultTableCellRenderer();
 		centerRender.setHorizontalAlignment(SwingConstants.CENTER);
@@ -124,8 +131,6 @@ public class IpcFrame extends JFrame {
 			tIpc.getColumnModel().getColumn(i).setCellRenderer(centerRender);
 		}
 		ipcBackEndHolder.renderServices();
-
-		tIpc.getColumnModel().getColumn(0).setPreferredWidth(103);
 		scrollPane.setViewportView(tIpc);
 		contentPane.setLayout(gl_contentPane);
 	}

@@ -8,9 +8,39 @@ public abstract class Function<D, R> {
 	public abstract R apply(D d);
 
 	public List<R> map(Collection<D> ds) {
-		List<R> output = new ArrayList<R>();
+		List<R> output = new ArrayList<R>(ds.size());
 		for (D d : ds) {
 			output.add(this.apply(d));
+		}
+		return output;
+	}
+
+	public List<R> map(D[] ds) {
+		List<R> output = new ArrayList<R>(ds.length);
+		for (D d : ds) {
+			output.add(this.apply(d));
+		}
+		return output;
+	}
+
+	public List<R> mapNotNull(Collection<D> ds) {
+		List<R> output = new ArrayList<R>(ds.size());
+		for (D d : ds) {
+			R r = this.apply(d);
+			if (r != null) {
+				output.add(r);
+			}
+		}
+		return output;
+	}
+
+	public List<R> mapNotNull(D[] ds) {
+		List<R> output = new ArrayList<R>(ds.length);
+		for (D d : ds) {
+			R r = this.apply(d);
+			if (r != null) {
+				output.add(r);
+			}
 		}
 		return output;
 	}

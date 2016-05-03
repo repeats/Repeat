@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import utilities.FileUtility;
 import argo.jdom.JsonNode;
@@ -15,6 +17,7 @@ import core.languageHandler.Language;
 
 public class DynamicCompilerManager implements IJsonable {
 
+	private static final Logger LOGGER = Logger.getLogger(DynamicCompilerManager.class.getName());
 	private final Map<Language, AbstractNativeCompiler> compilers;
 
 	public DynamicCompilerManager() {
@@ -52,5 +55,24 @@ public class DynamicCompilerManager implements IJsonable {
 		}
 
 		return JsonNodeFactories.array(compilerList);
+	}
+
+	public boolean parseJSON(List<JsonNode> compilerSettings) {
+		for (JsonNode compilerNode : compilerSettings) {
+			String name = compilerNode.getStringValue("name");
+			String path = compilerNode.getStringValue("path");
+			JsonNode compilerSpecificArgs = compilerNode.getNode("compiler_specific_args");
+
+			AbstractNativeCompiler compiler = getCompiler(name);
+			if (compiler != null) {
+				compiler.setPath(new File(path));
+				if (!compiler.parseCompilerSpecificArgs(compilerSpecificArgs)) {
+					LOGGER.log(Level.WARNING, "Compiler " + name + " was unable to parse its specific arguments.");
+				}
+			} else {
+				throw new IllegalStateException("Unknown compiler " + name);
+			}
+		}
+		return true;
 	}
 }

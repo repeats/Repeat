@@ -7,6 +7,11 @@ import utilities.ILoggable;
 public abstract class IIPCService implements ILoggable {
 
 	protected int port;
+	private boolean launchAtStartup;
+
+	public IIPCService() {
+		launchAtStartup = true;
+	}
 
 	public final void startRunning() throws IOException {
 		if (!isRunning()) {
@@ -42,4 +47,12 @@ public abstract class IIPCService implements ILoggable {
 	}
 
 	public abstract String getName();
+
+	public boolean isLaunchAtStartup() {
+		return launchAtStartup;
+	}
+
+	public void setLaunchAtStartup(boolean launchAtStartup) {
+		this.launchAtStartup = launchAtStartup;
+	}
 }

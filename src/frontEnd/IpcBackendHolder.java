@@ -1,5 +1,6 @@
 package frontEnd;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -69,6 +70,7 @@ public class IpcBackendHolder implements ILoggable {
 			frame.tIpc.setValueAt(service.getName(), i, IpcFrame.COLUMN_NAME);
 			frame.tIpc.setValueAt(service.getPort(), i, IpcFrame.COLUMN_PORT);
 			frame.tIpc.setValueAt(service.isRunning(), i, IpcFrame.COLUMN_STATUS);
+			frame.tIpc.setValueAt(service.isLaunchAtStartup(), i, IpcFrame.COLUMN_LAUCNH_AT_STARTUP);
 		}
 	}
 
@@ -80,6 +82,21 @@ public class IpcBackendHolder implements ILoggable {
 
 		IIPCService output = IPCServiceManager.getIPCService(selected);
 		return output;
+	}
+
+	protected void mouseReleasedIPCTable(MouseEvent e) {
+		int col = frame.tIpc.getSelectedColumn();
+
+		if (col != IpcFrame.COLUMN_LAUCNH_AT_STARTUP) {
+			return;
+		}
+
+		IIPCService service = getSelectedService();
+		if (service == null) {
+			return;
+		}
+
+		service.setLaunchAtStartup(!service.isLaunchAtStartup());
 	}
 
 	@Override

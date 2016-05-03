@@ -121,6 +121,24 @@ public class JSONUtility {
 	}
 
 	/**
+	 * Remove a child (or children) from the current json node given the key to remove
+	 * @param original the original json node where the new child will be removed
+	 * @param key the key of the child that will be removed
+	 * @return the json node with the removed child, or null if operation failed
+	 */
+	public static JsonNode removeChild(JsonNode original, String key) {
+		Map<JsonStringNode, JsonNode> existingFields = original.getFields();
+		Map<JsonStringNode, JsonNode> newMap = new HashMap<>();
+		for (Entry<JsonStringNode, JsonNode> entry : existingFields.entrySet()) {
+			if (!entry.getKey().toString().equals(key)) {
+				newMap.put(entry.getKey(), entry.getValue());
+			}
+		}
+
+		return JsonNodeFactories.object(newMap);
+	}
+
+	/**
 	 * Same as replace children but apply for only one child
 	 * @param parent parent node
 	 * @param replacingKey the key which value is replaced
