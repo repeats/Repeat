@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import signal
 import traceback
 import time
@@ -255,11 +256,12 @@ if __name__ == "__main__":
     write_thread = threading.Thread(target=client.process_write)
     read_thread = threading.Thread(target=client.process_read)
 
-    def terminate_repeat_client():
+    def terminate_repeat_client(*args, **kwargs):
         client.is_terminated = True
         write_thread.join()
         read_thread.join()
         client.stop()
+        sys.exit(0)
 
     signal.signal(signal.SIGTERM, terminate_repeat_client)
 
