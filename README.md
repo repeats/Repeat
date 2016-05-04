@@ -24,7 +24,7 @@ Known issues
 ============
 1. <del> Home/End buttons can only be used if numlocks is off </del> (This is a feature, not a bug)
 2. <del> Some source code files are not getting cleaned up. However, they're all in the data/source folder </del> [Since 1.7.3](https://github.com/hptruong93/Repeat/releases/tag/1.7.3) --> Provide a menu for user to clean up unused source files.
-3. <del>Python language is not fully supported. I'll have to write a better controller (mouse & keyboard) library for python.</del> Use [PyUserInput libray](https://github.com/SavinaRoja/PyUserInput) instead.
+3. <del>Python language is not fully supported. I'll have to write a better controller (mouse & keyboard) library for python.</del> Fully integrated python module [Since 2.0](https://github.com/hptruong93/Repeat/releases/tag/v2.0).
 4. If application is not initialized correctly, it may not exit and has to be killed
 5. <del> Does not catch error if hotkeys collide for different tasks. (i.e. you are responsible for not violating your hotkey assignment) </del> [Since 1.8](https://github.com/hptruong93/Repeat/releases/tag/1.8) --> Does not allow user to have overlapping keys.
 
