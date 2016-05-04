@@ -18,7 +18,8 @@ namespace Repeat.IPC {
             ClearParams();
 
             ParamStrings.Add("C#");
-            return SendRequest() == null ? false : true;
+            ParamStrings.Add(client.GetPort().ToString());
+            return SendRequest(blockingWait: false) == null ? false : true;
         }
     }
 }

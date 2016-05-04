@@ -97,7 +97,7 @@ namespace Repeat.IPC {
             bool result = replySignal.WaitOne(REQUEST_TIMEOUT_MS);
             client.synchronizationEvents.Remove(assignedID);
             if (!result) {
-                logger.Error("Timeout on sending request. Returning null for operation.");
+                logger.Error("Timeout on sending request. " + request + "\n\tReturning null for operation.");
                 return null;
             }
 

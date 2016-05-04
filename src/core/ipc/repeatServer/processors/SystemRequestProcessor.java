@@ -51,19 +51,34 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 			}
 		} else if (type.equals(ServerMainProcessor.TYPE_SYSTEM_CLIENT)) {
 			if (action.equals("identify")) {
-				if (paramNodes.size() != 1) {
-					getLogger().warning("Unexpected identity to have 2 parameters.");
+				if (paramNodes.size() != 2) {
+					getLogger().warning("Unexpected identity to have " + paramNodes.size() + " parameters.");
 					return false;
 				}
 
+				String name;
 				JsonNode nameNode = paramNodes.get(0);
 				if (!nameNode.isStringValue()) {
 					getLogger().warning("Identity must be a string.");
 					return false;
 				}
 
-				String name = nameNode.getStringValue();
-				TaskProcessorManager.identifyProcessor(name, holder.getTaskProcessor());
+				int port;
+				JsonNode portNode = paramNodes.get(1);
+				if (!portNode.isStringValue()) {
+					getLogger().warning("Port number must be a parsable string.");
+					return false;
+				} else {
+					try {
+						port = Integer.parseInt(portNode.getStringValue());
+					} catch (NumberFormatException e) {
+						getLogger().warning("Port number must be a number.");
+						return false;
+					}
+				}
+
+				name = nameNode.getStringValue();
+				TaskProcessorManager.identifyProcessor(name, port, holder.getTaskProcessor());
 				return success(type, id);
 			}
 		}

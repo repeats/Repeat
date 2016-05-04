@@ -34,7 +34,7 @@ public abstract class IIPCService implements ILoggable {
 
 	public abstract boolean isRunning();
 
-	public final void setPort(int newPort) {
+	public void setPort(int newPort) {
 		if (isRunning()) {
 			getLogger().warning("Cannot change port while running");
 			return;

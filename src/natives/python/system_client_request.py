@@ -6,8 +6,8 @@ class SystemClientRequest(request_generator.RequestGenerator):
         super(SystemClientRequest, self).__init__(client)
         self.type = 'system_client'
         self.device = 'system'
-        
+
     def identify(self):
         self.action = 'identify'
-        self.params = ['python']
+        self.params = ['python', str(self.client.socket.getsockname()[1])]
         return self.send_request(blocking_wait = False)

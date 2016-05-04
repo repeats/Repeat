@@ -123,5 +123,10 @@ public abstract class IPCClientService extends IIPCService {
 		return result;
 	}
 
+	@Override
+	public final void setPort(int newPort) {
+		this.port = newPort;
+	}
+
 	protected abstract String[] getLaunchCmd();
 }
