@@ -153,6 +153,18 @@ public class MouseCore {
 	}
 
 	/**
+	 * Left click mouse at a point with specified delay
+	 * @param x x coordinate of the point
+	 * @param y y coordinate of the point
+	 * @param delay amount of delay in ms
+	 * @throws InterruptedException
+	 */
+	public void leftClick(int x, int y, int delay) throws InterruptedException {
+		move(x, y);
+		click(InputEvent.BUTTON1_MASK, delay);
+	}
+
+	/**
 	 * Right click mouse at a point
 	 * @param x x coordinate of the point
 	 * @param y y coordinate of the point
@@ -160,6 +172,18 @@ public class MouseCore {
 	 */
 	public void rightClick(int x, int y) throws InterruptedException {
 		click(InputEvent.BUTTON3_MASK, x, y);
+	}
+
+	/**
+	 * Right click mouse at a point with specified delay
+	 * @param x x coordinate of the point
+	 * @param y y coordinate of the point
+	 * @param delay amount of delay in ms
+	 * @throws InterruptedException
+	 */
+	public void rightClick(int x, int y, int delay) throws InterruptedException {
+		move(x, y);
+		click(InputEvent.BUTTON3_MASK, delay);
 	}
 
 	/**

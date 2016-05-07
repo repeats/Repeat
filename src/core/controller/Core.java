@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 public final class Core {
 
+	private static final Logger LOGGER = Logger.getLogger(Core.class.getName());
 	private static final Core SINGLETON_INSTANCE = new Core();
 
 	private final ScheduledThreadPoolExecutor executor;
@@ -21,7 +22,7 @@ public final class Core {
 		try {
 			controller = new Robot();
 		} catch (AWTException e) {
-			Logger.getLogger(Core.class.getName()).log(Level.SEVERE, "Exception constructing controller", e);
+			LOGGER.log(Level.SEVERE, "Exception constructing controller", e);
 			System.exit(1);
 		}
 
