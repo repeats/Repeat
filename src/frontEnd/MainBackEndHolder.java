@@ -502,17 +502,17 @@ public class MainBackEndHolder {
 	protected void switchEnableTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
 
-		if (!action.isEnabled()) {
-			action.setEnabled(!action.isEnabled());
+		if (action.isEnabled()) {//Then disable it
+			action.setEnabled(false);
 			keysManager.unregisterTask(action);
-		} else {
+		} else {//Then enable it
 			Set<KeyChain> collisions = keysManager.areKeysRegistered(action.getHotkeys());
 			if (!collisions.isEmpty()) {
 				GlobalKeysManager.showCollisionWarning(main, collisions);
 				return;
 			}
 
-			action.setEnabled(!action.isEnabled());
+			action.setEnabled(true);
 			keysManager.registerTask(action);
 		}
 
