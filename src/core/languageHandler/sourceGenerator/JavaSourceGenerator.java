@@ -64,6 +64,7 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 		StringBuffer sb = new StringBuffer();
 		sb.append("package core;\n");
 		sb.append("import core.userDefinedTask.UserDefinedAction;\n");
+		sb.append("import core.userDefinedTask.Tools;\n");
 		sb.append("import core.controller.Core;\n");
 		sb.append("import core.controller.MouseCore;\n");
 		sb.append("import core.controller.KeyboardCore;\n");

@@ -15,7 +15,7 @@ public class Tools {
 
 	private static final Logger LOGGER = Logger.getLogger(Tools.class.getName());
 
-	protected static String getClipboard() {
+	public static String getClipboard() {
 		try {
 			String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
 			return data;
