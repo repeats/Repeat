@@ -76,9 +76,9 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 		sb.append("import utilities.swing.SwingUtil.OptionPaneUtil;\n");
 
 		sb.append("public class CustomAction extends UserDefinedAction {\n");
-		sb.append("    public void action(final Core controller) throws InterruptedException {\n");
-		sb.append("        KeyboardCore key = controller.keyBoard();\n");
-		sb.append("        MouseCore mouse = controller.mouse();\n");
+		sb.append("    public void action(final Core c) throws InterruptedException {\n");
+		sb.append("        KeyboardCore k = c.keyBoard();\n");
+		sb.append("        MouseCore m = c.mouse();\n");
 		sb.append("        List<Integer> invoker = this.invokingKeyChain.getKeys();\n");
 		sb.append("        /*Begin generated code*/\n");
 		sb.append(mainSource);
