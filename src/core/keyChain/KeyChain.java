@@ -68,6 +68,11 @@ public class KeyChain implements IJsonable {
 	}
 
 	@Override
+	public KeyChain clone() {
+		return new KeyChain(new ArrayList<>(this.keys));
+	}
+
+	@Override
 	public int hashCode() {
 		return this.toString().hashCode();
 	}

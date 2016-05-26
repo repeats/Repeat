@@ -788,6 +788,7 @@ public class MainBackEndHolder {
 		}
 		main.cbmiUseTrayIcon.setSelected(config.isUseTrayIcon());
 		main.cbmiHaltByKey.setSelected(config.isEnabledHaltingKeyPressed());
+		main.cbmiExecuteOnReleased.setSelected(config.isExecuteOnKeyReleased());
 	}
 
 	protected void switchTrayIconUse() {
@@ -801,6 +802,10 @@ public class MainBackEndHolder {
 
 	protected void switchHaltByKey() {
 		config.setEnabledHaltingKeyPressed(main.cbmiHaltByKey.isSelected());
+	}
+
+	protected void switchExecuteOnReleased() {
+		config.setExecuteOnKeyReleased(main.cbmiExecuteOnReleased.isSelected());
 	}
 
 	/*************************************************************************************************************/

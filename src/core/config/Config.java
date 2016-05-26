@@ -26,10 +26,10 @@ import frontEnd.MainBackEndHolder;
 
 public class Config implements ILoggable {
 
-	public static final String RELEASE_VERSION = "2.3.3";
+	public static final String RELEASE_VERSION = "2.4.0";
 	private static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
-	private static final String CURRENT_CONFIG_VERSION = "1.8";
+	private static final String CURRENT_CONFIG_VERSION = "1.9";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
@@ -44,6 +44,11 @@ public class Config implements ILoggable {
 
 	private boolean useTrayIcon;
 	private boolean enabledHaltingKeyPressed;
+	/**
+	 * If enabled will consider executing task on key released event. Otherwise will consider executing
+	 * task on key pressed event.
+	 */
+	private boolean executeOnKeyReleased;
 	private Level nativeHookDebugLevel;
 
 
@@ -51,6 +56,7 @@ public class Config implements ILoggable {
 		this.backEnd = backEnd;
 		useTrayIcon = DEFAULT_TRAY_ICON_USE;
 		this.enabledHaltingKeyPressed = true;
+		this.executeOnKeyReleased = false;
 		this.nativeHookDebugLevel = DEFAULT_NATIVE_HOOK_DEBUG_LEVEL;
 
 		RECORD = new KeyChain(KeyEvent.VK_F9);
@@ -72,7 +78,8 @@ public class Config implements ILoggable {
 				new Parser1_5(),
 				new Parser1_6(),
 				new Parser1_7(),
-				new Parser1_8()
+				new Parser1_8(),
+				new Parser1_9()
 			});
 
 		for (ConfigParser parser : knownParsers) {
@@ -142,6 +149,7 @@ public class Config implements ILoggable {
 								)),
 						JsonNodeFactories.field("tray_icon_enabled", JsonNodeFactories.booleanNode(useTrayIcon)),
 						JsonNodeFactories.field("enabled_halt_by_key", JsonNodeFactories.booleanNode(enabledHaltingKeyPressed)),
+						JsonNodeFactories.field("execute_on_key_released", JsonNodeFactories.booleanNode(executeOnKeyReleased)),
 						JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
 								JsonNodeFactories.field("record", RECORD.jsonize()),
 								JsonNodeFactories.field("replay", REPLAY.jsonize()),
@@ -231,6 +239,14 @@ public class Config implements ILoggable {
 
 	public void setUseTrayIcon(boolean useTrayIcon) {
 		this.useTrayIcon = useTrayIcon;
+	}
+
+	public boolean isExecuteOnKeyReleased() {
+		return executeOnKeyReleased;
+	}
+
+	public void setExecuteOnKeyReleased(boolean executeOnKeyReleased) {
+		this.executeOnKeyReleased = executeOnKeyReleased;
 	}
 
 	public Level getNativeHookDebugLevel() {

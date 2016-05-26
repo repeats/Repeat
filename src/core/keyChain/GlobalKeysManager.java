@@ -34,6 +34,11 @@ public final class GlobalKeysManager {
 
 	private final Config config;
 	private final Map<KeyChain, UserDefinedAction> actionMap;
+	/**
+	 * This function is the precondition to executing any task.
+	 * It is evaluated every time the manager considers executing any task.
+	 * If it evaluates to true, the task will not be executed.
+	 */
 	private Function<Void, Boolean> disablingFunction;
 	private final Map<String, Thread> executions;
 	private final KeyChain currentKeyChain;
@@ -54,62 +59,11 @@ public final class GlobalKeysManager {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-
-				if (code == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
-					haltAllTasks();
-					return true;
-				}
-
-				if (disablingFunction.apply(null)) {
-					return true;
-				}
-
 				currentKeyChain.getKeys().add(code);
 
-				final UserDefinedAction action = actionMap.get(currentKeyChain);
-				if (action == null) {
-					return true;
+				if (!config.isExecuteOnKeyReleased()) {
+					return considerTaskExecution(code);
 				}
-
-				final String id = RandomUtil.randomID();
-				Thread execution = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							action.setInvokingKeyChain(currentKeyChain);
-							action.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
-								@Override
-								public Void apply(Integer taskIndex) throws InterruptedException {
-									if (currentTaskGroup == null) {
-										LOGGER.warning("Task group is null. Cannot execute given task with index " + taskIndex);
-										return null;
-									}
-									List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
-
-									if (taskIndex >= 0 && taskIndex < tasks.size()) {
-										currentTaskGroup.getTasks().get(taskIndex).trackedAction(Core.getInstance());
-									} else {
-										LOGGER.warning("Index out of bound. Cannot execute given task with index " + taskIndex + " given task group only has " + tasks.size() + " elements.");
-									}
-
-									return null;
-								}
-							});
-							action.trackedAction(Core.getInstance());
-						} catch (InterruptedException e) {
-							LOGGER.info("Task ended prematurely");
-						} catch (Exception e) {
-							String name = action.getName() == null ? "" : action.getName();
-							LOGGER.log(Level.WARNING, "Exception while executing task " + name, e);
-						}
-
-						executions.remove(id);
-					}
-				});
-
-				executions.put(id, execution);
-				execution.start();
-
 				return true;
 			}
 		});
@@ -118,12 +72,11 @@ public final class GlobalKeysManager {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-
-				if (code == Config.HALT_TASK) {
+				if (config.isExecuteOnKeyReleased()) {
+					boolean result = considerTaskExecution(code);
 					currentKeyChain.getKeys().clear();
-					return true;
+					return result;
 				}
-
 				currentKeyChain.getKeys().clear();
 				return true;
 			}
@@ -137,6 +90,64 @@ public final class GlobalKeysManager {
 
 	public void setCurrentTaskGroup(TaskGroup currentTaskGroup) {
 		this.currentTaskGroup = currentTaskGroup;
+	}
+
+	private boolean considerTaskExecution(int keyCode) {
+		if (keyCode == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
+			currentKeyChain.getKeys().clear();
+			haltAllTasks();
+			return true;
+		}
+
+		if (disablingFunction.apply(null)) {
+			return true;
+		}
+
+		final UserDefinedAction action = actionMap.get(currentKeyChain);
+		final KeyChain invoker = currentKeyChain.clone();
+		if (action == null) {
+			return true;
+		}
+
+		final String id = RandomUtil.randomID();
+		Thread execution = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					action.setInvokingKeyChain(invoker);
+					action.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
+						@Override
+						public Void apply(Integer taskIndex) throws InterruptedException {
+							if (currentTaskGroup == null) {
+								LOGGER.warning("Task group is null. Cannot execute given task with index " + taskIndex);
+								return null;
+							}
+							List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
+
+							if (taskIndex >= 0 && taskIndex < tasks.size()) {
+								currentTaskGroup.getTasks().get(taskIndex).trackedAction(Core.getInstance());
+							} else {
+								LOGGER.warning("Index out of bound. Cannot execute given task with index " + taskIndex + " given task group only has " + tasks.size() + " elements.");
+							}
+
+							return null;
+						}
+					});
+					action.trackedAction(Core.getInstance());
+				} catch (InterruptedException e) {
+					LOGGER.info("Task ended prematurely");
+				} catch (Exception e) {
+					String name = action.getName() == null ? "" : action.getName();
+					LOGGER.log(Level.WARNING, "Exception while executing task " + name, e);
+				}
+
+				executions.remove(id);
+			}
+		});
+
+		executions.put(id, execution);
+		execution.start();
+		return true;
 	}
 
 	/**

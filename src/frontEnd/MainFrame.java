@@ -87,7 +87,7 @@ public class MainFrame extends JFrame {
 	protected JTextArea taSource, taStatus;
 	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython, rbmiCompileCS;
 	protected JRadioButtonMenuItem rbmiDebugSevere, rbmiDebugWarning, rbmiDebugInfo, rbmiDebugFine;
-	protected JCheckBoxMenuItem cbmiUseTrayIcon, cbmiHaltByKey;
+	protected JCheckBoxMenuItem cbmiUseTrayIcon, cbmiHaltByKey, cbmiExecuteOnReleased;
 	protected final JTextField tfMousePosition;
 	protected final JTable tTasks;
 
@@ -422,6 +422,15 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mSetting.add(cbmiHaltByKey);
+
+		cbmiExecuteOnReleased = new JCheckBoxMenuItem("Execute on released");
+		cbmiExecuteOnReleased.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.switchExecuteOnReleased();
+			}
+		});
+		mSetting.add(cbmiExecuteOnReleased);
 
 		JSeparator separator = new JSeparator();
 		mSetting.add(separator);
