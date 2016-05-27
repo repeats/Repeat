@@ -18,7 +18,6 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import argo.jdom.JsonStringNode;
 import argo.saj.InvalidSyntaxException;
-import core.config.IJsonable;
 
 public class JSONUtility {
 

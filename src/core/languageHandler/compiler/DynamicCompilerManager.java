@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.FileUtility;
+import utilities.IJsonable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import core.config.IJsonable;
 import core.languageHandler.Language;
 
 public class DynamicCompilerManager implements IJsonable {

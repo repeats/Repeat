@@ -1,4 +1,4 @@
-package core.config;
+package utilities;
 
 import argo.jdom.JsonRootNode;
 

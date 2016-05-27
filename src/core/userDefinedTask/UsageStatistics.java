@@ -5,11 +5,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utilities.DateUtility;
+import utilities.IJsonable;
 import utilities.ILoggable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import core.config.IJsonable;
 
 public class UsageStatistics implements IJsonable, ILoggable {
 

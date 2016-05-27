@@ -1,12 +1,11 @@
 package core.ipc.repeatServer;
 
+import utilities.IJsonable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 
 import com.sun.istack.internal.logging.Logger;
-
-import core.config.IJsonable;
 
 /**
  * This class is very similar to <class> UserDefinedAction </class>, except that this is meant to be
