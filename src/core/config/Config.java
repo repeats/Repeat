@@ -29,10 +29,12 @@ public class Config implements ILoggable {
 	public static final String RELEASE_VERSION = "2.4.0";
 	private static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
-	private static final String CURRENT_CONFIG_VERSION = "1.9";
+	protected static final String CURRENT_CONFIG_VERSION = "1.9";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
+
+	private static final List<ConfigParser> knownParsers;
 
 	private DynamicCompilerManager compilerFactory;
 	private final MainBackEndHolder backEnd;
@@ -51,6 +53,20 @@ public class Config implements ILoggable {
 	private boolean executeOnKeyReleased;
 	private Level nativeHookDebugLevel;
 
+	static {
+		knownParsers = Arrays.asList(new ConfigParser[]{
+				new Parser1_0(),
+				new Parser1_1(),
+				new Parser1_2(),
+				new Parser1_3(),
+				new Parser1_4(),
+				new Parser1_5(),
+				new Parser1_6(),
+				new Parser1_7(),
+				new Parser1_8(),
+				new Parser1_9()
+			});
+	}
 
 	public Config(MainBackEndHolder backEnd) {
 		this.backEnd = backEnd;
@@ -68,22 +84,25 @@ public class Config implements ILoggable {
 		return compilerFactory;
 	}
 
-	private ConfigParser getLatestConfigParser(String version) {
-		List<ConfigParser> knownParsers = Arrays.asList(new ConfigParser[]{
-				new Parser1_0(),
-				new Parser1_1(),
-				new Parser1_2(),
-				new Parser1_3(),
-				new Parser1_4(),
-				new Parser1_5(),
-				new Parser1_6(),
-				new Parser1_7(),
-				new Parser1_8(),
-				new Parser1_9()
-			});
-
+	protected static ConfigParser getConfigParser(String version) {
 		for (ConfigParser parser : knownParsers) {
 			if (parser.getVersion().equals(version)) {
+				return parser;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get config parser whose previous version is this version
+	 * @param version the version to consider
+	 * @return the config parser whose previous version is this version
+	 */
+	protected static ConfigParser getNextConfigParser(String version) {
+		for (ConfigParser parser : knownParsers) {
+			String previousVersion = parser.getPreviousVersion();
+			if (previousVersion != null && previousVersion.equals(version)) {
 				return parser;
 			}
 		}
@@ -107,7 +126,7 @@ public class Config implements ILoggable {
 			}
 
 			String version = root.getStringValue("version");
-			ConfigParser parser = getLatestConfigParser(version);
+			ConfigParser parser = getConfigParser(version);
 			boolean foundVersion = parser != null;
 			boolean extractResult = false;
 			if (foundVersion) {
@@ -189,7 +208,7 @@ public class Config implements ILoggable {
 			return false;
 		}
 		String version = root.getStringValue("version");
-		ConfigParser parser = getLatestConfigParser(version);
+		ConfigParser parser = getConfigParser(version);
 		if (parser == null) {
 			getLogger().warning("Uknown version " + version);
 			return false;

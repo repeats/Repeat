@@ -52,27 +52,8 @@ public class Parser1_8 extends ConfigParser {
 	}
 
 	@Override
-	protected boolean internalExtractData(Config config, JsonRootNode root) {
-		try {
-			//Convert to 1_9
-			Parser1_9 parser = new Parser1_9();
-			JsonRootNode newRoot = parser.convertFromPreviousVersion(root);
-
-			if (newRoot != null) {
-				return parser.extractData(config, newRoot);
-			} else {
-				LOGGER.log(Level.WARNING, "Unable to convert to later version " + parser.getVersion());
-				return false;
-			}
-		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to parse json", e);
-			return false;
-		}
-	}
-
-	@Override
-	protected boolean importData(Config config, JsonRootNode root) {
-		Parser1_9 parser = new Parser1_9();
-		return parser.importData(config, root);
+	protected boolean internalImportData(Config config, JsonRootNode root) {
+		ConfigParser parser = Config.getNextConfigParser(getVersion());
+		return parser.internalImportData(config, root);
 	}
 }

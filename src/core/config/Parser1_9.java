@@ -84,7 +84,7 @@ public class Parser1_9 extends ConfigParser {
 	}
 
 	@Override
-	protected boolean importData(Config config, JsonRootNode root) {
+	protected boolean internalImportData(Config config, JsonRootNode root) {
 		boolean result = true;
 
 		List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();

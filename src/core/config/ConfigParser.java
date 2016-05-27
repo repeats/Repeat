@@ -49,9 +49,46 @@ abstract class ConfigParser {
 			return false;
 		}
 
-		return internalExtractData(config, data);
-	}
-	protected abstract boolean internalExtractData(Config config, JsonRootNode data);
+		if (!Config.CURRENT_CONFIG_VERSION.equals(getVersion())) {//Then convert to latest version then parse
+			LOGGER.info("Looking for next version " + getVersion());
+			String currentVersion = getVersion();
+			while (!currentVersion.equals(Config.CURRENT_CONFIG_VERSION)) {
+				ConfigParser nextVersion = Config.getNextConfigParser(currentVersion);
 
-	protected abstract boolean importData(Config config, JsonRootNode data);
+				if (nextVersion == null) {
+					LOGGER.warning("Unable to find the next version of current version " + currentVersion);
+					return false;
+				}
+
+				try {
+					data = nextVersion.convertFromPreviousVersion(data);
+				} catch (Exception e) {
+					LOGGER.log(Level.WARNING, "Unable to convert from version " + currentVersion, e);
+					data = null;
+				}
+
+				if (data == null) {
+					LOGGER.log(Level.WARNING, "Unable to convert to later version " + nextVersion.getVersion());
+					return false;
+				}
+				currentVersion = nextVersion.getVersion();
+			}
+
+			ConfigParser parser = Config.getConfigParser(currentVersion);
+			return parser.extractData(config, data);
+		} else {
+			return internalExtractData(config, data);
+		}
+	}
+
+	protected boolean internalExtractData(Config config, JsonRootNode data) {
+		throw new UnsupportedOperationException("Config version " + getVersion() + " does not support extracting data. "
+				+ "Convert to a later version.");
+	}
+
+	protected final boolean importData(Config config, JsonRootNode data) {
+		return internalImportData(config, data);
+	}
+
+	protected abstract boolean internalImportData(Config config, JsonRootNode data);
 }
