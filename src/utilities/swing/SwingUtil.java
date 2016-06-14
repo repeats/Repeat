@@ -1,12 +1,16 @@
 package utilities.swing;
 
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -250,6 +254,13 @@ public class SwingUtil {
 
 		private OptionPaneUtil() {}
 
+		/**
+		 * Show selection dialog for user to choose from a list of values
+		 * @param title title of the dialog shown
+		 * @param choices list of string represents the available choices
+		 * @param selected index of the selected element at start time. If set to -1 then nothing is selected
+		 * @return index of the selected element, or -1 if nothing was selected
+		 */
 		public static int getSelection(String title, String[] choices, int selected) {
 			JList<String> list = new JList<String>(choices);
 			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -294,6 +305,11 @@ public class SwingUtil {
 			JOptionPane.showMessageDialog(null, scroll, title, JOptionPane.INFORMATION_MESSAGE);
 		}
 
+		/**
+		 * Show a list of values to user
+		 * @param titles titles of the values
+		 * @param values list of values in the according order of the titles
+		 */
 		public static void showValues(String[] titles, String[] values) {
 			if (titles.length == 0 || (titles.length != values.length)) {
 				return;
@@ -316,6 +332,13 @@ public class SwingUtil {
 					"Enter values", JOptionPane.OK_OPTION);
 		}
 
+		/**
+		 * Show a list of fields and values of them for user to confirm
+		 * @param confirmTitle title for the displayed window
+		 * @param titles list of titles of the fields to display
+		 * @param values values of each field in the according order
+		 * @return the JOptionPane selection value according to user's action
+		 */
 		public static int confirmValues(String confirmTitle, String[] titles, String[] values) {
 			if (titles.length == 0 || (titles.length != values.length)) {
 				return -1;
@@ -338,6 +361,11 @@ public class SwingUtil {
 					confirmTitle, JOptionPane.YES_NO_OPTION);
 		}
 
+		/**
+		 * Get input from a number of fields from user
+		 * @param titles titles of the fields that requires input
+		 * @return a list of input values entered by user, or null if user cancels input windows
+		 */
 		public static String[] getInputs(String[] titles) {
 			if (titles.length == 0) {
 				return null;
@@ -373,6 +401,57 @@ public class SwingUtil {
 			} else {
 				return null;
 			}
+		}
+	}
+
+	public static final class DialogUtil {
+		private DialogUtil() {}
+
+		/**
+		 * Display a dialog for user to select value from a list of values
+		 * @param parent parent jframe hosting this dialog
+		 * @param title title of the dialog shown
+		 * @param choices list of string represents the available choices
+		 * @param selected index of the selected element at start time. If set to -1 then nothing is selected
+		 * @return the index of selected field
+		 */
+		public static int getSelection(JFrame parent, String title, String[] choices, int selected) {
+			final JDialog dialog = new JDialog(parent, "Title", ModalityType.APPLICATION_MODAL);
+			dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			dialog.setTitle(title);
+
+			final JList<String> list = new JList<String>(choices);
+			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+			if (selected != -1 && selected < choices.length) {
+				list.setSelectedIndex(selected + 1);
+			}
+			list.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+						dialog.dispose();
+					} else if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+						list.clearSelection();
+						dialog.dispose();
+					} else if (e.getKeyCode() == KeyEvent.VK_1) {
+						list.setSelectedIndex(0);
+					} else if (e.getKeyCode() == KeyEvent.VK_2) {
+						list.setSelectedIndex(1);
+					} else if (e.getKeyCode() == KeyEvent.VK_3) {
+						list.setSelectedIndex(2);
+					} else if (e.getKeyCode() == KeyEvent.VK_4) {
+						list.setSelectedIndex(3);
+					}
+				}
+			});
+
+			dialog.add(list);
+			dialog.pack();
+			dialog.setLocationRelativeTo(null);
+			list.requestFocusInWindow();
+			dialog.setVisible(true);
+			return list.getSelectedIndex();
 		}
 	}
 }

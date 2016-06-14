@@ -14,6 +14,7 @@ import utilities.Function;
 
 public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 
+	private static final Logger LOGGER = Logger.getLogger(GlobalKeyListener.class.getName());
 	private static final long KEY_PRESS_DELAY_MS = 1000;
 
 	private Function<NativeKeyEvent, Boolean> keyPressed;
@@ -58,7 +59,7 @@ public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 		if (keyPressed != null) {
 			if ((!m.containsKey(code)) || (m.get(code) - time >= KEY_PRESS_DELAY_MS)) {
 				if (!keyPressed.apply(e)) {
-					System.out.println("Internal key listener problem");
+					LOGGER.warning("Internal key listener problem. Unable to apply key pressed action");
 				}
 			}
 		}
@@ -71,7 +72,7 @@ public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 
 		if (keyReleased != null) {
 			if (!keyReleased.apply(e)) {
-				System.out.println("Internal key listener problem");
+				LOGGER.warning("Internal key listener problem. Unable to apply key released action");
 			}
 		}
 	}
