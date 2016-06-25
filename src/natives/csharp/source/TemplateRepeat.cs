@@ -8,6 +8,7 @@ namespace Repeat.userDefinedAction {
         public override void Action() {
             MouseRequest mouse = controller.mouse;
             KeyboardRequest key = controller.key;
+            ToolRequest tool = controller.tool;
             List<int> invoker = this.invoker;
             //Begin generated code
 

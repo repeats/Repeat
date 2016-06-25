@@ -5,6 +5,7 @@ from key_code import *
 	invoker is the hotkey (list of keys) that invoked this action
 """
 def action(controller, invoker):
-	mouse = controller.mouse
-	key = controller.key
+	m = controller.mouse
+	k = controller.key
+	t = controller.tool
 	#Begin generated code

@@ -12,6 +12,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
 import core.ipc.repeatServer.MainMessageSender;
+import core.userDefinedTask.Tools;
 
 /**
  * This class represents the message processor for action request received from client.
@@ -51,6 +52,11 @@ import core.ipc.repeatServer.MainMessageSender;
  * 3) combination(key_values...) : perform a key combination
  *
  *************************************************************************
+ * The following actions are supported for keyboard:
+ * 1) getClipboard() : get current clipboard text content
+ * 2) setClipboard(value) : set current clipboard text content
+ * 3) execute(command) : execute a command in a subprocess
+ * 4) execute(command, cwd) : execute a command in a subprocess, in a given directory
  *
  * Once the action has been performed successfully, a reply message will be sent using the same id received.
  * The received message has the following JSON format in content:
@@ -66,6 +72,7 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 
 	private static final String DEVICE_MOUSE = "mouse";
 	private static final String DEVICE_KEYBOARD = "keyboard";
+	private static final String DEVICE_TOOL = "tool";
 
 	private final Core core;
 
@@ -85,6 +92,8 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			return mouseAction(type, id, action, parsedParams);
 		} else if (device.equals(DEVICE_KEYBOARD)) {
 			return keyboardAction(type, id, action, parsedParams);
+		} else if (device.equals(DEVICE_TOOL)) {
+			return toolAction(type, id, action, parsedParams);
 		}
 
 		return failure(type, id, "Unknown device " + device);
@@ -198,6 +207,36 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 		return unsupportedAction(type, id, action);
 	}
 
+	private boolean toolAction(String type, long id, final String action, final List<Object> parsedParams) throws InterruptedException {
+		if (action.equals("get_clipboard")) {
+			return success(type, id, Tools.getClipboard());
+		} else if (action.equals("set_clipboard")) {
+			List<String> params = toStringParams(parsedParams);
+			if (params == null) {
+				return false;
+			}
+
+			String data = params.get(0);
+			Tools.setClipboard(data);
+			return success(type, id);
+		} else if (action.equals("execute")) {
+			List<String> params = toStringParams(parsedParams);
+			if (params == null) {
+				return false;
+			}
+
+			if (params.size() == 1) {
+				return success(type, id, Tools.execute(params.get(0)));
+			} else if (params.size() == 2) {
+				return success(type, id, Tools.execute(params.get(0), params.get(1)));
+			} else {
+				return failure(type, id, "Unexpected number of parameter for execution");
+			}
+		}
+
+		return unsupportedAction(type, id, action);
+	}
+
 	private boolean unsupportedAction(String type, long id, final String action) {
 		return failure(type, id, "Unsupported action " + action);
 	}
@@ -261,6 +300,6 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 
 	@Override
 	public Logger getLogger() {
-		return Logger.getLogger(ControllerRequestProcessor.class.getName());
+		return Logger.getLogger(getClass().getName());
 	}
 }

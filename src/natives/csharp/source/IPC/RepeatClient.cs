@@ -36,6 +36,8 @@ namespace Repeat.ipc {
         public MouseRequest mouse { get; private set; }
         public KeyboardRequest key { get; private set; }
 
+        public ToolRequest tool { get; private set; }
+
         public RepeatClient() {
             synchronizationEvents = new Dictionary<int, AutoResetEvent>();
             returnedObjects = new Dictionary<int, JToken>();
@@ -49,6 +51,7 @@ namespace Repeat.ipc {
             systemHost = new SystemHostRequest(this);
             mouse = new MouseRequest(this);
             key = new KeyboardRequest(this);
+            tool = new ToolRequest(this);
         }
 
         private void ReadThread() {

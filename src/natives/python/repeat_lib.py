@@ -14,6 +14,7 @@ import Queue
 import specifications
 import keyboard_request
 import mouse_request
+import tool_request
 import system_host_request
 import system_client_request
 
@@ -44,6 +45,7 @@ class RepeatClient(object):
         self.system_client = system_client_request.SystemClientRequest(self)
         self.mouse = mouse_request.MouseRequest(self)
         self.key = keyboard_request.KeyboardRequest(self)
+        self.tool = tool_request.ToolRequest(self)
 
         self._previous_message = []
 
