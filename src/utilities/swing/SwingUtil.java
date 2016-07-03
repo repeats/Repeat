@@ -7,9 +7,11 @@ import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -256,23 +258,66 @@ public class SwingUtil {
 
 		/**
 		 * Show selection dialog for user to choose from a list of values
-		 * @param title title of the dialog shown
-		 * @param choices list of string represents the available choices
-		 * @param selected index of the selected element at start time. If set to -1 then nothing is selected
+		 *
+		 * @param title
+		 *            title of the dialog shown
+		 * @param choices
+		 *            list of string represents the available choices
+		 * @param selected
+		 *            index of the selected element at start time. If set to -1
+		 *            then nothing is selected
 		 * @return index of the selected element, or -1 if nothing was selected
+		 * @deprecated instead use {@link DialogUtil#getSelection(JFrame, String, String[], int)}
 		 */
-		public static int getSelection(String title, String[] choices, int selected) {
-			JList<String> list = new JList<String>(choices);
+		@Deprecated
+		public static int getSelection(String title, final String[] choices, int selected) {
+			final JTextField searchBar = new JTextField();
+
+			final List<DisplayPair> choicePairs = new LinkedList<>();
+			final JList<DisplayPair> list = new JList<>();
+			final DefaultListModel<DisplayPair> model = new DefaultListModel<>();
+			for (int i = 0; i < choices.length; i++) {
+				DisplayPair pair = new DisplayPair(i, choices[i]);
+				choicePairs.add(pair);
+				model.addElement(pair);
+			}
+			list.setModel(model);
 			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			if (selected != -1 && selected < choices.length) {
 				list.setSelectedIndex(selected);
 			}
+			searchBar.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyReleased(KeyEvent e) {
+					String text = searchBar.getText().toLowerCase().trim();
+					model.clear();
 
-			int selection = JOptionPane.showConfirmDialog(null, list, title, JOptionPane.YES_NO_OPTION);
+					for (DisplayPair pair : choicePairs) {
+						String comparing = pair.value.toLowerCase().trim();
+						if (comparing.contains(text) || text.contains(comparing)) {
+							model.addElement(pair);
+						}
+					}
+				}
+			});
+
+
+			JScrollPane pane = new JScrollPane(list);
+			JPanel container = new JPanel();
+			container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+			container.add(searchBar);
+			container.add(pane);
+			int selection = JOptionPane.showConfirmDialog(null, container, title, JOptionPane.YES_NO_OPTION);
 
 			if (selection == JOptionPane.OK_OPTION) {
-				return list.getSelectedIndex();
+				int selectedIndex = list.getSelectedIndex();
+				if (selectedIndex == -1) {
+					return -1;
+				}
+
+				DisplayPair pair = list.getSelectedValue();
+				return pair.index;
 			} else {
 				return -1;
 			}
@@ -416,42 +461,96 @@ public class SwingUtil {
 		 * @return the index of selected field
 		 */
 		public static int getSelection(JFrame parent, String title, String[] choices, int selected) {
-			final JDialog dialog = new JDialog(parent, "Title", ModalityType.APPLICATION_MODAL);
+			final JDialog dialog = new JDialog(parent, title, ModalityType.APPLICATION_MODAL);
 			dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			dialog.setTitle(title);
 
-			final JList<String> list = new JList<String>(choices);
+			final JTextField searchBar = new JTextField();
+
+			final List<DisplayPair> choicePairs = new LinkedList<>();
+			final JList<DisplayPair> list = new JList<>();
+			final DefaultListModel<DisplayPair> model = new DefaultListModel<>();
+			for (int i = 0; i < choices.length; i++) {
+				DisplayPair pair = new DisplayPair(i, choices[i]);
+				choicePairs.add(pair);
+				model.addElement(pair);
+			}
+			list.setModel(model);
 			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 			if (selected != -1 && selected < choices.length) {
-				list.setSelectedIndex(selected + 1);
+				list.setSelectedIndex(selected);
 			}
-			list.addKeyListener(new KeyAdapter() {
+			searchBar.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyReleased(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-						dialog.dispose();
-					} else if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
-						list.clearSelection();
-						dialog.dispose();
-					} else if (e.getKeyCode() == KeyEvent.VK_1) {
-						list.setSelectedIndex(0);
-					} else if (e.getKeyCode() == KeyEvent.VK_2) {
-						list.setSelectedIndex(1);
-					} else if (e.getKeyCode() == KeyEvent.VK_3) {
-						list.setSelectedIndex(2);
-					} else if (e.getKeyCode() == KeyEvent.VK_4) {
-						list.setSelectedIndex(3);
+					if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+						if (list.getSelectedIndex() < 0 && model.getSize() > 0) {
+							list.setSelectedIndex(0);
+						}
+
+						list.requestFocusInWindow();
+						return;
+					}
+
+					String text = searchBar.getText().toLowerCase().trim();
+					model.clear();
+
+					for (DisplayPair pair : choicePairs) {
+						String comparing = pair.value.toLowerCase().trim();
+						if (comparing.contains(text) || text.contains(comparing)) {
+							model.addElement(pair);
+						}
 					}
 				}
 			});
 
-			dialog.add(list);
+			list.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyReleased(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_UP) {
+						if (list.getSelectedIndex() == 0) {
+							searchBar.requestFocusInWindow();
+						}
+					} if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+						dialog.dispose();
+					} else if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
+						list.clearSelection();
+						dialog.dispose();
+					}
+				}
+			});
+
+			JScrollPane scrollPane = new JScrollPane(list);
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+			panel.add(searchBar);
+			panel.add(scrollPane);
+			dialog.add(panel);
 			dialog.pack();
 			dialog.setLocationRelativeTo(null);
-			list.requestFocusInWindow();
+			searchBar.requestFocusInWindow();
 			dialog.setVisible(true);
-			return list.getSelectedIndex();
+
+			DisplayPair selectedValue = list.getSelectedValue();
+			return selectedValue == null ? -1 : selectedValue.index;
+		}
+	}
+
+	/**
+	 * Class to capture a pair of index, value pair to display on list or table
+	 */
+	private static final class DisplayPair {
+		private final int index;
+		private final String value;
+
+		private DisplayPair(int index, String value) {
+			this.index = index;
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return value;
 		}
 	}
 }
