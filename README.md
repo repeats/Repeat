@@ -31,6 +31,13 @@ Known issues
 FAQ
 ===
 
+## What is the difference between this and [AutoHotkey](https://autohotkey.com/)?
+1. This runs on any platform that supports Java and is non [headless](https://en.wikipedia.org/wiki/Headless_software). AutoHotkey is written for Windows. Repeat works fine on your Linux machine at work as well as your Window gaming setup at home.
+2. The only limit to your hotkey power is your knowledge of the language you write your tasks in (e.g. Java, Python or C#). You don't have to learn a new meta language provided by AutoHotkey. This allows you to leverage your expertise in the language chosen and/or the immense support from the internet.
+
+## Why is this not available in non headless system?
+It does not make sense to listen to keyboard and mouse events in a headless system. How can you move your mouse if you have no screen? What would typing a key mean in such system?
+
 ## How do I change the global hotkeys (e.g. run task, start recording, stop recording)?
 You can change global hotkeys: In menu Settings --> Hotkey
 
@@ -51,6 +58,9 @@ Change hotkey for your task: just left click on the hotkey column of your task's
 
 ## My task is shown as enabled. How do I disable it?
 Enabling/disabling task: click on the column in the table that shows enabled/disabled.
+
+## I accidentally activated an infinite loop in my program with a hotkey. How do I stop the program?
+By default, pressing escape will iterrupt the running tasks. However, you can disable this feature in Setting --> Halt tasks by escape.
 
 ## There's a button with text "default". What is it?
 It's the button to manage task group.
