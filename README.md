@@ -38,6 +38,10 @@ How to
 6. Change hotkey for your task: just left click on the hotkey column of your task's row in the table and input the new hotkey
 7. Manage task group: click on the button next to Task group on the top right corner at any time to manage the task group.
 
+Demo
+====
+[Task creation](https://youtu.be/AwkZt7mqLSg)
+
 Code examples
 =============
 Type out 100! = 1 * 2 * 3 * ... * 100
