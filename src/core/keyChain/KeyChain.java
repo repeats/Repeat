@@ -98,7 +98,7 @@ public class KeyChain implements IJsonable {
 				return false;
 			}
 			for (int i = 0; i < this.keys.size(); i++) {
-				if (this.keys.get(i) != other.keys.get(i)) {
+				if (!this.keys.get(i).equals(other.keys.get(i))) {
 					return false;
 				}
 			}
