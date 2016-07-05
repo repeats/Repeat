@@ -112,7 +112,7 @@ public final class IPCServiceManager {
 								JsonNodeFactories.field("launch_at_startup", JsonNodeFactories.booleanNode(service == null ? false : service.isLaunchAtStartup()))
 								);
 					}
-				}.map(Language.ALL_LANGUAGES)
+				}.map(Language.values())
 			);
 	}
 

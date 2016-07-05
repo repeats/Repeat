@@ -26,10 +26,10 @@ import frontEnd.MainBackEndHolder;
 
 public class Config implements ILoggable {
 
-	public static final String RELEASE_VERSION = "2.5.1";
+	public static final String RELEASE_VERSION = "2.6";
 	private static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
-	protected static final String CURRENT_CONFIG_VERSION = "1.9";
+	protected static final String CURRENT_CONFIG_VERSION = "2.0";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
@@ -44,6 +44,7 @@ public class Config implements ILoggable {
 	private KeyChain REPLAY;
 	private KeyChain COMPILED_REPLAY;
 
+	private int mouseGestureActivationKey;
 	private boolean useTrayIcon;
 	private boolean enabledHaltingKeyPressed;
 	/**
@@ -64,7 +65,8 @@ public class Config implements ILoggable {
 				new Parser1_6(),
 				new Parser1_7(),
 				new Parser1_8(),
-				new Parser1_9()
+				new Parser1_9(),
+				new Parser2_0()
 			});
 	}
 
@@ -75,6 +77,7 @@ public class Config implements ILoggable {
 		this.executeOnKeyReleased = false;
 		this.nativeHookDebugLevel = DEFAULT_NATIVE_HOOK_DEBUG_LEVEL;
 
+		this.mouseGestureActivationKey = KeyEvent.VK_CAPS_LOCK;
 		RECORD = new KeyChain(KeyEvent.VK_F9);
 		REPLAY = new KeyChain(KeyEvent.VK_F11);
 		COMPILED_REPLAY = new KeyChain(KeyEvent.VK_F12);
@@ -170,6 +173,7 @@ public class Config implements ILoggable {
 						JsonNodeFactories.field("enabled_halt_by_key", JsonNodeFactories.booleanNode(enabledHaltingKeyPressed)),
 						JsonNodeFactories.field("execute_on_key_released", JsonNodeFactories.booleanNode(executeOnKeyReleased)),
 						JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
+								JsonNodeFactories.field("mouse_gesture_activation", JsonNodeFactories.number(mouseGestureActivationKey)),
 								JsonNodeFactories.field("record", RECORD.jsonize()),
 								JsonNodeFactories.field("replay", REPLAY.jsonize()),
 								JsonNodeFactories.field("replay_compiled", COMPILED_REPLAY.jsonize())
@@ -216,6 +220,14 @@ public class Config implements ILoggable {
 
 		boolean result = parser.importData(this, root);
 		return result;
+	}
+
+	public int getMouseGestureActivationKey() {
+		return mouseGestureActivationKey;
+	}
+
+	public void setMouseGestureActivationKey(int mouseGestureActivationKey) {
+		this.mouseGestureActivationKey = mouseGestureActivationKey;
 	}
 
 	public KeyChain getRECORD() {

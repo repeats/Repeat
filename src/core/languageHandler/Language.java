@@ -6,7 +6,6 @@ public enum Language {
     CSHARP("C#"),
     ;
 
-	public static Language[] ALL_LANGUAGES = {JAVA, PYTHON, CSHARP};
     private final String text;
 
     /**
@@ -22,7 +21,7 @@ public enum Language {
     }
 
     public static Language identify(String name) {
-    	for (Language language : ALL_LANGUAGES) {
+    	for (Language language : Language.values()) {
     		if (name.equals(language.toString())) {
     			return language;
     		}

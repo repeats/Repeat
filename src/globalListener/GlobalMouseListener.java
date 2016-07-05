@@ -1,5 +1,7 @@
 package globalListener;
 
+import java.util.logging.Logger;
+
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
@@ -7,6 +9,8 @@ import org.jnativehook.mouse.NativeMouseInputListener;
 import utilities.Function;
 
 public class GlobalMouseListener implements NativeMouseInputListener, GlobalListener {
+
+	private static final Logger LOGGER = Logger.getLogger(GlobalMouseListener.class.getName());
 
 	private Function<NativeMouseEvent, Boolean> mousePressed;
 	private Function<NativeMouseEvent, Boolean> mouseReleased;
@@ -44,7 +48,7 @@ public class GlobalMouseListener implements NativeMouseInputListener, GlobalList
 	public void nativeMousePressed(NativeMouseEvent arg0) {
 		if (mousePressed != null) {
 			if (!mousePressed.apply(arg0)) {
-				System.out.println("Mouse pressed event callback failed");
+				LOGGER.warning("Mouse pressed event callback failed");
 			}
 		}
 	}
@@ -53,7 +57,7 @@ public class GlobalMouseListener implements NativeMouseInputListener, GlobalList
 	public void nativeMouseReleased(NativeMouseEvent arg0) {
 		if (mouseReleased != null) {
 			if (!mouseReleased.apply(arg0)) {
-				System.out.println("Mouse release event callback failed");
+				LOGGER.warning("Mouse release event callback failed");
 			}
 		}
 	}
@@ -66,7 +70,7 @@ public class GlobalMouseListener implements NativeMouseInputListener, GlobalList
 	public void nativeMouseMoved(NativeMouseEvent arg0) {
 		if (mouseMoved != null) {
 			if (!mouseMoved.apply(arg0)) {
-				System.out.println("Mouse move event callback failed");
+				LOGGER.warning("Mouse move event callback failed");
 			}
 		}
 	}

@@ -28,7 +28,7 @@ import core.controller.Core;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
 
-public final class GlobalKeysManager {
+public final class GlobalEventsManager {
 
 	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 
@@ -42,15 +42,17 @@ public final class GlobalKeysManager {
 	private Function<Void, Boolean> disablingFunction;
 	private final Map<String, Thread> executions;
 	private final KeyChain currentKeyChain;
+	private final MouseGestureManager mouseGestureManager;
 
 	private TaskGroup currentTaskGroup;
 
-	public GlobalKeysManager(Config config) {
+	public GlobalEventsManager(Config config) {
 		this.config = config;
 		this.actionMap = new HashMap<>();
 		this.executions = new HashMap<>();
 		this.currentKeyChain = new KeyChain();
-		disablingFunction = Function.falseFunction();
+		this.disablingFunction = Function.falseFunction();
+		this.mouseGestureManager = new MouseGestureManager();
 	}
 
 	public void startGlobalListener() throws NativeHookException {
@@ -59,6 +61,9 @@ public final class GlobalKeysManager {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
+				if (code == config.getMouseGestureActivationKey()) {
+					mouseGestureManager.startRecoarding();
+				}
 				currentKeyChain.getKeys().add(code);
 
 				if (!config.isExecuteOnKeyReleased()) {
@@ -72,6 +77,10 @@ public final class GlobalKeysManager {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
+				if (code == config.getMouseGestureActivationKey()) {
+					mouseGestureManager.finishRecoarding();
+				}
+
 				if (config.isExecuteOnKeyReleased()) {
 					boolean result = considerTaskExecution(code);
 					currentKeyChain.getKeys().clear();
@@ -81,6 +90,8 @@ public final class GlobalKeysManager {
 				return true;
 			}
 		});
+
+		mouseGestureManager.startListening();
 		keyListener.startListening();
 	}
 

@@ -10,7 +10,7 @@ import utilities.IJsonable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import core.keyChain.GlobalKeysManager;
+import core.keyChain.GlobalEventsManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerManager;
 
@@ -50,7 +50,7 @@ public class TaskGroup implements IJsonable {
 		this.enabled = enabled;
 	}
 
-	public void setEnabled(boolean enabled, GlobalKeysManager keyManager) {
+	public void setEnabled(boolean enabled, GlobalEventsManager keyManager) {
 		if (keyManager == null) {
 			return;
 		} else {
@@ -62,7 +62,7 @@ public class TaskGroup implements IJsonable {
 							keyManager.registerTask(task);
 						} else {//Revert everything and exit
 							unregisterAll(keyManager);
-							GlobalKeysManager.showCollisionWarning(null, collisions);
+							GlobalEventsManager.showCollisionWarning(null, collisions);
 							return;
 						}
 					}
@@ -74,7 +74,7 @@ public class TaskGroup implements IJsonable {
 		}
 	}
 
-	private void unregisterAll(GlobalKeysManager keyManager) {
+	private void unregisterAll(GlobalEventsManager keyManager) {
 		for (UserDefinedAction task : tasks) {
 			keyManager.unregisterTask(task);
 		}

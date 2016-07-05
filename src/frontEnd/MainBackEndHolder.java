@@ -39,7 +39,7 @@ import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatServer.processors.TaskProcessorManager;
-import core.keyChain.GlobalKeysManager;
+import core.keyChain.GlobalEventsManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
@@ -66,7 +66,7 @@ public class MainBackEndHolder {
 	private TaskGroup currentGroup;
 	protected int selectedTaskIndex;
 
-	protected final GlobalKeysManager keysManager;
+	protected final GlobalEventsManager keysManager;
 	protected final Config config;
 
 	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
@@ -80,7 +80,7 @@ public class MainBackEndHolder {
 
 		executor = new ScheduledThreadPoolExecutor(5);
 
-		keysManager = new GlobalKeysManager(config);
+		keysManager = new GlobalEventsManager(config);
 		recorder = new Recorder(keysManager);
 
 		taskGroups = new ArrayList<>();
@@ -489,7 +489,7 @@ public class MainBackEndHolder {
 
 		Set<KeyChain> collisions = keysManager.areKeysRegistered(newKeyChains);
 		if (!collisions.isEmpty()) {
-			GlobalKeysManager.showCollisionWarning(main, collisions);
+			GlobalEventsManager.showCollisionWarning(main, collisions);
 			return;
 		}
 
@@ -508,7 +508,7 @@ public class MainBackEndHolder {
 		} else {//Then enable it
 			Set<KeyChain> collisions = keysManager.areKeysRegistered(action.getHotkeys());
 			if (!collisions.isEmpty()) {
-				GlobalKeysManager.showCollisionWarning(main, collisions);
+				GlobalEventsManager.showCollisionWarning(main, collisions);
 				return;
 			}
 

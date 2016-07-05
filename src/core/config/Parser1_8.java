@@ -41,7 +41,7 @@ public class Parser1_8 extends ConfigParser {
 										JsonNodeFactories.field("launch_at_startup", JsonNodeFactories.booleanNode(true))
 										);
 						}
-					}.map(Language.ALL_LANGUAGES)
+					}.map(Language.values())
 				));
 
 			return result.getRootNode();

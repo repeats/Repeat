@@ -69,7 +69,7 @@ public class BootStrapResources {
 	}
 
 	public static void extractResources() throws IOException {
-		for (Language language : Language.ALL_LANGUAGES) {
+		for (Language language : Language.values()) {
 			AbstractNativeBootstrapResource resource = NATIVE_BOOTSTRAP_RESOURCES.get(language);
 			if (resource != null) {
 				resource.extractResources();
@@ -101,7 +101,7 @@ public class BootStrapResources {
 	public static String getAbout() {
 		return "Repeat " + Config.RELEASE_VERSION + "\n"
 				+ "A tool to repeat yourself with some intelligence.\n"
-				+ "Created by Hoai Phuoc Truong. Contact me at hptruong93@gmail.com.";
+				+ "Created by HP Truong. Contact me at hptruong93@gmail.com.";
 	}
 
 	public static String getAPI(Language language) {

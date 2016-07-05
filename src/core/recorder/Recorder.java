@@ -11,7 +11,7 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import utilities.CodeConverter;
 import utilities.Function;
 import core.controller.Core;
-import core.keyChain.GlobalKeysManager;
+import core.keyChain.GlobalEventsManager;
 import core.languageHandler.Language;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
@@ -33,7 +33,7 @@ public class Recorder {
 
 	private HashMap<Language, AbstractSourceGenerator> sourceGenerators;
 
-	public Recorder(final GlobalKeysManager globalKeys) {
+	public Recorder(final GlobalEventsManager globalKeys) {
 		final Core controller = Core.getInstance();
 		taskScheduler = new TaskScheduler();
 
