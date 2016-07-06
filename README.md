@@ -3,6 +3,10 @@ Repeat
 
 Tired of cliking the same spot on your screen again and again? Got bored of typing the same phrase over and over again during your day? Repeat yourself with some intelligence.
 
+Demo
+====
+[Task creation](https://youtu.be/AwkZt7mqLSg)
+
 Features
 =======
 1. Record and replay computer activity.
@@ -90,10 +94,6 @@ This application listens on your mouse and keyboard events as well as allowing y
 
 ## Why is there no support for Javascript?
 It's coming. I will get it done when I have time.
-
-Demo
-====
-[Task creation](https://youtu.be/AwkZt7mqLSg)
 
 Code examples
 =============
