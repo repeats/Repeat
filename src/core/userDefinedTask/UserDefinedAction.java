@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import utilities.ExceptableFunction;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.IJsonable;
@@ -33,7 +32,6 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected String sourcePath;
 	protected Language compiler;
 	protected boolean enabled;
-	protected ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup;
 	protected KeyChain invokingKeyChain;
 	protected UsageStatistics statistics;
 
@@ -136,14 +134,6 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		setName(other.getName());
 		setHotKeys(other.getHotkeys());
 		this.statistics = other.statistics;
-	}
-
-	/**
-	 * This method is called to dynamically allow the current task to execute other tasks in group
-	 * @param executeTaskInGroup
-	 */
-	public final void setExecuteTaskInGroup(ExceptableFunction<Integer, Void, InterruptedException> executeTaskInGroup) {
-		this.executeTaskInGroup = executeTaskInGroup;
 	}
 
 	/**

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -19,7 +18,6 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import utilities.CodeConverter;
-import utilities.ExceptableFunction;
 import utilities.Function;
 import utilities.RandomUtil;
 import core.config.Config;
@@ -126,24 +124,6 @@ public final class GlobalEventsManager {
 			public void run() {
 				try {
 					action.setInvokingKeyChain(invoker);
-					action.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
-						@Override
-						public Void apply(Integer taskIndex) throws InterruptedException {
-							if (currentTaskGroup == null) {
-								LOGGER.warning("Task group is null. Cannot execute given task with index " + taskIndex);
-								return null;
-							}
-							List<UserDefinedAction> tasks = currentTaskGroup.getTasks();
-
-							if (taskIndex >= 0 && taskIndex < tasks.size()) {
-								currentTaskGroup.getTasks().get(taskIndex).trackedAction(Core.getInstance());
-							} else {
-								LOGGER.warning("Index out of bound. Cannot execute given task with index " + taskIndex + " given task group only has " + tasks.size() + " elements.");
-							}
-
-							return null;
-						}
-					});
 					action.trackedAction(Core.getInstance());
 				} catch (InterruptedException e) {
 					LOGGER.info("Task ended prematurely");
