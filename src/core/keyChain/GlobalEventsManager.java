@@ -76,7 +76,8 @@ public final class GlobalEventsManager {
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
 				if (code == config.getMouseGestureActivationKey()) {
-					mouseGestureManager.finishRecoarding();
+					UserDefinedAction action =  mouseGestureManager.finishRecoarding();
+					startExecutingAction(action);
 				}
 
 				if (config.isExecuteOnKeyReleased()) {
@@ -101,6 +102,11 @@ public final class GlobalEventsManager {
 		this.currentTaskGroup = currentTaskGroup;
 	}
 
+	/**
+	 * Given a new key code coming in, consider start executing an action based on its hotkey
+	 * @param keyCode new keyCode coming in
+	 * @return if operation succeeded (even if no action has been invoked)
+	 */
 	private boolean considerTaskExecution(int keyCode) {
 		if (keyCode == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
 			currentKeyChain.getKeys().clear();
@@ -112,11 +118,21 @@ public final class GlobalEventsManager {
 			return true;
 		}
 
-		final UserDefinedAction action = actionMap.get(currentKeyChain);
-		final KeyChain invoker = currentKeyChain.clone();
+		UserDefinedAction action = actionMap.get(currentKeyChain);
+		return startExecutingAction(action);
+	}
+
+	/**
+	 * Start executing an action in a separate thread
+	 *
+	 * @param action action to execute
+	 * @return if operation succeeded
+	 */
+	private boolean startExecutingAction(final UserDefinedAction action) {
 		if (action == null) {
 			return true;
 		}
+		final KeyChain invoker = currentKeyChain.clone();
 
 		final String id = RandomUtil.randomID();
 		Thread execution = new Thread(new Runnable() {
@@ -222,6 +238,12 @@ public final class GlobalEventsManager {
 		return isKeyRegistered(new KeyChain(code));
 	}
 
+	/**
+	 * Show a short notice that collision occurred
+	 *
+	 * @param parent parent frame to show the notice in (null if there is none)
+	 * @param keys collision key chains
+	 */
 	public static void showCollisionWarning(JFrame parent, Set<KeyChain> keys) {
 		JOptionPane.showMessageDialog(parent,
 				"Newly registered keychains "

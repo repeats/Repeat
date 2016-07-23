@@ -19,6 +19,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.controller.Core;
 import core.keyChain.KeyChain;
+import core.keyChain.MouseGesture;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
@@ -29,6 +30,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	protected String name;
 	protected Set<KeyChain> hotkeys;
+	protected Set<MouseGesture> mouseGestures;
 	protected String sourcePath;
 	protected Language compiler;
 	protected boolean enabled;
@@ -74,6 +76,18 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 			hotkeys = new HashSet<KeyChain>();
 		}
 		return hotkeys;
+	}
+
+	public final void setMouseGestures(Set<MouseGesture> mouseGestures) {
+		this.mouseGestures = mouseGestures;
+	}
+
+	public final Set<MouseGesture> getMouseGestures() {
+		if (mouseGestures == null) {
+			mouseGestures = new HashSet<>();
+		}
+
+		return mouseGestures;
 	}
 
 	/**
