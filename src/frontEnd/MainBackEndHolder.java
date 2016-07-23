@@ -24,7 +24,6 @@ import org.jnativehook.GlobalScreen;
 
 import staticResources.BootStrapResources;
 import utilities.DateUtility;
-import utilities.ExceptableFunction;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.NumberUtility;
@@ -63,7 +62,7 @@ public class MainBackEndHolder {
 	protected UserDefinedAction customFunction;
 
 	protected final List<TaskGroup> taskGroups;
-	private TaskGroup currentGroup;
+	protected TaskGroup currentGroup;
 	protected int selectedTaskIndex;
 
 	protected final GlobalEventsManager keysManager;
@@ -306,24 +305,6 @@ public class MainBackEndHolder {
 			    @Override
 				public void run() {
 			    	try {
-			    		customFunction.setExecuteTaskInGroup(new ExceptableFunction<Integer, Void, InterruptedException> () {
-							@Override
-							public Void apply(Integer d) throws InterruptedException {
-								if (currentGroup == null) {
-									LOGGER.warning("Task group is null. Cannot execute given task with index " + d);
-									return null;
-								}
-								List<UserDefinedAction> tasks = currentGroup.getTasks();
-
-								if (d >= 0 && d < tasks.size()) {
-									currentGroup.getTasks().get(d).action(Core.getInstance());
-								} else {
-									LOGGER.warning("Index out of bound. Cannot execute given task with index " + d + " given task group only has " + tasks.size() + " elements.");
-								}
-
-								return null;
-							}
-						});
 						customFunction.action(Core.getInstance());
 					} catch (InterruptedException e) {//Stopped prematurely
 						return;
@@ -382,6 +363,7 @@ public class MainBackEndHolder {
 			customFunction = null;
 
 			renderTasks();
+			writeConfigFile();
 		} else {
 			JOptionPane.showMessageDialog(main, "Nothing to add. Compile first?");
 		}
@@ -402,6 +384,7 @@ public class MainBackEndHolder {
 			selectedTaskIndex = - 1; //Reset selected index
 
 			renderTasks();
+			writeConfigFile();
 		} else {
 			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
 		}
@@ -428,7 +411,7 @@ public class MainBackEndHolder {
 	protected void changeTaskGroup() {
 		int selected = main.tTasks.getSelectedRow();
 		if (selected >= 0 && selected < currentGroup.getTasks().size()) {
-			int newGroupIndex = SwingUtil.OptionPaneUtil.getSelection("Select new group",
+			int newGroupIndex = SwingUtil.DialogUtil.getSelection(null, "Select new group",
 				new Function<TaskGroup, String>() {
 					@Override
 					public String apply(TaskGroup d) {
@@ -455,6 +438,7 @@ public class MainBackEndHolder {
 			destination.getTasks().add(toMove);
 
 			renderTasks();
+			writeConfigFile();
 		}
 	}
 
@@ -475,6 +459,9 @@ public class MainBackEndHolder {
 
 			LOGGER.info("Successfully overridden task " + customFunction.getName());
 			customFunction = null;
+			if (!config.writeConfig()) {
+				LOGGER.warning("Unable to update config.");
+			}
 		} else {
 			JOptionPane.showMessageDialog(main, "Select a task to override");
 		}
@@ -748,7 +735,12 @@ public class MainBackEndHolder {
 	/***************************************Configurations********************************************************/
 	//Write configuration file
 	protected boolean writeConfigFile() {
-		return config.writeConfig();
+		boolean result = config.writeConfig();
+		if (!result) {
+			LOGGER.warning("Unable to update config.");
+		}
+
+		return result;
 	}
 
 	private final Level[] DEBUG_LEVELS = {Level.SEVERE, Level.WARNING, Level.INFO, Level.FINE};
