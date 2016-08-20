@@ -797,7 +797,7 @@ public class MainFrame extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Name", "Key chain", "Enabled", "Use count", "Last used"
+				"Name", "Activation", "Enabled", "Use count", "Last used"
 			}
 		){
 			@Override

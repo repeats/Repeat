@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.jnativehook.mouse.NativeMouseEvent;
@@ -70,10 +69,15 @@ public class MouseGestureManager {
 	 * @param gesture gesture set to check
 	 * @return set of any collision occurs
 	 */
-	public Set<MouseGesture> areGesturesRegistered(Collection<MouseGesture> gesture) {
-		Set<MouseGesture> collision = new HashSet<>(actionMap.keySet());
-		collision.retainAll(gesture);
-		return collision;
+	public Set<UserDefinedAction> areGesturesRegistered(Collection<MouseGesture> gesture) {
+		Set<MouseGesture> collisions = new HashSet<>(actionMap.keySet());
+		collisions.retainAll(gesture);
+
+		Set<UserDefinedAction> output = new HashSet<>();
+		for (MouseGesture collision : collisions) {
+			output.add(actionMap.get(collision));
+		}
+		return output;
 	}
 
 	/**
@@ -132,20 +136,6 @@ public class MouseGestureManager {
 	}
 
 	/**
-	 * Show a short notice that collision occurred
-	 *
-	 * @param parent parent frame to show the notice in (null if there is none)
-	 * @param gestures collision gestures
-	 */
-	public static void showCollisionWarning(JFrame parent, Set<MouseGesture> gestures) {
-		JOptionPane.showMessageDialog(parent,
-				"Newly registered gestures "
-				+ "will collide with previously registered gesture \"" + gestures
-				+ "\"\nYou cannot assign this key chain unless you remove the conflicting key chain...",
-				"Key chain collision!", JOptionPane.WARNING_MESSAGE);
-	}
-
-	/**
 	 * Start recording the gesture
 	 */
 	protected void startRecoarding() {
@@ -177,7 +167,7 @@ public class MouseGestureManager {
 		List<JsonNode> points = new ArrayList<>(coordinates.size());
 
 		final int size = coordinates.size();
-		LOGGER.info("Classifying with size = " + size);
+		LOGGER.fine("Classifying with size = " + size);
 
 		for (int i = 0 ;i < size; i++) {
 			Point p = coordinates.poll();
@@ -185,7 +175,7 @@ public class MouseGestureManager {
 			points.add(comer);
 		}
 
-		return MouseGesture.RANDOM;
+		return MouseGesture.ALPHA;
 //		return post(JsonNodeFactories.object(
 //				JsonNodeFactories.field(
 //					"data", JsonNodeFactories.array(points))));

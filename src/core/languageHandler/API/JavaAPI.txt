@@ -13,8 +13,9 @@ I. Class method and attributes:
 II. Core API: (variable controller of type Core) 
     Use these anywhere with the controller variable: controller.<method_name>
     1) mouse(): get MouseCore
-    2) keyBoarđ): get KeyboardCore
+    2) keyBoard(): get KeyboardCore
     3) blockingWait(int milliseconds): wait for milliseconds before executing next command
+    4) delay(int milliseconds): an alias for blockingWait method
 
 III. MouseCore API: (variable mouse of type MouseCore)
     Use these anywhere with mouse variable: mouse.<method_name>

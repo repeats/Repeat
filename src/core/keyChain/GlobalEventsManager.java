@@ -19,6 +19,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import utilities.CodeConverter;
 import utilities.Function;
 import utilities.RandomUtil;
+import utilities.StringUtilities;
 import core.config.Config;
 import core.config.Parser1_0;
 import core.controller.Core;
@@ -162,14 +163,11 @@ public final class GlobalEventsManager {
 	 * @return List of currently registered tasks that collide with this newly registered task
 	 */
 	public Set<UserDefinedAction> registerTask(UserDefinedAction action) {
-		TaskActivation collisions = isActivationRegistered(action.getActivation());
+		Set<UserDefinedAction> collisions = isActivationRegistered(action.getActivation());
 		Set<UserDefinedAction> output = new HashSet<>();
 
-		for (KeyChain key : collisions.getHotkeys()) {
-			UserDefinedAction toRemove = actionMap.get(key);
-			if (toRemove != null) {
-				output.add(toRemove);
-			}
+		for (UserDefinedAction toRemove : collisions) {
+			output.add(toRemove);
 		}
 
 		for (KeyChain key : action.getActivation().getHotkeys()) {
@@ -216,36 +214,44 @@ public final class GlobalEventsManager {
 
 	/**
 	 * @param action
-	 * @return return an activation that is a union of all activations that the input collides with.
+	 * @return return set of actions that collide with this action, excluding the input task.
 	 */
-	public TaskActivation isTaskRegistered(UserDefinedAction action) {
-		return isActivationRegistered(action.getActivation());
+	public Set<UserDefinedAction> isTaskRegistered(UserDefinedAction action) {
+		Set<UserDefinedAction> output = isActivationRegistered(action.getActivation());
+		output.remove(action);
+		return output;
 	}
 
 	/**
 	 * Check if an activation is already registered.
 	 * @param activation
-	 * @return return an activation that is a union of all activations that the input collides with.
+	 * @return return set of actions that collide with this activation.
 	 */
-	public TaskActivation isActivationRegistered(TaskActivation activation) {
+	public Set<UserDefinedAction> isActivationRegistered(TaskActivation activation) {
 		// Check for keychain collision
-		Set<KeyChain> keyChainCollision = new HashSet<>();
+		Set<KeyChain> keyChainCollisions = new HashSet<>();
 		for (KeyChain code : activation.getHotkeys()) {
 			KeyChain collision = isKeyRegistered(code);
 			if (collision != null) {
-				keyChainCollision.add(collision);
+				keyChainCollisions.add(collision);
 			}
 		}
 
 		// Check for mouse gesture collision
-		Set<MouseGesture> gestureCollision = mouseGestureManager.areGesturesRegistered(activation.getMouseGestures());
+		Set<UserDefinedAction> gestureCollisions = mouseGestureManager.areGesturesRegistered(activation.getMouseGestures());
 
-		return TaskActivation.newBuilder().withHotKeys(keyChainCollision).withMouseGestures(gestureCollision).build();
+		Set<UserDefinedAction> output = new HashSet<>();
+		for (KeyChain collision : keyChainCollisions) {
+			output.add(actionMap.get(collision));
+		}
+		output.addAll(gestureCollisions);
+
+		return output;
 	}
 
 	private KeyChain isKeyRegistered(KeyChain code) {
 		for (KeyChain existing : actionMap.keySet()) {
-			if (existing.collideWith(code) && existing != code) {
+			if (existing.collideWith(code)) {
 				return existing;
 			}
 		}
@@ -261,14 +267,18 @@ public final class GlobalEventsManager {
 	 * Show a short notice that collision occurred.
 	 *
 	 * @param parent parent frame to show the notice in (null if there is none)
-	 * @param activation collision key chains
+	 * @param collisions set of colliding tasks.
 	 */
-	public static void showCollisionWarning(JFrame parent, TaskActivation activation) {
+	public static void showCollisionWarning(JFrame parent, Set<UserDefinedAction> collisions) {
+		String taskNames = StringUtilities.join(new Function<UserDefinedAction, String>() {
+			@Override
+			public String apply(UserDefinedAction d) {
+				return '\'' + d.getName() + '\'';
+			}}.map(collisions), ", ");
+
 		JOptionPane.showMessageDialog(parent,
 				"Newly registered keychains "
-				+ "will collide with previously registered\n"
-				+ "Keychain: \"" + activation.getHotkeys() + "\"\n"
-				+ "Mouse gesture: \"" + activation.getMouseGestures() + "\"\n"
+				+ "will collide with previously registered task(s) " + taskNames + "\n"
 				+ "You cannot assign this key chain unless you remove the conflicting key chain...",
 				"Key chain collision!", JOptionPane.WARNING_MESSAGE);
 	}

@@ -338,7 +338,7 @@ public class MainBackEndHolder {
 			}
 
 			for (UserDefinedAction task : group.getTasks()) {
-				TaskActivation collisions = keysManager.isActivationRegistered(task.getActivation());
+				Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(task);
 				if (task.isEnabled() && (collisions.isEmpty())) {
 					keysManager.registerTask(task);
 				}
@@ -475,7 +475,8 @@ public class MainBackEndHolder {
 			return;
 		}
 
-		TaskActivation collisions = keysManager.isActivationRegistered(newActivation);
+		Set<UserDefinedAction> collisions = keysManager.isActivationRegistered(newActivation);
+		collisions.remove(action);
 		if (!collisions.isEmpty()) {
 			GlobalEventsManager.showCollisionWarning(main, collisions);
 			return;
@@ -494,7 +495,7 @@ public class MainBackEndHolder {
 			action.setEnabled(false);
 			keysManager.unregisterTask(action);
 		} else { // Then enable it
-			TaskActivation collisions = keysManager.isActivationRegistered(action.getActivation());
+			Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(action);
 			if (!collisions.isEmpty()) {
 				GlobalEventsManager.showCollisionWarning(main, collisions);
 				return;
