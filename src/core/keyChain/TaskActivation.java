@@ -83,8 +83,8 @@ public class TaskActivation implements IJsonable {
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
-				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(hotkeys))),
-				JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array(JSONUtility.listToJson(mouseGestures))));
+				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
+				JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array(JSONUtility.listToJson(getMouseGestures()))));
 	}
 
 	/**

@@ -6,8 +6,8 @@ Author: HP Truong
 
 I. Class method and attributes:
     Use these anywhere in the method you define.
-    1) executeInGroup(int index): execute task with index number from the same task group. Invalid index 
-    does nothing
+    1)  executeInGroup(int index): execute task with index number from the same task group. Invalid index 
+    does nothing. This method is deprecated and is no longer supported.
     2) invokingKeyChain: store information about the key chain that invoked the task
 
 II. Core API: (variable controller of type Core) 
