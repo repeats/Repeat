@@ -40,6 +40,7 @@ import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatServer.processors.TaskProcessorManager;
 import core.keyChain.GlobalEventsManager;
 import core.keyChain.KeyChain;
+import core.keyChain.TaskActivation;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerOutput;
@@ -214,9 +215,9 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/****************************************Main hotkeys*********************************************************/
 	protected void configureMainHotkeys() {
-		keysManager.reRegisterTask(switchRecord, Arrays.asList(config.getRECORD()));
-		keysManager.reRegisterTask(switchReplay, Arrays.asList(config.getREPLAY()));
-		keysManager.reRegisterTask(switchReplayCompiled, Arrays.asList(config.getCOMPILED_REPLAY()));
+		keysManager.reRegisterTask(switchRecord, TaskActivation.newBuilder().withHotKey(config.getRECORD()).build());
+		keysManager.reRegisterTask(switchReplay, TaskActivation.newBuilder().withHotKey(config.getREPLAY()).build());
+		keysManager.reRegisterTask(switchReplayCompiled, TaskActivation.newBuilder().withHotKey(config.getCOMPILED_REPLAY()).build());
 	}
 
 	/*************************************************************************************************************/
@@ -337,7 +338,7 @@ public class MainBackEndHolder {
 			}
 
 			for (UserDefinedAction task : group.getTasks()) {
-				Set<KeyChain> collisions = keysManager.areKeysRegistered(task.getHotkeys());
+				TaskActivation collisions = keysManager.isActivationRegistered(task.getActivation());
 				if (task.isEnabled() && (collisions.isEmpty())) {
 					keysManager.registerTask(task);
 				}
@@ -469,18 +470,18 @@ public class MainBackEndHolder {
 
 	protected void changeHotkeyTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
-		Set<KeyChain> newKeyChains = KeyChainInputPanel.getInputKeyChains(main, action.getHotkeys());
-		if (newKeyChains == null) {
+		TaskActivation newActivation = KeyChainInputPanel.getInputKeyChains(main, action.getActivation());
+		if (newActivation == null) {
 			return;
 		}
 
-		Set<KeyChain> collisions = keysManager.areKeysRegistered(newKeyChains);
+		TaskActivation collisions = keysManager.isActivationRegistered(newActivation);
 		if (!collisions.isEmpty()) {
 			GlobalEventsManager.showCollisionWarning(main, collisions);
 			return;
 		}
 
-		keysManager.reRegisterTask(action, newKeyChains);
+		keysManager.reRegisterTask(action, newActivation);
 
 		KeyChain representative = action.getRepresentativeHotkey();
 		main.tTasks.setValueAt(representative.getKeys().isEmpty() ? "None" : representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
@@ -489,11 +490,11 @@ public class MainBackEndHolder {
 	protected void switchEnableTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
 
-		if (action.isEnabled()) {//Then disable it
+		if (action.isEnabled()) { // Then disable it
 			action.setEnabled(false);
 			keysManager.unregisterTask(action);
-		} else {//Then enable it
-			Set<KeyChain> collisions = keysManager.areKeysRegistered(action.getHotkeys());
+		} else { // Then enable it
+			TaskActivation collisions = keysManager.isActivationRegistered(action.getActivation());
 			if (!collisions.isEmpty()) {
 				GlobalEventsManager.showCollisionWarning(main, collisions);
 				return;
@@ -539,7 +540,7 @@ public class MainBackEndHolder {
 			if (e.getKeyCode() == Config.HALT_TASK) {
 				final UserDefinedAction action = currentGroup.getTasks().get(row);
 				keysManager.unregisterTask(action);
-				action.getHotkeys().clear();
+				action.getActivation().getHotkeys().clear();
 				main.tTasks.setValueAt("None", row, column);
 			} else {
 				changeHotkeyTask(row);

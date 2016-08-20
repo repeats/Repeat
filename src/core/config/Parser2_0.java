@@ -1,5 +1,6 @@
 package core.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +33,7 @@ public class Parser2_0 extends ConfigParser {
 	@Override
 	protected JsonRootNode internalConvertFromPreviousVersion(JsonRootNode previousVersion) {
 		try {
+			// Add mouse gesture activation to global hotkey
 			JsonNode globalSettings = previousVersion.getNode("global_settings");
 			JsonNode globalHotkey = globalSettings.getNode("global_hotkey");
 
@@ -42,7 +44,31 @@ public class Parser2_0 extends ConfigParser {
 
 			globalSettings = JSONUtility.replaceChild(globalSettings, "global_hotkey", globalHotkey);
 
-			return JSONUtility.replaceChild(previousVersion, "global_settings", globalSettings).getRootNode();
+			JsonNode output = JSONUtility.replaceChild(previousVersion, "global_settings", globalSettings).getRootNode();
+
+			// Modify hotkey into activation
+			List<JsonNode> taskGroups = output.getArrayNode("task_groups");
+			List<JsonNode> convertedTaskGroup = new ArrayList<>();
+			for (JsonNode group : taskGroups) {
+				List<JsonNode> tasks = group.getArrayNode("tasks");
+				List<JsonNode> convertedTasks = new ArrayList<>();
+				for (JsonNode task : tasks) {
+					JsonNode hotkey = task.getNode("hotkey");
+					JsonNode activation = JsonNodeFactories.object(
+							JsonNodeFactories.field("hotkey", hotkey),
+							JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array()));
+
+					task = JSONUtility.addChild(task, "activation", activation);
+					convertedTasks.add(task);
+				}
+
+
+				group = JSONUtility.replaceChild(group, "tasks", JsonNodeFactories.array(convertedTasks));
+				convertedTaskGroup.add(group);
+			}
+			output = JSONUtility.replaceChild(output, "task_groups", JsonNodeFactories.array(convertedTaskGroup));
+
+			return output.getRootNode();
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to convert json from previous version " + getPreviousVersion(), e);
 			return null;

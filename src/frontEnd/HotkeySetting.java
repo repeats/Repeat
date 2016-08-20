@@ -2,7 +2,6 @@ package frontEnd;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -16,13 +15,11 @@ import javax.swing.border.EmptyBorder;
 
 import utilities.swing.KeyChainInputPanel;
 import core.keyChain.KeyChain;
+import core.keyChain.TaskActivation;
 
+@SuppressWarnings("serial")
 public class HotkeySetting extends JFrame {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -4612578004508862160L;
 	private final JPanel contentPane;
 	private final JTextField tfRecord;
 	private final JTextField tfReplay;
@@ -54,7 +51,9 @@ public class HotkeySetting extends JFrame {
 				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
 				if (newKeyChain != null) {
-					backEnd.keysManager.reRegisterTask(backEnd.switchRecord, Arrays.asList(newKeyChain));
+					backEnd.keysManager.reRegisterTask(
+							backEnd.switchRecord,
+							TaskActivation.newBuilder().withHotKey(newKeyChain).build());
 					backEnd.config.setRECORD(newKeyChain);
 
 					tfRecord.setText(newKeyChain.toString());
@@ -72,7 +71,9 @@ public class HotkeySetting extends JFrame {
 				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
 				if (newKeyChain != null) {
-					backEnd.keysManager.reRegisterTask(backEnd.switchReplay, Arrays.asList(newKeyChain));
+					backEnd.keysManager.reRegisterTask(
+							backEnd.switchReplay,
+							TaskActivation.newBuilder().withHotKey(newKeyChain).build());
 					backEnd.config.setREPLAY(newKeyChain);
 
 					tfReplay.setText(newKeyChain.toString());
@@ -91,7 +92,9 @@ public class HotkeySetting extends JFrame {
 				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
 
 				if (newKeyChain != null) {
-					backEnd.keysManager.reRegisterTask(backEnd.switchReplayCompiled, Arrays.asList(newKeyChain));
+					backEnd.keysManager.reRegisterTask(
+							backEnd.switchReplayCompiled,
+							TaskActivation.newBuilder().withHotKey(newKeyChain).build());
 					backEnd.config.setCOMPILED_REPLAY(newKeyChain);
 
 					tfCompiledReplay.setText(newKeyChain.toString());

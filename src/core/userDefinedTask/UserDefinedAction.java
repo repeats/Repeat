@@ -1,8 +1,6 @@
 package core.userDefinedTask;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,16 +8,14 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import utilities.FileUtility;
-import utilities.Function;
 import utilities.IJsonable;
 import utilities.ILoggable;
-import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.controller.Core;
 import core.keyChain.KeyChain;
-import core.keyChain.MouseGesture;
+import core.keyChain.TaskActivation;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
@@ -29,8 +25,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	private static final Logger LOGGER = Logger.getLogger(UserDefinedAction.class.getName());
 
 	protected String name;
-	protected Set<KeyChain> hotkeys;
-	protected Set<MouseGesture> mouseGestures;
+	private TaskActivation activation;
 	protected String sourcePath;
 	protected Language compiler;
 	protected boolean enabled;
@@ -38,6 +33,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected UsageStatistics statistics;
 
 	public UserDefinedAction() {
+		activation = new TaskActivation();
 		invokingKeyChain = new KeyChain();
 		statistics = new UsageStatistics();
 		enabled = true;
@@ -63,31 +59,20 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		statistics.updateAverageExecutionTime(time);
 	}
 
+	/**
+	 * Set the name of the action.
+	 *
+	 * @param name new name of the action.
+	 */
 	public final void setName(String name) {
 		this.name = name;
 	}
 
-	public final void setHotKeys(Set<KeyChain> hotkeys) {
-		this.hotkeys = hotkeys;
-	}
-
-	public final Set<KeyChain> getHotkeys() {
-		if (hotkeys == null) {
-			hotkeys = new HashSet<KeyChain>();
-		}
-		return hotkeys;
-	}
-
-	public final void setMouseGestures(Set<MouseGesture> mouseGestures) {
-		this.mouseGestures = mouseGestures;
-	}
-
-	public final Set<MouseGesture> getMouseGestures() {
-		if (mouseGestures == null) {
-			mouseGestures = new HashSet<>();
-		}
-
-		return mouseGestures;
+	/**
+	 * @return the activation entity associated with this action.
+	 */
+	public TaskActivation getActivation() {
+		return activation;
 	}
 
 	/**
@@ -95,7 +80,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * @return a random key chain from the set of key chains.
 	 */
 	public final KeyChain getRepresentativeHotkey() {
-		Set<KeyChain> hotkeys = getHotkeys();
+		Set<KeyChain> hotkeys = getActivation().getHotkeys();
 		if (hotkeys == null || hotkeys.isEmpty()) {
 			return new KeyChain();
 		} else {
@@ -146,8 +131,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	public final void override(UserDefinedAction other) {
 		setName(other.getName());
-		setHotKeys(other.getHotkeys());
-		this.statistics = other.statistics;
+		activation.copy(other.activation);
+		statistics = other.statistics;
 	}
 
 	/**
@@ -156,8 +141,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * @param invokingKeyChain
 	 */
 	public final void setInvokingKeyChain(KeyChain invokingKeyChain) {
-		this.invokingKeyChain.getKeys().clear();
-		this.invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
+		invokingKeyChain.getKeys().clear();
+		invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
 	}
 
 	/***********************************************************************/
@@ -172,11 +157,11 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	}
 
 	public final void syncContent(UserDefinedAction other) {
-		this.sourcePath = other.sourcePath;
-		this.compiler = other.compiler;
-		this.name = other.name;
-		this.hotkeys = other.hotkeys;
-		this.enabled = other.enabled;
+		sourcePath = other.sourcePath;
+		compiler = other.compiler;
+		name = other.name;
+		activation.copy(other.activation);
+		enabled = other.enabled;
 	}
 
 	/***********************************************************************/
@@ -186,7 +171,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compiler.toString())),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
-				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
+				JsonNodeFactories.field("activation", activation.jsonize()),
 				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled)),
 				JsonNodeFactories.field("statistics", statistics.jsonize())
 				);
@@ -202,14 +187,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 			}
 
 			String name = node.getStringValue("name");
-			List<JsonNode> hotkeyJSONs =  node.getArrayNode("hotkey");
-			Set<KeyChain> hotkeys = new HashSet<>();
-			JSONUtility.addAllJson(hotkeyJSONs, new Function<JsonNode, KeyChain>(){
-				@Override
-				public KeyChain apply(JsonNode d) {
-					KeyChain value = KeyChain.parseJSON(d.getArrayNode());
-					return value;
-				}}, hotkeys);
+			JsonNode activationJSONs =  node.getNode("activation");
+			TaskActivation activation = TaskActivation.parseJSON(activationJSONs);
 
 			File sourceFile = new File(sourcePath);
 			StringBuffer sourceBuffer = FileUtility.readFromFile(sourceFile);
@@ -239,12 +218,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 			boolean enabled = node.getBooleanValue("enabled");
 
-
-
 			output.sourcePath = sourcePath;
 			output.compiler = compiler.getName();
 			output.name = name;
-			output.hotkeys = hotkeys;
+			output.activation = activation;
 			output.enabled = enabled;
 
 			return output;

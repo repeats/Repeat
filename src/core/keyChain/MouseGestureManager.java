@@ -84,7 +84,7 @@ public class MouseGestureManager {
 	 */
 	public Set<UserDefinedAction> registerAction(UserDefinedAction action) {
 		Set<UserDefinedAction> collisions = new HashSet<>();
-		for (MouseGesture gesture : action.getMouseGestures()) {
+		for (MouseGesture gesture : action.getActivation().getMouseGestures()) {
 			UserDefinedAction collided = actionMap.get(gesture);
 			if (collided != null) {
 				collisions.add(collided);
@@ -104,7 +104,7 @@ public class MouseGestureManager {
 	 */
 	protected Set<UserDefinedAction> unRegisterAction(UserDefinedAction action) {
 		Set<UserDefinedAction> output = new HashSet<>();
-		for (MouseGesture gesture : action.getMouseGestures()) {
+		for (MouseGesture gesture : action.getActivation().getMouseGestures()) {
 			UserDefinedAction removed = actionMap.remove(gesture);
 			if (removed != null) {
 				output.add(removed);
@@ -126,8 +126,8 @@ public class MouseGestureManager {
 	 */
 	protected Set<UserDefinedAction> reRegisterAction(UserDefinedAction action, Collection<MouseGesture> gestures) {
 		unRegisterAction(action);
-		action.getMouseGestures().clear();
-		action.getMouseGestures().addAll(gestures);
+		action.getActivation().getMouseGestures().clear();
+		action.getActivation().getMouseGestures().addAll(gestures);
 		return registerAction(action);
 	}
 
