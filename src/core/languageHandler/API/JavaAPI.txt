@@ -63,3 +63,9 @@ IV. KeyboardCore API: (variable key of type KeyboardCore)
 V. KeyChain API: (variable invoker of type KeyChain)
     Use these anywhere with key variable: invoker.<method_name>
     1) getKeys(): return a list of integers representing the key chain that invoked this.
+    
+VI. Shared memory API: (sharing variables between tasks)
+	these anywhere with key variable: shared_memory.<method_name>
+	1) getVar(String)
+	2) setVar(String, String)
+	3) delVar(String)

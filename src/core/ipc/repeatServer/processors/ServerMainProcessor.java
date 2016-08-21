@@ -17,8 +17,9 @@ import core.ipc.repeatServer.MainMessageSender;
  * There are four types of messages received from the client:
  * 1) action: See {@link core.ipc.repeatServer.processors.ControllerRequestProcessor}
  * 2) task: See {@link core.ipc.repeatServer.processors.TaskProcessor}
- * 3) system_host: See {@link core.ipc.repeatServer.processors.SystemRequestProcessor}
- * 4) system_client: See {@link core.ipc.repeatServer.processors.SystemRequestProcessor}
+ * 3) shared_memory: See {@link core.ipc.repeatServer.processors.SharedMemoryProcessor}
+ * 4) system_host: See {@link core.ipc.repeatServer.processors.SystemRequestProcessor}
+ * 5) system_client: See {@link core.ipc.repeatServer.processors.SystemRequestProcessor}
  *
  * A generic message received from client will have the following JSON format:
  * {
