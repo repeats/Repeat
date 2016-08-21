@@ -1,5 +1,7 @@
 package core.ipc.repeatServer.processors;
 
+import java.util.logging.Logger;
+
 import utilities.ILoggable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
@@ -54,5 +56,10 @@ abstract class AbstractMessageProcessor implements ILoggable {
 				JsonNodeFactories.field("status", JsonNodeFactories.string(status)),
 				JsonNodeFactories.field("message", message)
 				);
+	}
+
+	@Override
+	public final Logger getLogger() {
+		return Logger.getLogger(getClass().getName());
 	}
 }

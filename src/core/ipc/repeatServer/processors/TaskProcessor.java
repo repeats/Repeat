@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
@@ -144,7 +143,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 			return null;
 		}
 
-		long messageId = messageSender.sendMessage(ServerMainProcessor.TYPE_TASK, requestMessage);
+		long messageId = messageSender.sendMessage(IpcMessageType.TASK.getValue(), requestMessage);
 		if (messageId == -1) {
 			return null;
 		}
@@ -172,11 +171,6 @@ public class TaskProcessor extends AbstractMessageProcessor {
 	protected boolean verifyMessageContent(JsonNode content) {
 		return content.isStringValue("task_action") &&
 				content.isArrayNode("parameters");
-	}
-
-	@Override
-	public Logger getLogger() {
-		return Logger.getLogger(TaskProcessor.class.getName());
 	}
 
 	private static class Reply {

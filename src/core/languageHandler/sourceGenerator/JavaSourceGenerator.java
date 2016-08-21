@@ -65,6 +65,7 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 
 		StringBuffer sb = new StringBuffer();
 		sb.append(BootStrapResources.getNativeLanguageTemplate(Language.JAVA));
+		sb.append(mainSource);
 		return sb.toString();
 	}
 }

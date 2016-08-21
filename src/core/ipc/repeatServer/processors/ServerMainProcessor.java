@@ -35,15 +35,11 @@ import core.ipc.repeatServer.MainMessageSender;
  */
 public class ServerMainProcessor implements ILoggable {
 
-	public static final String TYPE_ACTION = "action";
-	public static final String TYPE_TASK = "task";
-	public static final String TYPE_SYSTEM_HOST = "system_host";
-	public static final String TYPE_SYSTEM_CLIENT = "system_client";
-
-	private final Map<String, AbstractMessageProcessor> messageProcesssors;
+	private final Map<IpcMessageType, AbstractMessageProcessor> messageProcesssors;
 	private final ControllerRequestProcessor actionProcessor;
 	private final TaskProcessor taskProcessor;
 	private final SystemRequestProcessor systemProcessor;
+	private final SharedMemoryProcessor sharedMemoryProcessor;
 
 	public ServerMainProcessor(Core core, MainMessageSender messageSender) {
 		messageProcesssors = new HashMap<>();
@@ -51,11 +47,13 @@ public class ServerMainProcessor implements ILoggable {
 		actionProcessor = new ControllerRequestProcessor(messageSender, core);
 		taskProcessor = new TaskProcessor(messageSender);
 		systemProcessor = new SystemRequestProcessor(messageSender, this);
+		sharedMemoryProcessor = new SharedMemoryProcessor(messageSender);
 
-		messageProcesssors.put(TYPE_ACTION, actionProcessor);
-		messageProcesssors.put(TYPE_TASK, taskProcessor);
-		messageProcesssors.put(TYPE_SYSTEM_HOST, systemProcessor);
-		messageProcesssors.put(TYPE_SYSTEM_CLIENT, systemProcessor);
+		messageProcesssors.put(IpcMessageType.ACTION, actionProcessor);
+		messageProcesssors.put(IpcMessageType.TASK, taskProcessor);
+		messageProcesssors.put(IpcMessageType.SHARED_MEMORY, sharedMemoryProcessor);
+		messageProcesssors.put(IpcMessageType.SYSTEM_HOST, systemProcessor);
+		messageProcesssors.put(IpcMessageType.SYSTEM_CLIENT, systemProcessor);
 	}
 
 	/**
@@ -72,12 +70,12 @@ public class ServerMainProcessor implements ILoggable {
 		}
 
 		getLogger().fine("Receive " + message);
-		String type = root.getStringValue("type");
+		IpcMessageType type = IpcMessageType.identify(root.getStringValue("type"));
 		long id = Long.parseLong(root.getNumberValue("id"));
 		JsonNode content = root.getNode("content");
 
 		try {
-			messageProcesssors.get(type).process(type, id, content);
+			messageProcesssors.get(type).process(type.getValue(), id, content);
 			return true;
 		} catch (InterruptedException e) {
 			getLogger().log(Level.WARNING, "Interrupted while processing message", e);
@@ -89,7 +87,7 @@ public class ServerMainProcessor implements ILoggable {
 		return message.isStringValue("type") &&
 				message.isNumberValue("id") &&
 				message.isObjectNode("content") &&
-				messageProcesssors.containsKey(message.getStringValue("type"));
+				messageProcesssors.containsKey(IpcMessageType.identify(message.getStringValue("type")));
 	}
 
 	@Override

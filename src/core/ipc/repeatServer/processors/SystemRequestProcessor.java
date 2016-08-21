@@ -1,7 +1,6 @@
 package core.ipc.repeatServer.processors;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import core.ipc.repeatServer.MainMessageSender;
@@ -45,11 +44,11 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 		String action = content.getStringValue("action");
 		List<JsonNode> paramNodes = content.getArrayNode("parameters"); //Unused
 
-		if (type.equals(ServerMainProcessor.TYPE_SYSTEM_HOST)) {
+		if (IpcMessageType.identify(type) == IpcMessageType.SYSTEM_HOST) {
 			if (action.equals("keep_alive")) {
 				return success(type, id);
 			}
-		} else if (type.equals(ServerMainProcessor.TYPE_SYSTEM_CLIENT)) {
+		} else if (IpcMessageType.identify(type) == IpcMessageType.SYSTEM_CLIENT) {
 			if (action.equals("identify")) {
 				if (paramNodes.size() != 2) {
 					getLogger().warning("Unexpected identity to have " + paramNodes.size() + " parameters.");
@@ -93,10 +92,5 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 				content.getStringValue("device").startsWith("system") &&
 				content.isStringValue("action") &&
 				content.isArrayNode("parameters");
-	}
-
-	@Override
-	public Logger getLogger() {
-		return Logger.getLogger(SystemRequestProcessor.class.getName());
 	}
 }

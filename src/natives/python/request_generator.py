@@ -41,7 +41,7 @@ class RequestGenerator(object):
 
         if blocking_wait:
             if not event.wait(RequestGenerator.REQUEST_TIMEOUT):
-                print "Timeout for this request id {0]".format(new_id)
+                print "Timeout for this request id {0}".format(new_id)
                 return None
 
         if new_id in events_pool and events_pool[new_id] is not event:

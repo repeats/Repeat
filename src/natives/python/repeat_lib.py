@@ -12,6 +12,7 @@ import threading
 import Queue
 
 import specifications
+import shared_memory_request
 import keyboard_request
 import mouse_request
 import tool_request
@@ -43,6 +44,8 @@ class RepeatClient(object):
 
         self.system = system_host_request.SystemHostRequest(self)
         self.system_client = system_client_request.SystemClientRequest(self)
+
+        self.shared_memory = shared_memory_request.SharedMemoryRequest(self)
         self.mouse = mouse_request.MouseRequest(self)
         self.key = keyboard_request.KeyboardRequest(self)
         self.tool = tool_request.ToolRequest(self)
@@ -126,7 +129,7 @@ class RepeatClient(object):
                         returned_object = parsed['content']['message']
                         cv = self.synchronization_objects.pop(message_id)
 
-                        if len(returned_object) > 0: #Give the output of this to the caller
+                        if returned_object is None or len(returned_object) > 0: #Give the output of this to the caller
                             self.synchronization_objects[message_id] = returned_object
 
                         cv.set()

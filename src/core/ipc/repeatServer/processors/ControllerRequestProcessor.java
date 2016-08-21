@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import utilities.IterableUtility;
 import argo.jdom.JsonNode;
@@ -296,10 +295,5 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 					content.getStringValue("device").equals("keyboard")) &&
 				content.isStringValue("action") &&
 				content.isArrayNode("parameters");
-	}
-
-	@Override
-	public Logger getLogger() {
-		return Logger.getLogger(getClass().getName());
 	}
 }
