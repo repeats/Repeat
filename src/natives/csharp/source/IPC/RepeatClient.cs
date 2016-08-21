@@ -33,6 +33,9 @@ namespace Repeat.ipc {
 
         protected SystemClientRequest systemClient;
         protected SystemHostRequest systemHost;
+
+        public SharedMemoryRequest mem { get; private set; }
+
         public MouseRequest mouse { get; private set; }
         public KeyboardRequest key { get; private set; }
 
@@ -49,6 +52,8 @@ namespace Repeat.ipc {
 
             systemClient = new SystemClientRequest(this);
             systemHost = new SystemHostRequest(this);
+
+            mem = new SharedMemoryRequest(this);
             mouse = new MouseRequest(this);
             key = new KeyboardRequest(this);
             tool = new ToolRequest(this);
