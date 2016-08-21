@@ -55,6 +55,7 @@ public class BootStrapResources {
 
 		/*********************************************************************************/
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.JAVA, getFile("/natives/java/TemplateRepeat"));
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON, getFile("/natives/python/template_repeat.py"));
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/natives/csharp/source/TemplateRepeat.cs"));
 

@@ -21,14 +21,13 @@ import utilities.Function;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
 import core.config.Config;
-import core.config.Parser1_0;
 import core.controller.Core;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
 
 public final class GlobalEventsManager {
 
-	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GlobalEventsManager.class.getName());
 
 	private final Config config;
 	private final Map<KeyChain, UserDefinedAction> actionMap;

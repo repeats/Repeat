@@ -2,7 +2,9 @@ package core.languageHandler.sourceGenerator;
 
 import java.util.logging.Logger;
 
+import staticResources.BootStrapResources;
 import utilities.Function;
+import core.languageHandler.Language;
 import core.scheduler.SchedulingData;
 
 public class JavaSourceGenerator extends AbstractSourceGenerator {
@@ -62,30 +64,7 @@ public class JavaSourceGenerator extends AbstractSourceGenerator {
 		}
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("package core;\n");
-		sb.append("import core.userDefinedTask.UserDefinedAction;\n");
-		sb.append("import core.userDefinedTask.Tools;\n");
-		sb.append("import core.controller.Core;\n");
-		sb.append("import core.controller.MouseCore;\n");
-		sb.append("import core.controller.KeyboardCore;\n");
-		sb.append("import core.keyChain.KeyChain;\n");
-		sb.append("import java.util.List;\n");
-		sb.append("import static java.awt.event.KeyEvent.*;\n");
-		sb.append("import static java.awt.event.InputEvent.BUTTON1_MASK;\n");
-		sb.append("import static java.awt.event.InputEvent.BUTTON3_MASK;\n");
-		sb.append("import utilities.swing.SwingUtil.OptionPaneUtil;\n");
-		sb.append("import utilities.swing.SwingUtil.DialogUtil;\n");
-
-		sb.append("public class CustomAction extends UserDefinedAction {\n");
-		sb.append("    public void action(final Core c) throws InterruptedException {\n");
-		sb.append("        KeyboardCore k = c.keyBoard();\n");
-		sb.append("        MouseCore m = c.mouse();\n");
-		sb.append("        List<Integer> invoker = this.invokingKeyChain.getKeys();\n");
-		sb.append("        /*Begin generated code*/\n");
-		sb.append(mainSource);
-		sb.append("    }\n");
-		sb.append("}");
-
+		sb.append(BootStrapResources.getNativeLanguageTemplate(Language.JAVA));
 		return sb.toString();
 	}
 }

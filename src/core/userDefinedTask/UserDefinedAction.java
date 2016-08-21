@@ -41,14 +41,14 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	/**
 	 * Custom action defined by user
-	 * @param controller See {@link core.controller.Core} class
+	 * @param controller See {@link core.controller.Core} class.
 	 * @throws InterruptedException
 	 */
 	public abstract void action(Core controller) throws InterruptedException;
 
 	/**
 	 * Perform the action and track the statistics related to this action.
-	 * @param controller
+	 * @param controller See {@link core.controller.Core} class.
 	 * @throws InterruptedException
 	 */
 	public final void trackedAction(Core controller) throws InterruptedException {
@@ -58,6 +58,50 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		time = System.currentTimeMillis() - time;
 		statistics.updateAverageExecutionTime(time);
 	}
+
+	/************************************************************************************/
+	/********************************Shared variable section*****************************/
+
+	/**
+	 * @return the default namespace for this action.
+	 */
+	public String getNamespace() {
+		return SharedVariables.GLOBAL_NAMESPACE;
+	}
+
+	/**
+	 * Get the value of a variable in the default namespace of this action.
+	 *
+	 * @param name name of the variable.
+	 * @return value of the variable.
+	 */
+	public String getVar(String name) {
+		return SharedVariables.getVar(getNamespace(), name);
+	}
+
+	/**
+	 * Set the value of a variable in the default namespace of this action.
+	 *
+	 * @param name name of the variable.
+	 * @param value new value for the variable.
+	 * @return value of the variable prior to set operation if exists, or null otherwise.
+	 */
+	public String setVar(String name, String value) {
+		return SharedVariables.setVar(getNamespace(), name, value);
+	}
+
+	/**
+	 * Delete the value of a variable in the default namespace of this action.
+	 *
+	 * @param name name of the variable.
+	 * @return value of the variable if exists, or null otherwise.
+	 */
+	public String delVar(String name) {
+		return SharedVariables.delVar(getNamespace(), name);
+	}
+
+	/********************************End shared variable section*************************/
+	/************************************************************************************/
 
 	/**
 	 * Set the name of the action.
@@ -137,7 +181,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	/**
 	 * This method is called to dynamically allow the current task to determine which key chain activated it among
-	 * its hotkeys. This will only change the key chain definition of the current key chain, not substituting the real object
+	 * its hotkeys. This will only change the key chain definition of the current key chain, not substituting the real object.
 	 * @param invokingKeyChain
 	 */
 	public final void setInvokingKeyChain(KeyChain invokingKeyChain) {

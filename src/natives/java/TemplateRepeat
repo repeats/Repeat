@@ -1,0 +1,28 @@
+package core;
+import core.userDefinedTask.UserDefinedAction;
+import core.userDefinedTask.SharedVariables;
+import core.userDefinedTask.Tools;
+import core.controller.Core;
+import core.controller.MouseCore;
+import core.controller.KeyboardCore;
+import core.keyChain.KeyChain;
+import java.util.List;
+import static java.awt.event.KeyEvent.*;
+import static java.awt.event.InputEvent.BUTTON1_MASK;
+import static java.awt.event.InputEvent.BUTTON3_MASK;
+import utilities.swing.SwingUtil.OptionPaneUtil;
+import utilities.swing.SwingUtil.DialogUtil;
+
+public class CustomAction extends UserDefinedAction {
+    public void action(final Core c) throws InterruptedException {
+        KeyboardCore k = c.keyBoard();
+        MouseCore m = c.mouse();
+        List<Integer> invoker = this.invokingKeyChain.getKeys();
+        /*Begin generated code*/
+    }
+
+    @Override
+    public String getNamespace() {
+    	return SharedVariables.GLOBAL_NAMESPACE;
+    }
+}
