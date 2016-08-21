@@ -15,3 +15,7 @@ Core API
         1) DoType(params int[] keyCodes) : type a series of keys sequentially. (e.g. type(1,2, 3))
         2) DoType(params string[] strings) : type a series of strings sequentially (e.g. type_string("a", "bb")
         3) Combination(params int[] keyCodes) : perform a combination (e.g. combination(VK_CTRL, VK_ALT, VL_DELETE)
+    III) Shared Memory
+    	1) GetVar(string namespace, string variable) : get a value for the variable in the given namespace
+    	2) SetVar(string namespace, string variable, string value) : set a value for the variable in the given namespace
+    	3) DelVar(string namespace, string variable) : delete a value for the variable in the given namespace
