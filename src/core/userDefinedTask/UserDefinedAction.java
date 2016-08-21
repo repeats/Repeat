@@ -59,49 +59,12 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		statistics.updateAverageExecutionTime(time);
 	}
 
-	/************************************************************************************/
-	/********************************Shared variable section*****************************/
-
 	/**
 	 * @return the default namespace for this action.
 	 */
 	public String getNamespace() {
 		return SharedVariables.GLOBAL_NAMESPACE;
 	}
-
-	/**
-	 * Get the value of a variable in the default namespace of this action.
-	 *
-	 * @param name name of the variable.
-	 * @return value of the variable.
-	 */
-	public String getVar(String name) {
-		return SharedVariables.getVar(getNamespace(), name);
-	}
-
-	/**
-	 * Set the value of a variable in the default namespace of this action.
-	 *
-	 * @param name name of the variable.
-	 * @param value new value for the variable.
-	 * @return value of the variable prior to set operation if exists, or null otherwise.
-	 */
-	public String setVar(String name, String value) {
-		return SharedVariables.setVar(getNamespace(), name, value);
-	}
-
-	/**
-	 * Delete the value of a variable in the default namespace of this action.
-	 *
-	 * @param name name of the variable.
-	 * @return value of the variable if exists, or null otherwise.
-	 */
-	public String delVar(String name) {
-		return SharedVariables.delVar(getNamespace(), name);
-	}
-
-	/********************************End shared variable section*************************/
-	/************************************************************************************/
 
 	/**
 	 * Set the name of the action.

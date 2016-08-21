@@ -15,6 +15,43 @@ public class SharedVariables {
 	public static final String GLOBAL_NAMESPACE = "global";
 	private static final Map<String, Map<String, String>> variables = new HashMap<>();
 
+	private final String namespace;
+
+	public SharedVariables(String namespace) {
+		this.namespace = namespace;
+	}
+
+	/**
+	 * Get a value of a variable for the current namespace.
+	 *
+	 * @param variable name of the variable.
+	 * @return value of the variable, or null if not exist.
+	 */
+	public String getVar(String variable) {
+		return getVar(namespace, variable);
+	}
+
+	/**
+	 * Set the value for a variable in the current namespace.
+	 *
+	 * @param variable variable name.
+	 * @param value value of the variable.
+	 * @return the existing value of the variable, or null if the variable does not exist before.
+	 */
+	public String setVar(String variable, String value) {
+		return setVar(namespace, variable, value);
+	}
+
+	/**
+	 * Delete the value for a variable in the current namespace.
+	 *
+	 * @param variable variable name.
+	 * @return the existing value of the variable, or null if the variable does not exist before.
+	 */
+	public String delVar(String variable) {
+		return delVar(namespace, variable);
+	}
+
 	/**
 	 * Retrieve a variable value given namespace and variable name.
 	 *
@@ -93,6 +130,4 @@ public class SharedVariables {
 
 		return false;
 	}
-
-	private SharedVariables() {}
 }

@@ -15,6 +15,7 @@ import utilities.swing.SwingUtil.DialogUtil;
 
 public class CustomAction extends UserDefinedAction {
     public void action(final Core c) throws InterruptedException {
+    	SharedVariables v = new SharedVariables(getNamespace());
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
         List<Integer> invoker = this.invokingKeyChain.getKeys();
