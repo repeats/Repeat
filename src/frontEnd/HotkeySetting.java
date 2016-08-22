@@ -48,7 +48,9 @@ public class HotkeySetting extends JFrame {
 		tfRecord.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
+				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(
+															HotkeySetting.this,
+															backEnd.config.getRECORD());
 
 				if (newKeyChain != null) {
 					backEnd.keysManager.reRegisterTask(
@@ -68,7 +70,9 @@ public class HotkeySetting extends JFrame {
 		tfReplay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
+				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(
+															HotkeySetting.this,
+															backEnd.config.getREPLAY());
 
 				if (newKeyChain != null) {
 					backEnd.keysManager.reRegisterTask(
@@ -89,7 +93,9 @@ public class HotkeySetting extends JFrame {
 		tfCompiledReplay.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(HotkeySetting.this);
+				KeyChain newKeyChain = KeyChainInputPanel.getInputKeyChain(
+															HotkeySetting.this,
+															backEnd.config.getCOMPILED_REPLAY());
 
 				if (newKeyChain != null) {
 					backEnd.keysManager.reRegisterTask(

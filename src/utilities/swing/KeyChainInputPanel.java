@@ -12,6 +12,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -31,13 +32,12 @@ import core.keyChain.KeyChain;
 import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivation;
 
+@SuppressWarnings("serial")
 public class KeyChainInputPanel extends JPanel {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3725919897922335085L;
 	private static final int MAX_KEY_CHAIN = 15;
+
+	private static final ReentrantLock inUse = new ReentrantLock();
 
 	private KeyChain keyChain;
 	private final DefaultListModel<KeyChain> model;
@@ -58,8 +58,21 @@ public class KeyChainInputPanel extends JPanel {
 		}
 	}
 
-	public static KeyChain getInputKeyChain(JFrame parent) {
-		TaskActivation task = getInputKeyChains(parent, 1, new TaskActivation());
+	public static KeyChain getInputKeyChain(JFrame parent, KeyChain prepopulated) {
+		Set<KeyChain> prepopulatedSet = new HashSet<>();
+		prepopulatedSet.add(prepopulated);
+		return getInputKeyChain(parent, prepopulatedSet);
+	}
+
+	public static KeyChain getInputKeyChain(JFrame parent, Set<KeyChain> prepopulated) {
+		TaskActivation task = getInputKeyChains(
+								parent, 1,
+								TaskActivation.newBuilder().withHotKeys(prepopulated).build(),
+								Mode.KEYCHAIN_ONLY);
+		if (task == null) {
+			return null;
+		}
+
 		Set<KeyChain> keys = task.getHotkeys();
 
 		if (keys != null && keys.size() == 1) {
@@ -68,8 +81,17 @@ public class KeyChainInputPanel extends JPanel {
 		return null;
 	}
 
-	public static TaskActivation getInputKeyChains(JFrame parent, TaskActivation prepopulated) {
-		return getInputKeyChains(parent, MAX_KEY_CHAIN, prepopulated);
+	public static TaskActivation getInputActivation(JFrame parent, TaskActivation prepopulated) {
+		inUse.lock();
+		try {
+			return getInputKeyChains(parent, MAX_KEY_CHAIN, prepopulated);
+		} finally {
+			inUse.unlock();
+		}
+	}
+
+	private static TaskActivation getInputKeyChains(JFrame parent, int limit, TaskActivation prepopulated) {
+		return getInputKeyChains(parent, limit, prepopulated, Mode.ALL_ACTIVATION);
 	}
 
 	/**
@@ -80,8 +102,8 @@ public class KeyChainInputPanel extends JPanel {
 	 * @param prepopulated populate the panel with a set of activation (e.g. existing activation).
 	 * @return a new {@link TaskActivation} object representing the user selection.
 	 */
-	private static TaskActivation getInputKeyChains(JFrame parent, int limit, TaskActivation prepopulated) {
-		KeyChainInputPanel input = new KeyChainInputPanel(prepopulated);
+	private static TaskActivation getInputKeyChains(JFrame parent, int limit, TaskActivation prepopulated, Mode mode) {
+		KeyChainInputPanel input = new KeyChainInputPanel(prepopulated, mode);
 		final JOptionPane optionPane = new JOptionPane(input, JOptionPane.INFORMATION_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 
@@ -137,11 +159,7 @@ public class KeyChainInputPanel extends JPanel {
 		}
 	}
 
-	private KeyChainInputPanel() {
-		this(new TaskActivation());
-	}
-
-	private KeyChainInputPanel(TaskActivation prepopulated) {
+	private KeyChainInputPanel(TaskActivation prepopulated, Mode mode) {
 		keyChain = new KeyChain();
 
 		final JLabel instruction = new JLabel("Start pressing key chain.");
@@ -235,11 +253,28 @@ public class KeyChainInputPanel extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		add(basicPanel);
-		add(javax.swing.Box.createVerticalStrut(5));
-		add(addButtonPanel);
-		add(javax.swing.Box.createVerticalStrut(5));
-		add(scrollPane);
-		add(javax.swing.Box.createVerticalStrut(5));
-		add(scrollPaneMouseGesture);
+		if (mode == Mode.ALL_ACTIVATION || mode == Mode.KEYCHAIN_ONLY) {
+			add(javax.swing.Box.createVerticalStrut(5));
+			add(addButtonPanel);
+			add(javax.swing.Box.createVerticalStrut(5));
+			add(scrollPane);
+		}
+		if (mode == Mode.ALL_ACTIVATION || mode == Mode.MOUSE_GESTURE_ONLY) {
+			add(javax.swing.Box.createVerticalStrut(5));
+			add(scrollPaneMouseGesture);
+		}
+	}
+
+	/**
+	 * @return whether a panel is being displayed.
+	 */
+	public static boolean isInUse() {
+		return inUse.isLocked();
+	}
+
+	private static enum Mode {
+		ALL_ACTIVATION,
+		KEYCHAIN_ONLY,
+		MOUSE_GESTURE_ONLY;
 	}
 }

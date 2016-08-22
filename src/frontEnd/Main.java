@@ -20,6 +20,7 @@ import staticResources.BootStrapResources;
 import utilities.Function;
 import utilities.logging.ExceptionUtility;
 import utilities.logging.OutStream;
+import utilities.swing.KeyChainInputPanel;
 
 public class Main {
 
@@ -69,7 +70,7 @@ public class Main {
 				createdFrame.backEnd.keysManager.setDisablingFunction(new Function<Void, Boolean>(){
 					@Override
 					public Boolean apply(Void r) {
-						return createdFrame.hotkey.isVisible();
+						return createdFrame.hotkey.isVisible() || KeyChainInputPanel.isInUse();
 					}
 				});
 

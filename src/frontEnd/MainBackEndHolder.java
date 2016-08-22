@@ -470,7 +470,7 @@ public class MainBackEndHolder {
 
 	protected void changeHotkeyTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
-		TaskActivation newActivation = KeyChainInputPanel.getInputKeyChains(main, action.getActivation());
+		TaskActivation newActivation = KeyChainInputPanel.getInputActivation(main, action.getActivation());
 		if (newActivation == null) {
 			return;
 		}

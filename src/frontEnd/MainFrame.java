@@ -785,11 +785,11 @@ public class MainFrame extends JFrame {
 		final LogPopupMenu mainLogPopupMenu = new LogPopupMenu(taStatus);
 		taStatus.setComponentPopupMenu(mainLogPopupMenu);
 
-				JScrollPane scrollPane_1 = new JScrollPane();
-				tabbedPane.addTab("Main log", null, scrollPane_1, null);
-				taStatus.setEditable(false);
+		JScrollPane scrollPane_1 = new JScrollPane();
+		tabbedPane.addTab("Main log", null, scrollPane_1, null);
+		taStatus.setEditable(false);
 
-						scrollPane_1.setViewportView(taStatus);
+		scrollPane_1.setViewportView(taStatus);
 
 		tTasks = new JTable();
 		tTasks.setColumnSelectionAllowed(false);
