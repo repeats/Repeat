@@ -147,9 +147,9 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * its hotkeys. This will only change the key chain definition of the current key chain, not substituting the real object.
 	 * @param invokingKeyChain
 	 */
-	public final void setInvokingKeyChain(KeyChain invokingKeyChain) {
-		invokingKeyChain.getKeys().clear();
-		invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
+	public final void setActivation(KeyChain invokingKeyChain) {
+		this.invokingKeyChain.getKeys().clear();
+		this.invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
 	}
 
 	/***********************************************************************/
