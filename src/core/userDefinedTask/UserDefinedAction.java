@@ -179,7 +179,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		if (!clean) {
 			return this;
 		} else {
-			//TODO recompile the current task
+			// TODO recompile the current task
 			getLogger().warning("Not supported");
 			return null;
 		}

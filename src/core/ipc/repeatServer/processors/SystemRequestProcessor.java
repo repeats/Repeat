@@ -42,7 +42,7 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 
 		String device = content.getStringValue("device");
 		String action = content.getStringValue("action");
-		List<JsonNode> paramNodes = content.getArrayNode("parameters"); //Unused
+		List<JsonNode> paramNodes = content.getArrayNode("parameters"); // Unused
 
 		if (IpcMessageType.identify(type) == IpcMessageType.SYSTEM_HOST) {
 			if (action.equals("keep_alive")) {

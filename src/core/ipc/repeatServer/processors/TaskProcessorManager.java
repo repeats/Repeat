@@ -34,7 +34,7 @@ public final class TaskProcessorManager {
 			IPCServiceManager.getIPCService(identified).setPort(port);
 
 			if (callBack != null) {
-				//It is necessary to call back in a separate thread to not block the receiving thread operation
+				// It is necessary to call back in a separate thread to not block the receiving thread operation
 				new Thread() {
 					@Override
 					public void run() {

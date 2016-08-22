@@ -131,10 +131,10 @@ public class SwingUtil {
 		}
 
 		public static void ensureRowNumber(JTable table, int maxSize) {
-			//Make sure enough space
+			// Make sure enough space
 			if (maxSize > table.getRowCount()) {
 				int rowCount = table.getRowCount();
-				//Add more rows
+				// Add more rows
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				for (int i = 0; i < maxSize - rowCount; i++) {
 					model.addRow(new Object[model.getColumnCount()]);
@@ -144,7 +144,7 @@ public class SwingUtil {
 
 		public static void setRowNumber(JTable table, int numberOfRow) {
 			ensureRowNumber(table, numberOfRow);
-			//Now table has at least numberOfRow. We make sure table does not have any extra row
+			// Now table has at least numberOfRow. We make sure table does not have any extra row
 			int toDelete = table.getRowCount() - numberOfRow;
 			removeLastRowTable(table, toDelete);
 		}

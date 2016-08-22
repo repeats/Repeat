@@ -17,7 +17,7 @@ public abstract class IPCClientService extends IIPCService {
 	private static final Logger LOGGER = Logger.getLogger(IPCClientService.class);
 	protected static final long TIMEOUT_MS = 5000;
 
-	protected File executingProgram; //The program used to execute this ipc client
+	protected File executingProgram; // The program used to execute this ipc client
 	protected Thread mainThread, forceDestroyThread;
 	protected Process mainProcess;
 	protected BufferedReader input;

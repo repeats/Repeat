@@ -38,7 +38,7 @@ abstract class ConfigParser {
 
 	protected final boolean extractData(Config config, JsonRootNode data) {
 		try {
-			//Sanity check
+			// Sanity check
 			if (!data.getStringValue("version").equals(getVersion())) {
 				LOGGER.warning("Invalid version " + data.getStringValue("version") + " with parser of version "
 						+ getVersion());
@@ -49,7 +49,7 @@ abstract class ConfigParser {
 			return false;
 		}
 
-		if (!Config.CURRENT_CONFIG_VERSION.equals(getVersion())) {//Then convert to latest version then parse
+		if (!Config.CURRENT_CONFIG_VERSION.equals(getVersion())) { // Then convert to latest version then parse
 			LOGGER.info("Looking for next version " + getVersion());
 			String currentVersion = getVersion();
 			while (!currentVersion.equals(Config.CURRENT_CONFIG_VERSION)) {

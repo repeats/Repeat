@@ -215,7 +215,7 @@ public class Recorder {
 		AbstractSourceGenerator generator = sourceGenerators.get(language);
 		if (generator != null) {
 			return generator.getSource();
-		} else {//Return null to indicate generator does not exist
+		} else { // Return null to indicate generator does not exist
 			return null;
 		}
 	}

@@ -506,11 +506,11 @@ public class FileUtility {
 
 		if (jarFile.isFile()) {// Run with JAR file
 		    final JarFile jar = new JarFile(jarFile);
-		    final Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+		    final Enumeration<JarEntry> entries = jar.entries(); // Gives ALL entries in jar
 		    while(entries.hasMoreElements()) {
 		    	JarEntry entry = entries.nextElement();
 		        String name = entry.getName();
-		        if (!name.startsWith(path + "/")) { //filter according to the path
+		        if (!name.startsWith(path + "/")) { // Filter according to the path
 		        	continue;
 		        }
 

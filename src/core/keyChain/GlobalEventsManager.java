@@ -41,6 +41,7 @@ public final class GlobalEventsManager {
 	private final KeyChain currentKeyChain;
 	private final MouseGestureManager mouseGestureManager;
 
+	@SuppressWarnings("unused")
 	private TaskGroup currentTaskGroup;
 
 	public GlobalEventsManager(Config config) {

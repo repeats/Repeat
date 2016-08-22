@@ -39,7 +39,7 @@ public class Config implements ILoggable {
 	private DynamicCompilerManager compilerFactory;
 	private final MainBackEndHolder backEnd;
 
-	public static final int HALT_TASK = KeyEvent.VK_ESCAPE; //This should be hardcoded, and must not be changed
+	public static final int HALT_TASK = KeyEvent.VK_ESCAPE; // This should be hardcoded, and must not be changed
 	private KeyChain RECORD;
 	private KeyChain REPLAY;
 	private KeyChain COMPILED_REPLAY;

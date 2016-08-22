@@ -165,7 +165,7 @@ public class JSONUtility {
 		for (JsonField field : parent.getFieldList()) {
 			String key = field.getName().getText();
 
-			if (parent.isNode(key)) {//Fail safe
+			if (parent.isNode(key)) { // Fail safe
 				if (replacingChildren.containsKey(key)) {
 					fields.add(JsonNodeFactories.field(key, replacingChildren.get(key)));
 				} else {

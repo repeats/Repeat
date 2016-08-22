@@ -42,7 +42,7 @@ public class CommandLineInterface {
 					core.mouse().click((int) parsed.get(2));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-					//Shouldn't be interrupted here though
+					// Shouldn't be interrupted here though
 				}
 				return true;
 			}

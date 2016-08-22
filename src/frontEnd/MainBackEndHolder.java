@@ -223,14 +223,14 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/****************************************Record and replay****************************************************/
 	protected void switchRecord() {
-		if (!isRecording) {//Start record
+		if (!isRecording) { // Start record
 			recorder.clear();
 			recorder.record();
 			isRecording = true;
 			main.bRecord.setIcon(BootStrapResources.STOP);
 
 			setEnableReplay(false);
-		} else {//Stop record
+		} else { // Stop record
 			recorder.stopRecord();
 			isRecording = false;
 			main.bRecord.setIcon(BootStrapResources.RECORD);
@@ -307,7 +307,7 @@ public class MainBackEndHolder {
 				public void run() {
 			    	try {
 						customFunction.action(Core.getInstance());
-					} catch (InterruptedException e) {//Stopped prematurely
+					} catch (InterruptedException e) { // Stopped prematurely
 						return;
 					} catch (Exception e) {
 						LOGGER.log(Level.WARNING, "Exception caught while executing custom function", e);
@@ -382,7 +382,7 @@ public class MainBackEndHolder {
 			removeTask(selectedTask);
 
 			currentGroup.getTasks().remove(selectedRow);
-			selectedTaskIndex = - 1; //Reset selected index
+			selectedTaskIndex = - 1; // Reset selected index
 
 			renderTasks();
 			writeConfigFile();
@@ -571,7 +571,7 @@ public class MainBackEndHolder {
 	}
 
 	private void loadSource(int row) {
-		//Load source if possible
+		// Load source if possible
 		if (row < 0 || row >= currentGroup.getTasks().size()) {
 			return;
 		}
@@ -627,7 +627,7 @@ public class MainBackEndHolder {
 
 		FileUtility.createDirectory(destination.getAbsolutePath());
 		config.exportTasksConfig(destination);
-		//Now create a zip file containing all source codes together with the config file
+		// Now create a zip file containing all source codes together with the config file
 		for (TaskGroup group : taskGroups) {
 			for (UserDefinedAction task : group.getTasks()) {
 				File sourceFile = new File(task.getSourcePath());
@@ -735,7 +735,7 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/***************************************Configurations********************************************************/
-	//Write configuration file
+	// Write configuration file
 	protected boolean writeConfigFile() {
 		boolean result = config.writeConfig();
 		if (!result) {
