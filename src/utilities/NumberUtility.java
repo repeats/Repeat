@@ -77,4 +77,9 @@ public final class NumberUtility {
 	public static boolean inRange(double a, double lower, double upper) {
 		return (a >= lower) && (a <= upper);
 	}
+
+	public static float fromIEEE754Binary(String binary) {
+		int integer = (int) Long.parseLong(binary, 2);
+		return Float.intBitsToFloat(integer);
+	}
 }

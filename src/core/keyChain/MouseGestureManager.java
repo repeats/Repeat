@@ -3,40 +3,21 @@ package core.keyChain;
 import globalListener.GlobalMouseListener;
 
 import java.awt.Point;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
-
 import org.jnativehook.mouse.NativeMouseEvent;
 
 import utilities.Function;
-import utilities.JSONUtility;
-import argo.jdom.JsonNode;
-import argo.jdom.JsonNodeFactories;
-import argo.jdom.JsonRootNode;
-import argo.jdom.JsonStringNode;
+import core.keyChain.mouseGestureRecognition.MouseGestureClassifier;
 import core.userDefinedTask.UserDefinedAction;
 
 /**
@@ -45,19 +26,17 @@ import core.userDefinedTask.UserDefinedAction;
 public class MouseGestureManager {
 
 	private static final Logger LOGGER = Logger.getLogger(MouseGestureManager.class.getName());
-	private static final int MAX_COORDINATES_COUNT = 1000;
-	private static final Set<MouseGesture> IGNORED_CLASSIFICATIONS = new HashSet<>(
-			Arrays.asList(MouseGesture.HORIZONTAL,
-						  MouseGesture.VERTICAL,
-						  MouseGesture.RANDOM));
-	private static final String GESTURE_RECOGNITION_SERVER = "http://localhost:8000";
 
+	private static final int MAX_COORDINATES_COUNT = 1000;
+
+	private final MouseGestureClassifier mouseGestureRecognizer;
 	private final Map<MouseGesture, UserDefinedAction> actionMap;
 	private final GlobalMouseListener mouseListener;
 	private final Queue<Point> coordinates;
 	private boolean enabled;
 
 	public MouseGestureManager() {
+		mouseGestureRecognizer = new MouseGestureClassifier();
 		actionMap = new HashMap<>();
 		coordinates = new ConcurrentLinkedQueue<Point>();
 		mouseListener = new GlobalMouseListener();
@@ -146,13 +125,16 @@ public class MouseGestureManager {
 	/**
 	 * Finish recording the gesture. Now decode it
 	 */
-	protected UserDefinedAction finishRecoarding() {
+	protected UserDefinedAction finishRecording() {
 		enabled = false;
 		try {
 			MouseGesture gesture = processCurrentData();
+			if (MouseGesture.IGNORED_CLASSIFICATIONS.contains(gesture)) {
+				return null;
+			}
 			return actionMap.get(gesture);
 		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Unable to finish recorded data", e);
+			LOGGER.log(Level.WARNING, "Unable to classify recorded data", e);
 		}
 		return null;
 	}
@@ -164,134 +146,8 @@ public class MouseGestureManager {
 	 * @throws IOException
 	 */
 	private MouseGesture processCurrentData() throws IOException {
-		List<JsonNode> points = new ArrayList<>(coordinates.size());
-
-		final int size = coordinates.size();
-		LOGGER.fine("Classifying with size = " + size);
-
-		for (int i = 0 ;i < size; i++) {
-			Point p = coordinates.poll();
-			JsonNode comer = pointToNode(p);
-			points.add(comer);
-		}
-
-		return MouseGesture.ALPHA;
-//		return post(JsonNodeFactories.object(
-//				JsonNodeFactories.field(
-//					"data", JsonNodeFactories.array(points))));
-	}
-
-	/**
-	 * Post the JSON content to {@link #GESTURE_RECOGNITION_SERVER} and process the result
-	 * @param content json content to be posted
-	 * @return the classification received from the server
-	 * @throws IOException
-	 */
-	private MouseGesture post(JsonNode content) throws IOException {
-		byte[] out = JSONUtility.jsonToString(content.getRootNode()).getBytes(Charset.forName("UTF-8"));
-		int length = out.length;
-
-		// Construct request
-		URL url = new URL(GESTURE_RECOGNITION_SERVER);
-		URLConnection con = url.openConnection();
-		HttpURLConnection http = (HttpURLConnection)url.openConnection();
-		http.setRequestMethod("POST");
-		http.setDoOutput(true);
-		http.setFixedLengthStreamingMode(length);
-		http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-
-		// Send request
-		http.connect();
-		try (OutputStream os = http.getOutputStream()) {
-		    os.write(out);
-		    os.flush();
-		}
-
-		// Retrieve response
-		int responseCode = http.getResponseCode();
-//		System.out.println("\nSending 'POST' request to URL : " + url);
-//		System.out.println("Response Code : " + responseCode);
-		if (responseCode != 200) {
-			throw new RuntimeException("Did not receive 200 from server! Instead status code " + responseCode);
-		}
-
-		String responseString = null;
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-			String inputLine;
-			StringBuilder response = new StringBuilder();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-
-			responseString = response.toString();
-		}
-
-		return processPostResponse(responseString);
-	}
-
-	/**
-	 * Process post response from the server to get the identified classifcation
-	 * @param response the response as string from server
-	 * @return the identified classification
-	 */
-	private MouseGesture processPostResponse(String response) {
-		JsonRootNode parsed = JSONUtility.jsonFromString(response);
-		JsonNode toAnalyze = parsed.getNode("result");
-		Map<JsonStringNode, JsonNode> fields = toAnalyze.getFields();
-		List<ClassificationEntry> converted = new ArrayList<>(5);
-		int totalCount = 0;
-
-		// Parse for meaningful values
-		for (Entry<JsonStringNode, JsonNode> entry : fields.entrySet()) {
-			String name = entry.getKey().getStringValue();
-			MouseGesture named = MouseGesture.find(name);
-			if (named == null) {
-				throw new IllegalArgumentException("Unable to identify class named " + name);
-			}
-
-			int number = Integer.parseInt(entry.getValue().getNumberValue());
-
-			if (IGNORED_CLASSIFICATIONS.contains(named)) {
-				continue;
-			}
-
-			totalCount += number;
-			converted.add(new ClassificationEntry(name, number));
-		}
-
-		if (converted.size() == 0) { // Nothing to do
-			return MouseGesture.RANDOM;
-		} else if (converted.size() == 1) {
-			System.out.println(response);
-			if (converted.get(0).count > 4) {
-				System.out.println("======> " + converted.get(0).name);
-				return converted.get(0).name;
-
-			} else {
-				return MouseGesture.RANDOM;
-			}
-		} else {
-			// Sort by decreasing count
-			Collections.sort(converted, new Comparator<ClassificationEntry>() {
-				@Override
-				public int compare(ClassificationEntry o1, ClassificationEntry o2) {
-					return o2.count - o1.count;
-				}
-			});
-
-			int max = converted.get(0).count;
-			int nextMax = converted.get(1).count;
-
-			System.out.println(response);
-			if (((double) max / totalCount > 0.5) && (max - nextMax > 10)) {
-				System.out.println("======> " + converted.get(0).name);
-				JOptionPane.showMessageDialog(null, "Detected symbol " + converted.get(0).name);
-				return converted.get(0).name;
-			} else {
-				return MouseGesture.RANDOM;
-			}
-		}
+		int size = coordinates.size();
+		return mouseGestureRecognizer.classifyGesture(coordinates, size);
 	}
 
 	/**
@@ -314,33 +170,5 @@ public class MouseGestureManager {
 	 */
 	protected void stopListening() {
 		mouseListener.stopListening();
-	}
-
-	/**
-	 * Convert a point to json node to send to the server
-	 * @param p point to convert to json node
-	 * @return a json node to send to the server representing the input point
-	 */
-	private static JsonNode pointToNode(Point p) {
-		return JsonNodeFactories.array(
-				JsonNodeFactories.number(p.x),
-				JsonNodeFactories.number(p.y));
-	}
-
-	/**
-	 * Class representing classification entry from the server
-	 */
-	private static class ClassificationEntry {
-		private final MouseGesture name;
-		private final int count;
-
-		private ClassificationEntry(String name, int count) {
-			this.name = MouseGesture.find(name);
-			if (this.name == null) {
-				throw new IllegalArgumentException("Unable to identify classification " + name);
-			}
-
-			this.count = count;
-		}
 	}
 }

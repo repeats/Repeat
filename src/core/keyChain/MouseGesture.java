@@ -1,6 +1,7 @@
 package core.keyChain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,10 @@ public enum MouseGesture implements IJsonable {
 	VERTICAL("vertical")
 	;
 
+	public static final Set<MouseGesture> IGNORED_CLASSIFICATIONS = new HashSet<>(
+			Arrays.asList(MouseGesture.HORIZONTAL,
+						  MouseGesture.VERTICAL,
+						  MouseGesture.RANDOM));
 
 	private final String text;
 
@@ -42,7 +47,7 @@ public enum MouseGesture implements IJsonable {
     	List<MouseGesture> output = new ArrayList<>();
 
 		for (MouseGesture value : values()) {
-			if (value != RANDOM) {
+			if (!IGNORED_CLASSIFICATIONS.contains(value)) {
 				output.add(value);
 			}
 		}
@@ -56,7 +61,7 @@ public enum MouseGesture implements IJsonable {
      * @param name name of the mouse gesture
      * @return the found mouse gesture, or null if cannot find one
      */
-    protected static MouseGesture find(String name) {
+    public static MouseGesture find(String name) {
     	for (MouseGesture classification : MouseGesture.values()) {
     		if (classification.text.equals(name)) {
     			return classification;

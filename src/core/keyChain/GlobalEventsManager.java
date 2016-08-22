@@ -75,7 +75,7 @@ public final class GlobalEventsManager {
 			public Boolean apply(NativeKeyEvent r) {
 				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
 				if (code == config.getMouseGestureActivationKey()) {
-					UserDefinedAction action =  mouseGestureManager.finishRecoarding();
+					UserDefinedAction action =  mouseGestureManager.finishRecording();
 					startExecutingAction(action);
 				}
 
