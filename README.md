@@ -10,10 +10,11 @@ Demo
 Features
 =======
 1. Record and replay computer activity.
-2. Store recorded task and replay them later
+2. Store recorded task and replay them later.
 3. Write your own task so you have more control over the computer.
 4. Assign multiple arbitrary hotkey combinations to activate a stored task.
-5. Manage your Repeat tasks (either recorded or written)
+5. Assign multiple mouse gestures to activate a stored task.
+6. Manage your Repeat tasks (either recorded or written).
 
 Disclaimer
 ==========

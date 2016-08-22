@@ -17,19 +17,30 @@ import argo.jdom.JsonRootNode;
  */
 public enum MouseGesture implements IJsonable {
 	ALPHA("alpha"),
-	DERIVATIVE("derivative"),
+	CIRCLE_LEFT("circle_left"),
+	GAMMA("gamma"),
 	GREATER_THAN("greater_than"),
 	HAT("hat"),
 	HORIZONTAL("horizontal"),
+	LESS_THAN("less_than"),
+	N("N"),
 	RANDOM("random"),
+	SIX("six"),
+	SQUARE("square"),
+	SQUARE_ROOT("square_root"),
+	TILDA("tilda"),
 	TRIANGLE("triangle"),
-	VERTICAL("vertical")
+	U("u"),
+	VERTICAL("vertical"),
+	Z("z")
 	;
 
 	public static final Set<MouseGesture> IGNORED_CLASSIFICATIONS = new HashSet<>(
-			Arrays.asList(MouseGesture.HORIZONTAL,
-						  MouseGesture.VERTICAL,
-						  MouseGesture.RANDOM));
+			Arrays.asList(HORIZONTAL,
+						  VERTICAL,
+						  SIX,
+						  U,
+						  RANDOM));
 
 	private final String text;
 
