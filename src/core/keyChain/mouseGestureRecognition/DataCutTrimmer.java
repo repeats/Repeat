@@ -16,7 +16,7 @@ public class DataCutTrimmer extends AbstractDataTrimmer {
 		}
 
 		ArrayList<Point> output = new ArrayList<>(DataNormalizer.POINT_COUNT);
-		ListIterator<Point> it = output.listIterator(input.size() - DataNormalizer.POINT_COUNT);
+		ListIterator<Point> it = input.listIterator(input.size() - DataNormalizer.POINT_COUNT);
 		while (it.hasNext()) {
 			output.add(it.next());
 		}

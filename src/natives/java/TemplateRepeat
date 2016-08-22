@@ -6,6 +6,7 @@ import core.controller.Core;
 import core.controller.MouseCore;
 import core.controller.KeyboardCore;
 import core.keyChain.KeyChain;
+import core.keyChain.MouseGesture;
 import java.util.List;
 import static java.awt.event.KeyEvent.*;
 import static java.awt.event.InputEvent.BUTTON1_MASK;
@@ -19,6 +20,7 @@ public class CustomAction extends UserDefinedAction {
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
         List<Integer> invoker = this.invokingKeyChain.getKeys();
+        MouseGesture gesture = this.invokingMouseGesture;
         /*Begin generated code*/
     }
 

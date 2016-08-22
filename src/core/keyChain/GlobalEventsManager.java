@@ -118,6 +118,10 @@ public final class GlobalEventsManager {
 		}
 
 		UserDefinedAction action = actionMap.get(currentKeyChain);
+		if (action != null) {
+			action.setInvokingKeyChain(currentKeyChain.clone());
+		}
+
 		return startExecutingAction(action);
 	}
 
@@ -131,14 +135,12 @@ public final class GlobalEventsManager {
 		if (action == null) {
 			return true;
 		}
-		final KeyChain invoker = currentKeyChain.clone();
 
 		final String id = RandomUtil.randomID();
 		Thread execution = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					action.setInvokingKeyChain(invoker);
 					action.trackedAction(Core.getInstance());
 				} catch (InterruptedException e) {
 					LOGGER.info("Task ended prematurely");

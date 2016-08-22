@@ -123,7 +123,7 @@ public class MouseGestureManager {
 	}
 
 	/**
-	 * Finish recording the gesture. Now decode it
+	 * Finish recording the gesture. Now decode it.
 	 */
 	protected UserDefinedAction finishRecording() {
 		enabled = false;
@@ -132,7 +132,12 @@ public class MouseGestureManager {
 			if (MouseGesture.IGNORED_CLASSIFICATIONS.contains(gesture)) {
 				return null;
 			}
-			return actionMap.get(gesture);
+
+			UserDefinedAction task = actionMap.get(gesture);
+			if (task != null) {
+				task.setInvokingMouseGesture(gesture);
+			}
+			return task;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to classify recorded data", e);
 		}

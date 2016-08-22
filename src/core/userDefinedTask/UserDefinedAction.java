@@ -15,6 +15,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.controller.Core;
 import core.keyChain.KeyChain;
+import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivation;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
@@ -29,7 +30,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected String sourcePath;
 	protected Language compiler;
 	protected boolean enabled;
+
 	protected KeyChain invokingKeyChain;
+	protected MouseGesture invokingMouseGesture;
+
 	protected UsageStatistics statistics;
 
 	public UserDefinedAction() {
@@ -145,12 +149,30 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	/**
 	 * This method is called to dynamically allow the current task to determine which key chain activated it among
 	 * its hotkeys. This will only change the key chain definition of the current key chain, not substituting the real object.
+	 *
+	 * This will also set {@link #invokingMouseGesture} to null.
+	 *
 	 * @param invokingKeyChain
 	 */
-	public final void setActivation(KeyChain invokingKeyChain) {
+	public final void setInvokingKeyChain(KeyChain invokingKeyChain) {
 		this.invokingKeyChain.getKeys().clear();
 		this.invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
+		this.invokingMouseGesture = null;
 	}
+
+	/**
+	 * This method is called to dynamically allow the current task to determine which key chain activated it among
+	 * its mouse gestures.
+	 *
+	 * This will also clear {@link #invokingKeyChain}.
+	 *
+	 * @param invokingMouseGesture
+	 */
+	public final void setInvokingMouseGesture(MouseGesture invokingMouseGesture) {
+		this.invokingMouseGesture = invokingMouseGesture;
+		this.invokingKeyChain.getKeys().clear();
+	}
+
 
 	/***********************************************************************/
 	public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
