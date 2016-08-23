@@ -35,7 +35,7 @@ public class MouseGestureClassifier {
 	 */
 	public MouseGesture classifyGesture(Queue<Point> points, int size) {
 		if (size < DataNormalizer.POINT_COUNT) {
-			LOGGER.log(Level.WARNING, "Not enough points for classification. "
+			LOGGER.log(Level.FINE, "Not enough points for classification. "
 					+ "Required at least {0} points but provided {1} points.",
 					new Object[] {DataNormalizer.POINT_COUNT, size});
 			return MouseGesture.RANDOM;
