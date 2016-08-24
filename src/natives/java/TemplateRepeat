@@ -8,6 +8,7 @@ import core.controller.KeyboardCore;
 import core.keyChain.KeyChain;
 import core.keyChain.MouseGesture;
 import java.util.List;
+import java.util.ArrayList;
 import static java.awt.event.KeyEvent.*;
 import static java.awt.event.InputEvent.BUTTON1_MASK;
 import static java.awt.event.InputEvent.BUTTON3_MASK;
@@ -19,8 +20,9 @@ public class CustomAction extends UserDefinedAction {
     	SharedVariables v = new SharedVariables(getNamespace());
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
-        List<Integer> invoker = this.invokingKeyChain.getKeys();
-        MouseGesture gesture = this.invokingMouseGesture;
+        KeyChain invokingHotkey = this.invoker.getFirstHotkey();
+        List<Integer> invoker = invokingHotkey == null ? new ArrayList<Integer>() : invokingHotkey.getKeys();
+        MouseGesture gesture = this.invoker.getFirstMouseGesture();
         /*Begin generated code*/
     }
 

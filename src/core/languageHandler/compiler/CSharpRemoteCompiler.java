@@ -45,7 +45,7 @@ public class CSharpRemoteCompiler extends AbstractRemoteNativeCompiler {
 		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
-				boolean result = remoteTaskManager.runTask(id, invokingKeyChain);
+				boolean result = remoteTaskManager.runTask(id, invoker);
 				if (!result) {
 					getLogger().warning("Unable to run task with id = " + id);
 				}

@@ -10,7 +10,9 @@ namespace Repeat.userDefinedAction {
             MouseRequest mouse = controller.mouse;
             KeyboardRequest key = controller.key;
             ToolRequest tool = controller.tool;
-            List<int> invoker = this.invoker;
+            List<int> invoker = this.activation.hotkeys;
+            string mouseGesture = this.activation.mouseGesture;
+
             //Begin generated code
 
         }

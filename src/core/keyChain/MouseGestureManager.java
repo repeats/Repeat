@@ -135,6 +135,7 @@ public class MouseGestureManager {
 
 			UserDefinedAction task = actionMap.get(gesture);
 			if (task != null) {
+				task.setInvoker(TaskActivation.newBuilder().withMouseGesture(gesture).build());
 				task.setInvokingMouseGesture(gesture);
 			}
 			return task;

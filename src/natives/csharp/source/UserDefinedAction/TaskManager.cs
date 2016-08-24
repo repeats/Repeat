@@ -52,13 +52,39 @@ namespace Repeat.userDefinedAction {
             } else if (action == "run_task") {
                 JEnumerable<JToken> parameterList = parameters.Children();
                 int taskID = parameterList.First().Value<int>();
-                JArray hotKeysJSON = parameterList.Skip(1).First().Value<JArray>();
+                JObject invokerJSON = parameterList.Skip(1).First().Value<JObject>();
+
                 List<int> hotkeys = new List<int>();
-                foreach (JToken token in hotKeysJSON.Children()) {
-                    hotkeys.Add(token.Value<int>());
+                string mouseGesture = null;
+                foreach (JProperty property in invokerJSON.Properties()) {
+                    JToken token = property.Value;
+                    if (property.Name == "hotkey") {
+                        // Get the first hotkey, or leave as empty list.
+                        JArray hotkeyListJSON = token.Value<JArray>();
+                        foreach (JArray hotkey in hotkeyListJSON.Children<JArray>()) {
+                            foreach (JToken key in hotkey.Children()) {
+                                hotkeys.Add(key.Value<int>());
+                            }
+                            break;
+                        }
+                    } else if (property.Name == "mouse_gesture") {
+                        // Get the first mouse gesture, or leave as null.
+                        JArray mouseGestureListJSON = token.Value<JArray>();
+                        foreach (JObject gesture in mouseGestureListJSON.Children<JObject>()) {
+                            foreach (JProperty prop in gesture.Properties()) {
+                                if (prop.Name == "name") {
+                                    mouseGesture = prop.Value.ToString();
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
 
-                return RunTask(taskID, hotkeys);
+                Activation activation = new Activation();
+                activation.hotkeys = hotkeys;
+                activation.mouseGesture = mouseGesture;
+                return RunTask(taskID, activation);
             } else if (action == "remove_task") {
                 int taskID = parameters.Children().First().Value<int>();
                 return RemoveTask(taskID);
@@ -67,12 +93,13 @@ namespace Repeat.userDefinedAction {
             }
         }
 
-        private JObject RunTask(int id, List<int> invoker) {
+        private JObject RunTask(int id, Activation invoker) {
             Console.WriteLine("Doing id " + id);
             UserDefinedAction toDo;
             if (actions.TryGetValue(id, out toDo)) {
                 toDo.controller = this.client;
-                toDo.invoker = invoker;
+                toDo.activation = invoker;
+                toDo.invoker = invoker.hotkeys; // Legacy
 
                 try {
                     toDo.Action();

@@ -230,10 +230,10 @@ class TaskManager(object):
                 'file_name' : file_name
             })
 
-    def run_task(self, task_id, hotkeys):
+    def run_task(self, task_id, invoker):
         if task_id not in self.tasks:
             return generate_reply(specifications.FAILURE, 'Cannot find task id %s' % task_id)
-        self.tasks[task_id].run(hotkeys)
+        self.tasks[task_id].run(invoker)
         return generate_reply(specifications.SUCCESS, {
                 'id' : task_id,
                 'file_name' : self.tasks[task_id].file_name

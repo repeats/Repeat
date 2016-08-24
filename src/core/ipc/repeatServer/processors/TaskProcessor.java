@@ -10,7 +10,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.ipc.repeatServer.ClientTask;
 import core.ipc.repeatServer.MainMessageSender;
-import core.keyChain.KeyChain;
+import core.keyChain.TaskActivation;
 
 /**
  * This class represents the message processor for all task action.
@@ -102,7 +102,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 		return -1;
 	}
 
-	public boolean runTask(int id, KeyChain invoker) {
+	public boolean runTask(int id, TaskActivation invoker) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string("run_task")),
 				JsonNodeFactories.field("parameters",

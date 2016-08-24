@@ -9,4 +9,7 @@ def action(controller, invoker):
 	m = controller.mouse
 	k = controller.key
 	t = controller.tool
+
+	keys = [] if len(invoker['hotkey']) == 0 else invoker['hotkey'][0]
+	gesture = None if len(invoker['mouse_gesture']) == 0 else invoker['mouse_gesture'][0]['name']
 	#Begin generated code

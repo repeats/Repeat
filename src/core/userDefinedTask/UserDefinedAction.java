@@ -31,13 +31,15 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected Language compiler;
 	protected boolean enabled;
 
+	protected TaskActivation invoker;
 	protected KeyChain invokingKeyChain;
 	protected MouseGesture invokingMouseGesture;
 
 	protected UsageStatistics statistics;
 
 	public UserDefinedAction() {
-		activation = new TaskActivation();
+		activation = TaskActivation.newBuilder().build();
+		invoker = TaskActivation.newBuilder().build();
 		invokingKeyChain = new KeyChain();
 		statistics = new UsageStatistics();
 		enabled = true;
@@ -144,6 +146,16 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		setName(other.getName());
 		activation.copy(other.activation);
 		statistics = other.statistics;
+	}
+
+	/**
+	 * This method is called to dynamically allow the current task to determine which activation triggered it.
+	 * This activation would contain only the activation element that triggered the event.
+	 *
+	 * @param invoker
+	 */
+	public final void setInvoker(TaskActivation invoker) {
+		this.invoker = invoker;
 	}
 
 	/**

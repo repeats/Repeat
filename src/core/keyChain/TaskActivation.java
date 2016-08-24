@@ -21,8 +21,6 @@ public class TaskActivation implements IJsonable {
 	private Set<KeyChain> hotkeys;
 	private Set<MouseGesture> mouseGestures;
 
-	public TaskActivation() {}
-
 	private TaskActivation(Builder builder) {
 		hotkeys = builder.hotkeys;
 		mouseGestures = builder.mouseGestures;
@@ -46,6 +44,18 @@ public class TaskActivation implements IJsonable {
 	}
 
 	/**
+	 * @return an arbitrary {@link KeyChain} from the set of keychains, or null if the set is empty.
+	 */
+	public final KeyChain getFirstHotkey() {
+		Set<KeyChain> hotkeys = getHotkeys();
+		if (hotkeys.isEmpty()) {
+			return null;
+		} else {
+			return hotkeys.iterator().next();
+		}
+	}
+
+	/**
 	 * @param mouseGestures set of mouse gestures to set.
 	 */
 	public final void setMouseGestures(Set<MouseGesture> mouseGestures) {
@@ -61,6 +71,18 @@ public class TaskActivation implements IJsonable {
 		}
 
 		return mouseGestures;
+	}
+
+	/**
+	 * @return an arbitrary {@link MouseGesture} from the set of gestures, or null if the set is empty.
+	 */
+	public final MouseGesture getFirstMouseGesture() {
+		Set<MouseGesture> gestures = getMouseGestures();
+		if (gestures.isEmpty()) {
+			return null;
+		} else {
+			return gestures.iterator().next();
+		}
 	}
 
 	/**
@@ -109,9 +131,7 @@ public class TaskActivation implements IJsonable {
 			}
 
 			Set<MouseGesture> gestures = MouseGesture.parseJSON(mouseGestureNode);
-			TaskActivation output = new TaskActivation();
-			output.setHotKeys(keyChains);
-			output.setMouseGestures(gestures);
+			TaskActivation output = TaskActivation.newBuilder().withHotKeys(keyChains).withMouseGestures(gestures).build();
 			return output;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Exception while parsing task activation.", e);
