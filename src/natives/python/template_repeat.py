@@ -5,7 +5,7 @@ from key_code import *
 	invoker is the hotkey (list of keys) that invoked this action
 """
 def action(controller, invoker):
-	mem = controller.shared_memory
+	mem = controller.shared_memory.get_instance('global') # Change string to change namespace
 	m = controller.mouse
 	k = controller.key
 	t = controller.tool

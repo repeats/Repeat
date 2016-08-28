@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Repeat.userDefinedAction {
     public class CustomAction : UserDefinedAction {
         public override void Action() {
-            SharedMemoryRequest mem = controller.mem;
+            SharedMemoryInstance mem = controller.mem.GetInstance("global"); // Change the string to change namespace
             MouseRequest mouse = controller.mouse;
             KeyboardRequest key = controller.key;
             ToolRequest tool = controller.tool;

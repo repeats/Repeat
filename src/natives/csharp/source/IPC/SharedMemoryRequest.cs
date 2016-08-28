@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using Repeat.ipc;
+using Repeat.userDefinedAction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace Repeat.IPC {
 
         public string GetVar(string nameSpace, string name) {
             Action = "get";
+            ParamInt.Clear();
             ParamStrings.Clear();
             ParamStrings.Add(nameSpace);
             ParamStrings.Add(name);
@@ -29,7 +31,8 @@ namespace Repeat.IPC {
         }
 
         public string SetVar(string nameSpace, string name, string value) {
-            Action = "del";
+            Action = "set";
+            ParamInt.Clear();
             ParamStrings.Clear();
             ParamStrings.Add(nameSpace);
             ParamStrings.Add(name);
@@ -45,6 +48,7 @@ namespace Repeat.IPC {
 
         public string DelVar(string nameSpace, string name) {
             Action = "del";
+            ParamInt.Clear();
             ParamStrings.Clear();
             ParamStrings.Add(nameSpace);
             ParamStrings.Add(name);
@@ -55,6 +59,10 @@ namespace Repeat.IPC {
             }
 
             return result.Value<string>();
+        }
+
+        public SharedMemoryInstance GetInstance(string nameSpace) {
+            return new SharedMemoryInstance(this, nameSpace);
         }
     }
 }
