@@ -1,6 +1,3 @@
-The project is moved to [https://github.com/repeats/Repeat](https://github.com/repeats/Repeat).
-======
-
 Repeat
 ======
 
