@@ -1,7 +1,6 @@
 package core.languageHandler.compiler;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +14,6 @@ import utilities.Pair;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
-import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
@@ -146,14 +144,5 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 		bCompile.setText("Load source");
 		File interpreter = getPath();
 		getLogger().info("Using python interpreter at " + interpreter.getAbsolutePath());
-		IIPCService pythonIPCService = IPCServiceManager.getIPCService(IPCServiceName.PYTHON);
-
-		if (!pythonIPCService.isRunning()) {
-			try {
-				pythonIPCService.startRunning();
-			} catch (IOException e) {
-				getLogger().log(Level.WARNING, "Encountered exception launching ipc", e);
-			}
-		}
 	}
 }
