@@ -113,3 +113,4 @@ Libraries used
 ==============
 1. jnativehook Global Hooks library at https://github.com/kwhat/jnativehook
 2. Argo JSON library at http://argo.sourceforge.net/
+3. Jama - A Java matrix package at http://math.nist.gov/javanumerics/jama/
