@@ -1,7 +1,7 @@
-Repeat
+The project is moved to [https://github.com/repeats/Repeat](https://github.com/repeats/Repeat).
 ======
 
-The project is moved to [https://github.com/repeats/Repeat](https://github.com/repeats/Repeat).
+Repeat
 ======
 
 Tired of cliking the same spot on your screen again and again? Got bored of typing the same phrase over and over again during your day? Repeat yourself with some intelligence.
