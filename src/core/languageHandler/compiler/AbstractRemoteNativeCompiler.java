@@ -7,6 +7,7 @@ import utilities.FileUtility;
 import utilities.Pair;
 import utilities.RandomUtil;
 import argo.jdom.JsonNode;
+import core.controller.Core;
 import core.ipc.repeatServer.processors.TaskProcessor;
 import core.ipc.repeatServer.processors.TaskProcessorManager;
 import core.languageHandler.Language;
@@ -16,9 +17,14 @@ import core.userDefinedTask.UserDefinedAction;
 public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompiler {
 
 	protected TaskProcessor remoteTaskManager;
+	protected File objectFileDirectory;
 
 	{
 		getLogger().setLevel(Level.ALL);
+	}
+
+	public AbstractRemoteNativeCompiler(File objectFileDirectory) {
+		this.objectFileDirectory = objectFileDirectory;
 	}
 
 	@Override
@@ -70,7 +76,34 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 
 	protected abstract boolean checkRemoteCompilerSettings();
 
-	protected abstract Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(int id, String source, File objectFile);
+	protected Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final int id, final String source, File objectFile) {
+		UserDefinedAction output = new UserDefinedAction() {
+			@Override
+			public void action(Core controller) {
+				boolean result = remoteTaskManager.runTask(id, invoker);
+				if (!result) {
+					getLogger().warning("Unable to run task with id = " + id);
+				}
+			}
+
+			@Override
+			public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
+				Pair<DynamicCompilerOutput, UserDefinedAction> recompiled = compile(source);
+				UserDefinedAction output = recompiled.getB();
+				output.syncContent(this);
+				return output;
+			}
+		};
+		output.setSourcePath(objectFile.getAbsolutePath());
+
+		getLogger().info("Successfully loaded action from remote compiler with id = " + id);
+		return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_SUCCESS, output);
+	}
+
+	@Override
+	protected final File getSourceFile(String compilingAction) {
+		return new File(FileUtility.joinPath(objectFileDirectory.getAbsolutePath(), compilingAction + this.getExtension()));
+	}
 
 	@Override
 	public abstract Language getName();
@@ -92,9 +125,6 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 
 	@Override
 	public abstract JsonNode getCompilerSpecificArgs();
-
-	@Override
-	protected abstract File getSourceFile(String compilingAction);
 
 	@Override
 	protected abstract String getDummyPrefix();

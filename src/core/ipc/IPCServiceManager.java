@@ -11,6 +11,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.ipc.repeatClient.CSharpIPCClientService;
 import core.ipc.repeatClient.PythonIPCClientService;
+import core.ipc.repeatClient.ScalaIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
 import core.languageHandler.Language;
 
@@ -18,7 +19,7 @@ public final class IPCServiceManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IPCServiceManager.class.getName());
 
-	public static final int IPC_SERVICE_COUNT = 3;
+	public static final int IPC_SERVICE_COUNT = 4;
 	private static final long INTER_SERVICE_BOOT_TIME_MS = 2000;
 	private static final IIPCService[] ipcServices;
 	private static final Map<Language, Integer> ipcByLanugage;
@@ -28,11 +29,13 @@ public final class IPCServiceManager {
 		ipcServices[IPCServiceName.CONTROLLER_SERVER.value()] =  new ControllerServer();
 		ipcServices[IPCServiceName.PYTHON.value()] = new PythonIPCClientService();
 		ipcServices[IPCServiceName.CSHARP.value()] = new CSharpIPCClientService();
+		ipcServices[IPCServiceName.SCALA.value()] = new ScalaIPCClientService();
 
 		ipcByLanugage = new HashMap<>();
 		ipcByLanugage.put(Language.JAVA, -1);
 		ipcByLanugage.put(Language.PYTHON, IPCServiceName.PYTHON.value());
 		ipcByLanugage.put(Language.CSHARP, IPCServiceName.CSHARP.value());
+		ipcByLanugage.put(Language.SCALA, IPCServiceName.SCALA.value());
 	}
 
 	public static IIPCService getIPCService(Language name) {
@@ -57,7 +60,7 @@ public final class IPCServiceManager {
 	}
 
 	public static void initiateServices() throws IOException {
-		for (IPCServiceName name : IPCServiceName.ALL_SERVICE_NAMES) {
+		for (IPCServiceName name : IPCServiceName.values()) {
 			IIPCService service = IPCServiceManager.getIPCService(name);
 			if (!service.isLaunchAtStartup()) {
 				continue;
@@ -73,8 +76,8 @@ public final class IPCServiceManager {
 	}
 
 	public static void stopServices() throws IOException {
-		for (int i = IPCServiceName.ALL_SERVICE_NAMES.length - 1; i >= 0; i--) {
-			IPCServiceName name = IPCServiceName.ALL_SERVICE_NAMES[i];
+		for (int i = IPCServiceName.values().length - 1; i >= 0; i--) {
+			IPCServiceName name = IPCServiceName.values()[i];
 			IIPCService service = IPCServiceManager.getIPCService(name);
 			do {
 				service.stopRunning();
@@ -88,16 +91,22 @@ public final class IPCServiceManager {
 	}
 
 	public static boolean parseJSON(List<JsonNode> ipcSettings) {
+		boolean result = true;
+
 		for (JsonNode language : ipcSettings) {
 			String name = language.getStringValue("name");
-			boolean launchAtStartup = language.getBooleanValue("launch_at_startup");
 			Language currentLanguage = Language.identify(name);
 			IIPCService service = IPCServiceManager.getIPCService(currentLanguage);
 			if (service != null) {
-				service.setLaunchAtStartup(launchAtStartup);
+				boolean newResult = service.extractSpecificConfig(language.getNode("config"));
+				if (!newResult) {
+					LOGGER.warning("Unable to parse config for ipc service " + name);
+				}
+				result &= newResult;
 			}
 		}
-		return true;
+
+		return result;
 	}
 
 	public static JsonNode jsonize() {
@@ -109,7 +118,7 @@ public final class IPCServiceManager {
 
 						return JsonNodeFactories.object(
 								JsonNodeFactories.field("name", JsonNodeFactories.string(l.toString())),
-								JsonNodeFactories.field("launch_at_startup", JsonNodeFactories.booleanNode(service == null ? false : service.isLaunchAtStartup()))
+								JsonNodeFactories.field("config", service == null ? JsonNodeFactories.nullNode(): service.getSpecificConfig())
 								);
 					}
 				}.map(Language.values())

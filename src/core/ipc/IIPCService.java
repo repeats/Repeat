@@ -3,6 +3,8 @@ package core.ipc;
 import java.io.IOException;
 
 import utilities.ILoggable;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 
 public abstract class IIPCService implements ILoggable {
 
@@ -27,6 +29,28 @@ public abstract class IIPCService implements ILoggable {
 		}
 
 		stop();
+	}
+
+	/**
+	 * Specific configuration parameters for this ipc service.
+	 *
+	 * @return the json node containing configuration parmeters for this ipc service.
+	 */
+	protected JsonNode getSpecificConfig() {
+		return JsonNodeFactories.object(
+				JsonNodeFactories.field("launch_at_startup", JsonNodeFactories.booleanNode(isLaunchAtStartup()))
+				);
+	}
+
+	/**
+	 * Extract internal configuration parameters for this ipc service.
+	 *
+	 * @param node the json node containing configuration parameters for this ipc service.
+	 * @return if parsing was successful.
+	 */
+	protected boolean extractSpecificConfig(JsonNode node) {
+		launchAtStartup = node.getBooleanValue("launch_at_startup");
+		return true;
 	}
 
 	protected abstract void start() throws IOException;

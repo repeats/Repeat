@@ -4,9 +4,9 @@ public enum IPCServiceName {
 	CONTROLLER_SERVER(0),
     PYTHON(1),
     CSHARP(2),
+    SCALA(3),
     ;
 
-	public static IPCServiceName[] ALL_SERVICE_NAMES = new IPCServiceName[] {CONTROLLER_SERVER, PYTHON, CSHARP};
     private final int index;
 
     /**

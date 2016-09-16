@@ -26,10 +26,10 @@ import frontEnd.MainBackEndHolder;
 
 public class Config implements ILoggable {
 
-	public static final String RELEASE_VERSION = "3.1.1";
+	public static final String RELEASE_VERSION = "3.2";
 	private static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
-	protected static final String CURRENT_CONFIG_VERSION = "2.0";
+	protected static final String CURRENT_CONFIG_VERSION = "2.1";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
@@ -66,7 +66,8 @@ public class Config implements ILoggable {
 				new Parser1_7(),
 				new Parser1_8(),
 				new Parser1_9(),
-				new Parser2_0()
+				new Parser2_0(),
+				new Parser2_1()
 			});
 	}
 

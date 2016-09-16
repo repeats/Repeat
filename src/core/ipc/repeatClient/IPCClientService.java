@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 
+import utilities.JSONUtility;
 import utilities.StringUtilities;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 
 import com.sun.istack.internal.logging.Logger;
 
@@ -126,6 +129,26 @@ public abstract class IPCClientService extends IIPCService {
 	@Override
 	public final void setPort(int newPort) {
 		this.port = newPort;
+	}
+
+	@Override
+	protected JsonNode getSpecificConfig() {
+		JsonNode config = super.getSpecificConfig();
+		return JSONUtility.addChild(config, "executing_program", executingProgram == null ?
+				JsonNodeFactories.nullNode() : JsonNodeFactories.string(executingProgram.getAbsolutePath()));
+	}
+
+	@Override
+	protected boolean extractSpecificConfig(JsonNode node) {
+		if (!super.extractSpecificConfig(node)) {
+			return false;
+		}
+
+		if (node.isNode("executing_program") && !node.isNullNode("executing_program")) {
+			executingProgram = new File(node.getStringValue("executing_program"));
+		}
+
+		return true;
 	}
 
 	protected abstract String[] getLaunchCmd();

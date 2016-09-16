@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
 	protected final JTextField tfRepeatDelay;
 	protected JButton bRecord, bReplay, bCompile, bRun, bTaskGroup;
 	protected JTextArea taSource, taStatus;
-	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython, rbmiCompileCS;
+	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython, rbmiCompileCS, rbmiCompileScala;
 	protected JRadioButtonMenuItem rbmiDebugSevere, rbmiDebugWarning, rbmiDebugInfo, rbmiDebugFine;
 	protected JCheckBoxMenuItem cbmiUseTrayIcon, cbmiHaltByKey, cbmiExecuteOnReleased;
 	protected final JTextField tfMousePosition;
@@ -358,14 +358,25 @@ public class MainFrame extends JFrame {
 		mnNewMenu_3.add(rbmiCompileCS);
 		bGroupLanguage.add(rbmiCompileCS);
 
+		rbmiCompileScala = new JRadioButtonMenuItem("Scala");
+		rbmiCompileScala.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.refreshCompilingLanguage();
+			}
+		});
+		mnNewMenu_3.add(rbmiCompileScala);
+		bGroupLanguage.add(rbmiCompileScala);
+
 		languageSelection.put(Language.JAVA, rbmiCompileJava);
 		languageSelection.put(Language.PYTHON, rbmiCompilePython);
 		languageSelection.put(Language.CSHARP, rbmiCompileCS);
+		languageSelection.put(Language.SCALA, rbmiCompileScala);
 
 		rbmiSelection.put(rbmiCompileJava, Language.JAVA);
 		rbmiSelection.put(rbmiCompilePython, Language.PYTHON);
 		rbmiSelection.put(rbmiCompileCS, Language.CSHARP);
-
+		rbmiSelection.put(rbmiCompileScala, Language.SCALA);
 
 		mntmNewMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
 

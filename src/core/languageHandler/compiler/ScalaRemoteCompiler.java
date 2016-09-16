@@ -9,50 +9,51 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import utilities.FileUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
-import core.ipc.repeatClient.PythonIPCClientService;
+import core.ipc.repeatClient.ScalaIPCClientService;
 import core.languageHandler.Language;
 
-public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
-
-	private File interpreter;
+public class ScalaRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 	{
 		getLogger().setLevel(Level.ALL);
 	}
 
-	public PythonRemoteCompiler(File objectFileDirectory) {
+	public ScalaRemoteCompiler(File objectFileDirectory) {
 		super(objectFileDirectory);
-		interpreter = new File("python.exe");
 	}
 
 	@Override
-	public void setPath(File file) {
-		interpreter = file;
-	}
-
-	@Override
-	public File getPath() {
-		return interpreter;
+	protected boolean checkRemoteCompilerSettings() {
+		return true;
 	}
 
 	@Override
 	public Language getName() {
-		return Language.PYTHON;
+		return Language.SCALA;
 	}
 
 	@Override
 	public String getExtension() {
-		return ".py";
+		return ".scala";
 	}
 
 	@Override
 	public String getObjectExtension() {
-		return ".py";
+		return ".class";
+	}
+
+	@Override
+	public File getPath() {
+		return new File(".");
+	}
+
+	@Override
+	public void setPath(File path) {
+		// Intentionally left blank
 	}
 
 	@Override
@@ -67,33 +68,23 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 	@Override
 	protected String getDummyPrefix() {
-		return "PY_";
+		return "SCALA_";
 	}
 
 	@Override
 	public Logger getLogger() {
-		return Logger.getLogger(PythonRemoteCompiler.class.getName());
+		return Logger.getLogger(getClass().getName());
 	}
-
-	@Override
-	protected boolean checkRemoteCompilerSettings() {
-		if (!FileUtility.fileExists(interpreter) || !interpreter.canExecute()) {
-			getLogger().severe("No interpreter found at " + interpreter.getAbsolutePath());
-			return false;
-		}
-
-		return true;
-	}
-
-	/*******************************************************************/
-	/************************Swing components***************************/
-	/*******************************************************************/
 
 	@Override
 	public void promptChangePath(JFrame parent) {
+		ScalaIPCClientService ipcService = ((ScalaIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.SCALA));
+
 		JFileChooser chooser = new JFileChooser(getPath());
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(parent, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
+
+		// First select the JRE to launch scala subsystem
+		if (chooser.showDialog(parent, "Set JRE") == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = chooser.getSelectedFile();
 			if (!selectedFile.canExecute()) {
 				JOptionPane.showMessageDialog(parent,
@@ -101,14 +92,25 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 				return;
 			}
 			setPath(selectedFile);
-			((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(selectedFile);
+			ipcService.setExecutingProgram(selectedFile);
+		}
+
+		// Next select the scala jar directories containing the jar dependencies for the subsystem
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if (chooser.showDialog(parent, "Set scala jar library directory") == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = chooser.getSelectedFile();
+			if (!selectedFile.isDirectory()) {
+				JOptionPane.showMessageDialog(parent,
+						"Chosen path " + selectedFile.getName() + " is not a directory", "Invalid choice", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+			ipcService.setScalaLibraryDirectory(selectedFile);
 		}
 	}
 
 	@Override
 	public void changeCompilationButton(JButton bCompile) {
-		bCompile.setText("Load source");
-		File interpreter = getPath();
-		getLogger().info("Using python interpreter at " + interpreter.getAbsolutePath());
+		bCompile.setText("Compile source");
 	}
 }

@@ -22,6 +22,7 @@ public abstract class AbstractSourceGenerator {
 		REFERENCE_SOURCES.put(Language.JAVA, new JavaSourceGenerator());
 		REFERENCE_SOURCES.put(Language.PYTHON, new PythonSourceGenerator());
 		REFERENCE_SOURCES.put(Language.CSHARP, new CSharpSourceGenerator());
+		REFERENCE_SOURCES.put(Language.SCALA, new ScalaSourceGenerator());
 	}
 
 	public static String getReferenceSource(Language language) {

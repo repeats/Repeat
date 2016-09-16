@@ -4,6 +4,7 @@ public enum Language {
 	JAVA("java"),
     PYTHON("python"),
     CSHARP("C#"),
+    SCALA("scala"),
     ;
 
     private final String text;

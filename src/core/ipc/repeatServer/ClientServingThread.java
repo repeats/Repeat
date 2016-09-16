@@ -58,6 +58,7 @@ class ClientServingThread implements Runnable, ILoggable {
 		try {
 			while (!isStopped()) {
 				if (!processLoop()) {
+					getLogger().info("Failed to execute process loop...");
 					break;
 				}
 			}
@@ -99,18 +100,24 @@ class ClientServingThread implements Runnable, ILoggable {
 
 	private boolean process() throws IOException {
 		if (reader == null || writer == null) {
+			getLogger().warning("Unable to process with reader " + reader + " and writer " + writer);
 			return false;
 		}
 
 		List<StringBuilder> messages = getMessages();
 		if (messages == null || messages.size() == 0) {
+			getLogger().warning("Messages is null or messages size is 0. " + messages);
 			return false;
 		}
 
 		boolean result = true;
 
 		for (StringBuilder message : messages) {
-			result &= requestProcessor.processRequest(message.toString());
+			boolean newResult = requestProcessor.processRequest(message.toString());
+			result &= newResult;
+			if (!newResult) {
+				getLogger().warning("Unable to process request " + message.toString());
+			}
 		}
 
 		return result;
