@@ -37,12 +37,13 @@ import core.userDefinedTask.Tools;
  * 3) move(int, int): move mouse to a certain position
  * 4) move_by(int, int): move mouse by a certain distance (in pixel)
  *
- * 5) drag(int, int, int, int): drag mouse from a point to another point (i.e. leftClick at the starting point, then move mouse to end point, then release mouse)
- * 6) drag_by(int, int): drag mouse by a certain distance
+ * 5) drag(int, int): drag mouse from a point to another point (i.e. leftClick at the current position, then move mouse to end point, then release mouse)
+ * 6) drag(int, int, int, int): drag mouse from a point to another point (i.e. leftClick at the starting point, then move mouse to end point, then release mouse)
+ * 7) drag_by(int, int): drag mouse by a certain distance
  *
- * 7) get_position(): get position of the mouse
- * 8) get_color(): get the color (RGB) of the current pixel at which the mouse is pointing
- * 9) get_color(int, int): get the color (RGB) of the pixel at the location
+ * 8) get_position(): get position of the mouse
+ * 9) get_color(): get the color (RGB) of the current pixel at which the mouse is pointing
+ * 10) get_color(int, int): get the color (RGB) of the pixel at the location
  *
  *************************************************************************
  * The following actions are supported for keyboard:
@@ -141,7 +142,10 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			}
 			return success(type, id);
 		} else if (action.equals("drag")) {
-			if (params.size() == 4) {
+			if (params.size() == 2) {
+				Point p = core.mouse().getPosition();
+				core.mouse().drag(p.x, p.y, params.get(0), params.get(1));
+			} else if (params.size() == 4) {
 				core.mouse().drag(params.get(0), params.get(1), params.get(2), params.get(3));
 			} else {
 				return failure(type, id, "Unable to drag mouse by with " + params.size() + " parameters.");
