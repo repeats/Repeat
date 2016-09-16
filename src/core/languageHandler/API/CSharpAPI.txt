@@ -11,6 +11,11 @@ Core API
         4) RightClick(int x, int y) : right click at position (x,y)
         5) Move(int x, int y) : move mouse to position (x,y)
         6) MoveBy(int x, int y) : move mouse by (x,y) vector
+        7) Drag(int x1, int y1, int x2, int y2) : 
+        8) DragBy(int x, int y) : drag mouse by certain pixels
+        9) GetPosition() : get the current position of the mouse
+        10) GetColor() : get the color of the pixel where the mouse is
+        11) GetColor(int x, int y) : get the color of the pixel at a location
     II) Key
         1) DoType(params int[] keyCodes) : type a series of keys sequentially. (e.g. type(1,2, 3))
         2) DoType(params string[] strings) : type a series of strings sequentially (e.g. type_string("a", "bb")
