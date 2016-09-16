@@ -88,7 +88,7 @@ public class ScalaIPCClientService extends IPCClientService {
 			return null;
 		}
 
-		return new String[] { executingProgram.getAbsolutePath(), "-classpath" , "\"" + getClassPath() + "\"", SCALA_MAIN_CLASS};
+		return new String[] { executingProgram.getAbsolutePath(), "-classpath" , getClassPath(), SCALA_MAIN_CLASS};
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class ScalaIPCClientService extends IPCClientService {
 
 	@Override
 	protected boolean extractSpecificConfig(JsonNode node) {
-		if (!super.extractSpecificConfig(getSpecificConfig())) {
+		if (!super.extractSpecificConfig(node)) {
 			return false;
 		}
 

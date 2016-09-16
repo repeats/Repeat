@@ -50,7 +50,7 @@ public abstract class IPCClientService extends IIPCService {
 			getLogger().warning("Unable to retrieve launch cmd for " + getName());
 			return;
 		} else {
-			getLogger().info("Executing " + StringUtilities.join(cmd, " "));
+			getLogger().info("Executing " + StringUtilities.join(cmd, " ") + " in " + new File(".").getAbsolutePath());
 		}
 
 		mainThread = new Thread() {
@@ -59,6 +59,7 @@ public abstract class IPCClientService extends IIPCService {
 				try {
 					String line;
 					ProcessBuilder processBuilder = new ProcessBuilder(cmd);
+					processBuilder.directory(new File("."));
 					processBuilder.redirectErrorStream(true);
 					mainProcess = processBuilder.start();
 

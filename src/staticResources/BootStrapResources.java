@@ -65,6 +65,7 @@ public class BootStrapResources {
 		NATIVE_BOOTSTRAP_RESOURCES = new HashMap<>();
 		NATIVE_BOOTSTRAP_RESOURCES.put(Language.PYTHON, new PythonResources());
 		NATIVE_BOOTSTRAP_RESOURCES.put(Language.CSHARP, new CSharpResources());
+		NATIVE_BOOTSTRAP_RESOURCES.put(Language.SCALA, new ScalaResources());
 	}
 
 	public static AbstractNativeBootstrapResource getBootstrapResource(Language language) {
