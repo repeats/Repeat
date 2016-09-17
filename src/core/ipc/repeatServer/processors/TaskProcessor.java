@@ -47,6 +47,7 @@ import core.keyChain.TaskActivation;
 public class TaskProcessor extends AbstractMessageProcessor {
 
 	private static final long EXECUTION_TIMEOUT_MS = 2000;
+	private static final long TASK_CREATION_TIMEOUT_MS = 10000; // Compiling may take long time
 	private final Map<Integer, ClientTask> tasks;
 	private final Map<Long, Reply> locks;
 
@@ -91,7 +92,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 				)
 			);
 
-		Reply reply = fullMessage(requestMessage);
+		Reply reply = fullMessage(requestMessage, TASK_CREATION_TIMEOUT_MS);
 		if (reply != null && reply.status.equals(SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
 			if (task != null) {
@@ -113,7 +114,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 				)
 			);
 
-		Reply reply = fullMessage(requestMessage);
+		Reply reply = fullMessage(requestMessage, EXECUTION_TIMEOUT_MS);
 		return reply != null && reply.status.equals(SUCCESS_STATUS);
 	}
 
@@ -125,7 +126,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 				)
 			);
 
-		Reply reply = fullMessage(requestMessage);
+		Reply reply = fullMessage(requestMessage, EXECUTION_TIMEOUT_MS);
 		if (reply.status.equals(SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
 			if (task != null && task.getId() == id) {
@@ -137,7 +138,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 		return false;
 	}
 
-	private Reply fullMessage(JsonNode requestMessage) {
+	private Reply fullMessage(JsonNode requestMessage, long timeoutMs) {
 		if (!verifyMessageContent(requestMessage)) {
 			getLogger().warning("Cannot send invalid message " + requestMessage);
 			return null;
@@ -153,7 +154,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 
 		try {
 			synchronized (wait) {
-				wait.wait(EXECUTION_TIMEOUT_MS);
+				wait.wait(timeoutMs);
 			}
 			if (wait.timeout) {
 				getLogger().warning("Timeout on operation with id " + messageId);
