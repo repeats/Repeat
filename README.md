@@ -9,6 +9,8 @@ Demo
 
 [Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
 
+[Playing Plants vs Zombies](https://youtu.be/7pQHcFfrpDI)
+
 Features
 =======
 1. Record and replay computer activity.
