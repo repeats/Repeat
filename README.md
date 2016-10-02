@@ -6,6 +6,7 @@ Tired of cliking the same spot on your screen again and again? Got bored of typi
 Demo
 ====
 [Task creation](https://youtu.be/AwkZt7mqLSg)
+[Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
 
 Features
 =======
