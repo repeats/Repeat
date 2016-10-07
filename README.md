@@ -1,11 +1,15 @@
 Repeat
 ======
 
-Tired of cliking the same spot on your screen again and again? Got bored of typing the same phrase over and over again during your day? Repeat yourself with some intelligence.
+Tired of clicking the same spot on your screen again and again? Got bored of typing the same phrase over and over again during your day? Repeat yourself with some intelligence.
 
 Demo
 ====
 [Task creation](https://youtu.be/AwkZt7mqLSg)
+
+[Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
+
+[Playing Plants vs Zombies](https://youtu.be/7pQHcFfrpDI)
 
 Features
 =======
@@ -23,7 +27,7 @@ Disclaimer
 
 Installation
 ============
-Just download the [latest version](https://github.com/hptruong93/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate priviliges since Repeat needs to listen to and/or control the mouse and keyboard.
+Just download the [latest version](https://github.com/hptruong93/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
 
 Known issues
 ============
@@ -40,7 +44,7 @@ FAQ
 1. This runs on any platform that supports Java and is non [headless](https://en.wikipedia.org/wiki/Headless_software). AutoHotkey is written for Windows. Repeat works fine on your Linux machine at work as well as your Window gaming setup at home.
 2. The only limit to your hotkey power is your knowledge of the language you write your tasks in (e.g. Java, Python or C#). You don't have to learn a new meta language provided by AutoHotkey. This allows you to leverage your expertise in the language chosen and/or the immense support from the internet.
 
-## Why is this not available in non headless system?
+## Why is this only available in non headless system?
 It does not make sense to listen to keyboard and mouse events in a headless system. How can you move your mouse if you have no screen? What would typing a key mean in such system?
 
 ## How do I change the global hotkeys (e.g. run task, start recording, stop recording)?
@@ -65,7 +69,7 @@ Change hotkey for your task: just left click on the hotkey column of your task's
 Enabling/disabling task: click on the column in the table that shows enabled/disabled.
 
 ## I accidentally activated an infinite loop in my program with a hotkey. How do I stop the program?
-By default, pressing escape will iterrupt the running tasks. However, you can disable this feature in Setting --> Halt tasks by escape.
+By default, pressing escape will interrupt the running tasks. However, you can disable this feature in Setting --> Halt tasks by escape.
 
 ## There's a button with text "default". What is it?
 It's the button to manage task group.
@@ -93,7 +97,7 @@ At the time I was desperately in need of a tool to liberate myself from the repe
 ## Why can't this be a web service? It's a lot of effort downloading the JAR and run it.
 This application listens on your mouse and keyboard events as well as allowing you to simulate mouse/keyboard events. If I could do such thing from a web browser, some hackers must have got your personal information, passwords, bank account number by now.
 
-## Why is there no support for Javascript?
+## Why is there no support for JavaScript?
 It's coming. I will get it done when I have time.
 
 Code examples
