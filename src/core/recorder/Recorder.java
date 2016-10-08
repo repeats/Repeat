@@ -14,8 +14,10 @@ import core.controller.Core;
 import core.keyChain.GlobalEventsManager;
 import core.languageHandler.Language;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
+import core.languageHandler.sourceGenerator.CSharpSourceGenerator;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
+import core.languageHandler.sourceGenerator.ScalaSourceGenerator;
 import core.scheduler.SchedulingData;
 
 public class Recorder {
@@ -40,6 +42,8 @@ public class Recorder {
 		sourceGenerators = new HashMap<>();
 		sourceGenerators.put(Language.JAVA, new JavaSourceGenerator());
 		sourceGenerators.put(Language.PYTHON, new PythonSourceGenerator());
+		sourceGenerators.put(Language.CSHARP, new CSharpSourceGenerator());
+		sourceGenerators.put(Language.SCALA, new ScalaSourceGenerator());
 
 		/*************************************************************************************************/
 		keyListener = new GlobalKeyListener();
