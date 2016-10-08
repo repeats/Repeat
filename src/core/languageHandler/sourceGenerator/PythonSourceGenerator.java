@@ -1,15 +1,9 @@
 package core.languageHandler.sourceGenerator;
 
-import java.util.logging.Logger;
-
-import staticResources.BootStrapResources;
 import utilities.Function;
 import core.languageHandler.Language;
-import core.scheduler.SchedulingData;
 
 public class PythonSourceGenerator extends AbstractSourceGenerator {
-
-	private static final Logger LOGGER = Logger.getLogger(PythonSourceGenerator.class.getName());
 
 	public PythonSourceGenerator() {
 		super();
@@ -22,51 +16,68 @@ public class PythonSourceGenerator extends AbstractSourceGenerator {
 	}
 
 	@Override
-	public boolean internalSubmitTask(long time, String device, String action, int[] param) {
-		String mid = "";
-		if (device.equals("mouse")) {
-			if (action.equals("move")) {
-				mid = "m.move(" + param[0] + ", " + param[1] +")\n";
-			} else if (action.equals("moveBy")) {
-				mid = "m.move_by(" + param[0] + ", " + param[1] +")\n";
-			} else if (action.equals("click")) {
-				mid = "m.click(" + param[0] + ")\n";
-			} else if (action.equals("press")) {
-				mid = "m.press(" + param[0] + ")\n";
-			} else if (action.equals("release")) {
-				mid = "m.release(" + param[0] + ")\n";
-			} else {
-				return false;
-			}
-		} else if (device.equals("keyBoard")) {
-			if (action.equals("type")) {
-				mid = "k.type(" + param[0] + ")\n";
-			} else if (action.equals("press")) {
-				mid = "k.press(" + param[0] + ")\n";
-			} else if (action.equals("release")) {
-				mid = "k.release(" + param[0] + ")\n";
-			} else {
-				return false;
-			}
-		} else if (action.equals("wait")) {
-			mid = "time.sleep(" + (param[0] / 1000f) + ")\n";
-		}
-
-		return sourceScheduler.addTask(new SchedulingData<String>(time, TAB + mid));
+	protected Language getSourceLanguage() {
+		return Language.PYTHON;
 	}
 
 	@Override
-	public String getSource() {
-		String mainSource = sourceScheduler.getSource();
-		if (mainSource == null) {
-			LOGGER.severe("Unable to generate source...");
-			mainSource = "";
+	public String getSourceTab() {
+		return TAB;
+	}
+
+	@Override
+	protected AbstractMouseSourceCodeGenerator buildMouseSourceCodeGenerator() {
+		return new PythonMouseSourceCodeGenerator();
+	}
+
+	@Override
+	protected AbstractKeyboardSourceCodeGenerator buildKeyboardSourceCodeGenerator() {
+		return new PythonKeyboardSourceCodeGenerator();
+	}
+
+	private class PythonMouseSourceCodeGenerator extends AbstractMouseSourceCodeGenerator {
+
+		@Override
+		protected String move(int[] params) {
+			return "m.move(" + params[0] + ", " + params[1] +")";
 		}
 
-		StringBuffer sb = new StringBuffer();
-		sb.append(BootStrapResources.getNativeLanguageTemplate(Language.PYTHON));
-		sb.append(mainSource);
+		@Override
+		protected String moveBy(int[] params) {
+			return "m.move_by(" + params[0] + ", " + params[1] +")";
+		}
 
-		return sb.toString();
+		@Override
+		protected String click(int[] params) {
+			return "m.click(" + params[0] + ")";
+		}
+
+		@Override
+		protected String press(int[] params) {
+			return "m.press(" + params[0] + ")";
+		}
+
+		@Override
+		protected String release(int[] params) {
+			return "m.release(" + params[0] + ")";
+		}
+	}
+
+	private class PythonKeyboardSourceCodeGenerator extends AbstractKeyboardSourceCodeGenerator {
+
+		@Override
+		protected String type(int[] params) {
+			return "k.type(" + params[0] + ")";
+		}
+
+		@Override
+		protected String press(int[] params) {
+			return "k.press(" + params[0] + ")";
+		}
+
+		@Override
+		protected String release(int[] params) {
+			return "k.release(" + params[0] + ")";
+		}
 	}
 }

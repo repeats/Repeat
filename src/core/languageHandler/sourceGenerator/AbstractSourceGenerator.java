@@ -3,10 +3,15 @@ package core.languageHandler.sourceGenerator;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import staticResources.BootStrapResources;
 import core.languageHandler.Language;
+import core.scheduler.SchedulingData;
 
 public abstract class AbstractSourceGenerator {
+
+	private static final Logger LOGGER = Logger.getLogger(AbstractSourceGenerator.class.getName());
 
 	protected final StringBuffer source;
 	protected TaskSourceScheduler sourceScheduler;
@@ -33,9 +38,15 @@ public abstract class AbstractSourceGenerator {
 		return null;
 	}
 
+	protected AbstractKeyboardSourceCodeGenerator keyboardSourceCodeGenerator;
+	protected AbstractMouseSourceCodeGenerator mouseSourceCodeGenerator;
+
 	public AbstractSourceGenerator() {
 		source = new StringBuffer();
 		sourceScheduler = new TaskSourceScheduler();
+
+		keyboardSourceCodeGenerator = buildKeyboardSourceCodeGenerator();
+		mouseSourceCodeGenerator = buildMouseSourceCodeGenerator();
 	}
 
 	public final boolean submitTask(long time, String device, String action, int[] param) {
@@ -46,16 +57,21 @@ public abstract class AbstractSourceGenerator {
 		return internalSubmitTask(time, device, action, param);
 	}
 
-	protected abstract boolean internalSubmitTask(long time, String device, String action, int[] param);
-
-	protected final boolean verify(String device, String action, int[] param) {
+	protected boolean internalSubmitTask(long time, String device, String action, int[] params) {
+		String mid = "";
 		if (device.equals("mouse")) {
-			return Arrays.asList("move", "moveBy", "press", "release", "click").contains(action);
+			mid = mouseSourceCodeGenerator.getSourceCode(action, params);
 		} else if (device.equals("keyBoard")) {
-			return Arrays.asList("type", "press", "release").contains(action);
+			mid = keyboardSourceCodeGenerator.getSourceCode(action, params);
 		} else {
 			return false;
 		}
+
+		return mid == null ? false : sourceScheduler.addTask(new SchedulingData<String>(time, getSourceTab() + mid + "\n"));
+	}
+
+	protected final boolean verify(String device, String action, int[] param) {
+		return Arrays.asList("mouse", "keyBoard").contains(device);
 	}
 
 	public final void clear() {
@@ -63,5 +79,41 @@ public abstract class AbstractSourceGenerator {
 		sourceScheduler.clear();
 	}
 
-	public abstract String getSource();
+	/**
+	 * This method is called once in the constructor.
+	 *
+	 * @return an {@link AbstractMouseSourceCodeGenerator} to generate mouse source code.
+	 */
+	protected abstract AbstractMouseSourceCodeGenerator buildMouseSourceCodeGenerator();
+
+	/**
+	 * This method is called once in the constructor.
+	 *
+	 * @return an {@link AbstractMouseSourceCodeGenerator} to generate keyboard source code.
+	 */
+	protected abstract AbstractKeyboardSourceCodeGenerator buildKeyboardSourceCodeGenerator();
+
+	/**
+	 * @return the {@link Language} of generated source code.
+	 */
+	protected abstract Language getSourceLanguage();
+
+	/**
+	 * @return the amount of indentation required for the generated source code.
+	 */
+	public abstract String getSourceTab();
+
+	public String getSource() {
+		String mainSource = sourceScheduler.getSource();
+		if (mainSource == null) {
+			LOGGER.severe("Unable to generate source...");
+			mainSource = "";
+		}
+
+		StringBuffer sb = new StringBuffer();
+		sb.append(BootStrapResources.getNativeLanguageTemplate(getSourceLanguage()));
+		sb.append(mainSource);
+
+		return sb.toString();
+	}
 }
