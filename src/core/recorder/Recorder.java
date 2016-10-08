@@ -51,10 +51,6 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (globalKeys.isKeyRegistered(code) != null) {
-					return true;
-				}
-
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
@@ -74,10 +70,6 @@ public class Recorder {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
 				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (globalKeys.isKeyRegistered(code) != null) {
-					return true;
-				}
-
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable() {
 					@Override
