@@ -46,8 +46,9 @@ import core.keyChain.TaskActivation;
  */
 public class TaskProcessor extends AbstractMessageProcessor {
 
-	private static final long EXECUTION_TIMEOUT_MS = 2000;
 	private static final long TASK_CREATION_TIMEOUT_MS = 10000; // Compiling may take long time
+	private static final long EXECUTION_TIMEOUT_MS = 500000; // Execution may also take long time
+	private static final long TASK_REMOVAL_TIMEOUT_MS = 2000; // Removal should be fast
 	private final Map<Integer, ClientTask> tasks;
 	private final Map<Long, Reply> locks;
 
@@ -126,7 +127,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 				)
 			);
 
-		Reply reply = fullMessage(requestMessage, EXECUTION_TIMEOUT_MS);
+		Reply reply = fullMessage(requestMessage, TASK_REMOVAL_TIMEOUT_MS);
 		if (reply.status.equals(SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
 			if (task != null && task.getId() == id) {

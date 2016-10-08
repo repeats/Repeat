@@ -60,6 +60,7 @@ public abstract class AbstractSourceGenerator {
 
 	public final void clear() {
 		source.setLength(0);
+		sourceScheduler.clear();
 	}
 
 	public abstract String getSource();

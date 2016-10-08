@@ -26,33 +26,38 @@ import core.userDefinedTask.Tools;
  *
  *************************************************************************
  * The following actions are supported for mouse:
- * 1a) left_click(): left click at the current mouse position
- * 1b) left_click(int): left click with delay in ms
- * 1c) left_click(int, int): left click at a position
+ * 1a) press(mask): press the mouse using the current mask
+ * 1b) release(mask): release the mouse using the current mask
  *
- * 2a) right_click(): right click at the current mouse position
- * 2b) right_click(int): right click with delay in ms
- * 2c) right_click(int, int): right click at a position
+ * 2a) left_click(): left click at the current mouse position
+ * 2b) left_click(int): left click with delay in ms
+ * 2c) left_click(int, int): left click at a position
  *
- * 3) move(int, int): move mouse to a certain position
- * 4) move_by(int, int): move mouse by a certain distance (in pixel)
+ * 3a) right_click(): right click at the current mouse position
+ * 3b) right_click(int): right click with delay in ms
+ * 3c) right_click(int, int): right click at a position
  *
- * 5) drag(int, int): drag mouse from a point to another point (i.e. leftClick at the current position, then move mouse to end point, then release mouse)
- * 6) drag(int, int, int, int): drag mouse from a point to another point (i.e. leftClick at the starting point, then move mouse to end point, then release mouse)
- * 7) drag_by(int, int): drag mouse by a certain distance
+ * 4) move(int, int): move mouse to a certain position
+ * 5) move_by(int, int): move mouse by a certain distance (in pixel)
  *
- * 8) get_position(): get position of the mouse
- * 9) get_color(): get the color (RGB) of the current pixel at which the mouse is pointing
- * 10) get_color(int, int): get the color (RGB) of the pixel at the location
+ * 6) drag(int, int): drag mouse from a point to another point (i.e. leftClick at the current position, then move mouse to end point, then release mouse)
+ * 7) drag(int, int, int, int): drag mouse from a point to another point (i.e. leftClick at the starting point, then move mouse to end point, then release mouse)
+ * 8) drag_by(int, int): drag mouse by a certain distance
  *
- *************************************************************************
- * The following actions are supported for keyboard:
- * 1) type(key_values...) : type a series of keys sequentially. The int value is the same as defined in java.awt.KeyEvent class
- * 2) type_string(strings...) : type a series of strings sequentially.
- * 3) combination(key_values...) : perform a key combination
+ * 9) get_position(): get position of the mouse
+ * 10) get_color(): get the color (RGB) of the current pixel at which the mouse is pointing
+ * 11) get_color(int, int): get the color (RGB) of the pixel at the location
  *
  *************************************************************************
  * The following actions are supported for keyboard:
+ * 1) press(key_value) : press a key on the keyboard. The int value is the same as defined in java.awt.KeyEvent class
+ * 2) release(key_value) : release a key on the keyboard.
+ * 2) type(key_values...) : type a series of keys sequentially.
+ * 3) type_string(strings...) : type a series of strings sequentially.
+ * 4) combination(key_values...) : perform a key combination
+ *
+ *************************************************************************
+ * The following actions are supported for common tool:
  * 1) getClipboard() : get current clipboard text content
  * 2) setClipboard(value) : set current clipboard text content
  * 3) execute(command) : execute a command in a subprocess
@@ -105,7 +110,21 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			return false;
 		}
 
-		if (action.equals("left_click")) {
+		if (action.equals("press")) {
+			if (params.size() == 1) {
+				core.mouse().press(params.get(0));
+			} else {
+				return failure(type, id, "Unable to press mouse with " + params.size() + " parameters.");
+			}
+			return success(type, id);
+		} else if (action.equals("release")) {
+			if (params.size() == 1) {
+				core.mouse().release(params.get(0));
+			} else {
+				return failure(type, id, "Unable to press mouse with " + params.size() + " parameters.");
+			}
+			return success(type, id);
+		} else if (action.equals("left_click")) {
 			if (params.isEmpty()) {
 				core.mouse().leftClick();
 			} else if (params.size() == 1) {
@@ -179,7 +198,31 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	}
 
 	private boolean keyboardAction(String type, long id, final String action, final List<Object> parsedParams) throws InterruptedException {
-		if (action.equals("type")) {
+		if (action.equals("press")) {
+			final List<Integer> params = toIntegerParams(parsedParams);
+			if (params == null) {
+				return false;
+			}
+
+			if (params.size() == 1) {
+				core.keyBoard().press(params.get(0));
+			} else {
+				return failure(type, id, "Unable to press key with " + params.size() + " parameters.");
+			}
+			return success(type, id);
+		} else if (action.equals("release")) {
+			final List<Integer> params = toIntegerParams(parsedParams);
+			if (params == null) {
+				return false;
+			}
+
+			if (params.size() == 1) {
+				core.keyBoard().release(params.get(0));
+			} else {
+				return failure(type, id, "Unable to release key with " + params.size() + " parameters.");
+			}
+			return success(type, id);
+		} else if (action.equals("type")) {
 			final List<Integer> params = toIntegerParams(parsedParams);
 			if (params == null) {
 				return false;

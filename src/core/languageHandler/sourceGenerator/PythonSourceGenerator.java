@@ -16,7 +16,7 @@ public class PythonSourceGenerator extends AbstractSourceGenerator {
 		this.sourceScheduler.setSleepSource(new Function<Long, String>() {
 			@Override
 			public String apply(Long r) {
-				return TAB + "time.sleep(" + (r / 1000.0) + ")\n";
+				return TAB + "time.sleep(" + (r / 1000f) + ")\n";
 			}
 		});
 	}
@@ -26,30 +26,30 @@ public class PythonSourceGenerator extends AbstractSourceGenerator {
 		String mid = "";
 		if (device.equals("mouse")) {
 			if (action.equals("move")) {
-				mid = "repeat_lib.mouse_move(" + param[0] + ", " + param[1] +")\n";
+				mid = "m.move(" + param[0] + ", " + param[1] +")\n";
 			} else if (action.equals("moveBy")) {
-				mid = "repeat_lib.mouse_move_by(" + param[0] + ", " + param[1] +")\n";
+				mid = "m.move_by(" + param[0] + ", " + param[1] +")\n";
 			} else if (action.equals("click")) {
-				mid = "repeat_lib.mouse_click(" + param[0] + ")\n";
+				mid = "m.click(" + param[0] + ")\n";
 			} else if (action.equals("press")) {
-				mid = "repeat_lib.mouse_press(" + param[0] + ")\n";
+				mid = "m.press(" + param[0] + ")\n";
 			} else if (action.equals("release")) {
-				mid = "repeat_lib.mouse_release(" + param[0] + ")\n";
+				mid = "m.release(" + param[0] + ")\n";
 			} else {
 				return false;
 			}
 		} else if (device.equals("keyBoard")) {
 			if (action.equals("type")) {
-				mid = "repeat_lib.key_type(" + param[0] + ")\n";
+				mid = "k.type(" + param[0] + ")\n";
 			} else if (action.equals("press")) {
-				mid = "repeat_lib.key_press(" + param[0] + ")\n";
+				mid = "k.press(" + param[0] + ")\n";
 			} else if (action.equals("release")) {
-				mid = "repeat_lib.key_release(" + param[0] + ")\n";
+				mid = "k.release(" + param[0] + ")\n";
 			} else {
 				return false;
 			}
 		} else if (action.equals("wait")) {
-			mid = "repeat_lib.blockingWait(" + param[0] + ")\n";
+			mid = "time.sleep(" + (param[0] / 1000f) + ")\n";
 		}
 
 		return sourceScheduler.addTask(new SchedulingData<String>(time, TAB + mid));

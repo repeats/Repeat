@@ -1,5 +1,6 @@
 package staticResources;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Field;
@@ -20,24 +21,46 @@ public class PythonResources extends AbstractNativeBootstrapResource {
 	protected boolean generateKeyCode() {
 		StringBuilder sb = new StringBuilder();
 		Field[] fields = KeyEvent.class.getFields();
+
 		for (Field f : fields) {
 			String name = f.getName();
 			if (!name.startsWith("VK_")) {
 				continue;
 			}
 
-			try {
-				sb.append(name + " = " + f.getInt(KeyEvent.class));
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+			addCodeFromField(sb, f);
+		}
+
+		fields = InputEvent.class.getFields();
+		for (Field f : fields) {
+			String name = f.getName();
+			if (!name.startsWith("BUTTON") || !name.endsWith("MASK")) {
+				continue;
 			}
-			sb.append("\n");
+
+			addCodeFromField(sb, f);
 		}
 
 		String keyCodeFilePath = FileUtility.joinPath(getExtractingDest().getAbsolutePath(), "key_code.py");
 		return FileUtility.writeToFile(sb.toString().trim(), new File(keyCodeFilePath), false);
+	}
+
+	/**
+	 * Add a new line of code that defines the field constant.
+	 * The new line of code will be appended to an input string builder.
+	 *
+	 * @param sb string builder to append the code to.
+	 * @param f field containing the information about the constant to add.
+	 */
+	private void addCodeFromField(StringBuilder sb, Field f) {
+		try {
+			sb.append(f.getName() + " = " + f.getInt(KeyEvent.class));
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		sb.append("\n");
 	}
 
 	@Override

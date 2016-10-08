@@ -5,18 +5,22 @@ Author: HP Truong
 **********************************************************************************************************
 Core API
     I) Mouse
-        1) left_click(x = None, y = None) : left click at a position. If either x or y is not provided, left click at current position
-        2) right_click(x = None, y = None) : right click at a position. If either x or y is not provided, right click at current position
-        3) move(x, y) : move mouse to a position (in pixel)
-        4) move_by(x, y) : move mouse by certain pixels
-        5) drag(x, y) : drag mouse to a certain position
-        6) drag_by(x, y) : drag mouse by certain pixels
-        7) get_position() : get the current position of the mouse
-        8) get_color(x = None, y = None) : get the color of the pixel where the mouse is, or at a location
+    	1) press(mask) : press the mask of the mouse
+    	2) release(mask) : release the mask of the mouse
+        3) left_click(x = None, y = None) : left click at a position. If either x or y is not provided, left click at current position
+        4) right_click(x = None, y = None) : right click at a position. If either x or y is not provided, right click at current position
+        5) move(x, y) : move mouse to a position (in pixel)
+        6) move_by(x, y) : move mouse by certain pixels
+        7) drag(x, y) : drag mouse to a certain position
+        8) drag_by(x, y) : drag mouse by certain pixels
+        9) get_position() : get the current position of the mouse
+        10) get_color(x = None, y = None) : get the color of the pixel where the mouse is, or at a location
     II) Key
-        1) type_key(keys) : type a series of keys sequentially. (e.g. type(VK_A,VK_B, VK_C))
-        2) type_string(strings) : type a series of strings sequentially (e.g. type_string("a", "bb")
-        3) combination(keys) : perform a combination (e.g. combination(VK_CTRL, VK_ALT, VL_DELETE)
+    	1) press(key) : press a key on the keyboard
+    	2) release(key) : release a key on the keyboard
+        3) type_key(keys) : type a series of keys sequentially. (e.g. type(VK_A,VK_B, VK_C))
+        4) type_string(strings) : type a series of strings sequentially (e.g. type_string("a", "bb")
+        5) combination(keys) : perform a combination (e.g. combination(VK_CTRL, VK_ALT, VL_DELETE)
 	III) Shared memory
 		1) get(namespace, variable)
 		2) set(namespace, variable, value)

@@ -1,5 +1,7 @@
 package core.ipc.repeatServer.processors;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import utilities.ILoggable;
@@ -40,6 +42,9 @@ abstract class AbstractMessageProcessor implements ILoggable {
 
 	protected boolean failure(String type, long id, String message) {
 		getLogger().warning(message);
+		StringWriter sw = new StringWriter();
+		new Throwable("").printStackTrace(new PrintWriter(sw));
+		getLogger().info(sw.toString());
 		messageSender.sendMessage(type, id, generateReply(FAILURE_STATUS, message));
 		return false;
 	}
