@@ -32,7 +32,7 @@ public class MainMessageSender implements ILoggable {
 		idCount = 1L;
 	}
 
-	public long sendMessage(String type, JsonNode content) {
+	public synchronized long sendMessage(String type, JsonNode content) {
 		long id = newID();
 		if (sendMessage(type, id, content)) {
 			return id;
@@ -41,7 +41,7 @@ public class MainMessageSender implements ILoggable {
 		}
 	}
 
-	public boolean sendMessage(String type, long id, JsonNode content) {
+	public synchronized boolean sendMessage(String type, long id, JsonNode content) {
 		JsonRootNode toSend = getMessage(type, id, content);
 
 		synchronized (this) {

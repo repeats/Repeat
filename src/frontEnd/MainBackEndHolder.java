@@ -714,7 +714,7 @@ public class MainBackEndHolder {
 	}
 
 	protected void compileSource() {
-		String source = main.taSource.getText();
+		String source = main.taSource.getText().replaceAll("\t", "    "); // Use spaces instead of tabs
 
 		AbstractNativeCompiler compiler = getCompiler();
 		Pair<DynamicCompilerOutput, UserDefinedAction> compilationResult = compiler.compile(source);
