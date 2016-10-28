@@ -27,7 +27,7 @@ Disclaimer
 
 Installation
 ============
-Just download the [latest version](https://github.com/hptruong93/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
+Just download the [latest version](https://github.com/repeats/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
 
 Known issues
 ============
