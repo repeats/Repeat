@@ -16,8 +16,8 @@ public abstract class InjectionSourceGenerator extends AbstractSourceGenerator {
 	private static final String GENERATED_CODE_SECTION_SIGNAL = "Begin generated code";
 
 	@Override
-	public String getSource() {
-		String mainSource = sourceScheduler.getSource();
+	public String getSource(float speedup) {
+		String mainSource = sourceScheduler.getSource(speedup);
 		if (mainSource == null) {
 			LOGGER.severe("Unable to generate source...");
 			mainSource = "";

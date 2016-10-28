@@ -22,7 +22,8 @@ class TaskScheduler extends AbstractScheduler<Runnable> {
 		super();
 	}
 
-	protected synchronized long runTasks(final long count, final long delay, final Function<Void, Void> callBack, final long callBackDelay) {
+	protected synchronized long runTasks(final long count, final long delay, final float speedup,
+											final Function<Void, Void> callBack, final long callBackDelay) {
 		if (isRunning) {
 			LOGGER.info("Cannot invoke two running instances");
 			return 0;
@@ -52,7 +53,7 @@ class TaskScheduler extends AbstractScheduler<Runnable> {
 						}
 
 						try {
-							Thread.sleep(currentTime - time);
+							Thread.sleep((long)((currentTime - time) / speedup));
 						} catch (InterruptedException e) {
 							LOGGER.info("Ended prematuredly");
 							return; // Ended prematurely
@@ -64,7 +65,7 @@ class TaskScheduler extends AbstractScheduler<Runnable> {
 
 					if (delay > 0) {
 						try {
-							Thread.sleep(delay);
+							Thread.sleep((long)(delay / speedup));
 						} catch (InterruptedException e) {
 							LOGGER.info("Ended prematuredly");
 							return; // Ended prematurely
@@ -74,7 +75,7 @@ class TaskScheduler extends AbstractScheduler<Runnable> {
 
 				if (callBack != null && callBackDelay > 0) {
 					try {
-						Thread.sleep(callBackDelay);
+						Thread.sleep((long)(callBackDelay / speedup));
 					} catch (InterruptedException e) {
 						return; // Ended prematurely
 					}

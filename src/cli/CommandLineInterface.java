@@ -152,7 +152,7 @@ public class CommandLineInterface {
 
 				JavaNativeCompiler compiler = new JavaNativeCompiler("CustomAction", new String[] { "core" }, new String[] {});
 
-				Pair<DynamicCompilerOutput, UserDefinedAction> compilerResult = compiler.compile(sourceGen.getSource());
+				Pair<DynamicCompilerOutput, UserDefinedAction> compilerResult = compiler.compile(sourceGen.getSource(1));
 				UserDefinedAction action = compilerResult.getB();
 
 				if (action != null) {

@@ -251,6 +251,10 @@ public class MainBackEndHolder {
 			});
 			recorder.stopReplay();
 		} else {
+			if (!applySpeedup()) {
+				return;
+			}
+
 			isReplaying = true;
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
@@ -604,7 +608,9 @@ public class MainBackEndHolder {
 	}
 
 	protected void generateSource() {
-		main.taSource.setText(recorder.getGeneratedCode(getSelectedLanguage()));
+		if (applySpeedup()) {
+			main.taSource.setText(recorder.getGeneratedCode(getSelectedLanguage()));
+		}
 	}
 
 	protected void importTasks(File inputFile) {
@@ -815,6 +821,29 @@ public class MainBackEndHolder {
 		if (state) {
 			main.tfRepeatCount.setText("1");
 			main.tfRepeatDelay.setText("0");
+		}
+	}
+
+	/**
+	 * Apply the current speedup in the textbox.
+	 * This attempts to parse the speedup.
+	 *
+	 * @return if the speedup was successfully parsed and applied.
+	 */
+	private boolean applySpeedup() {
+		String speedupText = main.tfSpeedup.getText();
+		try {
+			float speedup = Float.parseFloat(speedupText);
+			if (speedup <= 0) {
+				JOptionPane.showMessageDialog(main, "Speedup has to be positive.", "Invalid speedup", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
+
+			recorder.setSpeedup(speedup);
+			return true;
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(main, " Malformed literal.", "Invalid speedup", JOptionPane.WARNING_MESSAGE);
+			return false;
 		}
 	}
 

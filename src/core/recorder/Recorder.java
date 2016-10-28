@@ -25,6 +25,9 @@ public class Recorder {
 	public static final int MODE_NORMAL = 0;
 	public static final int MODE_MOUSE_CLICK_ONLY = 1;
 
+	private static final float NO_SPEEDUP = 1f;
+	private float speedup;
+
 	private long startTime;
 	private int mode;
 
@@ -38,6 +41,8 @@ public class Recorder {
 	public Recorder(final GlobalEventsManager globalKeys) {
 		final Core controller = Core.getInstance();
 		taskScheduler = new TaskScheduler();
+
+		speedup = NO_SPEEDUP;
 
 		sourceGenerators = new HashMap<>();
 		sourceGenerators.put(Language.JAVA, new JavaSourceGenerator());
@@ -165,6 +170,16 @@ public class Recorder {
 		});
 	}
 
+	/**
+	 * Set the speedup in play back and source code generation for this scheduler.
+	 * This should be set before replaying.
+	 *
+	 * @param speedup
+	 */
+	public void setSpeedup(float speedup) {
+		this.speedup = speedup;
+	}
+
 	public void setRecordMode(int mode) {
 		this.mode = mode;
 	}
@@ -185,7 +200,7 @@ public class Recorder {
 	}
 
 	public void replay(long count, long delay, Function<Void, Void> callBack, long callBackDelay, boolean blocking) {
-		long time = taskScheduler.runTasks(count, delay, callBack, callBackDelay);
+		long time = taskScheduler.runTasks(count, delay, speedup, callBack, callBackDelay);
 
 		if (blocking && time > 0) {
 			try {
@@ -210,7 +225,7 @@ public class Recorder {
 	public String getGeneratedCode(Language language) {
 		AbstractSourceGenerator generator = sourceGenerators.get(language);
 		if (generator != null) {
-			return generator.getSource();
+			return generator.getSource(speedup);
 		} else { // Return null to indicate generator does not exist
 			return null;
 		}

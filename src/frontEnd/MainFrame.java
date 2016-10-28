@@ -83,6 +83,7 @@ public class MainFrame extends JFrame {
 	private final JPanel contentPane;
 	protected final JTextField tfRepeatCount;
 	protected final JTextField tfRepeatDelay;
+	protected final JTextField tfSpeedup;
 	protected JButton bRecord, bReplay, bCompile, bRun, bTaskGroup;
 	protected JTextArea taSource, taStatus;
 	protected JRadioButtonMenuItem rbmiCompileJava, rbmiCompilePython, rbmiCompileCS, rbmiCompileScala;
@@ -586,7 +587,7 @@ public class MainFrame extends JFrame {
 		tfRepeatDelay.setEnabled(false);
 		tfRepeatDelay.setColumns(10);
 
-		JLabel lblNewLabel_2 = new JLabel("ms");
+		JLabel lblNewLabel_2 = new JLabel("ms, and speedup of ");
 
 		JScrollPane scrollPane = new LinedTextArea(taSource);
 
@@ -678,6 +679,10 @@ public class MainFrame extends JFrame {
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
+		tfSpeedup = new JTextField();
+		tfSpeedup.setText("1.0");
+		tfSpeedup.setColumns(10);
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -698,14 +703,16 @@ public class MainFrame extends JFrame {
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(lblNewLabel)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(lblNewLabel_1)
-									.addGap(17)
-									.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(lblNewLabel_2)))
-							.addPreferredGap(ComponentPlacement.RELATED, 230, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblNewLabel_2)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(tfSpeedup, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 205, Short.MAX_VALUE)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(lblNewLabel_5)
@@ -767,11 +774,12 @@ public class MainFrame extends JFrame {
 										.addComponent(bReplay)
 										.addComponent(lblNewLabel)
 										.addComponent(tfRepeatCount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-										.addComponent(lblNewLabel_1)
-										.addComponent(lblNewLabel_2)
 										.addComponent(lSecondsSaved)
-										.addComponent(lblNewLabel_5))
+										.addComponent(lblNewLabel_5)
+										.addComponent(lblNewLabel_1)
+										.addComponent(tfRepeatDelay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblNewLabel_2)
+										.addComponent(tfSpeedup, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 										.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)

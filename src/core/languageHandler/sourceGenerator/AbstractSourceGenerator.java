@@ -33,7 +33,7 @@ public abstract class AbstractSourceGenerator {
 	public static String getReferenceSource(Language language) {
 		AbstractSourceGenerator generator = REFERENCE_SOURCES.get(language);
 		if (generator != null) {
-			return generator.getSource();
+			return generator.getSource(1); // No speedup
 		}
 		return null;
 	}
@@ -103,8 +103,8 @@ public abstract class AbstractSourceGenerator {
 	 */
 	public abstract String getSourceTab();
 
-	public String getSource() {
-		String mainSource = sourceScheduler.getSource();
+	public String getSource(float speedup) {
+		String mainSource = sourceScheduler.getSource(speedup);
 		if (mainSource == null) {
 			LOGGER.severe("Unable to generate source...");
 			mainSource = "";
