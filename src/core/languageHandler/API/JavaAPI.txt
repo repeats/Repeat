@@ -6,11 +6,11 @@ Author: HP Truong
 
 I. Class method and attributes:
     Use these anywhere in the method you define.
-    1)  executeInGroup(int index): execute task with index number from the same task group. Invalid index 
+    1)  executeInGroup(int index): execute task with index number from the same task group. Invalid index
     does nothing. This method is deprecated and is no longer supported.
     2) invokingKeyChain: store information about the key chain that invoked the task
 
-II. Core API: (variable controller of type Core) 
+II. Core API: (variable controller of type Core)
     Use these anywhere with the controller variable: controller.<method_name>
     1) mouse(): get MouseCore
     2) keyBoard(): get KeyboardCore
@@ -59,13 +59,13 @@ IV. KeyboardCore API: (variable key of type KeyboardCore)
     10) release(int key)
     11) release(int...keys)
     12) isLocked(int key)
-    
+
 V. KeyChain API: (variable invoker of type KeyChain)
     Use these anywhere with key variable: invoker.<method_name>
     1) getKeys(): return a list of integers representing the key chain that invoked this.
-    
+
 VI. Shared memory API: (sharing variables between tasks)
-	these anywhere with key variable: shared_memory.<method_name>
-	1) getVar(String)
-	2) setVar(String, String)
-	3) delVar(String)
+    these anywhere with key variable: shared_memory.<method_name>
+    1) getVar(String)
+    2) setVar(String, String)
+    3) delVar(String)

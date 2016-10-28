@@ -5,8 +5,8 @@ Author: HP Truong
 **********************************************************************************************************
 Core API
     I) Mouse
-    	1) press(mask) : press the mask of the mouse
-    	2) release(mask) : release the mask of the mouse
+        1) press(mask) : press the mask of the mouse
+        2) release(mask) : release the mask of the mouse
         3) left_click(x = None, y = None) : left click at a position. If either x or y is not provided, left click at current position
         4) right_click(x = None, y = None) : right click at a position. If either x or y is not provided, right click at current position
         5) move(x, y) : move mouse to a position (in pixel)
@@ -16,12 +16,12 @@ Core API
         9) get_position() : get the current position of the mouse
         10) get_color(x = None, y = None) : get the color of the pixel where the mouse is, or at a location
     II) Key
-    	1) press(key) : press a key on the keyboard
-    	2) release(key) : release a key on the keyboard
+        1) press(key) : press a key on the keyboard
+        2) release(key) : release a key on the keyboard
         3) type_key(keys) : type a series of keys sequentially. (e.g. type(VK_A,VK_B, VK_C))
         4) type_string(strings) : type a series of strings sequentially (e.g. type_string("a", "bb")
         5) combination(keys) : perform a combination (e.g. combination(VK_CTRL, VK_ALT, VL_DELETE)
-	III) Shared memory
-		1) get(namespace, variable)
-		2) set(namespace, variable, value)
-		3) del(namespace, variable)    
+    III) Shared memory
+        1) get(namespace, variable)
+        2) set(namespace, variable, value)
+        3) del(namespace, variable)
