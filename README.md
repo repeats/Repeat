@@ -7,6 +7,10 @@ Demo
 ====
 [Task creation](https://youtu.be/AwkZt7mqLSg)
 
+[Clipboard with history](https://youtu.be/dqNckwIPjCE)
+
+[Mouse gesture activation](https://youtu.be/ay9UwPX83vs)
+
 [Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
 
 [Playing Plants vs Zombies](https://youtu.be/7pQHcFfrpDI)
