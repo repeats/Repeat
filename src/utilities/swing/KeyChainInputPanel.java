@@ -103,7 +103,7 @@ public class KeyChainInputPanel extends JPanel {
 	 * @return a new {@link TaskActivation} object representing the user selection.
 	 */
 	private static TaskActivation getInputKeyChains(JFrame parent, int limit, TaskActivation prepopulated, Mode mode) {
-		KeyChainInputPanel input = new KeyChainInputPanel(prepopulated, mode);
+		KeyChainInputPanel input = new KeyChainInputPanel(prepopulated, limit, mode);
 		final JOptionPane optionPane = new JOptionPane(input, JOptionPane.INFORMATION_MESSAGE,
 				JOptionPane.OK_CANCEL_OPTION);
 
@@ -156,7 +156,7 @@ public class KeyChainInputPanel extends JPanel {
 		}
 	}
 
-	private KeyChainInputPanel(TaskActivation prepopulated, Mode mode) {
+	private KeyChainInputPanel(TaskActivation prepopulated, final int limit, Mode mode) {
 		keyChain = new KeyChain();
 
 		final JLabel instruction = new JLabel("Start pressing key chain.");
@@ -217,6 +217,10 @@ public class KeyChainInputPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!keyChain.getKeys().isEmpty()) {
+					if (model.getSize() >= limit) {
+						return;
+					}
+
 					model.addElement(keyChain);
 					keyChain = new KeyChain();
 					tf.setText("");
