@@ -7,6 +7,10 @@ Demo
 ====
 [Task creation](https://youtu.be/AwkZt7mqLSg)
 
+[Clipboard with history](https://youtu.be/dqNckwIPjCE)
+
+[Mouse gesture activation](https://youtu.be/ay9UwPX83vs)
+
 [Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
 
 [Playing Plants vs Zombies](https://youtu.be/7pQHcFfrpDI)
@@ -27,7 +31,7 @@ Disclaimer
 
 Installation
 ============
-Just download the [latest version](https://github.com/hptruong93/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
+Just download the [latest version](https://github.com/repeats/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
 
 Known issues
 ============
