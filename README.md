@@ -5,11 +5,13 @@ Tired of clicking the same spot on your screen again and again? Got bored of typ
 
 Demo
 ====
-[Task creation](https://youtu.be/AwkZt7mqLSg)
-
-[Clipboard with history](https://youtu.be/dqNckwIPjCE)
+[Task creation and playback](https://youtu.be/5ZS2X8DtDhk)
 
 [Mouse gesture activation](https://youtu.be/ay9UwPX83vs)
+
+[Task creation using multiple programming languages](https://youtu.be/AwkZt7mqLSg)
+
+[Clipboard with history](https://youtu.be/dqNckwIPjCE)
 
 [Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
 
