@@ -96,6 +96,16 @@ public class LinedTextArea extends JScrollPane {
 
 		});
 
+		AbstractAction tabAction = new AbstractAction() {
+			@Override
+		    public void actionPerformed(ActionEvent e) {
+				// Use four spaces instead of tab
+				textArea.replaceSelection("    ");
+			}
+		};
+		KeyStroke tabKey = KeyStroke.getKeyStroke("TAB");
+		textArea.getInputMap().put(tabKey, tabAction);
+
 		getViewport().add(textArea);
 		setRowHeaderView(lines);
 		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
