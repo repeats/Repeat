@@ -715,6 +715,10 @@ public class MainBackEndHolder {
 		promptSource();
 	}
 
+	protected void configureCurrentCompiler() {
+		getCompiler().configure();
+	}
+
 	protected void changeCompilerPath() {
 		getCompiler().promptChangePath(main);
 	}

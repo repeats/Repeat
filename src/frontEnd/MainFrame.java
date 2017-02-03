@@ -423,6 +423,15 @@ public class MainFrame extends JFrame {
 
 		menuBar.add(mSetting);
 
+		JMenuItem mntmNewMenuItem_6 = new JMenuItem("Configure compiler...");
+		mntmNewMenuItem_6.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.configureCurrentCompiler();
+			}
+		});
+		mSetting.add(mntmNewMenuItem_6);
+
 		final JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Record Mouse Click Only");
 		mSetting.add(chckbxmntmNewCheckItem);
 

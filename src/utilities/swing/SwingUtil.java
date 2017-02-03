@@ -4,6 +4,8 @@ import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -534,6 +537,53 @@ public class SwingUtil {
 			DisplayPair selectedValue = list.getSelectedValue();
 			return selectedValue == null ? -1 : selectedValue.index;
 		}
+
+		/**
+		 * Show a generic input dialog of customizable content.
+		 *
+		 * @param title title of the input window.
+		 * @param content panel containing the input choices.
+		 * @return true if the user chose the OK option, false otherwise (cancel, or close dialog).
+		 */
+		public static boolean genericInput(String title, JPanel content) {
+			final ModifableBoolean result = new ModifableBoolean(false);
+			final JDialog dialog = new JDialog(null, title, ModalityType.APPLICATION_MODAL);
+			dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+			panel.add(content);
+
+			JPanel buttonPanel = new JPanel();
+			JButton bOK = new JButton("OK");
+			JButton bCancel = new JButton("Cancel");
+			buttonPanel.add(bOK);
+			buttonPanel.add(bCancel);
+			panel.add(buttonPanel);
+
+			bOK.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					result.setValue(true);
+					dialog.dispose();
+				}
+			});
+
+			bCancel.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					result.setValue(false);
+					dialog.dispose();
+				}
+			});
+
+			dialog.add(panel);
+			dialog.pack();
+			dialog.setLocationRelativeTo(null);
+			dialog.setVisible(true);
+
+			return result.getValue();
+		}
 	}
 
 	/**
@@ -550,6 +600,25 @@ public class SwingUtil {
 
 		@Override
 		public String toString() {
+			return value;
+		}
+	}
+
+	/**
+	 * A wrapper for boolean primitive that allows modification of its value.
+	 */
+	private static final class ModifableBoolean {
+		private boolean value;
+
+		private ModifableBoolean(boolean init) {
+			this.value = init;
+		}
+
+		private void setValue(boolean value) {
+			this.value = value;
+		}
+
+		private boolean getValue() {
 			return value;
 		}
 	}

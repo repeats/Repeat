@@ -111,4 +111,9 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 		File interpreter = getPath();
 		getLogger().info("Using python interpreter at " + interpreter.getAbsolutePath());
 	}
+
+	@Override
+	public void configure() {
+		// Nothing to do at the moment
+	}
 }

@@ -113,4 +113,9 @@ public class ScalaRemoteCompiler extends AbstractRemoteNativeCompiler {
 	public void changeCompilationButton(JButton bCompile) {
 		bCompile.setText("Compile source");
 	}
+
+	@Override
+	public void configure() {
+		// Nothing to do at the moment
+	}
 }

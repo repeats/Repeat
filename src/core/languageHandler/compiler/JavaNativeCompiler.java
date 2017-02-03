@@ -2,9 +2,14 @@ package core.languageHandler.compiler;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,9 +17,14 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -23,9 +33,12 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import utilities.FileUtility;
+import utilities.Function;
+import utilities.JSONUtility;
 import utilities.Pair;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
+import utilities.swing.SwingUtil;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.languageHandler.Language;
@@ -39,7 +52,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	private final String[] packageTree;
 	private final String defaultClassName;
 	private String className;
-	private final String[] classPaths;
+	private String[] classPaths;
 
 	private File home;
 
@@ -199,12 +212,38 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 
 	@Override
 	public boolean parseCompilerSpecificArgs(JsonNode node) {
+		if (!node.isArrayNode("classpath")) {
+			return false;
+		}
+
+		List<String> paths = new ArrayList<>();
+		JSONUtility.addAllJson(node.getArrayNode("classpath"), new Function<JsonNode, String>(){
+			@Override
+			public String apply(JsonNode d) {
+				return d.getStringValue().toString();
+			}
+		}, paths);
+		// Override current class paths
+		classPaths = paths.toArray(classPaths);
+		try {
+			applyClassPath();
+		} catch (MalformedURLException | NoSuchMethodException | SecurityException |
+				IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			getLogger().log(Level.WARNING, "Unable to apply class path.", e);
+			return false;
+		}
+
 		return true;
 	}
 
 	@Override
 	public JsonNode getCompilerSpecificArgs() {
-		return JsonNodeFactories.object();
+		List<JsonNode> paths = new ArrayList<>(classPaths.length);
+		for (String path : classPaths) {
+			paths.add(JsonNodeFactories.string(path));
+		}
+
+		return JsonNodeFactories.object(JsonNodeFactories.field("classpath", JsonNodeFactories.array(paths)));
 	}
 
 	@Override
@@ -215,6 +254,31 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	@Override
 	public Logger getLogger() {
 		return Logger.getLogger(JavaNativeCompiler.class.getName());
+	}
+
+	/**
+	 * Add all {@link #classPaths} on the current list of classpath to the system class loader. This introduces two limitations:
+	 * 1) There is no way to remove a class path that was added in the past.
+	 * 2) Contamination of the system class loader.
+	 *
+	 * Alternatively, we could spawn a temporary classloader that contains these paths for each user defined task instantiation.
+	 * This would require refactoring the compilation process to wrap the compiled action execution within this temporary classloader
+	 * creation process.
+	 *
+	 * @throws MalformedURLException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	private void applyClassPath() throws MalformedURLException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		// Hacky reflection solution to alter the global classpath.
+		Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+	    method.setAccessible(true);
+	    for (String path : classPaths) {
+	    	method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{new File(path).toURI().toURL()});
+	    }
 	}
 
 	/*******************************************************************/
@@ -234,5 +298,49 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	@Override
 	public void changeCompilationButton(JButton bCompile) {
 		bCompile.setText("Compile source");
+	}
+
+	@Override
+	public void configure() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(new JLabel("It is advisable to restart the program if you remove a path from the class path list."));
+		panel.add(new JLabel("Class paths (1 path per row)"));
+
+		JTextArea texts = new JTextArea(StringUtilities.join(classPaths, "\n"));
+		JScrollPane scrollPane = new JScrollPane(texts);
+		texts.setRows(10);
+		texts.setColumns(80);
+		panel.add(scrollPane);
+
+		if (!SwingUtil.DialogUtil.genericInput("Configure Java compiler", panel)) {
+			return;
+		}
+
+		String[] paths = texts.getText().split("\n");
+		ArrayList<String> validPaths = new ArrayList<>();
+		for (String path : paths) {
+			if (path.trim().isEmpty()) {
+				continue;
+			}
+
+			if (Files.isReadable(Paths.get(path))) {
+				validPaths.add(path);
+			} else {
+				getLogger().log(Level.WARNING, "The path " + path + " is not readable.");
+				return;
+			}
+		}
+
+		classPaths = new String[validPaths.size()];
+		for (int i = 0; i < validPaths.size(); i++) {
+			classPaths[i] = validPaths.get(i);
+		}
+
+		try {
+			applyClassPath();
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Unable to configure the new classpath.", e);
+		}
 	}
 }

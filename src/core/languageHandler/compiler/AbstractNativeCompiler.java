@@ -33,4 +33,9 @@ public abstract class AbstractNativeCompiler implements ILoggable {
 	/*******************************************************************/
 	public abstract void promptChangePath(JFrame parent);
 	public abstract void changeCompilationButton(JButton bCompile);
+
+	/**
+	 * Show a swing component for the user to configure the parameters specific to this compiler.
+	 */
+	public abstract void configure();
 }
