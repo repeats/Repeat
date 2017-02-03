@@ -265,6 +265,8 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	 * This would require refactoring the compilation process to wrap the compiled action execution within this temporary classloader
 	 * creation process.
 	 *
+	 * Update: The proposed alternative above did not work. Somehow {@link Thread#setContextClassLoader} did not work as expected.
+	 *
 	 * @throws MalformedURLException
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
