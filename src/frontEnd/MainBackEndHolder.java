@@ -223,6 +223,10 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/****************************************Record and replay****************************************************/
 	protected void switchRecord() {
+		if (isReplaying) { // Do not switch record when replaying.
+			return;
+		}
+
 		if (!isRecording) { // Start record
 			recorder.clear();
 			recorder.record();
@@ -240,6 +244,10 @@ public class MainBackEndHolder {
 	}
 
 	protected void switchReplay() {
+		if (isRecording) { // Cannot switch replay when recording.
+			return;
+		}
+
 		if (isReplaying) {
 			isReplaying = false;
 			SwingUtilities.invokeLater(new Runnable() {
@@ -821,6 +829,7 @@ public class MainBackEndHolder {
 		main.bReplay.setEnabled(state);
 		main.tfRepeatCount.setEnabled(state);
 		main.tfRepeatDelay.setEnabled(state);
+		main.tfSpeedup.setEnabled(state);
 
 		if (state) {
 			main.tfRepeatCount.setText("1");

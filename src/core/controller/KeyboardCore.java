@@ -8,7 +8,7 @@ import java.util.HashMap;
 import utilities.Function;
 
 /**
- * Class to provide API to control mouse
+ * Class to provide API to control keyboard.
  * @author HP Truong
  *
  */
