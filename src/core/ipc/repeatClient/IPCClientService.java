@@ -27,7 +27,8 @@ public abstract class IPCClientService extends IIPCService {
 
 	public void setExecutingProgram(File executablePath) {
 		if (!executablePath.canExecute()) {
-			LOGGER.warning("File is not executable");
+			LOGGER.warning("File is not executable: " + executablePath.getAbsolutePath());
+			return;
 		}
 
 		this.executingProgram = executablePath;
@@ -146,7 +147,7 @@ public abstract class IPCClientService extends IIPCService {
 		}
 
 		if (node.isNode("executing_program") && !node.isNullNode("executing_program")) {
-			executingProgram = new File(node.getStringValue("executing_program"));
+			setExecutingProgram(new File(node.getStringValue("executing_program")));
 		}
 
 		return true;
