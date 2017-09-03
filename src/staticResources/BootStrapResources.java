@@ -19,16 +19,23 @@ public class BootStrapResources {
 
 	private static final Logger LOGGER = Logger.getLogger(BootStrapResources.class.getName());
 
+	private static final int ICON_SIZE = 24;
+	
 	private static final Map<Language, String> LANGUAGE_API;
 	private static final Map<Language, String> NATIVE_LANGUAGE_TEMPLATES;
 	private static final Map<Language, AbstractNativeBootstrapResource> NATIVE_BOOTSTRAP_RESOURCES;
 
 	public static final Image TRAY_IMAGE;
+	public static final ImageIcon COMPILE_IMAGE, PLAY_COMPILED_IMAGE, EDIT_CODE, RELOAD;
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE, REFRESH;
 	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
 
 	static {
 		TRAY_IMAGE = getImage("/staticResources/Repeat.jpg");
+		COMPILE_IMAGE = new ImageIcon(getImage("/staticResources/compile.png").getScaledInstance(ICON_SIZE, ICON_SIZE,  Image.SCALE_SMOOTH));
+		PLAY_COMPILED_IMAGE = new ImageIcon(getImage("/staticResources/play_compiled.png").getScaledInstance(ICON_SIZE, ICON_SIZE,  Image.SCALE_SMOOTH));
+		EDIT_CODE = new ImageIcon(getImage("/staticResources/edit_code.png").getScaledInstance(ICON_SIZE, ICON_SIZE,  Image.SCALE_SMOOTH));
+		RELOAD = new ImageIcon(getImage("/staticResources/reload.png").getScaledInstance(ICON_SIZE, ICON_SIZE,  Image.SCALE_SMOOTH));
 
 		ADD = getIcon("/toolbarButtonGraphics/general/Add24.gif");
 		EDIT = getIcon("/toolbarButtonGraphics/general/Edit24.gif");

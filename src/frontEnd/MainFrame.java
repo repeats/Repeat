@@ -576,7 +576,9 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		bCompile = new JButton("Compile source");
+		bCompile = new JButton();
+		bCompile.setIcon(BootStrapResources.COMPILE_IMAGE);
+		bCompile.setToolTipText("Compile");
 		bCompile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -600,7 +602,9 @@ public class MainFrame extends JFrame {
 
 		JScrollPane scrollPane = new LinedTextArea(taSource);
 
-		bRun = new JButton("Run Compiled Action");
+		bRun = new JButton();
+		bRun.setIcon(BootStrapResources.PLAY_COMPILED_IMAGE);
+		bRun.setToolTipText("Run Compiled Action");
 		bRun.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -690,7 +694,28 @@ public class MainFrame extends JFrame {
 
 		tfSpeedup = new JTextField();
 		tfSpeedup.setText("1.0");
+		tfSpeedup.setEnabled(false);
 		tfSpeedup.setColumns(10);
+		
+		JButton bEdit = new JButton();
+		bEdit.setIcon(BootStrapResources.EDIT_CODE);
+		bEdit.setToolTipText("Edit the source code using the OS default program.");
+		bEdit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.editSourceCode();
+			}
+		});
+		
+		JButton bReload = new JButton();
+		bReload.setIcon(BootStrapResources.RELOAD);
+		bReload.setToolTipText("Update the code from the source code file editted using OS default program.");
+		bReload.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				backEnd.reloadSourceCode();
+			}
+		});
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -721,7 +746,7 @@ public class MainFrame extends JFrame {
 							.addComponent(lblNewLabel_2)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(tfSpeedup, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 205, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED, 199, Short.MAX_VALUE)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(lblNewLabel_5)
@@ -735,14 +760,16 @@ public class MainFrame extends JFrame {
 									.addPreferredGap(ComponentPlacement.RELATED))))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
-									.addPreferredGap(ComponentPlacement.UNRELATED))
+								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(bCompile)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(bRun)
-									.addGap(32)))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bEdit)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(bReload)))
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addComponent(bAddTask, GroupLayout.PREFERRED_SIZE, 42, GroupLayout.PREFERRED_SIZE)
@@ -759,8 +786,8 @@ public class MainFrame extends JFrame {
 									.addGap(94))
 								.addGroup(gl_contentPane.createSequentialGroup()
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-										.addComponent(tabbedPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
-										.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE))
+										.addComponent(tabbedPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
+										.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE))
 									.addGap(1)))))
 					.addGap(7))
 		);
@@ -796,17 +823,19 @@ public class MainFrame extends JFrame {
 											.addComponent(bRun)
 											.addComponent(bAddTask))
 										.addComponent(bModifyTask, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-										.addComponent(bRemoveTask)))
+										.addComponent(bRemoveTask)
+										.addComponent(bEdit)
+										.addComponent(bReload)))
 								.addComponent(bMoveTask)))
 						.addComponent(bMoveTaskUp)
 						.addComponent(bMoveTaskDown))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
 							.addGap(11)
-							.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE))
-						.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
+							.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
+						.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		taStatus = new JTextArea();

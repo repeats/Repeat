@@ -1,5 +1,6 @@
 package frontEnd;
 
+import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -71,6 +72,8 @@ public class MainBackEndHolder {
 
 	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
 	protected boolean isRecording, isReplaying, isRunning;
+	
+	private File tempSourceFile;
 
 	protected final MainFrame main;
 
@@ -361,6 +364,53 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/*****************************************Task related********************************************************/
 
+	/**
+	 * Edit source code using the default program to open the source code file (with appropriate extension 
+	 * depending on the currently selected language).
+	 * 
+	 * This does not update the source code in the text area in the main GUI.
+	 */
+	protected void editSourceCode() {
+		AbstractNativeCompiler currentCompiler = getCompiler();
+		// Create a temporary file
+		try {
+			tempSourceFile = File.createTempFile("source", currentCompiler.getExtension());
+			tempSourceFile.deleteOnExit();
+			
+			FileUtility.writeToFile(main.taSource.getText(), tempSourceFile, false);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(main, "Encountered error creating temporary source file.\n" + e.getMessage());
+			return;
+		}
+
+		try {
+			Desktop.getDesktop().open(tempSourceFile);
+			int update = JOptionPane.showConfirmDialog(main, "Update source code from editted source file? (Confirm once done)", "Reload source code", JOptionPane.YES_NO_OPTION);
+			if (update == JOptionPane.YES_OPTION) {
+				reloadSourceCode();
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(main, "Unable to open file for editting.\n" + e.getMessage());
+		}
+	}
+
+	/**
+	 * Load the source code from the temporary source code file into the text area (if the source code file exists).
+	 */
+	protected void reloadSourceCode() {
+		if (tempSourceFile == null || !tempSourceFile.exists()) {
+			JOptionPane.showMessageDialog(main, "Temp file not accessible.");
+			return;
+		}
+
+		StringBuffer sourceCode = FileUtility.readFromFile(tempSourceFile);
+		if (sourceCode == null) {
+			JOptionPane.showMessageDialog(main, "Unable to read from temp file.");
+			return;
+		}
+		main.taSource.setText(sourceCode.toString());
+	}
+	
 	private void removeTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
 		if (!TaskSourceManager.removeTask(task)) {
