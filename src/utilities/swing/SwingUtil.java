@@ -29,6 +29,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import utilities.Function;
+import utilities.FuzzySearch;
+import utilities.FuzzySearch.FuzzySearchable;
 
 public class SwingUtil {
 
@@ -469,9 +471,9 @@ public class SwingUtil {
 
 			final JTextField searchBar = new JTextField();
 
-			final List<DisplayPair> choicePairs = new LinkedList<>();
-			final JList<DisplayPair> list = new JList<>();
-			final DefaultListModel<DisplayPair> model = new DefaultListModel<>();
+			final List<FuzzySearchable> choicePairs = new LinkedList<>();
+			final JList<FuzzySearchable> list = new JList<>();
+			final DefaultListModel<FuzzySearchable> model = new DefaultListModel<>();
 			for (int i = 0; i < choices.length; i++) {
 				DisplayPair pair = new DisplayPair(i, choices[i]);
 				choicePairs.add(pair);
@@ -498,11 +500,8 @@ public class SwingUtil {
 					String text = searchBar.getText().toLowerCase().trim();
 					model.clear();
 
-					for (DisplayPair pair : choicePairs) {
-						String comparing = pair.value.toLowerCase().trim();
-						if (comparing.contains(text) || text.contains(comparing)) {
-							model.addElement(pair);
-						}
+					for (FuzzySearchable pair : FuzzySearch.fuzzySearch(choicePairs, text)) {
+						model.addElement(pair);
 					}
 				}
 			});
@@ -534,7 +533,7 @@ public class SwingUtil {
 			searchBar.requestFocusInWindow();
 			dialog.setVisible(true);
 
-			DisplayPair selectedValue = list.getSelectedValue();
+			DisplayPair selectedValue = (DisplayPair) list.getSelectedValue(); // We know cast is safe since we only added this type.
 			return selectedValue == null ? -1 : selectedValue.index;
 		}
 
@@ -589,18 +588,25 @@ public class SwingUtil {
 	/**
 	 * Class to capture a pair of index, value pair to display on list or table
 	 */
-	private static final class DisplayPair {
+	private static final class DisplayPair implements FuzzySearch.FuzzySearchable {
 		private final int index;
 		private final String value;
+		private final String referenceValue; // Used in comparison and searching
 
 		private DisplayPair(int index, String value) {
 			this.index = index;
 			this.value = value;
+			this.referenceValue = value.toLowerCase().trim();
 		}
 
 		@Override
 		public String toString() {
 			return value;
+		}
+
+		@Override
+		public String getString() {
+			return referenceValue;
 		}
 	}
 

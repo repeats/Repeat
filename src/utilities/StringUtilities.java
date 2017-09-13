@@ -171,6 +171,57 @@ public class StringUtilities {
 
 		return -1;
 	}
+	
+	/**
+	 * Calculate the Levenshtein distance between two strings using dynamic programming.
+	 * This implementation is based on the pseudocode presented on Wikipedia.
+	 * 
+	 * @param l first string
+	 * @param r second string
+	 * @return the Levenshtein distance between two strings
+	 */
+	public static int levenshteinDistance(String l, String r) {
+		if (l == null && r == null) return 0;
+		if (l == null) return r.length();
+		if (r == null) return l.length();
+		
+		if (l.isEmpty() && r.isEmpty()) return 0;
+		if (l.isEmpty()) return r.length();
+		if (r.isEmpty()) return l.length();
+		
+		int m = l.length();
+		int n = r.length();
+		
+		int[][] d = new int[m+1][n+1];
+		for (int i = 0; i < m; i++) {
+			d[i][0] = i;
+		}
+		
+		for (int j = 0; j < n; j++) {
+			d[0][j] = j;
+		}
+		
+		for (int i = 1; i <= m; i++) {
+			for (int j = 1; j <= n; j++) {
+				char cl = l.charAt(i-1);
+				char cr = r.charAt(j-1);
+				
+				int cost = cl == cr ? 0 : 1;
+				
+				d[i][j] = Math.min(
+							Math.min(d[i-1][j] + 1, d[i][j-1] + 1),
+							d[i-1][j-1] + cost);
+				
+				// Uncomment this for Optimal Alignment String Distance calculation
+				// Transposition
+//				if (i > 1 && j > 1 && cl == r.charAt(j-2) && l.charAt(i-2) == cr) {
+//					d[i][j] = Math.min(d[i][j], d[i-2][j-2]);
+//				}
+			}
+		}
+		
+		return d[m][n];
+	}
 
 	/**
 	 * Private constructor so that no instance is created
