@@ -47,7 +47,7 @@ public class Main {
 			BootStrapResources.extractResources();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Cannot extract bootstrap resources.", e);
-			System.exit(1);
+			System.exit(2);
 		}
 
 		/*************************************************************************************/
@@ -57,7 +57,7 @@ public class Main {
 			protected Void doInBackground() throws Exception {
 				if (createdFrame == null) {
 					LOGGER.severe("Main frame is not created. Exitting...");
-					System.exit(2);
+					System.exit(3);
 				}
 
 				createdFrame.backEnd.loadConfig(null);
