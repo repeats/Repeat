@@ -36,7 +36,7 @@ public abstract class IPCClientService extends IIPCService {
 
 	@Override
 	public final void start() throws IOException {
-		if (!executingProgram.exists()) {
+		if (executingProgram == null || !executingProgram.exists()) {
 			getLogger().warning("Launcher " + executingProgram.getAbsolutePath() + " does not exist.");
 			return;
 		}
