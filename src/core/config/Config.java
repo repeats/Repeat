@@ -9,24 +9,23 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import utilities.FileUtility;
-import utilities.ILoggable;
-import utilities.JSONUtility;
+import com.sun.glass.events.KeyEvent;
+
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-
-import com.sun.glass.events.KeyEvent;
-
 import core.ipc.IPCServiceManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import core.userDefinedTask.TaskGroup;
 import frontEnd.MainBackEndHolder;
+import utilities.FileUtility;
+import utilities.ILoggable;
+import utilities.JSONUtility;
 
 public class Config implements ILoggable {
 
-	public static final String RELEASE_VERSION = "3.7";
+	public static final String RELEASE_VERSION = "3.7.1";
 	private static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
 	protected static final String CURRENT_CONFIG_VERSION = "2.2";
