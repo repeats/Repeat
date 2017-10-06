@@ -1,15 +1,15 @@
 package core.ipc.repeatServer;
 
-import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.ILoggable;
-import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import utilities.ILoggable;
+import utilities.JSONUtility;
 
 /**
  * This class sends messages to the ipc client
@@ -26,7 +26,7 @@ import argo.jdom.JsonRootNode;
 public class MainMessageSender implements ILoggable {
 
 	private long idCount;
-	private BufferedWriter writer;
+	private DataOutputStream writer;
 
 	protected MainMessageSender() {
 		idCount = 1L;
@@ -46,13 +46,11 @@ public class MainMessageSender implements ILoggable {
 
 		synchronized (this) {
 			try {
-				String message = String.format("%s%s%s%s%s",
-									ClientServingThread.MESSAGE_DELIMITER,
-									ClientServingThread.MESSAGE_DELIMITER,
-									JSONUtility.jsonToString(toSend),
-									ClientServingThread.MESSAGE_DELIMITER,
-									ClientServingThread.MESSAGE_DELIMITER);
-				writer.write(message);
+				writer.write(ClientServingThread.MESSAGE_DELIMITER);
+				writer.write(ClientServingThread.MESSAGE_DELIMITER);
+				writer.write(encode(JSONUtility.jsonToString(toSend)));
+				writer.write(ClientServingThread.MESSAGE_DELIMITER);
+				writer.write(ClientServingThread.MESSAGE_DELIMITER);
 				writer.flush();
 			} catch (IOException e) {
 				getLogger().log(Level.WARNING, "Exception while writing message", e);
@@ -76,8 +74,18 @@ public class MainMessageSender implements ILoggable {
 		return idCount;
 	}
 
-	protected void setWriter(BufferedWriter writer) {
+	protected void setWriter(DataOutputStream writer) {
 		this.writer = writer;
+	}
+
+	/**
+	 * Encode a message to send from server to client.
+	 *
+	 * @param message message to encode.
+	 * @return byte array representing bytes to send to client.
+	 */
+	private byte[] encode(String message) {
+		return message.getBytes(ControllerServer.ENCODING);
 	}
 
 	@Override

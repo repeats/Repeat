@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
@@ -14,6 +16,7 @@ import core.ipc.IIPCService;
 
 public class ControllerServer extends IIPCService {
 
+	protected static final Charset ENCODING = StandardCharsets.UTF_8;
 	private static final int DEFAULT_PORT = 9999;
 	private static final int DEFAULT_TIMEOUT_MS = 10000;
 	private static final int MAX_THREAD_COUNT = 10;
