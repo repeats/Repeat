@@ -161,7 +161,24 @@ public class KeyboardCore {
 	}
 
 	/**
+	 * Type a sequence of keys sequentially multiple times
+	 * @param count number of times to repeat the typing
+	 * @param key integers representing the keys as specified in java.awt.events.KeyEvent class
+	 * @throws InterruptedException
+	 */
+	public void repeat(int count, int...keys) throws InterruptedException {
+		if (count <= 0) {
+			return;
+		}
+
+		for (int i = 0; i < count; i++) {
+			type(keys);
+		}
+	}
+	
+	/**
 	 * Type a key multiple times
+	 * @deprecated use {@link #repeat(int, int...)} instead
 	 * @param key integer representing the key as specified in java.awt.events.KeyEvent class
 	 * @param count number of times to repeat the typing
 	 * @throws InterruptedException
