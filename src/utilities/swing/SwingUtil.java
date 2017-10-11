@@ -495,6 +495,12 @@ public class SwingUtil {
 
 						list.requestFocusInWindow();
 						return;
+					} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+						if (model.getSize() == 1) {
+							list.setSelectedIndex(0);
+							dialog.dispose();
+						}
+						return;
 					}
 
 					String text = searchBar.getText().toLowerCase().trim();

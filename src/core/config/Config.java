@@ -25,7 +25,7 @@ import utilities.JSONUtility;
 
 public class Config implements ILoggable {
 
-	public static final String RELEASE_VERSION = "3.7.1";
+	public static final String RELEASE_VERSION = "3.8";
 	private static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
 	protected static final String CURRENT_CONFIG_VERSION = "2.2";
