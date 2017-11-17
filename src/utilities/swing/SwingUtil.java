@@ -457,6 +457,29 @@ public class SwingUtil {
 	public static final class DialogUtil {
 		private DialogUtil() {}
 
+		public static class DialogSelectionOption {
+			// Enable selecting first element when pressing enter regardless how many items there are in the list.
+			private boolean selectFirstElementOnEnter;
+			// Enable auto-select the first element after filter if it is the only element in the choice list.
+			private boolean selectOnlyElementOnFilter;
+
+			private DialogSelectionOption() {}
+
+			public static DialogSelectionOption create() {
+				return new DialogSelectionOption();
+			}
+
+			public DialogSelectionOption selectFirstElementOnEnter(boolean val) {
+				selectFirstElementOnEnter = val;
+				return this;
+			}
+
+			public DialogSelectionOption selectOnlyElementOnFilter(boolean val) {
+				selectOnlyElementOnFilter = val;
+				return this;
+			}
+		}
+
 		/**
 		 * Display a dialog for user to select value from a list of values
 		 * @param parent parent jframe hosting this dialog
@@ -466,6 +489,19 @@ public class SwingUtil {
 		 * @return the index of selected field
 		 */
 		public static int getSelection(JFrame parent, String title, String[] choices, int selected) {
+			return getSelection(parent, title, choices, selected, DialogSelectionOption.create());
+		}
+
+		/**
+		 * Display a dialog for user to select value from a list of values
+		 * with certain options in the dialogs.
+		 * @param parent parent jframe hosting this dialog
+		 * @param title title of the dialog shown
+		 * @param choices list of string represents the available choices
+		 * @param selected index of the selected element at start time. If set to -1 then nothing is selected
+		 * @return the index of selected field
+		 */
+		public static int getSelection(JFrame parent, String title, String[] choices, int selected, DialogSelectionOption option) {
 			final JDialog dialog = new JDialog(parent, title, ModalityType.APPLICATION_MODAL);
 			dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -496,7 +532,7 @@ public class SwingUtil {
 						list.requestFocusInWindow();
 						return;
 					} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-						if (model.getSize() == 1) {
+						if (model.getSize() == 1 || (model.getSize() > 0 && option.selectFirstElementOnEnter)) {
 							list.setSelectedIndex(0);
 							dialog.dispose();
 						}
@@ -506,8 +542,14 @@ public class SwingUtil {
 					String text = searchBar.getText().toLowerCase().trim();
 					model.clear();
 
-					for (FuzzySearchable pair : FuzzySearch.fuzzySearch(choicePairs, text)) {
+					List<FuzzySearchable> filteredPairs = FuzzySearch.fuzzySearch(choicePairs, text);
+					for (FuzzySearchable pair : filteredPairs) {
 						model.addElement(pair);
+					}
+					if (option.selectOnlyElementOnFilter && filteredPairs.size() == 1) {
+						list.setSelectedIndex(0);
+						dialog.dispose();
+						return;
 					}
 				}
 			});
