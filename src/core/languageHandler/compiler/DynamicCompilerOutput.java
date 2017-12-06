@@ -7,4 +7,5 @@ public enum DynamicCompilerOutput {
 	COMPILER_MISSING,
 	COMPILER_MISCONFIGURED,
 	COMPILATION_ERROR,
+	CONSTRUCTOR_ERROR, // Missing nullary constructor.
 }

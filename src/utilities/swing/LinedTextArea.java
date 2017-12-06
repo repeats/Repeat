@@ -39,7 +39,6 @@ public class LinedTextArea extends JScrollPane {
             @Override
             public void undoableEditHappened(UndoableEditEvent e) {
                 undoManager.addEdit(e.getEdit());
-//                System.out.println(e);
             }
         });
         textArea.getActionMap().put("Undo", new AbstractAction("Undo") {

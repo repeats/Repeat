@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import sun.misc.Launcher;
 import frontEnd.BlankClass;
 
 /**
@@ -524,21 +523,21 @@ public class FileUtility {
 		    }
 		    jar.close();
 		} else { // Run with IDE
-		    final URL url = Launcher.class.getResource("/" + path);
-		    if (url != null) {
-		        try {
-		            final File apps = new File(url.toURI());
-		            for (File app : apps.listFiles()) {
-		            	if (!filteringFunction.apply(app.getAbsolutePath())) {
-				        	continue;
-				        }
-		                Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), app.getName()));
-		                Files.copy(app.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
-		            }
-		        } catch (URISyntaxException ex) {
-		            // never happens
-		        }
-		    }
+			final URL url = FileUtility.class.getResource("/" + path);
+			if (url != null) {
+				try {
+					final File apps = new File(url.toURI());
+					for (File app : apps.listFiles()) {
+						if (!filteringFunction.apply(app.getAbsolutePath())) {
+							continue;
+						}
+						Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), app.getName()));
+						Files.copy(app.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+					}
+				} catch (URISyntaxException ex) {
+					// never happens
+				}
+			}
 		}
 	}
 

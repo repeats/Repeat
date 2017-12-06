@@ -23,16 +23,6 @@ import javax.swing.SwingUtilities;
 
 import org.jnativehook.GlobalScreen;
 
-import staticResources.BootStrapResources;
-import utilities.DateUtility;
-import utilities.FileUtility;
-import utilities.Function;
-import utilities.NumberUtility;
-import utilities.OSIdentifier;
-import utilities.Pair;
-import utilities.ZipUtility;
-import utilities.swing.KeyChainInputPanel;
-import utilities.swing.SwingUtil;
 import core.config.Config;
 import core.controller.Core;
 import core.ipc.IPCServiceManager;
@@ -51,6 +41,16 @@ import core.recorder.Recorder;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
+import staticResources.BootStrapResources;
+import utilities.DateUtility;
+import utilities.FileUtility;
+import utilities.Function;
+import utilities.NumberUtility;
+import utilities.OSIdentifier;
+import utilities.Pair;
+import utilities.ZipUtility;
+import utilities.swing.KeyChainInputPanel;
+import utilities.swing.SwingUtil;
 
 public class MainBackEndHolder {
 
@@ -72,7 +72,7 @@ public class MainBackEndHolder {
 
 	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
 	protected boolean isRecording, isReplaying, isRunning;
-	
+
 	private File tempSourceFile;
 
 	protected final MainFrame main;
@@ -365,9 +365,9 @@ public class MainBackEndHolder {
 	/*****************************************Task related********************************************************/
 
 	/**
-	 * Edit source code using the default program to open the source code file (with appropriate extension 
+	 * Edit source code using the default program to open the source code file (with appropriate extension
 	 * depending on the currently selected language).
-	 * 
+	 *
 	 * This does not update the source code in the text area in the main GUI.
 	 */
 	protected void editSourceCode() {
@@ -376,7 +376,7 @@ public class MainBackEndHolder {
 		try {
 			tempSourceFile = File.createTempFile("source", currentCompiler.getExtension());
 			tempSourceFile.deleteOnExit();
-			
+
 			FileUtility.writeToFile(main.taSource.getText(), tempSourceFile, false);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(main, "Encountered error creating temporary source file.\n" + e.getMessage());
@@ -410,7 +410,7 @@ public class MainBackEndHolder {
 		}
 		main.taSource.setText(sourceCode.toString());
 	}
-	
+
 	private void removeTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
 		if (!TaskSourceManager.removeTask(task)) {

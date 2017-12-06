@@ -5,19 +5,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import utilities.JSONUtility;
-import utilities.StringUtilities;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
-
-import com.sun.istack.internal.logging.Logger;
-
 import core.ipc.IIPCService;
+import utilities.JSONUtility;
+import utilities.StringUtilities;
 
 public abstract class IPCClientService extends IIPCService {
 
-	private static final Logger LOGGER = Logger.getLogger(IPCClientService.class);
+	private static final Logger LOGGER = Logger.getLogger(IPCClientService.class.getName());
 	protected static final long TIMEOUT_MS = 5000;
 
 	protected File executingProgram; // The program used to execute this ipc client

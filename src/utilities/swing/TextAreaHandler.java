@@ -18,7 +18,6 @@ public class TextAreaHandler extends Handler {
 
 	@Override
 	public void publish(final LogRecord record) {
-		System.out.println("here");
 		SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

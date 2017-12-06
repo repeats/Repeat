@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.FileUtility;
-import utilities.IJsonable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.languageHandler.Language;
+import utilities.FileUtility;
+import utilities.IJsonable;
 
 public class DynamicCompilerManager implements IJsonable {
 
@@ -36,11 +36,11 @@ public class DynamicCompilerManager implements IJsonable {
 		return getCompiler(Language.identify(name));
 	}
 
-	public boolean hasCompiler(String name) {
+	public boolean hasCompiler(Language name) {
 		return compilers.containsKey(name);
 	}
 
-	public AbstractNativeCompiler removeCompiler(String name) {
+	public AbstractNativeCompiler removeCompiler(Language name) {
 		return compilers.remove(name);
 	}
 

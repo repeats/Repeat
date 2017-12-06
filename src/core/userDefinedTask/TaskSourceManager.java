@@ -1,15 +1,15 @@
 package core.userDefinedTask;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 import utilities.FileUtility;
 
-import com.sun.istack.internal.logging.Logger;
 
 
 public class TaskSourceManager {
 
-	private static final Logger LOGGER = Logger.getLogger(TaskSourceManager.class);
+	private static final Logger LOGGER = Logger.getLogger(TaskSourceManager.class.getName());
 
 	public static boolean submitTask(UserDefinedAction task, String source) {
 		String sourceFileName = null;

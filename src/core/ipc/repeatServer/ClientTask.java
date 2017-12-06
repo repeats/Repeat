@@ -1,11 +1,12 @@
 package core.ipc.repeatServer;
 
-import utilities.IJsonable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-
-import com.sun.istack.internal.logging.Logger;
+import utilities.IJsonable;
 
 /**
  * This class is very similar to <class> UserDefinedAction </class>, except that this is meant to be
@@ -14,7 +15,7 @@ import com.sun.istack.internal.logging.Logger;
  *
  */
 public class ClientTask implements IJsonable {
-	private static final Logger LOGGER = Logger.getLogger(ClientTask.class);
+	private static final Logger LOGGER = Logger.getLogger(ClientTask.class.getName());
 
 	private final int id;
 	private final String fileName;
@@ -46,7 +47,7 @@ public class ClientTask implements IJsonable {
 			String fileName = node.getStringValue("file_name");
 			return new ClientTask(id, fileName);
 		} catch (Exception e) {
-			LOGGER.warning("Failed to parse ClientTask.", e);
+			LOGGER.log(Level.WARNING, "Failed to parse ClientTask.", e);
 			return null;
 		}
 	}

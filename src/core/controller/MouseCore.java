@@ -76,7 +76,7 @@ public class MouseCore {
 	 * @throws InterruptedException
 	 */
 	public void leftClick() throws InterruptedException {
-		click(InputEvent.BUTTON1_MASK);
+		click(InputEvent.BUTTON1_DOWN_MASK);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class MouseCore {
 	 * @throws InterruptedException
 	 */
 	public void leftClick(int delay) throws InterruptedException {
-		click(InputEvent.BUTTON1_MASK, delay);
+		click(InputEvent.BUTTON1_DOWN_MASK, delay);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class MouseCore {
 	 * @throws InterruptedException
 	 */
 	public void rightClick() throws InterruptedException {
-		click(InputEvent.BUTTON3_MASK);
+		click(InputEvent.BUTTON3_DOWN_MASK);
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class MouseCore {
 	 * @throws InterruptedException
 	 */
 	public void rightClick(int delay) throws InterruptedException {
-		click(InputEvent.BUTTON3_MASK, delay);
+		click(InputEvent.BUTTON3_DOWN_MASK, delay);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class MouseCore {
 	 * @throws InterruptedException
 	 */
 	public void leftClick(int x, int y) throws InterruptedException {
-		click(InputEvent.BUTTON1_MASK, x, y);
+		click(InputEvent.BUTTON1_DOWN_MASK, x, y);
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class MouseCore {
 	 */
 	public void leftClick(int x, int y, int delay) throws InterruptedException {
 		move(x, y);
-		click(InputEvent.BUTTON1_MASK, delay);
+		click(InputEvent.BUTTON1_DOWN_MASK, delay);
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class MouseCore {
 	 * @throws InterruptedException
 	 */
 	public void rightClick(int x, int y) throws InterruptedException {
-		click(InputEvent.BUTTON3_MASK, x, y);
+		click(InputEvent.BUTTON3_DOWN_MASK, x, y);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class MouseCore {
 	 */
 	public void rightClick(int x, int y, int delay) throws InterruptedException {
 		move(x, y);
-		click(InputEvent.BUTTON3_MASK, delay);
+		click(InputEvent.BUTTON3_DOWN_MASK, delay);
 	}
 
 	/**
@@ -206,9 +206,9 @@ public class MouseCore {
 	 * Release 3 primary mouse masks: 1, 2, and 3
 	 */
 	public void releaseAll() {
-		controller.mouseRelease(InputEvent.BUTTON1_MASK);
-		controller.mouseRelease(InputEvent.BUTTON2_MASK);
-		controller.mouseRelease(InputEvent.BUTTON3_MASK);
+		controller.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+		controller.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+		controller.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
 	}
 
 	/**
@@ -237,9 +237,9 @@ public class MouseCore {
 	 */
 	public void drag(int sourceX, int sourceY, int destX, int destY) {
 		move(sourceX, sourceY);
-		press(InputEvent.BUTTON1_MASK);
+		press(InputEvent.BUTTON1_DOWN_MASK);
 		move(destX, destY);
-		release(InputEvent.BUTTON1_MASK);
+		release(InputEvent.BUTTON1_DOWN_MASK);
 	}
 
 	/**
@@ -258,9 +258,9 @@ public class MouseCore {
 	 * @param sourceY y coordinate of the beginning point
 	 */
 	public void dragBy(int amountX, int amountY) {
-		press(InputEvent.BUTTON1_MASK);
+		press(InputEvent.BUTTON1_DOWN_MASK);
 		moveBy(amountX, amountY);
-		release(InputEvent.BUTTON1_MASK);
+		release(InputEvent.BUTTON1_DOWN_MASK);
 	}
 
 	/**

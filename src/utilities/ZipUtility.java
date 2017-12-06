@@ -38,8 +38,6 @@ public class ZipUtility {
 				String fileName = zipEntry.getName();
 				File newFile = new File(FileUtility.joinPath(outputFolder, fileName));
 
-				System.out.println("file unzip : " + newFile.getAbsoluteFile());
-
 				// create all non exists folders
 				// else you will hit FileNotFoundException for compressed folder
 				new File(newFile.getParent()).mkdirs();
