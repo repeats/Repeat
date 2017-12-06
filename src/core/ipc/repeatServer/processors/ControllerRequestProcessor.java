@@ -3,15 +3,17 @@ package core.ipc.repeatServer.processors;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import utilities.IterableUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
 import core.ipc.repeatServer.MainMessageSender;
 import core.userDefinedTask.Tools;
+import utilities.IterableUtility;
+import utilities.swing.SwingUtil;
 
 /**
  * This class represents the message processor for action request received from client.
@@ -62,6 +64,7 @@ import core.userDefinedTask.Tools;
  * 2) setClipboard(value) : set current clipboard text content
  * 3) execute(command) : execute a command in a subprocess
  * 4) execute(command, cwd) : execute a command in a subprocess, in a given directory
+ * 5) get_selection(title, selected, choices): show a selection panel for user to select choices from
  *
  * Once the action has been performed successfully, a reply message will be sent using the same id received.
  * The received message has the following JSON format in content:
@@ -278,6 +281,32 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			} else {
 				return failure(type, id, "Unexpected number of parameter for execution");
 			}
+		} else if (action.equals("get_selection")) {
+			if (parsedParams.size() < 3) {
+				return failure(type, id, "Need at least 3 parameters to get selection (title, selected, choices)");
+			}
+
+
+			Iterator<Object> it = parsedParams.iterator();
+			String title = "";
+			int selected = 0;
+			try {
+				title = (String) it.next();
+				selected = (int) it.next();
+			} catch (ClassCastException e) {
+				return failure(type, id, "Need type string, int as first two paramters to get_selection");
+			}
+
+			List<Object> choiceObjects = new ArrayList<>();
+			while (it.hasNext()) {
+				choiceObjects.add(it.next());
+			}
+			final List<String> choices = toStringParams(choiceObjects);
+			if (choices == null) {
+				return failure(type, id, "Type of choices must be string");
+			}
+			int selection = SwingUtil.DialogUtil.getSelection(null, title, choices.toArray(new String[choices.size()]), selected);
+			return success(type, id, JsonNodeFactories.number(selection));
 		}
 
 		return unsupportedAction(type, id, action);
