@@ -119,12 +119,12 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	                }
 
 	                /** Compilation Requirements *********************************************************************************************/
-					DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-					JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-	                if (compiler == null) {
-	                	getLogger().warning("No java compiler found. Set class path points to JDK in setting?");
-	                	return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode));
-	                }
+	                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+	                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+					if (compiler == null) {
+						getLogger().warning("No java compiler found. Set class path points to JDK in setting?");
+						return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode));
+					}
 	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
 
 	                // This sets up the class path that the compiler will use.
@@ -172,7 +172,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 
 	private Pair<DynamicCompilerOutput, UserDefinedAction> loadClass(String loadClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
 		classLoader.addURL(new File("./").toURI().toURL());
-        Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + loadClassName);
+		Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + loadClassName);
         Object object = null;
 		try {
 			object = loadedClass.getDeclaredConstructor().newInstance();
@@ -181,10 +181,10 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.CONSTRUCTOR_ERROR, null);
 		}
 
-        getLogger().log(Level.FINE, "Successfully loaded class " + loadClassName);
-        UserDefinedAction output = (UserDefinedAction) object;
-        output.setSourcePath(getSourceFile(loadClassName).getAbsolutePath());
-        return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_SUCCESS, output);
+		getLogger().log(Level.FINE, "Successfully loaded class " + loadClassName);
+		UserDefinedAction output = (UserDefinedAction) object;
+		output.setSourcePath(getSourceFile(loadClassName).getAbsolutePath());
+		return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_SUCCESS, output);
 	}
 
 	/**
