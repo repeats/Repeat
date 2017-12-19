@@ -70,7 +70,7 @@ public abstract class IPCClientService extends IIPCService {
 							continue;
 						}
 
-						getLogger().info(trimmed);
+						getLogger().info("[" + getName() + "] - " + trimmed);
 					}
 
 					mainProcess.waitFor();

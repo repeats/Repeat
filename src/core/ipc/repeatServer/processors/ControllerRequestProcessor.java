@@ -286,7 +286,6 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 				return failure(type, id, "Need at least 3 parameters to get selection (title, selected, choices)");
 			}
 
-
 			Iterator<Object> it = parsedParams.iterator();
 			String title = "";
 			int selected = 0;
