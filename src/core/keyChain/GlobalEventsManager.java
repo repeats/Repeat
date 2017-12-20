@@ -1,7 +1,5 @@
 package core.keyChain;
 
-import globalListener.GlobalKeyListener;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,14 +14,15 @@ import javax.swing.JOptionPane;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
-import utilities.CodeConverter;
-import utilities.Function;
-import utilities.RandomUtil;
-import utilities.StringUtilities;
 import core.config.Config;
 import core.controller.Core;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
+import globalListener.GlobalKeyListener;
+import utilities.CodeConverter;
+import utilities.Function;
+import utilities.RandomUtil;
+import utilities.StringUtilities;
 
 public final class GlobalEventsManager {
 
@@ -58,14 +57,14 @@ public final class GlobalEventsManager {
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (code == config.getMouseGestureActivationKey()) {
+				KeyStroke stroke = CodeConverter.getKeyEventCode(r.getKeyCode());
+				if (stroke.getKey() == config.getMouseGestureActivationKey()) {
 					mouseGestureManager.startRecoarding();
 				}
-				currentKeyChain.getKeys().add(code);
+				currentKeyChain.addKeyStroke(KeyStroke.Of(stroke.getKey(), KeyChain.KEY_MODIFIER_UNKNOWN));
 
 				if (!config.isExecuteOnKeyReleased()) {
-					return considerTaskExecution(code);
+					return considerTaskExecution(stroke.getKey());
 				}
 				return true;
 			}
@@ -74,18 +73,18 @@ public final class GlobalEventsManager {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				int code = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (code == config.getMouseGestureActivationKey()) {
+				KeyStroke stroke = CodeConverter.getKeyEventCode(r.getKeyCode());
+				if (stroke.getKey() == config.getMouseGestureActivationKey()) {
 					UserDefinedAction action =  mouseGestureManager.finishRecording();
 					startExecutingAction(action);
 				}
 
 				if (config.isExecuteOnKeyReleased()) {
-					boolean result = considerTaskExecution(code);
-					currentKeyChain.getKeys().clear();
+					boolean result = considerTaskExecution(stroke.getKey());
+					currentKeyChain.clearKeys();
 					return result;
 				}
-				currentKeyChain.getKeys().clear();
+				currentKeyChain.clearKeys();
 				return true;
 			}
 		});
@@ -109,7 +108,7 @@ public final class GlobalEventsManager {
 	 */
 	private boolean considerTaskExecution(int keyCode) {
 		if (keyCode == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
-			currentKeyChain.getKeys().clear();
+			currentKeyChain.clearKeys();
 			haltAllTasks();
 			return true;
 		}
@@ -307,7 +306,7 @@ public final class GlobalEventsManager {
 	}
 
 	private UserDefinedAction registerKey(KeyChain code, UserDefinedAction action) {
-		if (code.getKeys().contains(Config.HALT_TASK)) {
+		if (code.contains(KeyStroke.Of(Config.HALT_TASK, KeyChain.KEY_MODIFIER_UNKNOWN))) {
 			return null;
 		}
 

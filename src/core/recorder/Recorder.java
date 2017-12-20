@@ -1,15 +1,10 @@
 package core.recorder;
 
-import globalListener.GlobalKeyListener;
-import globalListener.GlobalMouseListener;
-
 import java.util.HashMap;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 
-import utilities.CodeConverter;
-import utilities.Function;
 import core.controller.Core;
 import core.keyChain.GlobalEventsManager;
 import core.languageHandler.Language;
@@ -19,6 +14,10 @@ import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.languageHandler.sourceGenerator.ScalaSourceGenerator;
 import core.scheduler.SchedulingData;
+import globalListener.GlobalKeyListener;
+import globalListener.GlobalMouseListener;
+import utilities.CodeConverter;
+import utilities.Function;
 
 public class Recorder {
 
@@ -55,7 +54,7 @@ public class Recorder {
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
-				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
+				final int code = CodeConverter.getKeyEventCode(r.getKeyCode()).getKey();
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
@@ -74,7 +73,7 @@ public class Recorder {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
-				final int code = CodeConverter.getKeyEventCode(r.getKeyCode());
+				final int code = CodeConverter.getKeyEventCode(r.getKeyCode()).getKey();
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable() {
 					@Override

@@ -29,6 +29,7 @@ import javax.swing.ListSelectionModel;
 
 import core.config.Config;
 import core.keyChain.KeyChain;
+import core.keyChain.KeyStroke;
 import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivation;
 
@@ -133,12 +134,12 @@ public class KeyChainInputPanel extends JPanel {
 				Enumeration<KeyChain> allKeys = input.model.elements();
 				while (allKeys.hasMoreElements()) {
 					KeyChain next = allKeys.nextElement();
-					if (!next.getKeys().isEmpty()) {
+					if (!next.isEmpty()) {
 						keyChains.add(next);
 					}
 				}
 
-				if (!input.keyChain.getKeys().isEmpty()) {
+				if (!input.keyChain.isEmpty()) {
 					keyChains.add(input.keyChain);
 				}
 
@@ -169,7 +170,7 @@ public class KeyChainInputPanel extends JPanel {
 				int code = e.getKeyCode();
 
 				if (code == Config.HALT_TASK) {
-					keyChain.getKeys().clear();
+					keyChain.clearKeys();
 				}
 
 				tf.setText(keyChain.toString());
@@ -178,7 +179,7 @@ public class KeyChainInputPanel extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int code = e.getKeyCode();
-				keyChain.getKeys().add(code);
+				keyChain.addKeyStroke(KeyStroke.Of(code, KeyChain.KEY_MODIFIER_UNKNOWN));
 			}
 		});
 
@@ -216,7 +217,7 @@ public class KeyChainInputPanel extends JPanel {
 		bAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!keyChain.getKeys().isEmpty()) {
+				if (!keyChain.isEmpty()) {
 					if (model.getSize() >= limit) {
 						return;
 					}

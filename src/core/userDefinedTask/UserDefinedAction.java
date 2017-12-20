@@ -7,9 +7,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import utilities.FileUtility;
-import utilities.IJsonable;
-import utilities.ILoggable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
@@ -20,6 +17,9 @@ import core.keyChain.TaskActivation;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
+import utilities.FileUtility;
+import utilities.IJsonable;
+import utilities.ILoggable;
 
 public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
@@ -167,8 +167,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * @param invokingKeyChain
 	 */
 	public final void setInvokingKeyChain(KeyChain invokingKeyChain) {
-		this.invokingKeyChain.getKeys().clear();
-		this.invokingKeyChain.getKeys().addAll(invokingKeyChain.getKeys());
+		this.invokingKeyChain.clearKeys();
+		this.invokingKeyChain.addFrom(invokingKeyChain);
 		this.invokingMouseGesture = null;
 	}
 
@@ -182,7 +182,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 */
 	public final void setInvokingMouseGesture(MouseGesture invokingMouseGesture) {
 		this.invokingMouseGesture = invokingMouseGesture;
-		this.invokingKeyChain.getKeys().clear();
+		this.invokingKeyChain.clearKeys();
 	}
 
 

@@ -6,6 +6,7 @@ import core.controller.Core;
 import core.controller.MouseCore;
 import core.controller.KeyboardCore;
 import core.keyChain.KeyChain;
+import core.keyChain.KeyStroke;
 import core.keyChain.MouseGesture;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class CustomAction extends UserDefinedAction {
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
         KeyChain invokingHotkey = this.invoker.getFirstHotkey();
-        List<Integer> invoker = invokingHotkey == null ? new ArrayList<Integer>() : invokingHotkey.getKeys();
+        List<KeyStroke> invoker = invokingHotkey == null ? new ArrayList<KeyStroke>() : invokingHotkey.getKeyStrokes();
         MouseGesture gesture = this.invoker.getFirstMouseGesture();
         /*Begin generated code*/
 

@@ -16,9 +16,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import utilities.swing.KeyChainInputPanel;
 import core.keyChain.KeyChain;
 import core.keyChain.TaskActivation;
+import utilities.swing.KeyChainInputPanel;
 
 @SuppressWarnings("serial")
 public class HotkeySetting extends JFrame {
@@ -136,14 +136,14 @@ public class HotkeySetting extends JFrame {
 				if (newKeyChain == null) {
 					return;
 				}
-				if (newKeyChain.getKeys().size() > 1) {
+				if (newKeyChain.getSize() > 1) {
 					JOptionPane.showMessageDialog(HotkeySetting.this,
 													"You can choose only 1 key to activate mouse gesture recognition.",
 													"Title", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 
-				backEnd.config.setMouseGestureActivationKey(newKeyChain.getKeys().get(0));
+				backEnd.config.setMouseGestureActivationKey(newKeyChain.getKeyStrokes().get(0).getKey());
 				tfMouseGestureActivation.setText(newKeyChain.toString());
 			}
 		});

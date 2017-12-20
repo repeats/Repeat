@@ -8,21 +8,35 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.Function;
-import utilities.IJsonable;
-import utilities.StringUtilities;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.config.Parser1_0;
+import utilities.Function;
+import utilities.IJsonable;
+import utilities.StringUtilities;
 
 public class KeyChain implements IJsonable {
 
+	public static final int KEY_MODIFIER_UNKNOWN = 0;
+	public static final int KEY_MODIFIER_LEFT = 1;
+	public static final int KEY_MODIFIER_RIGHT = 2;
+
 	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 	private final List<Integer> keys;
+	private final List<Integer> keyModifiers;
 
 	public KeyChain(List<Integer> keys) {
 		this.keys = keys;
+		keyModifiers = new ArrayList<>(keys.size());
+		for (int i = 0; i < keys.size(); i++) {
+			keyModifiers.add(KEY_MODIFIER_UNKNOWN);
+		}
+	}
+
+	private KeyChain(List<Integer> keys, List<Integer> modifiers) {
+		this.keys = keys;
+		this.keyModifiers = modifiers;
 	}
 
 	public KeyChain(int key) {
@@ -53,8 +67,77 @@ public class KeyChain implements IJsonable {
 		}
 	}
 
+	/**
+	 * @return list of key codes in this key chain.
+	 * @deprecated change to use {@link #getKeyStrokes()} instead.
+	 */
+	@Deprecated
 	public List<Integer> getKeys() {
 		return keys;
+	}
+
+	/**
+	 * @return the list of key strokes contained in this key chain.
+	 */
+	public List<KeyStroke> getKeyStrokes() {
+		List<KeyStroke> output = new ArrayList<>(keys.size());
+		for (int i = 0; i < keys.size(); i++) {
+			output.add(KeyStroke.Of(keys.get(i), keyModifiers.get(i)));
+		}
+		return output;
+	}
+
+	/**
+	 * @return the number of key strokes in this key chain.
+	 */
+	public int getSize() {
+		return keys.size();
+	}
+
+	/*
+	 * Add all key strokes from another key chain.
+	 */
+	public void addFrom(KeyChain other) {
+		keys.addAll(keys);
+		keyModifiers.addAll(keyModifiers);
+	}
+
+	/**
+	 * Add a single stroke to the key chain.
+	 * @param stroke stroke to add.
+	 */
+	public void addKeyStroke(KeyStroke stroke) {
+		keys.add(stroke.getKey());
+		keyModifiers.add(stroke.getModifier());
+	}
+
+	/**
+	 * Remove all keys in this key chain.
+	 */
+	public void clearKeys() {
+		keys.clear();
+		keyModifiers.clear();
+	}
+
+	/**
+	 * Check whether this key chain contains no key.
+	 * @return if there is no key stroke in this key chain.
+	 */
+	public boolean isEmpty() {
+		return keys.isEmpty();
+	}
+
+	/**
+	 * @param stroke the key stroke to find.
+	 * @return whether the given key stroke is in this key chain.
+	 */
+	public boolean contains(KeyStroke stroke) {
+		for (int i = 0; i < keys.size(); i++) {
+			if (KeyStroke.Of(keys.get(i), keyModifiers.get(i)).equals(stroke)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -69,7 +152,7 @@ public class KeyChain implements IJsonable {
 
 	@Override
 	public KeyChain clone() {
-		return new KeyChain(new ArrayList<>(this.keys));
+		return new KeyChain(new ArrayList<>(this.keys), new ArrayList<>(this.keyModifiers));
 	}
 
 	@Override

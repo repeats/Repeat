@@ -7,6 +7,9 @@ import java.awt.event.KeyEvent;
 
 import org.jnativehook.mouse.NativeMouseEvent;
 
+import core.keyChain.KeyChain;
+import core.keyChain.KeyStroke;
+
 public class CodeConverter {
 
 	public static int getMouseButtonCode(int nativeCode, boolean isPressed) {
@@ -33,363 +36,451 @@ public class CodeConverter {
 		}
 	}
 
-	public static int getKeyEventCode(int nativeCode) {
+	public static KeyStroke getKeyEventCode(int nativeCode) {
+		int code = -1;
+		int modifier = KeyChain.KEY_MODIFIER_UNKNOWN;
 		// Lookup text values.
 
 		switch (nativeCode) {
 
 		case VC_ESCAPE:
 
-			return KeyEvent.VK_ESCAPE;
+			code = KeyEvent.VK_ESCAPE;
+			break;
 
 			// Begin Function Keys
 
 		case VC_F1:
 
-			return KeyEvent.VK_F1;
+			code = KeyEvent.VK_F1;
+			break;
 
 		case VC_F2:
 
-			return KeyEvent.VK_F2;
+			code = KeyEvent.VK_F2;
+			break;
 
 		case VC_F3:
 
-			return KeyEvent.VK_F3;
+			code = KeyEvent.VK_F3;
+			break;
 
 		case VC_F4:
 
-			return KeyEvent.VK_F4;
+			code = KeyEvent.VK_F4;
+			break;
 
 		case VC_F5:
 
-			return KeyEvent.VK_F5;
+			code = KeyEvent.VK_F5;
+			break;
 
 		case VC_F6:
 
-			return KeyEvent.VK_F6;
+			code = KeyEvent.VK_F6;
+			break;
 
 		case VC_F7:
 
-			return KeyEvent.VK_F7;
+			code = KeyEvent.VK_F7;
+			break;
 
 		case VC_F8:
 
-			return KeyEvent.VK_F8;
+			code = KeyEvent.VK_F8;
+			break;
 
 		case VC_F9:
 
-			return KeyEvent.VK_F9;
+			code = KeyEvent.VK_F9;
+			break;
 
 		case VC_F10:
 
-			return KeyEvent.VK_F10;
+			code = KeyEvent.VK_F10;
+			break;
 
 		case VC_F11:
 
-			return KeyEvent.VK_F11;
+			code = KeyEvent.VK_F11;
+			break;
 
 		case VC_F12:
 
-			return KeyEvent.VK_F12;
+			code = KeyEvent.VK_F12;
+			break;
 
 		case VC_F13:
 
-			return KeyEvent.VK_F13;
+			code = KeyEvent.VK_F13;
+			break;
 
 		case VC_F14:
 
-			return KeyEvent.VK_F14;
+			code = KeyEvent.VK_F14;
+			break;
 
 		case VC_F15:
 
-			return KeyEvent.VK_F15;
+			code = KeyEvent.VK_F15;
+			break;
 
 		case VC_F16:
 
-			return KeyEvent.VK_F16;
+			code = KeyEvent.VK_F16;
+			break;
 
 		case VC_F17:
 
-			return KeyEvent.VK_F17;
+			code = KeyEvent.VK_F17;
+			break;
 
 		case VC_F18:
 
-			return KeyEvent.VK_F18;
+			code = KeyEvent.VK_F18;
+			break;
 
 		case VC_F19:
 
-			return KeyEvent.VK_F19;
+			code = KeyEvent.VK_F19;
+			break;
 
 		case VC_F20:
 
-			return KeyEvent.VK_F20;
+			code = KeyEvent.VK_F20;
+			break;
 
 		case VC_F21:
 
-			return KeyEvent.VK_F21;
+			code = KeyEvent.VK_F21;
+			break;
 
 		case VC_F22:
 
-			return KeyEvent.VK_F22;
+			code = KeyEvent.VK_F22;
+			break;
 
 		case VC_F23:
 
-			return KeyEvent.VK_F23;
+			code = KeyEvent.VK_F23;
+			break;
 
 		case VC_F24:
 
-			return KeyEvent.VK_F24;
+			code = KeyEvent.VK_F24;
+			break;
 
 			// End Function Keys
 
 			// Begin Alphanumeric Zone
 
 		case VC_BACKQUOTE:
-			return KeyEvent.VK_BACK_QUOTE;
+			code = KeyEvent.VK_BACK_QUOTE;
+			break;
 
 		case VC_1:
 
-			return KeyEvent.VK_1;
+			code = KeyEvent.VK_1;
+			break;
 
 		case VC_2:
 
-			return KeyEvent.VK_2;
+			code = KeyEvent.VK_2;
+			break;
 
 		case VC_3:
 
-			return KeyEvent.VK_3;
+			code = KeyEvent.VK_3;
+			break;
 
 		case VC_4:
 
-			return KeyEvent.VK_4;
+			code = KeyEvent.VK_4;
+			break;
 
 		case VC_5:
 
-			return KeyEvent.VK_5;
+			code = KeyEvent.VK_5;
+			break;
 
 		case VC_6:
 
-			return KeyEvent.VK_6;
+			code = KeyEvent.VK_6;
+			break;
 
 		case VC_7:
 
-			return KeyEvent.VK_7;
+			code = KeyEvent.VK_7;
+			break;
 
 		case VC_8:
 
-			return KeyEvent.VK_8;
+			code = KeyEvent.VK_8;
+			break;
 
 		case VC_9:
 
-			return KeyEvent.VK_9;
+			code = KeyEvent.VK_9;
+			break;
 
 		case VC_0:
 
-			return KeyEvent.VK_0;
+			code = KeyEvent.VK_0;
+			break;
 
 		case VC_MINUS:
 
-			return KeyEvent.VK_MINUS;
+			code = KeyEvent.VK_MINUS;
+			break;
 
 		case VC_EQUALS:
 
-			return KeyEvent.VK_EQUALS;
+			code = KeyEvent.VK_EQUALS;
+			break;
 
 		case VC_BACKSPACE:
 
-			return KeyEvent.VK_BACK_SPACE;
+			code = KeyEvent.VK_BACK_SPACE;
+			break;
 
 		case VC_TAB:
 
-			return KeyEvent.VK_TAB;
+			code = KeyEvent.VK_TAB;
+			break;
 
 		case VC_CAPS_LOCK:
 
-			return KeyEvent.VK_CAPS_LOCK;
+			code = KeyEvent.VK_CAPS_LOCK;
+			break;
 
 		case VC_A:
 
-			return KeyEvent.VK_A;
+			code = KeyEvent.VK_A;
+			break;
 
 		case VC_B:
 
-			return KeyEvent.VK_B;
+			code = KeyEvent.VK_B;
+			break;
 
 		case VC_C:
 
-			return KeyEvent.VK_C;
+			code = KeyEvent.VK_C;
+			break;
 
 		case VC_D:
 
-			return KeyEvent.VK_D;
+			code = KeyEvent.VK_D;
+			break;
 
 		case VC_E:
 
-			return KeyEvent.VK_E;
+			code = KeyEvent.VK_E;
+			break;
 
 		case VC_F:
 
-			return KeyEvent.VK_F;
+			code = KeyEvent.VK_F;
+			break;
 
 		case VC_G:
 
-			return KeyEvent.VK_G;
+			code = KeyEvent.VK_G;
+			break;
 
 		case VC_H:
 
-			return KeyEvent.VK_H;
+			code = KeyEvent.VK_H;
+			break;
 
 		case VC_I:
 
-			return KeyEvent.VK_I;
+			code = KeyEvent.VK_I;
+			break;
 
 		case VC_J:
 
-			return KeyEvent.VK_J;
+			code = KeyEvent.VK_J;
+			break;
 
 		case VC_K:
 
-			return KeyEvent.VK_K;
+			code = KeyEvent.VK_K;
+			break;
 
 		case VC_L:
 
-			return KeyEvent.VK_L;
+			code = KeyEvent.VK_L;
+			break;
 
 		case VC_M:
 
-			return KeyEvent.VK_M;
+			code = KeyEvent.VK_M;
+			break;
 
 		case VC_N:
 
-			return KeyEvent.VK_N;
+			code = KeyEvent.VK_N;
+			break;
 
 		case VC_O:
 
-			return KeyEvent.VK_O;
+			code = KeyEvent.VK_O;
+			break;
 
 		case VC_P:
 
-			return KeyEvent.VK_P;
+			code = KeyEvent.VK_P;
+			break;
 
 		case VC_Q:
 
-			return KeyEvent.VK_Q;
+			code = KeyEvent.VK_Q;
+			break;
 
 		case VC_R:
 
-			return KeyEvent.VK_R;
+			code = KeyEvent.VK_R;
+			break;
 
 		case VC_S:
 
-			return KeyEvent.VK_S;
+			code = KeyEvent.VK_S;
+			break;
 
 		case VC_T:
 
-			return KeyEvent.VK_T;
+			code = KeyEvent.VK_T;
+			break;
 
 		case VC_U:
 
-			return KeyEvent.VK_U;
+			code = KeyEvent.VK_U;
+			break;
 
 		case VC_V:
 
-			return KeyEvent.VK_V;
+			code = KeyEvent.VK_V;
+			break;
 
 		case VC_W:
 
-			return KeyEvent.VK_W;
+			code = KeyEvent.VK_W;
+			break;
 
 		case VC_X:
 
-			return KeyEvent.VK_X;
+			code = KeyEvent.VK_X;
+			break;
 
 		case VC_Y:
 
-			return KeyEvent.VK_Y;
+			code = KeyEvent.VK_Y;
+			break;
 
 		case VC_Z:
 
-			return KeyEvent.VK_Z;
+			code = KeyEvent.VK_Z;
+			break;
 
 		case VC_OPEN_BRACKET:
 
-			return KeyEvent.VK_OPEN_BRACKET;
+			code = KeyEvent.VK_OPEN_BRACKET;
+			break;
 
 		case VC_CLOSE_BRACKET:
 
-			return KeyEvent.VK_CLOSE_BRACKET;
+			code = KeyEvent.VK_CLOSE_BRACKET;
+			break;
 
 		case VC_BACK_SLASH:
 
-			return KeyEvent.VK_BACK_SLASH;
+			code = KeyEvent.VK_BACK_SLASH;
+			break;
 
 		case VC_SEMICOLON:
 
-			return KeyEvent.VK_SEMICOLON;
+			code = KeyEvent.VK_SEMICOLON;
+			break;
 
 		case VC_QUOTE:
 
-			return KeyEvent.VK_QUOTE;
+			code = KeyEvent.VK_QUOTE;
+			break;
 
 		case VC_ENTER:
 
-			return KeyEvent.VK_ENTER;
+			code = KeyEvent.VK_ENTER;
+			break;
 
 		case VC_COMMA:
 
-			return KeyEvent.VK_COMMA;
+			code = KeyEvent.VK_COMMA;
+			break;
 
 		case VC_PERIOD:
 
-			return KeyEvent.VK_PERIOD;
+			code = KeyEvent.VK_PERIOD;
+			break;
 
 		case VC_SLASH:
 
-			return KeyEvent.VK_SLASH;
+			code = KeyEvent.VK_SLASH;
+			break;
 
 		case VC_SPACE:
 
-			return KeyEvent.VK_SPACE;
+			code = KeyEvent.VK_SPACE;
+			break;
 
 			// End Alphanumeric Zone
 
 		case VC_PRINTSCREEN:
 
-			return KeyEvent.VK_PRINTSCREEN;
+			code = KeyEvent.VK_PRINTSCREEN;
+			break;
 
 		case VC_SCROLL_LOCK:
 
-			return KeyEvent.VK_SCROLL_LOCK;
+			code = KeyEvent.VK_SCROLL_LOCK;
+			break;
 
 		case VC_PAUSE:
 
-			return KeyEvent.VK_PAUSE;
+			code = KeyEvent.VK_PAUSE;
+			break;
 
 			// Begin Edit Key Zone
 
 		case VC_INSERT:
 
-			return KeyEvent.VK_INSERT;
+			code = KeyEvent.VK_INSERT;
+			break;
 
 		case VC_DELETE:
 
-			return KeyEvent.VK_DELETE;
+			code = KeyEvent.VK_DELETE;
+			break;
 
 		case VC_HOME:
 
-			return KeyEvent.VK_HOME;
+			code = KeyEvent.VK_HOME;
+			break;
 
 		case VC_END:
 
-			return KeyEvent.VK_END;
+			code = KeyEvent.VK_END;
+			break;
 
 		case VC_PAGE_UP:
 
-			return KeyEvent.VK_PAGE_UP;
+			code = KeyEvent.VK_PAGE_UP;
+			break;
 
 		case VC_PAGE_DOWN:
 
-			return KeyEvent.VK_PAGE_DOWN;
+			code = KeyEvent.VK_PAGE_DOWN;
+			break;
 
 			// End Edit Key Zone
 
@@ -397,19 +488,23 @@ public class CodeConverter {
 
 		case VC_UP:
 
-			return KeyEvent.VK_UP;
+			code = KeyEvent.VK_UP;
+			break;
 
 		case VC_DOWN:
 
-			return KeyEvent.VK_DOWN;
+			code = KeyEvent.VK_DOWN;
+			break;
 
 		case VC_LEFT:
 
-			return KeyEvent.VK_LEFT;
+			code = KeyEvent.VK_LEFT;
+			break;
 
 		case VC_RIGHT:
 
-			return KeyEvent.VK_RIGHT;
+			code = KeyEvent.VK_RIGHT;
+			break;
 
 			// End Cursor Key Zone
 
@@ -417,74 +512,92 @@ public class CodeConverter {
 
 		case VC_NUM_LOCK:
 
-			return KeyEvent.VK_NUM_LOCK;
+			code = KeyEvent.VK_NUM_LOCK;
+			break;
 
 		case VC_KP_DIVIDE:
 
-			return KeyEvent.VK_DIVIDE;
+			code = KeyEvent.VK_DIVIDE;
+			break;
 
 		case VC_KP_MULTIPLY:
 
-			return KeyEvent.VK_MULTIPLY;
+			code = KeyEvent.VK_MULTIPLY;
+			break;
 
 		case VC_KP_SUBTRACT:
 
-			return KeyEvent.VK_SUBTRACT;
+			code = KeyEvent.VK_SUBTRACT;
+			break;
 
 		case VC_KP_EQUALS:
-			return KeyEvent.VK_EQUALS;
+			code = KeyEvent.VK_EQUALS;
+			break;
 
 		case VC_KP_ADD:
 
-			return KeyEvent.VK_ADD;
+			code = KeyEvent.VK_ADD;
+			break;
 
 		case VC_KP_ENTER:
 
-			return KeyEvent.VK_ENTER;
+			code = KeyEvent.VK_ENTER;
+			break;
 
 		case VC_KP_SEPARATOR:
 
-			return KeyEvent.VK_SEPARATOR;
+			code = KeyEvent.VK_SEPARATOR;
+			break;
 
 		case VC_KP_1:
 
-			return KeyEvent.VK_NUMPAD1;
+			code = KeyEvent.VK_NUMPAD1;
+			break;
 
 		case VC_KP_2:
 
-			return KeyEvent.VK_NUMPAD2;
+			code = KeyEvent.VK_NUMPAD2;
+			break;
 
 		case VC_KP_3:
 
-			return KeyEvent.VK_NUMPAD3;
+			code = KeyEvent.VK_NUMPAD3;
+			break;
 
 		case VC_KP_4:
 
-			return KeyEvent.VK_NUMPAD4;
+			code = KeyEvent.VK_NUMPAD4;
+			break;
 
 		case VC_KP_5:
 
-			return KeyEvent.VK_NUMPAD5;
+			code = KeyEvent.VK_NUMPAD5;
+			break;
 
 		case VC_KP_6:
 
-			return KeyEvent.VK_NUMPAD6;
+			code = KeyEvent.VK_NUMPAD6;
+			break;
 
 		case VC_KP_7:
 
-			return KeyEvent.VK_NUMPAD7;
+			code = KeyEvent.VK_NUMPAD7;
+			break;
 
 		case VC_KP_8:
 
-			return KeyEvent.VK_NUMPAD8;
+			code = KeyEvent.VK_NUMPAD8;
+			break;
 
 		case VC_KP_9:
 
-			return KeyEvent.VK_NUMPAD9;
+			code = KeyEvent.VK_NUMPAD9;
+			break;
 
 		case VC_KP_0:
 
-			return KeyEvent.VK_NUMPAD0;
+			code = KeyEvent.VK_NUMPAD0;
+			break;
 
 			// End Numeric Zone
 
@@ -492,56 +605,73 @@ public class CodeConverter {
 
 		case VC_SHIFT_L:
 
-			return KeyEvent.VK_SHIFT;
+			code = KeyEvent.VK_SHIFT;
+			modifier = KeyChain.KEY_MODIFIER_LEFT;
+			break;
 
 		case VC_SHIFT_R:
 
-			return KeyEvent.VK_SHIFT;
+			code = KeyEvent.VK_SHIFT;
+			modifier = KeyChain.KEY_MODIFIER_RIGHT;
+			break;
 
 		case VC_CONTROL_L:
 
-			return KeyEvent.VK_CONTROL;
+			code = KeyEvent.VK_CONTROL;
+			modifier = KeyChain.KEY_MODIFIER_LEFT;
+			break;
 
 		case VC_CONTROL_R:
 
-			return KeyEvent.VK_CONTROL;
+			code = KeyEvent.VK_CONTROL;
+			modifier = KeyChain.KEY_MODIFIER_RIGHT;
+			break;
 
 		case VC_ALT_L:
 
-			return KeyEvent.VK_ALT;
+			code = KeyEvent.VK_ALT;
+			modifier = KeyChain.KEY_MODIFIER_LEFT;
+			break;
 
 		case VC_ALT_R:
 
-			return KeyEvent.VK_ALT;
+			code = KeyEvent.VK_ALT;
+			modifier = KeyChain.KEY_MODIFIER_RIGHT;
+			break;
 
 		case VC_META_L:
 			if (OSIdentifier.IS_WINDOWS) {
-				return KeyEvent.VK_WINDOWS;
+				code = KeyEvent.VK_WINDOWS;
 			} else {
-				return KeyEvent.VK_META;
+				code = KeyEvent.VK_META;
 			}
+			modifier = KeyChain.KEY_MODIFIER_LEFT;
+			break;
 
 		case VC_META_R:
 			if (OSIdentifier.IS_WINDOWS) {
-				return KeyEvent.VK_WINDOWS;
+				code = KeyEvent.VK_WINDOWS;
 			} else {
-				return KeyEvent.VK_META;
+				code = KeyEvent.VK_META;
 			}
+			modifier = KeyChain.KEY_MODIFIER_RIGHT;
+			break;
 
 		case VC_CONTEXT_MENU:
 
-			return KeyEvent.VK_CONTEXT_MENU;
+			code = KeyEvent.VK_CONTEXT_MENU;
+			break;
 
 			// End Modifier and Control Keys
 
 		case VC_UNDEFINED:
 
-			return KeyEvent.VK_UNDEFINED;
+			code = KeyEvent.VK_UNDEFINED;
+			break;
 
 		}
 
-		return -1;
-
+		return KeyStroke.Of(code, modifier);
 	}
 
 }

@@ -547,7 +547,7 @@ public class MainBackEndHolder {
 		keysManager.reRegisterTask(action, newActivation);
 
 		KeyChain representative = action.getRepresentativeHotkey();
-		main.tTasks.setValueAt(representative.getKeys().isEmpty() ? "None" : representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
+		main.tTasks.setValueAt(representative.isEmpty() ? "None" : representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
 	}
 
 	protected void switchEnableTask(int row) {
@@ -580,7 +580,7 @@ public class MainBackEndHolder {
 			main.tTasks.setValueAt(task.getName(), row, MainFrame.TTASK_COLUMN_TASK_NAME);
 
 			KeyChain representative = task.getRepresentativeHotkey();
-			if (representative != null && !representative.getKeys().isEmpty()) {
+			if (representative != null && !representative.isEmpty()) {
 				main.tTasks.setValueAt(representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
 			} else {
 				main.tTasks.setValueAt("None", row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
