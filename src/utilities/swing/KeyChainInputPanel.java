@@ -179,7 +179,7 @@ public class KeyChainInputPanel extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int code = e.getKeyCode();
-				keyChain.addKeyStroke(KeyStroke.Of(code, KeyChain.KEY_MODIFIER_UNKNOWN));
+				keyChain.addKeyStroke(KeyStroke.Of(code, KeyStroke.KEY_MODIFIER_UNKNOWN));
 			}
 		});
 

@@ -18,10 +18,6 @@ import utilities.StringUtilities;
 
 public class KeyChain implements IJsonable {
 
-	public static final int KEY_MODIFIER_UNKNOWN = 0;
-	public static final int KEY_MODIFIER_LEFT = 1;
-	public static final int KEY_MODIFIER_RIGHT = 2;
-
 	private static final Logger LOGGER = Logger.getLogger(Parser1_0.class.getName());
 	private final List<Integer> keys;
 	private final List<Integer> keyModifiers;
@@ -30,7 +26,7 @@ public class KeyChain implements IJsonable {
 		this.keys = keys;
 		keyModifiers = new ArrayList<>(keys.size());
 		for (int i = 0; i < keys.size(); i++) {
-			keyModifiers.add(KEY_MODIFIER_UNKNOWN);
+			keyModifiers.add(KeyStroke.KEY_MODIFIER_UNKNOWN);
 		}
 	}
 

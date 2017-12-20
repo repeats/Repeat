@@ -6,6 +6,9 @@ package core.keyChain;
 public class KeyStroke {
 	private int key;
 	private int modifier;
+	public static final int KEY_MODIFIER_RIGHT = 2;
+	public static final int KEY_MODIFIER_LEFT = 1;
+	public static final int KEY_MODIFIER_UNKNOWN = 0;
 
 	public static KeyStroke Of(int key, int modifier) {
 		return new KeyStroke(key, modifier);

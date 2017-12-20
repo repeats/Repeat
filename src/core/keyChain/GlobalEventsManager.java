@@ -61,7 +61,7 @@ public final class GlobalEventsManager {
 				if (stroke.getKey() == config.getMouseGestureActivationKey()) {
 					mouseGestureManager.startRecoarding();
 				}
-				currentKeyChain.addKeyStroke(KeyStroke.Of(stroke.getKey(), KeyChain.KEY_MODIFIER_UNKNOWN));
+				currentKeyChain.addKeyStroke(KeyStroke.Of(stroke.getKey(), KeyStroke.KEY_MODIFIER_UNKNOWN));
 
 				if (!config.isExecuteOnKeyReleased()) {
 					return considerTaskExecution(stroke.getKey());
@@ -306,7 +306,7 @@ public final class GlobalEventsManager {
 	}
 
 	private UserDefinedAction registerKey(KeyChain code, UserDefinedAction action) {
-		if (code.contains(KeyStroke.Of(Config.HALT_TASK, KeyChain.KEY_MODIFIER_UNKNOWN))) {
+		if (code.contains(KeyStroke.Of(Config.HALT_TASK, KeyStroke.KEY_MODIFIER_UNKNOWN))) {
 			return null;
 		}
 
