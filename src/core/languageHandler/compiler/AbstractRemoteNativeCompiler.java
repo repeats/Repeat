@@ -3,9 +3,6 @@ package core.languageHandler.compiler;
 import java.io.File;
 import java.util.logging.Level;
 
-import utilities.FileUtility;
-import utilities.Pair;
-import utilities.RandomUtil;
 import argo.jdom.JsonNode;
 import core.controller.Core;
 import core.ipc.repeatServer.processors.TaskProcessor;
@@ -13,6 +10,9 @@ import core.ipc.repeatServer.processors.TaskProcessorManager;
 import core.languageHandler.Language;
 import core.userDefinedTask.DormantUserDefinedTask;
 import core.userDefinedTask.UserDefinedAction;
+import utilities.FileUtility;
+import utilities.Pair;
+import utilities.RandomUtil;
 
 public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompiler {
 
@@ -89,6 +89,11 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 			@Override
 			public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
 				Pair<DynamicCompilerOutput, UserDefinedAction> recompiled = compile(source);
+				if (recompiled.getA() != DynamicCompilerOutput.COMPILATION_SUCCESS) {
+					getLogger().warning("Unable to recompile task id = " + id + ". Error is " + recompiled.getA());
+					return null;
+				}
+
 				UserDefinedAction output = recompiled.getB();
 				output.syncContent(this);
 				return output;

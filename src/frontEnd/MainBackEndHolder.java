@@ -16,6 +16,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
@@ -130,8 +131,12 @@ public class MainBackEndHolder {
 						tasks.set(i, recompiled);
 
 						if (recompiled.isEnabled()) {
-							if (keysManager.isTaskRegistered(recompiled).isEmpty()) {
+							Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(recompiled);
+							if (collisions.isEmpty()) {
 								keysManager.registerTask(recompiled);
+							} else {
+								List<String> collisionNames = collisions.stream().map(t -> t.getName()).collect(Collectors.toList());
+								LOGGER.warning("Unable to register task " + recompiled.getName() + ". Collisions are " + collisionNames);
 							}
 						}
 					}
@@ -555,7 +560,9 @@ public class MainBackEndHolder {
 
 		if (action.isEnabled()) { // Then disable it
 			action.setEnabled(false);
-			keysManager.unregisterTask(action);
+			if (!action.isEnabled()) {
+				keysManager.unregisterTask(action);
+			}
 		} else { // Then enable it
 			Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(action);
 			if (!collisions.isEmpty()) {
@@ -564,7 +571,9 @@ public class MainBackEndHolder {
 			}
 
 			action.setEnabled(true);
-			keysManager.registerTask(action);
+			if (action.isEnabled()) {
+				keysManager.registerTask(action);
+			}
 		}
 
 		main.tTasks.setValueAt(action.isEnabled(), row, MainFrame.TTASK_COLUMN_ENABLED);

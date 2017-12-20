@@ -2,11 +2,11 @@ package core.userDefinedTask;
 
 import java.util.logging.Level;
 
-import utilities.ILoggable;
-import utilities.Pair;
 import core.controller.Core;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerOutput;
+import utilities.ILoggable;
+import utilities.Pair;
 
 public final class DormantUserDefinedTask extends UserDefinedAction implements ILoggable {
 
@@ -18,7 +18,7 @@ public final class DormantUserDefinedTask extends UserDefinedAction implements I
 
 	@Override
 	public final void action(Core controller) throws InterruptedException {
-		getLogger().log(Level.WARNING, "Task " + name + "is dormant. Recompile to use it.");
+		getLogger().log(Level.WARNING, "Task " + name + " is dormant. Recompile to use it.");
 	}
 
 	@Override
@@ -47,10 +47,12 @@ public final class DormantUserDefinedTask extends UserDefinedAction implements I
 		UserDefinedAction output = result.getB();
 
 		if (compilerStatus == DynamicCompilerOutput.COMPILATION_SUCCESS) {
+			getLogger().info("Successfully recompiled dormant task " + getName() + ".");
 			output.syncContent(this);
 			output.compiler = compiler.getName();
 			return output;
 		} else {
+			getLogger().warning("Unable to recompile dormant task " + getName() + ". Error " + compilerStatus);
 			return this;
 		}
 	}
