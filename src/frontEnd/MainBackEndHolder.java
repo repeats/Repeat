@@ -40,6 +40,7 @@ import core.languageHandler.compiler.PythonRemoteCompiler;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.recorder.Recorder;
 import core.userDefinedTask.TaskGroup;
+import core.userDefinedTask.TaskInvoker;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
 import staticResources.BootStrapResources;
@@ -68,6 +69,7 @@ public class MainBackEndHolder {
 	protected TaskGroup currentGroup;
 	protected int selectedTaskIndex;
 
+	protected final TaskInvoker taskInvoker; // To allow executing other tasks programmatically.
 	protected final GlobalEventsManager keysManager;
 	protected final Config config;
 
@@ -84,11 +86,12 @@ public class MainBackEndHolder {
 
 		executor = new ScheduledThreadPoolExecutor(5);
 
-		keysManager = new GlobalEventsManager(config);
-		recorder = new Recorder(keysManager);
-
 		taskGroups = new ArrayList<>();
 		selectedTaskIndex = -1;
+
+		taskInvoker = new TaskInvoker(taskGroups);
+		keysManager = new GlobalEventsManager(config);
+		recorder = new Recorder(keysManager);
 
 		switchRecord = new UserDefinedAction() {
 			@Override
@@ -803,6 +806,7 @@ public class MainBackEndHolder {
 		}
 
 		customFunction = createdInstance;
+		customFunction.setTaskInvoker(taskInvoker);
 		customFunction.setCompiler(compiler.getName());
 
 		if (!TaskSourceManager.submitTask(customFunction, source)) {

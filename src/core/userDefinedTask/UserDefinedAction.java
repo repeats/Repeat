@@ -35,6 +35,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected KeyChain invokingKeyChain;
 	protected MouseGesture invokingMouseGesture;
 
+	// This is to enable invoking task programmatically.
+	protected TaskInvoker taskInvoker;
 	protected UsageStatistics statistics;
 
 	public UserDefinedAction() {
@@ -138,6 +140,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		this.enabled = enabled;
 	}
 
+	public void setTaskInvoker(TaskInvoker taskInvoker) {
+		this.taskInvoker = taskInvoker;
+	}
+
 	public final UsageStatistics getStatistics() {
 		return statistics;
 	}
@@ -156,6 +162,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 */
 	public final void setInvoker(TaskActivation invoker) {
 		this.invoker = invoker;
+		setInvokingKeyChain(invoker.getFirstHotkey());
+		setInvokingMouseGesture(invoker.getFirstMouseGesture());
 	}
 
 	/**
@@ -166,7 +174,11 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 *
 	 * @param invokingKeyChain
 	 */
-	public final void setInvokingKeyChain(KeyChain invokingKeyChain) {
+	private final void setInvokingKeyChain(KeyChain invokingKeyChain) {
+		if (invokingKeyChain == null) {
+			return;
+		}
+
 		this.invokingKeyChain.clearKeys();
 		this.invokingKeyChain.addFrom(invokingKeyChain);
 		this.invokingMouseGesture = null;
@@ -180,7 +192,11 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 *
 	 * @param invokingMouseGesture
 	 */
-	public final void setInvokingMouseGesture(MouseGesture invokingMouseGesture) {
+	private final void setInvokingMouseGesture(MouseGesture invokingMouseGesture) {
+		if (invokingMouseGesture == null) {
+			return;
+		}
+
 		this.invokingMouseGesture = invokingMouseGesture;
 		this.invokingKeyChain.clearKeys();
 	}

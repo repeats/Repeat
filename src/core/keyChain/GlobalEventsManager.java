@@ -120,7 +120,6 @@ public final class GlobalEventsManager {
 		UserDefinedAction action = actionMap.get(currentKeyChain);
 		if (action != null) {
 			action.setInvoker(TaskActivation.newBuilder().withHotKey(currentKeyChain.clone()).build());
-			action.setInvokingKeyChain(currentKeyChain.clone());
 		}
 
 		return startExecutingAction(action);

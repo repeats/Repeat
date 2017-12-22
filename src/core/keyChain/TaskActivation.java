@@ -1,5 +1,6 @@
 package core.keyChain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -7,11 +8,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.IJsonable;
-import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import utilities.IJsonable;
+import utilities.JSONUtility;
 
 
 public class TaskActivation implements IJsonable {
@@ -141,6 +142,32 @@ public class TaskActivation implements IJsonable {
 
 	public static Builder newBuilder() {
 		return new Builder();
+	}
+
+	/**
+	 * Convenient constructor to build a one key chain one hot key activation.
+	 *
+	 * @param keys
+	 *            list of keys in the key chain.
+	 * @return the built task activation.
+	 */
+	public static TaskActivation combination(int... keys) {
+		List<Integer> ks = new ArrayList<>(keys.length);
+		for (int key : keys) {
+			ks.add(key);
+		}
+		return newBuilder().addHotKeys(new KeyChain(ks)).build();
+	}
+
+	/**
+	 * Convenient constructor to build a one mouse gesture activation.
+	 *
+	 * @param gesture
+	 *            mouse gesture.
+	 * @return the built task activation.
+	 */
+	public static TaskActivation gesture(MouseGesture gesture) {
+		return newBuilder().addMouseGesture(gesture).build();
 	}
 
 	/**

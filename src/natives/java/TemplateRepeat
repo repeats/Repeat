@@ -8,6 +8,7 @@ import core.controller.KeyboardCore;
 import core.keyChain.KeyChain;
 import core.keyChain.KeyStroke;
 import core.keyChain.MouseGesture;
+import core.keyChain.TaskActivation;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.Point;
@@ -22,6 +23,7 @@ public class CustomAction extends UserDefinedAction {
     	SharedVariables v = new SharedVariables(getNamespace());
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
+        TaskInvoker ti = this.taskInvoker;
         KeyChain invokingHotkey = this.invoker.getFirstHotkey();
         List<KeyStroke> invoker = invokingHotkey == null ? new ArrayList<KeyStroke>() : invokingHotkey.getKeyStrokes();
         MouseGesture gesture = this.invoker.getFirstMouseGesture();

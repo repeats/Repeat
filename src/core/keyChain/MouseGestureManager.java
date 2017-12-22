@@ -1,7 +1,5 @@
 package core.keyChain;
 
-import globalListener.GlobalMouseListener;
-
 import java.awt.Point;
 import java.io.IOException;
 import java.util.Collection;
@@ -16,9 +14,10 @@ import java.util.logging.Logger;
 
 import org.jnativehook.mouse.NativeMouseEvent;
 
-import utilities.Function;
 import core.keyChain.mouseGestureRecognition.MouseGestureClassifier;
 import core.userDefinedTask.UserDefinedAction;
+import globalListener.GlobalMouseListener;
+import utilities.Function;
 
 /**
  * Class to manage mouse gesture recognition and action
@@ -136,7 +135,6 @@ public class MouseGestureManager {
 			UserDefinedAction task = actionMap.get(gesture);
 			if (task != null) {
 				task.setInvoker(TaskActivation.newBuilder().withMouseGesture(gesture).build());
-				task.setInvokingMouseGesture(gesture);
 			}
 			return task;
 		} catch (Exception e) {
