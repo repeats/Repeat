@@ -23,7 +23,7 @@ public class CustomAction extends UserDefinedAction {
     	SharedVariables v = new SharedVariables(getNamespace());
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
-        TaskInvoker ti = this.taskInvoker;
+        TaskActivation ti = this.invoker;
         KeyChain invokingHotkey = this.invoker.getFirstHotkey();
         List<KeyStroke> invoker = invokingHotkey == null ? new ArrayList<KeyStroke>() : invokingHotkey.getKeyStrokes();
         MouseGesture gesture = this.invoker.getFirstMouseGesture();

@@ -19,12 +19,39 @@ public class KeyStroke {
 		this.modifier = modifier;
 	}
 
+	/**
+	 * Retrieve the key on the keyboard. This alone does not identify the exact key
+	 * for cases like Ctrl and Shift, which have left and right keys.
+	 *
+	 * @return the integer representing the key on the keyboard.
+	 */
 	public int getKey() {
 		return key;
 	}
 
+	/**
+	 * Syntactic sugar for {@link #getKey()}.
+	 */
+	public int k() {
+		return getKey();
+	}
+
+	/**
+	 * Retrieve the modifier of the key stroke. Either left or right for
+	 * keys like shift, ctrl or alt, or has undefined meaning for keys
+	 * that have only 1 key on the keyboard (virtually all others).
+	 *
+	 * @return the modifier of the key stroke.
+	 */
 	public int getModifier() {
 		return modifier;
+	}
+
+	/**
+	 * Syntactic sugar for {@link #getModifier()}.
+	 */
+	public int m() {
+		return getModifier();
 	}
 
 	@Override
