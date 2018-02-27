@@ -39,6 +39,8 @@ import frontEnd.BlankClass;
  */
 public class FileUtility {
 
+	private static final Logger LOGGER = Logger.getLogger(FileUtility.class.getName());
+
 	/**
 	 * Private constructor so that no instance is created
 	 */
@@ -188,12 +190,13 @@ public class FileUtility {
 	}
 
 	/**
+	 * Move the content of directory A to directory B.
 	 *
-	 * @param sourceDirectory
-	 * @param destDirectory
-	 * @return
+	 * @param sourceDirectory source directory.
+	 * @param destDirectory destination directory.
+	 * @return whether operation succeeded.
 	 */
-	public static boolean moveFiles(File sourceDirectory, File destDirectory) {
+	public static boolean moveDirectory(File sourceDirectory, File destDirectory) {
 		if (!sourceDirectory.isDirectory() || !destDirectory.isDirectory()) {
 			return false;
 		}
@@ -201,7 +204,23 @@ public class FileUtility {
 		boolean result = true;
 		for (File f : sourceDirectory.listFiles()) {
 			String name = f.getName();
-			result &= f.renameTo(new File(FileUtility.joinPath(destDirectory.getAbsolutePath(), name)));
+			File dst = new File(FileUtility.joinPath(destDirectory.getAbsolutePath(), name));
+			if (!f.isDirectory()) {
+				try {
+					Files.move(Paths.get(f.getAbsolutePath()), Paths.get(dst.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+				} catch (SecurityException | IOException e) {
+					LOGGER.log(Level.WARNING, "Failed to move file.", e);
+					return false;
+				}
+			} else {
+				try {
+					dst.mkdirs();
+				} catch (SecurityException e) {
+					LOGGER.log(Level.WARNING, "Failed to create necessary directories.", e);
+					return false;
+				}
+				result &= moveDirectory(f, dst);
+			}
 		}
 		return result;
 	}

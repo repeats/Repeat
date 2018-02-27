@@ -49,16 +49,14 @@ import javax.swing.table.DefaultTableModel;
 
 import org.jnativehook.NativeHookException;
 
+import commonTools.AreaClickerTool;
+import commonTools.ClickerTool;
+import core.languageHandler.Language;
+import core.recorder.Recorder;
 import staticResources.BootStrapResources;
 import utilities.FileUtility;
 import utilities.swing.LinedTextArea;
 import utilities.swing.SwingUtil;
-
-import commonTools.AreaClickerTool;
-import commonTools.ClickerTool;
-
-import core.languageHandler.Language;
-import core.recorder.Recorder;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -259,7 +257,7 @@ public class MainFrame extends JFrame {
 		mntmNewMenuItem_4.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
+				JFileChooser chooser = new JFileChooser(new File("."));
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				int returnVal = chooser.showOpenDialog(MainFrame.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -696,7 +694,7 @@ public class MainFrame extends JFrame {
 		tfSpeedup.setText("1.0");
 		tfSpeedup.setEnabled(false);
 		tfSpeedup.setColumns(10);
-		
+
 		JButton bEdit = new JButton();
 		bEdit.setIcon(BootStrapResources.EDIT_CODE);
 		bEdit.setToolTipText("Edit the source code using the OS default program.");
@@ -706,7 +704,7 @@ public class MainFrame extends JFrame {
 				backEnd.editSourceCode();
 			}
 		});
-		
+
 		JButton bReload = new JButton();
 		bReload.setIcon(BootStrapResources.RELOAD);
 		bReload.setToolTipText("Update the code from the source code file editted using OS default program.");

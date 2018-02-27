@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.JSONUtility;
+import com.sun.glass.events.KeyEvent;
+
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-
-import com.sun.glass.events.KeyEvent;
-
-import core.userDefinedTask.TaskGroup;
+import utilities.JSONUtility;
 
 public class Parser2_0 extends ConfigParser {
 
@@ -75,16 +73,7 @@ public class Parser2_0 extends ConfigParser {
 
 	@Override
 	protected boolean internalImportData(Config config, JsonRootNode root) {
-		boolean result = true;
-
-		List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();
-		for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
-			TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
-			result &= taskGroup != null;
-			if (taskGroup != null) {
-				taskGroups.add(taskGroup);
-			}
-		}
-		return result;
+		ConfigParser parser = Config.getNextConfigParser(getVersion());
+		return parser.internalImportData(config, root);
 	}
 }

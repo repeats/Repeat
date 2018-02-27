@@ -71,6 +71,7 @@ public class MainBackEndHolder {
 
 	protected final TaskInvoker taskInvoker; // To allow executing other tasks programmatically.
 	protected final GlobalEventsManager keysManager;
+
 	protected final Config config;
 
 	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
@@ -685,7 +686,14 @@ public class MainBackEndHolder {
 
 	protected void importTasks(File inputFile) {
 		ZipUtility.unZipFile(inputFile.getAbsolutePath(), ".");
-		FileUtility.moveFiles(new File("tmp"), new File("."));
+		File src = new File("tmp");
+		File dst = new File(".");
+		boolean moved = FileUtility.moveDirectory(src, dst);
+		if (!moved) {
+			LOGGER.warning("Failed to move files from " + src.getAbsolutePath() + " to " + dst.getAbsolutePath());
+			JOptionPane.showMessageDialog(main, "Failed to move files.");
+			return;
+		}
 
 		boolean result = config.importTaskConfig();
 		FileUtility.deleteFile(new File("tmp"));
@@ -693,7 +701,7 @@ public class MainBackEndHolder {
 		if (result) {
 			JOptionPane.showMessageDialog(main, "Successfully imported tasks");
 		} else {
-			JOptionPane.showMessageDialog(main, "Encountered error while importing tasks");
+			JOptionPane.showMessageDialog(main, "Encountered error(s) while importing tasks");
 		}
 	}
 
@@ -940,6 +948,10 @@ public class MainBackEndHolder {
 	}
 
 	/*************************************************************************************************************/
+	public GlobalEventsManager getKeysManager() {
+		return keysManager;
+	}
+
 	public List<TaskGroup> getTaskGroups() {
 		return taskGroups;
 	}
