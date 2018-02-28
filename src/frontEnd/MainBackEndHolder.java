@@ -740,14 +740,20 @@ public class MainBackEndHolder {
 			JOptionPane.showMessageDialog(main, "Failed to move files.");
 			return;
 		}
-
+		int existingGroupCount = taskGroups.size();
 		boolean result = config.importTaskConfig();
 		FileUtility.deleteFile(new File("tmp"));
 
-		if (result) {
-			JOptionPane.showMessageDialog(main, "Successfully imported tasks");
+		if (taskGroups.size() > existingGroupCount) {
+			currentGroup = taskGroups.get(existingGroupCount); // Take the new group with lowest index.
 		} else {
-			JOptionPane.showMessageDialog(main, "Encountered error(s) while importing tasks");
+			JOptionPane.showMessageDialog(main, "No new task group found!");
+			return;
+		}
+		if (result) {
+			JOptionPane.showMessageDialog(main, "Successfully imported tasks. Switching to a new task group...");
+		} else {
+			JOptionPane.showMessageDialog(main, "Encountered error(s) while importing tasks. Switching to a new task group...");
 		}
 	}
 
