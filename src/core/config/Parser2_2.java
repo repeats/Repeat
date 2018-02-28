@@ -2,22 +2,17 @@ package core.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.ipc.IPCServiceManager;
-import core.keyChain.GlobalEventsManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.Language;
 import core.userDefinedTask.TaskGroup;
-import core.userDefinedTask.UserDefinedAction;
 import utilities.JSONUtility;
-import utilities.StringUtilities;
 
 public class Parser2_2 extends ConfigParser {
 
@@ -106,23 +101,11 @@ public class Parser2_2 extends ConfigParser {
 	protected boolean internalImportData(Config config, JsonRootNode root) {
 		boolean result = true;
 
-		GlobalEventsManager keysManager = config.getBackEnd().getKeysManager();
-		List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();
 		for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
 			TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
 			result &= taskGroup != null;
 			if (taskGroup != null) {
-				taskGroups.add(taskGroup);
-				for (UserDefinedAction action : taskGroup.getTasks()) {
-					Set<UserDefinedAction> collisions = keysManager.isActivationRegistered(action.getActivation());
-					if (collisions.isEmpty()) {
-						keysManager.registerTask(action);
-					} else {
-						result = false;
-						String collisionNames = StringUtilities.join(collisions.stream().map(t -> t.getName()).collect(Collectors.toList()), ", ");
-						LOGGER.log(Level.WARNING, "Cannot register action " + action.getName() + ". There are collisions with " + collisionNames + " in hotkeys!");
-					}
-				}
+				result &= config.getBackEnd().addPopulatedTaskGroup(taskGroup);
 			}
 		}
 		return result;

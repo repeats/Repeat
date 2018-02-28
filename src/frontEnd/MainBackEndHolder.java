@@ -50,6 +50,7 @@ import utilities.Function;
 import utilities.NumberUtility;
 import utilities.OSIdentifier;
 import utilities.Pair;
+import utilities.StringUtilities;
 import utilities.ZipUtility;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
@@ -368,6 +369,51 @@ public class MainBackEndHolder {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Add a task group with actions already filled in.
+	 * This also registers the task activations for the tasks in group.
+	 * Note that this does not replace existing activations with colliding activations.
+	 * Task activation registration  continues on failures and only reports one failure at the end.
+	 *
+	 * @param group group to add.
+	 * @return whether operation succeeds (i.e. no activation collision).
+	 */
+	public boolean addPopulatedTaskGroup(TaskGroup group) {
+		boolean result = true;
+		taskGroups.add(group);
+		for (UserDefinedAction action : group.getTasks()) {
+			Set<UserDefinedAction> collisions = keysManager.isActivationRegistered(action.getActivation());
+			if (collisions.isEmpty()) {
+				keysManager.registerTask(action);
+			} else {
+				result &= false;
+				String collisionNames = StringUtilities.join(collisions.stream().map(t -> t.getName()).collect(Collectors.toList()), ", ");
+				LOGGER.log(Level.WARNING, "Cannot register action " + action.getName() + ". There are collisions with " + collisionNames + " in hotkeys!");
+			}
+		}
+		return result;
+	}
+
+	protected void removeTaskGroup(int index) {
+		if (index < 0 || index >= taskGroups.size()) {
+			return;
+		}
+
+		TaskGroup removed = taskGroups.remove(index);
+		if (taskGroups.size() < 1) {
+			taskGroups.add(new TaskGroup("default"));
+		}
+
+		if (getCurrentTaskGroup() == removed) {
+			setCurrentTaskGroup(taskGroups.get(0));
+		}
+
+		for (UserDefinedAction action : removed.getTasks()) {
+			keysManager.unregisterTask(action);
+		}
+		renderTaskGroup();
 	}
 
 	/*************************************************************************************************************/
@@ -948,10 +994,6 @@ public class MainBackEndHolder {
 	}
 
 	/*************************************************************************************************************/
-	public GlobalEventsManager getKeysManager() {
-		return keysManager;
-	}
-
 	public List<TaskGroup> getTaskGroups() {
 		return taskGroups;
 	}

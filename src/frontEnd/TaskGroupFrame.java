@@ -28,9 +28,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import core.userDefinedTask.TaskGroup;
 import staticResources.BootStrapResources;
 import utilities.swing.SwingUtil;
-import core.userDefinedTask.TaskGroup;
 
 @SuppressWarnings("serial")
 public class TaskGroupFrame extends JFrame {
@@ -239,16 +239,7 @@ public class TaskGroupFrame extends JFrame {
 	private void removeGroup() {
 		int selected = tGroups.getSelectedRow();
 		if (selected >= 0) {
-			TaskGroup removed = backEnd.taskGroups.remove(selected);
-
-			if (backEnd.taskGroups.size() < 1) {
-				backEnd.taskGroups.add(new TaskGroup("default"));
-			}
-
-			if (backEnd.getCurrentTaskGroup() == removed) {
-				backEnd.setCurrentTaskGroup(backEnd.taskGroups.get(0));
-			}
-			renderTaskGroup();
+			backEnd.removeTaskGroup(selected);
 		} else {
 			JOptionPane.showMessageDialog(this, "Select a group on the table first.");
 		}
