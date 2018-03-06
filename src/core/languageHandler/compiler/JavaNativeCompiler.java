@@ -122,7 +122,8 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 	                JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 					if (compiler == null) {
-						getLogger().warning("No java compiler found. Set class path points to JDK in setting?");
+						getLogger().warning("No java compiler found. Set class path points to JDK in setting?\nNote that for Java 9 an above. Setting class path no longer "
+								+ "works. You will need to launch this program using a JDK instead of a JRE.");
 						return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode));
 					}
 	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
