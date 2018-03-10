@@ -1,3 +1,4 @@
+
 Repeat
 ======
 
@@ -19,9 +20,9 @@ Demo
 
 Features
 =======
-1. Record and replay computer activity.
-2. Store recorded task and replay them later.
-3. Write your own task so you have more control over the computer.
+1. Record and replay computer activities.
+2. Store recorded tasks and replay them later.
+3. Write your own task **in your favorite text editor** so you have more control over the computer.
 4. Assign multiple arbitrary hotkey combinations to activate a stored task.
 5. Assign multiple mouse gestures to activate a stored task.
 6. Manage your Repeat tasks (either recorded or written).
@@ -35,13 +36,12 @@ Installation
 ============
 Just download the [latest version](https://github.com/repeats/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
 
-Known issues
-============
-1. <del> Home/End buttons can only be used if numlocks is off </del> (This is a feature, not a bug)
-2. <del> Some source code files are not getting cleaned up. However, they're all in the data/source folder </del> [Since 1.7.3](https://github.com/hptruong93/Repeat/releases/tag/1.7.3) --> Provide a menu for user to clean up unused source files.
-3. <del>Python language is not fully supported. I'll have to write a better controller (mouse & keyboard) library for python.</del> Fully integrated python module [Since 2.0](https://github.com/hptruong93/Repeat/releases/tag/v2.0).
-4. If application is not initialized correctly, it may not exit and has to be killed. This rarely happens. I've not seen such thing for a very long time.
-5. <del> Does not catch error if hotkeys collide for different tasks. (i.e. you are responsible for not violating your hotkey assignment) </del> [Since 1.8](https://github.com/hptruong93/Repeat/releases/tag/1.8) --> Does not allow user to have overlapping keys.
+The recommended way to launch the program is through terminal:
+
+     $cd <jar_directory>
+     $java -jar Repeat.jar
+
+Note that since **Java 9**, the jar file must be launched from a JDK (as opposed to a JRE) to be able to compile file. The workaround used in Java 8 and before to set Java home no longer works.
 
 FAQ
 ===
@@ -52,6 +52,21 @@ FAQ
 
 ## Why is this only available in non headless system?
 It does not make sense to listen to keyboard and mouse events in a headless system. How can you move your mouse if you have no screen? What would typing a key mean in such system?
+
+## I am running a Linux machine. Will the C# module get started at application start time?
+C# module is disabled if you are on a non Windows OS. Nothing from C# module will get started.
+
+## It's 2018. Why Java Swing?
+At the time I was desperately in need of a tool to liberate myself from the repetitive tasks at work. I could have used JavaFX but I would take more time since I was not that proficient at JavaFX.
+
+## Why can't this be a web service? It's a lot of effort downloading the JAR and run it.
+This application listens on your mouse and keyboard events as well as allowing you to simulate mouse/keyboard events. If I could do such thing from a web browser, some hackers must have got your personal information, passwords, bank account number by now.
+
+## Why is there no support for JavaScript?
+It's coming. I will get it done when I have time.
+
+Common usage questions
+===============
 
 ## How do I change the global hotkeys (e.g. run task, start recording, stop recording)?
 You can change global hotkeys: In menu Settings --> Hotkey
@@ -94,29 +109,18 @@ Similar to Java, you need to identify where the python interpreter is at. First 
 You need to start Python submodule first. Go to Tool --> Native modules and click on the python IPC line, then click on the play button to start it.
 You can achieve the same thing by just restarting the application. Python module will be automatically started if you've configured python interpreter correctly.
 
-## I am running a Linux machine. Will the C# module get started at application start time?
-C# module is disabled if you are on a non Windows OS. Nothing from C# module will get started.
-
-## It's 2016. Why Java Swing?
-At the time I was desperately in need of a tool to liberate myself from the repetitive tasks at work. I could have used JavaFX but I would take more time since I was not that proficient at JavaFX.
-
-## Why can't this be a web service? It's a lot of effort downloading the JAR and run it.
-This application listens on your mouse and keyboard events as well as allowing you to simulate mouse/keyboard events. If I could do such thing from a web browser, some hackers must have got your personal information, passwords, bank account number by now.
-
-## Why is there no support for JavaScript?
-It's coming. I will get it done when I have time.
-
 Code examples
 =============
 Type out 100! = 1 * 2 * 3 * ... * 100
 -------------------------------------
     /* Write your code beneath "Begin generated code" */
-    controller.blockingWait(100); //To make sure the hotkey has been fully released
-    key.type("100! = ");
+    c.blockingWait(100); //To make sure the hotkey has been fully released
+    k.type("100! = ");
     for (int i = 1; i <= 100; i++) {
-        key.type(i + "");
-        if (i != 100)
-            key.type(" * ");
+        k.type(i + "");
+        if (i != 100) {
+            k.type(" * ");
+        }
     }
 
 Libraries used

@@ -69,6 +69,7 @@ public class HotkeySetting extends JFrame {
 					backEnd.keysManager.reRegisterTask(
 							backEnd.switchRecord,
 							TaskActivation.newBuilder().withHotKey(newKeyChain).build());
+
 					backEnd.config.setRECORD(newKeyChain);
 
 					tfRecord.setText(newKeyChain.toString());

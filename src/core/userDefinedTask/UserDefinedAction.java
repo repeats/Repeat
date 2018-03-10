@@ -140,6 +140,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		this.enabled = enabled;
 	}
 
+	public void setActivation(TaskActivation activation) {
+		this.activation = activation;
+	}
+
 	public void setTaskInvoker(TaskInvoker taskInvoker) {
 		this.taskInvoker = taskInvoker;
 	}
@@ -162,6 +166,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 */
 	public final void setInvoker(TaskActivation invoker) {
 		this.invoker = invoker;
+
+		// For legacy purpose.
 		setInvokingKeyChain(invoker.getFirstHotkey());
 		setInvokingMouseGesture(invoker.getFirstMouseGesture());
 	}
@@ -173,7 +179,9 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * This will also set {@link #invokingMouseGesture} to null.
 	 *
 	 * @param invokingKeyChain
+	 * @deprecated use {@link #setInvoker(TaskActivation)} instead.
 	 */
+	@Deprecated
 	private final void setInvokingKeyChain(KeyChain invokingKeyChain) {
 		if (invokingKeyChain == null) {
 			return;
@@ -181,7 +189,6 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 		this.invokingKeyChain.clearKeys();
 		this.invokingKeyChain.addFrom(invokingKeyChain);
-		this.invokingMouseGesture = null;
 	}
 
 	/**
@@ -191,14 +198,15 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * This will also clear {@link #invokingKeyChain}.
 	 *
 	 * @param invokingMouseGesture
+	 * @deprecated use {@link #setInvoker(TaskActivation)} instead.
 	 */
+	@Deprecated
 	private final void setInvokingMouseGesture(MouseGesture invokingMouseGesture) {
 		if (invokingMouseGesture == null) {
 			return;
 		}
 
 		this.invokingMouseGesture = invokingMouseGesture;
-		this.invokingKeyChain.clearKeys();
 	}
 
 

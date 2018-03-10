@@ -15,23 +15,29 @@ import utilities.IJsonable;
 import utilities.JSONUtility;
 
 
+/**
+ * Represents an entity that activates a {@link core.userDefinedTask.UserDefinedAction}.
+ */
 public class TaskActivation implements IJsonable {
 
 	private static final Logger LOGGER = Logger.getLogger(TaskActivation.class.getName());
 
 	private Set<KeyChain> hotkeys;
 	private Set<MouseGesture> mouseGestures;
+	private Set<KeySequence> keySequences;
 
 	private TaskActivation(Builder builder) {
 		hotkeys = builder.hotkeys;
 		mouseGestures = builder.mouseGestures;
+		keySequences = builder.keySequences;
 	}
 
 	/**
 	 * @param hotkeys the hotkey set to set
 	 */
 	public final void setHotKeys(Set<KeyChain> hotkeys) {
-		this.hotkeys = hotkeys;
+		this.hotkeys = new HashSet<>();
+		this.hotkeys.addAll(hotkeys);
 	}
 
 	/**
@@ -60,7 +66,8 @@ public class TaskActivation implements IJsonable {
 	 * @param mouseGestures set of mouse gestures to set.
 	 */
 	public final void setMouseGestures(Set<MouseGesture> mouseGestures) {
-		this.mouseGestures = mouseGestures;
+		this.mouseGestures = new HashSet<>();
+		this.mouseGestures.addAll(mouseGestures);
 	}
 
 	/**
@@ -87,6 +94,37 @@ public class TaskActivation implements IJsonable {
 	}
 
 	/**
+	 * @param keySequences set of key sequences to set.
+	 */
+	public final void setKeySequences(Set<KeySequence> keySequences) {
+		this.keySequences = new HashSet<>();
+		this.keySequences.addAll(keySequences);
+	}
+
+	/**
+	 * @return set of key sequences associated with this activation entity.
+	 */
+	public final Set<KeySequence> getKeySequences() {
+		if (keySequences == null) {
+			return new HashSet<>();
+		}
+
+		return keySequences;
+	}
+
+	/**
+	 * @return an arbitrary {@link KeySequence} from the set of gestures, or null if the set is empty.
+	 */
+	public final KeySequence getFirstKeySequence() {
+		Set<KeySequence> keySequences = getKeySequences();
+		if (keySequences.isEmpty()) {
+			return null;
+		} else {
+			return keySequences.iterator().next();
+		}
+	}
+
+	/**
 	 * Copy the content of the other {@link TaskActivation} to this object.
 	 *
 	 * @param other other task activation whose content will be copied from.
@@ -94,6 +132,7 @@ public class TaskActivation implements IJsonable {
 	public final void copy(TaskActivation other) {
 		setHotKeys(other.getHotkeys());
 		setMouseGestures(other.getMouseGestures());
+		setKeySequences(other.getKeySequences());
 	}
 
 	/**
@@ -107,6 +146,7 @@ public class TaskActivation implements IJsonable {
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
+				JsonNodeFactories.field("key_sequence", JsonNodeFactories.array(JSONUtility.listToJson(getKeySequences()))),
 				JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array(JSONUtility.listToJson(getMouseGestures()))));
 	}
 
@@ -119,6 +159,7 @@ public class TaskActivation implements IJsonable {
 	public static TaskActivation parseJSON(JsonNode node) {
 		try {
 			List<JsonNode> hotkeysNode = node.getArrayNode("hotkey");
+			List<JsonNode> keySequenceNodes = node.isArrayNode("key_sequence") ? node.getArrayNode("key_sequence") : new ArrayList<>();
 			List<JsonNode> mouseGestureNode = node.getArrayNode("mouse_gesture");
 
 			Set<KeyChain> keyChains = new HashSet<>();
@@ -131,8 +172,18 @@ public class TaskActivation implements IJsonable {
 				}
 			}
 
+			Set<KeySequence> keySequences = new HashSet<>();
+			for (JsonNode keySequenceNode : keySequenceNodes) {
+				KeySequence newkeySequence = KeySequence.parseJSON(keySequenceNode.getArrayNode());
+				if (newkeySequence == null) {
+					LOGGER.log(Level.WARNING, "Cannot parse key chain " + keySequenceNode);
+				} else {
+					keySequences.add(newkeySequence);
+				}
+			}
+
 			Set<MouseGesture> gestures = MouseGesture.parseJSON(mouseGestureNode);
-			TaskActivation output = TaskActivation.newBuilder().withHotKeys(keyChains).withMouseGestures(gestures).build();
+			TaskActivation output = TaskActivation.newBuilder().withHotKeys(keyChains).withKeySequence(keySequences).withMouseGestures(gestures).build();
 			return output;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Exception while parsing task activation.", e);
@@ -177,10 +228,12 @@ public class TaskActivation implements IJsonable {
 
 		private Set<KeyChain> hotkeys;
 		private Set<MouseGesture> mouseGestures;
+		private Set<KeySequence> keySequences;
 
 		private Builder() {
 			hotkeys = new HashSet<>();
 			mouseGestures = new HashSet<>();
+			keySequences = new HashSet<>();
 		}
 
 		public Builder addHotKeys(KeyChain... keys) {
@@ -189,13 +242,14 @@ public class TaskActivation implements IJsonable {
 		}
 
 		public Builder withHotKey(KeyChain key) {
-			hotkeys = new HashSet<>();
+			hotkeys.clear();
 			hotkeys.add(key);
 			return this;
 		}
 
 		public Builder withHotKeys(Set<KeyChain> keys) {
-			this.hotkeys = keys;
+			this.hotkeys.clear();
+			this.hotkeys.addAll(keys);
 			return this;
 		}
 
@@ -205,13 +259,31 @@ public class TaskActivation implements IJsonable {
 		}
 
 		public Builder withMouseGesture(MouseGesture gesture) {
-			mouseGestures = new HashSet<>();
+			mouseGestures.clear();
 			mouseGestures.add(gesture);
 			return this;
 		}
 
 		public Builder withMouseGestures(Set<MouseGesture> gestures) {
-			this.mouseGestures = gestures;
+			this.mouseGestures.clear();
+			this.mouseGestures.addAll(gestures);
+			return this;
+		}
+
+		public Builder addKeySequence(KeySequence... keySequences) {
+			this.keySequences.addAll(Arrays.asList(keySequences));
+			return this;
+		}
+
+		public Builder withKeySequence(KeySequence keySequences) {
+			this.keySequences.clear();
+			this.keySequences.add(keySequences);
+			return this;
+		}
+
+		public Builder withKeySequence(Set<KeySequence> keySequences) {
+			this.keySequences.clear();
+			this.keySequences.addAll(keySequences);
 			return this;
 		}
 

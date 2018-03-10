@@ -1,7 +1,7 @@
 package core.keyChain;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +29,6 @@ public final class GlobalEventsManager {
 	private static final Logger LOGGER = Logger.getLogger(GlobalEventsManager.class.getName());
 
 	private final Config config;
-	private final Map<KeyChain, UserDefinedAction> actionMap;
 	/**
 	 * This function is the precondition to executing any task.
 	 * It is evaluated every time the manager considers executing any task.
@@ -37,19 +36,22 @@ public final class GlobalEventsManager {
 	 */
 	private Function<Void, Boolean> disablingFunction;
 	private final Map<String, Thread> executions;
-	private final KeyChain currentKeyChain;
-	private final MouseGestureManager mouseGestureManager;
+	private final KeyStrokeManager taskActivationManager;
 
 	@SuppressWarnings("unused")
 	private TaskGroup currentTaskGroup;
 
 	public GlobalEventsManager(Config config) {
 		this.config = config;
-		this.actionMap = new HashMap<>();
+
 		this.executions = new HashMap<>();
-		this.currentKeyChain = new KeyChain();
 		this.disablingFunction = Function.falseFunction();
-		this.mouseGestureManager = new MouseGestureManager();
+
+		this.taskActivationManager = new AggregateKeyStrokeManager(config,
+				new KeyChainManager(config),
+				new KeySequenceManager(config),
+				new MouseGestureManager(config));
+
 	}
 
 	public void startGlobalListener() throws NativeHookException {
@@ -58,15 +60,12 @@ public final class GlobalEventsManager {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
 				KeyStroke stroke = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (stroke.getKey() == config.getMouseGestureActivationKey()) {
-					mouseGestureManager.startRecoarding();
+				if (!shouldDelegate(stroke)) {
+					return true;
 				}
-				currentKeyChain.addKeyStroke(KeyStroke.Of(stroke.getKey(), KeyStroke.KEY_MODIFIER_UNKNOWN));
 
-				if (!config.isExecuteOnKeyReleased()) {
-					return considerTaskExecution(stroke.getKey());
-				}
-				return true;
+				Set<UserDefinedAction> actions = taskActivationManager.onKeyStrokePressed(stroke);
+				return startExecutingActions(actions);
 			}
 		});
 
@@ -74,22 +73,16 @@ public final class GlobalEventsManager {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
 				KeyStroke stroke = CodeConverter.getKeyEventCode(r.getKeyCode());
-				if (stroke.getKey() == config.getMouseGestureActivationKey()) {
-					UserDefinedAction action = mouseGestureManager.finishRecording();
-					startExecutingAction(action);
+				if (!shouldDelegate(stroke)) {
+					return true;
 				}
 
-				if (config.isExecuteOnKeyReleased()) {
-					boolean result = considerTaskExecution(stroke.getKey());
-					currentKeyChain.clearKeys();
-					return result;
-				}
-				currentKeyChain.clearKeys();
-				return true;
+				Set<UserDefinedAction> actions = taskActivationManager.onKeyStrokeReleased(stroke);
+				return startExecutingActions(actions);
 			}
 		});
 
-		mouseGestureManager.startListening();
+		taskActivationManager.startListening();
 		keyListener.startListening();
 	}
 
@@ -102,27 +95,34 @@ public final class GlobalEventsManager {
 	}
 
 	/**
-	 * Given a new key code coming in, consider start executing an action based on its hotkey
+	 * Given a new key code coming in, consider whether we should delegate
+	 * to the {@link KeyStrokeManager}, or take actions and terminate.
+	 *
 	 * @param keyCode new keyCode coming in
-	 * @return if operation succeeded (even if no action has been invoked)
+	 * @return if we should continue delegating this to the managers.
 	 */
-	private boolean considerTaskExecution(int keyCode) {
-		if (keyCode == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
-			currentKeyChain.clearKeys();
+	private boolean shouldDelegate(KeyStroke stroke) {
+		if (stroke.getKey() == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
+			taskActivationManager.clear();
 			haltAllTasks();
-			return true;
+			return false;
 		}
 
-		if (disablingFunction.apply(null)) {
-			return true;
-		}
+		return !disablingFunction.apply(null);
+	}
 
-		UserDefinedAction action = actionMap.get(currentKeyChain);
-		if (action != null) {
-			action.setInvoker(TaskActivation.newBuilder().withHotKey(currentKeyChain.clone()).build());
+	/**
+	 * Start executing actions, each in a separate thread.
+	 *
+	 * @param actions actions to execute
+	 * @return if all operations succeeded
+	 */
+	private boolean startExecutingActions(Collection<UserDefinedAction> actions) {
+		boolean result = true;
+		for (UserDefinedAction action : actions) {
+			result &= startExecutingAction(action);
 		}
-
-		return startExecutingAction(action);
+		return result;
 	}
 
 	/**
@@ -164,21 +164,7 @@ public final class GlobalEventsManager {
 	 * @return List of currently registered tasks that collide with this newly registered task
 	 */
 	public Set<UserDefinedAction> registerTask(UserDefinedAction action) {
-		Set<UserDefinedAction> collisions = isActivationRegistered(action.getActivation());
-		Set<UserDefinedAction> output = new HashSet<>();
-
-		for (UserDefinedAction toRemove : collisions) {
-			output.add(toRemove);
-		}
-
-		for (KeyChain key : action.getActivation().getHotkeys()) {
-			registerKey(key, action);
-		}
-
-		// Mouse gesture registration
-		output.addAll(mouseGestureManager.registerAction(action));
-
-		return output;
+		return taskActivationManager.registerAction(action);
 	}
 
 	/**
@@ -191,11 +177,7 @@ public final class GlobalEventsManager {
 	 */
 	public Set<UserDefinedAction> reRegisterTask(UserDefinedAction action, TaskActivation newActivation) {
 		unregisterTask(action);
-		action.getActivation().getHotkeys().clear();
-		action.getActivation().getHotkeys().addAll(newActivation.getHotkeys());
-		action.getActivation().getMouseGestures().clear();
-		action.getActivation().getMouseGestures().addAll(newActivation.getMouseGestures());
-
+		action.setActivation(newActivation);
 		return registerTask(action);
 	}
 
@@ -205,11 +187,7 @@ public final class GlobalEventsManager {
 	 * @return if all activations are removed.
 	 */
 	public boolean unregisterTask(UserDefinedAction action) {
-		for (KeyChain k : action.getActivation().getHotkeys()) {
-			unregisterKey(k);
-		}
-
-		mouseGestureManager.unRegisterAction(action);
+		taskActivationManager.unRegisterAction(action);
 		return true;
 	}
 
@@ -229,39 +207,7 @@ public final class GlobalEventsManager {
 	 * @return return set of actions that collide with this activation.
 	 */
 	public Set<UserDefinedAction> isActivationRegistered(TaskActivation activation) {
-		// Check for keychain collision
-		Set<KeyChain> keyChainCollisions = new HashSet<>();
-		for (KeyChain code : activation.getHotkeys()) {
-			KeyChain collision = isKeyRegistered(code);
-			if (collision != null) {
-				keyChainCollisions.add(collision);
-			}
-		}
-
-		// Check for mouse gesture collision
-		Set<UserDefinedAction> gestureCollisions = mouseGestureManager.areGesturesRegistered(activation.getMouseGestures());
-
-		Set<UserDefinedAction> output = new HashSet<>();
-		for (KeyChain collision : keyChainCollisions) {
-			output.add(actionMap.get(collision));
-		}
-		output.addAll(gestureCollisions);
-
-		return output;
-	}
-
-	private KeyChain isKeyRegistered(KeyChain code) {
-		for (KeyChain existing : actionMap.keySet()) {
-			if (existing.collideWith(code)) {
-				return existing;
-			}
-		}
-
-		return null;
-	}
-
-	public KeyChain isKeyRegistered(int code) {
-		return isKeyRegistered(new KeyChain(code));
+		return taskActivationManager.collision(activation);
 	}
 
 	/**
@@ -298,20 +244,5 @@ public final class GlobalEventsManager {
 			}
 		}
 		executions.clear();
-	}
-
-	private UserDefinedAction unregisterKey(KeyChain code) {
-		return actionMap.remove(code);
-	}
-
-	private UserDefinedAction registerKey(KeyChain code, UserDefinedAction action) {
-		if (code.contains(KeyStroke.Of(Config.HALT_TASK, KeyStroke.KEY_MODIFIER_UNKNOWN))) {
-			return null;
-		}
-
-		UserDefinedAction removal = actionMap.get(code);
-		actionMap.put(code, action);
-
-		return removal;
 	}
 }

@@ -37,7 +37,7 @@ public class CodeConverter {
 
 	public static KeyStroke getKeyEventCode(int nativeCode) {
 		int code = -1;
-		int modifier = KeyStroke.KEY_MODIFIER_UNKNOWN;
+		KeyStroke.Modifier modifier = KeyStroke.Modifier.KEY_MODIFIER_UNKNOWN;
 		// Lookup text values.
 
 		switch (nativeCode) {
@@ -605,37 +605,37 @@ public class CodeConverter {
 		case VC_SHIFT_L:
 
 			code = KeyEvent.VK_SHIFT;
-			modifier = KeyStroke.KEY_MODIFIER_LEFT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_LEFT;
 			break;
 
 		case VC_SHIFT_R:
 
 			code = KeyEvent.VK_SHIFT;
-			modifier = KeyStroke.KEY_MODIFIER_RIGHT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_RIGHT;
 			break;
 
 		case VC_CONTROL_L:
 
 			code = KeyEvent.VK_CONTROL;
-			modifier = KeyStroke.KEY_MODIFIER_LEFT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_LEFT;
 			break;
 
 		case VC_CONTROL_R:
 
 			code = KeyEvent.VK_CONTROL;
-			modifier = KeyStroke.KEY_MODIFIER_RIGHT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_RIGHT;
 			break;
 
 		case VC_ALT_L:
 
 			code = KeyEvent.VK_ALT;
-			modifier = KeyStroke.KEY_MODIFIER_LEFT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_LEFT;
 			break;
 
 		case VC_ALT_R:
 
 			code = KeyEvent.VK_ALT;
-			modifier = KeyStroke.KEY_MODIFIER_RIGHT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_RIGHT;
 			break;
 
 		case VC_META_L:
@@ -644,7 +644,7 @@ public class CodeConverter {
 			} else {
 				code = KeyEvent.VK_META;
 			}
-			modifier = KeyStroke.KEY_MODIFIER_LEFT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_LEFT;
 			break;
 
 		case VC_META_R:
@@ -653,7 +653,7 @@ public class CodeConverter {
 			} else {
 				code = KeyEvent.VK_META;
 			}
-			modifier = KeyStroke.KEY_MODIFIER_RIGHT;
+			modifier = KeyStroke.Modifier.KEY_MODIFIER_RIGHT;
 			break;
 
 		case VC_CONTEXT_MENU:
@@ -670,7 +670,7 @@ public class CodeConverter {
 
 		}
 
-		return KeyStroke.Of(code, modifier);
+		return KeyStroke.of(code, modifier);
 	}
 
 }

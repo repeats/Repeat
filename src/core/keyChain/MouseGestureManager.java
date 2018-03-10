@@ -2,7 +2,9 @@ package core.keyChain;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,9 +13,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.jnativehook.mouse.NativeMouseEvent;
 
+import core.config.Config;
 import core.keyChain.mouseGestureRecognition.MouseGestureClassifier;
 import core.userDefinedTask.UserDefinedAction;
 import globalListener.GlobalMouseListener;
@@ -22,7 +26,7 @@ import utilities.Function;
 /**
  * Class to manage mouse gesture recognition and action
  */
-public class MouseGestureManager {
+public class MouseGestureManager extends KeyStrokeManager {
 
 	private static final Logger LOGGER = Logger.getLogger(MouseGestureManager.class.getName());
 
@@ -34,11 +38,51 @@ public class MouseGestureManager {
 	private final Queue<Point> coordinates;
 	private boolean enabled;
 
-	public MouseGestureManager() {
+	public MouseGestureManager(Config config) {
+		super(config);
 		mouseGestureRecognizer = new MouseGestureClassifier();
 		actionMap = new HashMap<>();
 		coordinates = new ConcurrentLinkedQueue<Point>();
 		mouseListener = new GlobalMouseListener();
+	}
+
+	/**
+	 * Start listening to the mouse for movement
+	 */
+	@Override
+	public void startListening() {
+		mouseListener.setMouseMoved(new Function<NativeMouseEvent, Boolean> () {
+			@Override
+			public Boolean apply(NativeMouseEvent d) {
+				if (enabled && coordinates.size() < MAX_COORDINATES_COUNT) {
+					coordinates.add(new Point(d.getX(), d.getY()));
+				}
+				return true;
+			}});
+		mouseListener.startListening();
+	}
+
+	@Override
+	public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
+		if (stroke.getKey() == getConfig().getMouseGestureActivationKey()) {
+			startRecording();
+		}
+		return Collections.<UserDefinedAction>emptySet();
+	}
+
+	@Override
+	public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+		if (stroke.getKey() == getConfig().getMouseGestureActivationKey()) {
+			UserDefinedAction action = finishRecording();
+			return new HashSet<>(Arrays.asList(action));
+		}
+		return Collections.<UserDefinedAction>emptySet();
+	}
+
+	@Override
+	public void clear() {
+		enabled = false;
+		coordinates.clear();
 	}
 
 	/**
@@ -47,9 +91,12 @@ public class MouseGestureManager {
 	 * @param gesture gesture set to check
 	 * @return set of any collision occurs
 	 */
-	public Set<UserDefinedAction> areGesturesRegistered(Collection<MouseGesture> gesture) {
+	@Override
+	public Set<UserDefinedAction> collision(Collection<TaskActivation> activations) {
+		Set<MouseGesture> gestures = activations.stream().map(a -> a.getMouseGestures()).flatMap(Set::stream).collect(Collectors.toSet());
+
 		Set<MouseGesture> collisions = new HashSet<>(actionMap.keySet());
-		collisions.retainAll(gesture);
+		collisions.retainAll(gestures);
 
 		Set<UserDefinedAction> output = new HashSet<>();
 		for (MouseGesture collision : collisions) {
@@ -64,6 +111,7 @@ public class MouseGestureManager {
 	 * @param action the action to execute
 	 * @return the gestures that are collided
 	 */
+	@Override
 	public Set<UserDefinedAction> registerAction(UserDefinedAction action) {
 		Set<UserDefinedAction> collisions = new HashSet<>();
 		for (MouseGesture gesture : action.getActivation().getMouseGestures()) {
@@ -84,7 +132,8 @@ public class MouseGestureManager {
 	 * @param action action to unregister
 	 * @return action (if exist) associated with this gesture
 	 */
-	protected Set<UserDefinedAction> unRegisterAction(UserDefinedAction action) {
+	@Override
+	public Set<UserDefinedAction> unRegisterAction(UserDefinedAction action) {
 		Set<UserDefinedAction> output = new HashSet<>();
 		for (MouseGesture gesture : action.getActivation().getMouseGestures()) {
 			UserDefinedAction removed = actionMap.remove(gesture);
@@ -97,26 +146,9 @@ public class MouseGestureManager {
 	}
 
 	/**
-	 * Unregister an action from a {@link MouseGesture} and register it to
-	 * another one. This kicks out all other actions associated with this
-	 * gesture.
-	 *
-	 * @param action action to re-register
-	 * @param gesture new gestures to register the action with
-	 *
-	 * @return any action associated with the new gesture previously
-	 */
-	protected Set<UserDefinedAction> reRegisterAction(UserDefinedAction action, Collection<MouseGesture> gestures) {
-		unRegisterAction(action);
-		action.getActivation().getMouseGestures().clear();
-		action.getActivation().getMouseGestures().addAll(gestures);
-		return registerAction(action);
-	}
-
-	/**
 	 * Start recording the gesture
 	 */
-	protected void startRecoarding() {
+	protected void startRecording() {
 		coordinates.clear();
 		enabled = true;
 	}
@@ -152,21 +184,6 @@ public class MouseGestureManager {
 	private MouseGesture processCurrentData() throws IOException {
 		int size = coordinates.size();
 		return mouseGestureRecognizer.classifyGesture(coordinates, size);
-	}
-
-	/**
-	 * Start listening to the mouse for movement
-	 */
-	protected void startListening() {
-		mouseListener.setMouseMoved(new Function<NativeMouseEvent, Boolean> () {
-			@Override
-			public Boolean apply(NativeMouseEvent d) {
-				if (enabled && coordinates.size() < MAX_COORDINATES_COUNT) {
-					coordinates.add(new Point(d.getX(), d.getY()));
-				}
-				return true;
-			}});
-		mouseListener.startListening();
 	}
 
 	/**
