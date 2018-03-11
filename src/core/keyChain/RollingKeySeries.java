@@ -64,6 +64,7 @@ public class RollingKeySeries extends KeySeries {
 	/**
 	 * Get the string which would be typed out if all keys in this {@link KeySequence} are pressed in the specified order.
 	 * Note that this includes effects of keys like SHIFT, CAPSLOCK, or NUMSLOCK.
+	 * This means that this assumes both press and release activities are recorded with this instance.
 	 */
 	@Override
 	public String getTypedString() {
@@ -119,6 +120,8 @@ public class RollingKeySeries extends KeySeries {
 	}
 
 	private boolean collideWithActivationPhrase(ActivationPhrase other) {
-		return getTypedString().endsWith(other.getValue());
+		int lastCode = keys.listIterator(keys.size()).previous().getKey();
+		boolean isTypedChar = KeyCodeToChar.hasCharForCode(lastCode, KeyboardState.getDefault());
+		return getTypedString().endsWith(other.getValue()) && isTypedChar;
 	}
 }

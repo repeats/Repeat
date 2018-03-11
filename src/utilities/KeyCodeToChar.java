@@ -6,6 +6,10 @@ import core.keyChain.KeyboardState;
 
 public class KeyCodeToChar {
 
+	public static boolean hasCharForCode(int code, KeyboardState state) {
+		return !getCharForCode(code, state).isEmpty();
+	}
+
 	public static String getCharForCode(int code, KeyboardState state) {
 		String nonAlphaChar = getNonAlphaChar(code, state);
 		String alphaChar = getAlphaChar(code, state);
