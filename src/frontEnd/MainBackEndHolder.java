@@ -137,7 +137,16 @@ public class MainBackEndHolder {
 
 						if (recompiled.isEnabled()) {
 							Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(recompiled);
-							if (collisions.isEmpty()) {
+							boolean conflict = false;
+							if (!collisions.isEmpty()) {
+								if (collisions.size() != 1) {
+									conflict = true;
+								} else {
+									conflict = !collisions.iterator().next().equals(task);
+								}
+							}
+
+							if (!conflict) {
 								keysManager.registerTask(recompiled);
 							} else {
 								List<String> collisionNames = collisions.stream().map(t -> t.getName()).collect(Collectors.toList());
