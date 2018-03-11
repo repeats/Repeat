@@ -128,10 +128,10 @@ public class KeyStroke implements IJsonable {
 	public String toString() {
 		String suffix = "";
 		if (modifier == Modifier.KEY_MODIFIER_LEFT) {
-			suffix = "(L)";
+			suffix = " (L)";
 		}
 		if (modifier == Modifier.KEY_MODIFIER_RIGHT) {
-			suffix = "(R)";
+			suffix = " (R)";
 		}
 		return KeyEvent.getKeyText(getKey()) + suffix;
 	}
