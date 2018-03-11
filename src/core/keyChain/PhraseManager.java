@@ -52,7 +52,7 @@ public class PhraseManager extends RollingKeySeriesManager {
 			TaskActivation activation = action.getActivation();
 			for (ActivationPhrase phrase : activation.getPhrases()) {
 				if (currentRollingKeySeries.collideWith(phrase)) {
-					action.setActivation(TaskActivation.newBuilder().withPhrase(phrase).build());
+					action.setInvoker(TaskActivation.newBuilder().withPhrase(phrase).build());
 					output.add(action);
 				}
 			}

@@ -1,6 +1,5 @@
 package core.keyChain;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -141,7 +140,7 @@ public abstract class KeySeries implements IJsonable {
 		return StringUtilities.join(new Function<KeyStroke, String>() {
 			@Override
 			public String apply(KeyStroke k) {
-				return KeyEvent.getKeyText(k.getKey());
+				return k.toString();
 			}
 		}.map(keys), " + ");
 	}
