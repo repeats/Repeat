@@ -48,23 +48,22 @@ public class KeyStroke implements IJsonable {
 	private int key;
 	private Modifier modifier;
 
+	private boolean pressed; // Press or release.
 	private LocalDateTime invokedTime;
-	private KeyboardState keyboardState;
 
 	public static KeyStroke of(int key, Modifier modifier) {
-		return new KeyStroke(key, modifier, LocalDateTime.now(), KeyboardState.getDefault());
+		return new KeyStroke(key, modifier, false, LocalDateTime.now());
 	}
 
-	public static KeyStroke of(int key, Modifier modifier, LocalDateTime invokedTime, KeyboardState keyboardState) {
-		return new KeyStroke(key, modifier, invokedTime, keyboardState);
+	public static KeyStroke of(int key, Modifier modifier, boolean press, LocalDateTime invokedTime) {
+		return new KeyStroke(key, modifier, press, invokedTime);
 	}
 
-	private KeyStroke(int key, Modifier modifier, LocalDateTime invokedTime, KeyboardState keyboardState) {
+	private KeyStroke(int key, Modifier modifier, boolean press, LocalDateTime invokedTime) {
 		this.key = key;
 		this.modifier = modifier;
-
+		this.pressed = press;
 		this.invokedTime = invokedTime;
-		this.keyboardState = keyboardState;
 	}
 
 	/**
@@ -102,17 +101,27 @@ public class KeyStroke implements IJsonable {
 		return getModifier();
 	}
 
+	public KeyStroke at(LocalDateTime invokedTime) {
+		this.invokedTime = invokedTime;
+		return this;
+	}
+
 	public LocalDateTime getInvokedTime() {
 		return invokedTime;
 	}
 
-	public KeyboardState getKeyboardState() {
-		return keyboardState;
+	public KeyStroke press(boolean pressed) {
+		this.pressed = pressed;
+		return this;
+	}
+
+	public boolean isPressed() {
+		return pressed;
 	}
 
 	@Override
 	public KeyStroke clone() {
-		return of(key, modifier);
+		return of(key, modifier, pressed, invokedTime);
 	}
 
 	@Override

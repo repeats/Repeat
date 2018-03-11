@@ -81,6 +81,20 @@ public class JSONUtility {
 	}
 
 	/**
+	 * Convert an iterable of strings to list of json objects
+	 * @param collection iterable of strings
+	 * @return list of JSON objects converted from the input list. Underlying implementation is currently using LinkedList
+	 */
+	public static List<JsonNode> listToJson(Iterable<String> collection) {
+		List<JsonNode> jsonList = new LinkedList<>();
+		for (String item : collection) {
+			jsonList.add(JsonNodeFactories.string(item));
+		}
+
+		return jsonList;
+	}
+
+	/**
 	 * Attempt to parse JSON from a list, then add all results to an output collection. This does not add
 	 * nodes that cannot be parsed (returning null)
 	 * @param nodes input list of json nodes

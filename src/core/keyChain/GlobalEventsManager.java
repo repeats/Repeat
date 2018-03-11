@@ -1,5 +1,6 @@
 package core.keyChain;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,8 +20,8 @@ import core.controller.Core;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
 import globalListener.GlobalKeyListener;
-import utilities.CodeConverter;
 import utilities.Function;
+import utilities.NativeHookCodeConverter;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
 
@@ -50,6 +51,7 @@ public final class GlobalEventsManager {
 		this.taskActivationManager = new AggregateKeyStrokeManager(config,
 				new KeyChainManager(config),
 				new KeySequenceManager(config),
+				new PhraseManager(config),
 				new MouseGestureManager(config));
 
 	}
@@ -59,7 +61,7 @@ public final class GlobalEventsManager {
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				KeyStroke stroke = CodeConverter.getKeyEventCode(r.getKeyCode());
+				KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(r.getKeyCode()).press(true).at(LocalDateTime.now());
 				if (!shouldDelegate(stroke)) {
 					return true;
 				}
@@ -72,7 +74,7 @@ public final class GlobalEventsManager {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				KeyStroke stroke = CodeConverter.getKeyEventCode(r.getKeyCode());
+				KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(r.getKeyCode()).press(false).at(LocalDateTime.now());;
 				if (!shouldDelegate(stroke)) {
 					return true;
 				}

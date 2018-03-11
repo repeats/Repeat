@@ -25,11 +25,13 @@ public class TaskActivation implements IJsonable {
 	private Set<KeyChain> hotkeys;
 	private Set<MouseGesture> mouseGestures;
 	private Set<KeySequence> keySequences;
+	private Set<ActivationPhrase> phrases;
 
 	private TaskActivation(Builder builder) {
 		hotkeys = builder.hotkeys;
 		mouseGestures = builder.mouseGestures;
 		keySequences = builder.keySequences;
+		phrases = builder.phrases;
 	}
 
 	/**
@@ -125,6 +127,37 @@ public class TaskActivation implements IJsonable {
 	}
 
 	/**
+	 * @param phrases set of key phrases to set.
+	 */
+	public void setPhrases(Set<ActivationPhrase> phrases) {
+		this.phrases.clear();
+		this.phrases.addAll(phrases);
+	}
+
+	/**
+	 * @return set of phrases associated with this activation entity.
+	 */
+	public final Set<ActivationPhrase> getPhrases() {
+		if (phrases == null) {
+			return new HashSet<>();
+		}
+
+		return phrases;
+	}
+
+	/**
+	 * @return an arbitrary phrase from the set of pharses, or null if the set is empty.
+	 */
+	public final ActivationPhrase getFirsPhrase() {
+		Set<ActivationPhrase> phrases = getPhrases();
+		if (phrases.isEmpty()) {
+			return null;
+		} else {
+			return phrases.iterator().next();
+		}
+	}
+
+	/**
 	 * Copy the content of the other {@link TaskActivation} to this object.
 	 *
 	 * @param other other task activation whose content will be copied from.
@@ -133,13 +166,14 @@ public class TaskActivation implements IJsonable {
 		setHotKeys(other.getHotkeys());
 		setMouseGestures(other.getMouseGestures());
 		setKeySequences(other.getKeySequences());
+		setPhrases(other.getPhrases());
 	}
 
 	/**
 	 * Check if this activation is empty (i.e. no event for activation).
 	 */
 	public final boolean isEmpty() {
-		return getHotkeys().isEmpty() && getMouseGestures().isEmpty();
+		return getHotkeys().isEmpty() && getMouseGestures().isEmpty() && getKeySequences().isEmpty() && getPhrases().isEmpty();
 	}
 
 	@Override
@@ -147,7 +181,8 @@ public class TaskActivation implements IJsonable {
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
 				JsonNodeFactories.field("key_sequence", JsonNodeFactories.array(JSONUtility.listToJson(getKeySequences()))),
-				JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array(JSONUtility.listToJson(getMouseGestures()))));
+				JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array(JSONUtility.listToJson(getMouseGestures()))),
+				JsonNodeFactories.field("phrases", JsonNodeFactories.array(JSONUtility.listToJson(getPhrases()))));
 	}
 
 	/**
@@ -161,6 +196,7 @@ public class TaskActivation implements IJsonable {
 			List<JsonNode> hotkeysNode = node.getArrayNode("hotkey");
 			List<JsonNode> keySequenceNodes = node.isArrayNode("key_sequence") ? node.getArrayNode("key_sequence") : new ArrayList<>();
 			List<JsonNode> mouseGestureNode = node.getArrayNode("mouse_gesture");
+			List<JsonNode> phrasesNode = node.isArrayNode("phrases") ? node.getArrayNode("phrases") : new ArrayList<>();
 
 			Set<KeyChain> keyChains = new HashSet<>();
 			for (JsonNode hotkeyNode : hotkeysNode) {
@@ -183,7 +219,23 @@ public class TaskActivation implements IJsonable {
 			}
 
 			Set<MouseGesture> gestures = MouseGesture.parseJSON(mouseGestureNode);
-			TaskActivation output = TaskActivation.newBuilder().withHotKeys(keyChains).withKeySequence(keySequences).withMouseGestures(gestures).build();
+
+			Set<ActivationPhrase> phrases = new HashSet<>();
+			for (JsonNode phraseNode : phrasesNode) {
+				ActivationPhrase phrase = ActivationPhrase.parseJSON(phraseNode);
+				if (phrase == null) {
+					LOGGER.log(Level.WARNING, "Cannot parse phrase " + phraseNode);
+				} else {
+					phrases.add(phrase);
+				}
+			}
+
+			TaskActivation output = TaskActivation.newBuilder()
+										.withHotKeys(keyChains)
+										.withKeySequence(keySequences)
+										.withMouseGestures(gestures)
+										.withPhrases(phrases)
+										.build();
 			return output;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Exception while parsing task activation.", e);
@@ -229,11 +281,13 @@ public class TaskActivation implements IJsonable {
 		private Set<KeyChain> hotkeys;
 		private Set<MouseGesture> mouseGestures;
 		private Set<KeySequence> keySequences;
+		private Set<ActivationPhrase> phrases;
 
 		private Builder() {
 			hotkeys = new HashSet<>();
 			mouseGestures = new HashSet<>();
 			keySequences = new HashSet<>();
+			phrases = new HashSet<>();
 		}
 
 		public Builder addHotKeys(KeyChain... keys) {
@@ -284,6 +338,23 @@ public class TaskActivation implements IJsonable {
 		public Builder withKeySequence(Set<KeySequence> keySequences) {
 			this.keySequences.clear();
 			this.keySequences.addAll(keySequences);
+			return this;
+		}
+
+		public Builder addPhrases(ActivationPhrase... phrases) {
+			this.phrases.addAll(Arrays.asList(phrases));
+			return this;
+		}
+
+		public Builder withPhrase(ActivationPhrase phrase) {
+			this.phrases.clear();
+			this.phrases.add(phrase);
+			return this;
+		}
+
+		public Builder withPhrases(Set<ActivationPhrase> phrases) {
+			this.phrases.clear();
+			this.phrases.addAll(phrases);
 			return this;
 		}
 

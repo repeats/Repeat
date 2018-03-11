@@ -16,7 +16,7 @@ import core.languageHandler.sourceGenerator.ScalaSourceGenerator;
 import core.scheduler.SchedulingData;
 import globalListener.GlobalKeyListener;
 import globalListener.GlobalMouseListener;
-import utilities.CodeConverter;
+import utilities.NativeHookCodeConverter;
 import utilities.Function;
 
 public class Recorder {
@@ -54,7 +54,7 @@ public class Recorder {
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
-				final int code = CodeConverter.getKeyEventCode(r.getKeyCode()).getKey();
+				final int code = NativeHookCodeConverter.getKeyEventCode(r.getKeyCode()).getKey();
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
@@ -73,7 +73,7 @@ public class Recorder {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
-				final int code = CodeConverter.getKeyEventCode(r.getKeyCode()).getKey();
+				final int code = NativeHookCodeConverter.getKeyEventCode(r.getKeyCode()).getKey();
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable() {
 					@Override
@@ -94,7 +94,7 @@ public class Recorder {
 		mouseListener.setMouseReleased(new Function<NativeMouseEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeMouseEvent r) {
-				final int code = CodeConverter.getMouseButtonCode(r.getButton(), false);
+				final int code = NativeHookCodeConverter.getMouseButtonCode(r.getButton(), false);
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
@@ -122,7 +122,7 @@ public class Recorder {
 		mouseListener.setMousePressed(new Function<NativeMouseEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeMouseEvent r) {
-				final int code = CodeConverter.getMouseButtonCode(r.getModifiers(), true);
+				final int code = NativeHookCodeConverter.getMouseButtonCode(r.getModifiers(), true);
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override

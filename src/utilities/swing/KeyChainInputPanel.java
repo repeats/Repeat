@@ -31,6 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import core.config.Config;
+import core.keyChain.ActivationPhrase;
 import core.keyChain.KeyChain;
 import core.keyChain.KeySequence;
 import core.keyChain.KeyStroke;
@@ -44,9 +45,11 @@ public class KeyChainInputPanel extends JPanel {
 
 	private static final ReentrantLock inUse = new ReentrantLock();
 
+	private JTextField tfPhrase;
 	private List<KeyStroke> keyStrokes;
 	private final DefaultListModel<KeyChain> modelKeyChain;
 	private final DefaultListModel<KeySequence> modelKeySequence;
+	private final DefaultListModel<ActivationPhrase> modelPhrases;
 	private final JList<MouseGesture> mouseGestureList;
 
 	public static void main(String[] args) {
@@ -151,15 +154,32 @@ public class KeyChainInputPanel extends JPanel {
 					}
 				}
 
+				Set<ActivationPhrase> phrases = new HashSet<>();
+				Enumeration<ActivationPhrase> allPhrases = input.modelPhrases.elements();
+				while (allPhrases.hasMoreElements()) {
+					ActivationPhrase next = allPhrases.nextElement();
+					if (!next.isEmpty()) {
+						phrases.add(next);
+					}
+				}
+
 				Set<MouseGesture> gestures = new HashSet<>();
 				for (MouseGesture gesture : input.mouseGestureList.getSelectedValuesList()) {
 					gestures.add(gesture);
 				}
 
+				// Add pending inputs.
 				if (!input.keyStrokes.isEmpty()) {
 					keyChains.add(new KeyChain(input.keyStrokes));
 				}
-				return TaskActivation.newBuilder().withHotKeys(keyChains).withKeySequence(keySequences).withMouseGestures(gestures).build();
+				if (!input.tfPhrase.getText().isEmpty()) {
+					phrases.add(ActivationPhrase.of(input.tfPhrase.getText()));
+				}
+				return TaskActivation.newBuilder()
+						.withHotKeys(keyChains)
+						.withKeySequence(keySequences)
+						.withPhrases(phrases)
+						.withMouseGestures(gestures).build();
 			}
 
 			return null;
@@ -172,10 +192,10 @@ public class KeyChainInputPanel extends JPanel {
 		keyStrokes = new ArrayList<>();
 
 		final JLabel instruction = new JLabel("Start pressing key chain.");
-		final JTextField tf = new JTextField();
-		tf.setEditable(false);
+		final JTextField tfKeySeries = new JTextField();
+		tfKeySeries.setEditable(false);
 
-		tf.addKeyListener(new KeyAdapter() {
+		tfKeySeries.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				int code = e.getKeyCode();
@@ -183,7 +203,7 @@ public class KeyChainInputPanel extends JPanel {
 					keyStrokes.clear();
 				}
 
-				tf.setText(new KeyChain(keyStrokes).toString());
+				tfKeySeries.setText(new KeyChain(keyStrokes).toString());
 			}
 
 			@Override
@@ -227,7 +247,7 @@ public class KeyChainInputPanel extends JPanel {
 
 					modelKeyChain.addElement(keyChain);
 					keyStrokes.clear();
-					tf.setText("");
+					tfKeySeries.setText("");
 				}
 			}
 		});
@@ -270,7 +290,7 @@ public class KeyChainInputPanel extends JPanel {
 
 					modelKeySequence.addElement(keySequence);
 					keyStrokes.clear();
-					tf.setText("");
+					tfKeySeries.setText("");
 				}
 			}
 		});
@@ -282,6 +302,49 @@ public class KeyChainInputPanel extends JPanel {
 					int selected = listKeySequence.getSelectedIndex();
 					if (selected >= 0) {
 						modelKeySequence.remove(listKeySequence.getSelectedIndex());
+					}
+				}
+			}
+		});
+
+		/******************************************************************************************/
+		tfPhrase = new JTextField();
+		modelPhrases = new DefaultListModel<>();
+		for (ActivationPhrase phrase : prepopulated.getPhrases()) {
+			modelPhrases.addElement(phrase);
+		}
+
+		final JList<ActivationPhrase> listPhrases = new JList<>(modelPhrases);
+		listPhrases.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		listPhrases.setLayoutOrientation(JList.VERTICAL);
+		listPhrases.setVisibleRowCount(-1);
+
+		final JScrollPane scrollPanePhrases = new JScrollPane(listPhrases);
+		scrollPanePhrases.setPreferredSize(new Dimension(150, 80));
+
+		final JButton bAddPhrase = new JButton("Add phrase");
+		bAddPhrase.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String phrase = tfPhrase.getText();
+				if (!phrase.isEmpty()) {
+					if (modelPhrases.getSize() >= limit) {
+						return;
+					}
+
+					modelPhrases.addElement(ActivationPhrase.of(phrase));
+					tfPhrase.setText("");
+				}
+			}
+		});
+
+		listPhrases.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					int selected = listPhrases.getSelectedIndex();
+					if (selected >= 0) {
+						modelPhrases.remove(listPhrases.getSelectedIndex());
 					}
 				}
 			}
@@ -324,12 +387,24 @@ public class KeyChainInputPanel extends JPanel {
 		addKeySequenceButtonPanel.add(javax.swing.Box.createHorizontalStrut(10));
 		addKeySequenceButtonPanel.add(new JLabel("(Select and right click to remove.)"));
 
+		JPanel phrasePanel = new JPanel();
+		phrasePanel.setLayout(new BoxLayout(phrasePanel, BoxLayout.Y_AXIS));
+		final JLabel phraseLabel = new JLabel("Phrase");
+		phrasePanel.add(phraseLabel);
+		phrasePanel.add(javax.swing.Box.createVerticalStrut(5));
+		phrasePanel.add(tfPhrase);
+		final JPanel addPhraseButtonPanel = new JPanel();
+		addPhraseButtonPanel.setLayout(new BoxLayout(addPhraseButtonPanel, BoxLayout.X_AXIS));
+		addPhraseButtonPanel.add(bAddPhrase);
+		addPhraseButtonPanel.add(javax.swing.Box.createHorizontalStrut(10));
+		addPhraseButtonPanel.add(new JLabel("(Select and right click to remove.)"));
+
 		/******************************************************************************************/
 
 		final JPanel basicPanel = new JPanel();
 		basicPanel.setLayout(new BoxLayout(basicPanel, BoxLayout.Y_AXIS));
 		basicPanel.add(instruction);
-		basicPanel.add(tf);
+		basicPanel.add(tfKeySeries);
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -348,6 +423,14 @@ public class KeyChainInputPanel extends JPanel {
 			add(javax.swing.Box.createVerticalStrut(5));
 			add(scrollPaneKeySequence);
 		}
+		if (mode == Mode.ALL_ACTIVATION || mode == Mode.PHRASE_ONLY) {
+			add(javax.swing.Box.createVerticalStrut(20));
+			add(phrasePanel);
+			add(javax.swing.Box.createVerticalStrut(5));
+			add(addPhraseButtonPanel);
+			add(javax.swing.Box.createVerticalStrut(5));
+			add(scrollPanePhrases);
+		}
 		if (mode == Mode.ALL_ACTIVATION || mode == Mode.MOUSE_GESTURE_ONLY) {
 			add(javax.swing.Box.createVerticalStrut(5));
 			add(scrollPaneMouseGesture);
@@ -365,6 +448,7 @@ public class KeyChainInputPanel extends JPanel {
 		ALL_ACTIVATION,
 		KEYCHAIN_ONLY,
 		MOUSE_GESTURE_ONLY,
-		KEY_SEQUENCE_ONLY;
+		KEY_SEQUENCE_ONLY,
+		PHRASE_ONLY;
 	}
 }

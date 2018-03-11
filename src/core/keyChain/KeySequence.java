@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
-import utilities.KeyCodeToChar;
 
 /**
  * Sequence of keys sorted chronologically. There is no guarantee that one is
@@ -43,20 +42,6 @@ public class KeySequence extends KeySeries {
 		} else {
 			return Collections.indexOfSubList(otherKeys, keys) >= 0;
 		}
-	}
-
-	/**
-	 * Get the string which would be typed out if all keys in this {@link KeySequence} are pressed in the specified order.
-	 * Note that this ignores effects of keys like SHIFT, CAPSLOCK, or NUMSLOCK.
-	 */
-	public String getTypedString() {
-		StringBuilder builder = new StringBuilder();
-		for (KeyStroke keyStroke : getKeyStrokes()) {
-			String s = KeyCodeToChar.getCharForCode(keyStroke.getKey(), keyStroke.getKeyboardState());
-			builder.append(s);
-		}
-
-		return builder.toString();
 	}
 
 	public static KeySequence parseJSON(List<JsonNode> list) {

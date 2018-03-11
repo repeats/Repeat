@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import utilities.KeyCodeToChar;
+
 /**
  * A chronologically ordered key series that have an upper limit of number of
  * key strokes and will remove the last one.
@@ -58,6 +60,27 @@ public class RollingKeySeries extends KeySeries {
 		}
 	}
 
+
+	/**
+	 * Get the string which would be typed out if all keys in this {@link KeySequence} are pressed in the specified order.
+	 * Note that this includes effects of keys like SHIFT, CAPSLOCK, or NUMSLOCK.
+	 */
+	@Override
+	public String getTypedString() {
+		StringBuilder builder = new StringBuilder();
+		KeyboardState keyboardState = KeyboardState.getDefault();
+
+		for (KeyStroke keyStroke : getKeyStrokes()) {
+			keyboardState = keyboardState.changeWith(keyStroke);
+			if (keyStroke.isPressed()) {
+				String s = KeyCodeToChar.getCharForCode(keyStroke.getKey(), keyboardState);
+				builder.append(s);
+			}
+		}
+
+		return builder.toString();
+	}
+
 	/**
 	 * This method is only valid for input of class {@link KeySequence}.
 	 * Checks whether the pressing key strokes in this object in the specified order
@@ -65,10 +88,18 @@ public class RollingKeySeries extends KeySeries {
 	 */
 	@Override
 	public boolean collideWith(KeySeries other) {
-		if (!(other instanceof KeySequence)) {
-			throw new IllegalStateException("This method is not supported for this class " + other.getClass() + ".");
+		if (other instanceof KeySequence) {
+			return collideWithKeySequence((KeySequence) other);
 		}
 
+		if (other instanceof ActivationPhrase) {
+			return collideWithActivationPhrase((ActivationPhrase) other);
+		}
+
+		throw new IllegalStateException("This method is not supported for this class: " + other.getClass());
+	}
+
+	private boolean collideWithKeySequence(KeySequence other) {
 		List<KeyStroke> otherKeyStrokes = other.getKeyStrokes();
 		if (otherKeyStrokes.size() > keys.size()) {
 			return false;
@@ -87,5 +118,7 @@ public class RollingKeySeries extends KeySeries {
 		return true;
 	}
 
-
+	private boolean collideWithActivationPhrase(ActivationPhrase other) {
+		return getTypedString().endsWith(other.getValue());
+	}
 }

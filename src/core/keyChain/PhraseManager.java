@@ -7,9 +7,9 @@ import java.util.Set;
 import core.config.Config;
 import core.userDefinedTask.UserDefinedAction;
 
-public class KeySequenceManager extends RollingKeySeriesManager {
+public class PhraseManager extends RollingKeySeriesManager {
 
-	public KeySequenceManager(Config config) {
+	public PhraseManager(Config config) {
 		super(config);
 	}
 
@@ -25,6 +25,7 @@ public class KeySequenceManager extends RollingKeySeriesManager {
 
 	@Override
 	public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+		currentRollingKeySeries.addKeyStroke(stroke);
 		if (getConfig().isExecuteOnKeyReleased()) {
 			return considerTaskExecution(stroke);
 		}
@@ -34,9 +35,9 @@ public class KeySequenceManager extends RollingKeySeriesManager {
 
 	@Override
 	protected boolean collisionWithAction(UserDefinedAction action, TaskActivation activation) {
-		for (KeySequence sequence : activation.getKeySequences()) {
-			for (KeySequence actionSequence : action.getActivation().getKeySequences()) {
-				if (actionSequence.collideWith(sequence)) {
+		for (ActivationPhrase phrase : activation.getPhrases()) {
+			for (ActivationPhrase actionPhrase : action.getActivation().getPhrases()) {
+				if (phrase.collideWith(actionPhrase)) {
 					return true;
 				}
 			}
@@ -49,8 +50,8 @@ public class KeySequenceManager extends RollingKeySeriesManager {
 		Set<UserDefinedAction> output = new HashSet<>();
 		for (UserDefinedAction action : registeredActions) {
 			TaskActivation activation = action.getActivation();
-			for (KeySequence sequence : activation.getKeySequences()) {
-				if (currentRollingKeySeries.collideWith(sequence)) {
+			for (ActivationPhrase phrase : activation.getPhrases()) {
+				if (currentRollingKeySeries.collideWith(phrase)) {
 					output.add(action);
 				}
 			}

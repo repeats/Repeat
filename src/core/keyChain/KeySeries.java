@@ -12,6 +12,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.Function;
 import utilities.IJsonable;
+import utilities.KeyCodeToChar;
 import utilities.StringUtilities;
 
 public abstract class KeySeries implements IJsonable {
@@ -117,6 +118,22 @@ public abstract class KeySeries implements IJsonable {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Get the string which would be typed out if all keys in this {@link KeySequence} are pressed in the specified order.
+	 * Note that this ignores effects of keys like SHIFT, CAPSLOCK, or NUMSLOCK.
+	 */
+	public String getTypedString() {
+		StringBuilder builder = new StringBuilder();
+		KeyboardState keyboardState = KeyboardState.getDefault();
+
+		for (KeyStroke keyStroke : getKeyStrokes()) {
+			String s = KeyCodeToChar.getCharForCode(keyStroke.getKey(), keyboardState);
+			builder.append(s);
+		}
+
+		return builder.toString();
 	}
 
 	@Override

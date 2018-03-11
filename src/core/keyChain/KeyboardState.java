@@ -1,5 +1,7 @@
 package core.keyChain;
 
+import com.sun.glass.events.KeyEvent;
+
 /**
  * The state of lock keys on the keyboard (numslock, capslock, scrolllock).
  * Instances of this class is immutable.
@@ -25,12 +27,33 @@ public class KeyboardState {
 		this.shiftLocked = isShiftLocked;
 	}
 
+	public KeyboardState changeWith(KeyStroke stroke) {
+		int key = stroke.getKey();
+		boolean pressed = stroke.isPressed();
+
+		if (key == KeyEvent.VK_SHIFT) {
+			return withShiftLocked(pressed);
+		} else if (key == KeyEvent.VK_NUM_LOCK) {
+			return withNumslock(pressed);
+		} else if (key == KeyEvent.VK_CAPS_LOCK) {
+			return withCapslock(pressed);
+		} else if (key == KeyEvent.VK_SCROLL_LOCK) {
+			return withScrollLock(pressed);
+		}
+
+		return this;
+	}
+
 	public KeyboardState withNumslockOn() {
 		return clone().setNumslockLocked(true);
 	}
 
 	public KeyboardState withNumslockOff() {
 		return clone().setNumslockLocked(false);
+	}
+
+	private KeyboardState withNumslock(boolean state) {
+		return clone().setNumslockLocked(state);
 	}
 
 	public KeyboardState withCapslockOn() {
@@ -41,6 +64,10 @@ public class KeyboardState {
 		return clone().setCapslockLocked(false);
 	}
 
+	private KeyboardState withCapslock(boolean state) {
+		return clone().setCapslockLocked(state);
+	}
+
 	public KeyboardState withScrollLockOn() {
 		return clone().setScrollLockLocked(true);
 	}
@@ -49,12 +76,20 @@ public class KeyboardState {
 		return clone().setScrollLockLocked(false);
 	}
 
+	private KeyboardState withScrollLock(boolean state) {
+		return clone().setScrollLockLocked(state);
+	}
+
 	public KeyboardState withShiftLocked() {
 		return clone().setShiftLocked(true);
 	}
 
 	public KeyboardState withShiftUnlocked() {
 		return clone().setShiftLocked(false);
+	}
+
+	private KeyboardState withShiftLocked(boolean state) {
+		return clone().setShiftLocked(state);
 	}
 
 	@Override

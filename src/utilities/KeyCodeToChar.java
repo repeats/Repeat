@@ -95,6 +95,8 @@ public class KeyCodeToChar {
 			return "\t";
 		case KeyEvent.VK_ENTER:
 			return "\n";
+		case KeyEvent.VK_SPACE:
+			return " ";
 		default:
 			return "";
 		}
@@ -148,6 +150,8 @@ public class KeyCodeToChar {
 			return "\t";
 		case KeyEvent.VK_ENTER:
 			return "\n";
+		case KeyEvent.VK_SPACE:
+			return " ";
 		default:
 			return "";
 		}
