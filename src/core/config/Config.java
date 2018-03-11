@@ -76,7 +76,7 @@ public class Config implements ILoggable {
 		this.backEnd = backEnd;
 		useTrayIcon = DEFAULT_TRAY_ICON_USE;
 		this.enabledHaltingKeyPressed = true;
-		this.executeOnKeyReleased = false;
+		this.executeOnKeyReleased = true;
 		this.nativeHookDebugLevel = DEFAULT_NATIVE_HOOK_DEBUG_LEVEL;
 
 		this.mouseGestureActivationKey = KeyEvent.VK_CAPS_LOCK;
