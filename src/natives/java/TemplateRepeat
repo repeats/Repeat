@@ -5,11 +5,13 @@ import core.userDefinedTask.Tools;
 import core.controller.Core;
 import core.controller.MouseCore;
 import core.controller.KeyboardCore;
+import core.keyChain.ActivationPhrase;
 import core.keyChain.KeyChain;
 import core.keyChain.KeySequence;
 import core.keyChain.KeyStroke;
 import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivation;
+import core.userDefinedTask.TaskInvoker;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.Point;
@@ -24,12 +26,14 @@ public class CustomAction extends UserDefinedAction {
     	SharedVariables v = new SharedVariables(getNamespace());
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
-        TaskActivation ti = this.invoker;
-        KeyChain invokingKeyChain = ti.getFirstHotkey();
-        KeySequence invokingKeySequence = ti.getFirstKeySequence();
+        TaskInvoker ti = this.taskInvoker; // To execute other tasks dynamically.
+        TaskActivation activation = this.invoker;
+        KeyChain invokingKeyChain = activation.getFirstHotkey();
+        KeySequence invokingKeySequence = activation.getFirstKeySequence();
         List<KeyStroke> kc = invokingKeyChain == null ? new ArrayList<KeyStroke>() : invokingKeyChain.getKeyStrokes();
         List<KeyStroke> ks = invokingKeySequence == null ? new ArrayList<KeyStroke>() : invokingKeySequence.getKeyStrokes();
-		MouseGesture mg = ti.getFirstMouseGesture();
+		MouseGesture mg = activation.getFirstMouseGesture();
+		ActivationPhrase p = activation.getFirsPhrase();
         /*Begin generated code*/
 
     }
