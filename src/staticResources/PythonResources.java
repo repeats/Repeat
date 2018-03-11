@@ -6,8 +6,9 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.logging.Logger;
 
-import utilities.FileUtility;
+import core.keyChain.KeyStroke;
 import core.languageHandler.Language;
+import utilities.FileUtility;
 
 
 public class PythonResources extends AbstractNativeBootstrapResource {
@@ -41,8 +42,21 @@ public class PythonResources extends AbstractNativeBootstrapResource {
 			addCodeFromField(sb, f);
 		}
 
+		for (KeyStroke.Modifier modifier : KeyStroke.Modifier.values()) {
+			addCode(sb, modifier.name(), modifier.getValue());
+		}
+
 		String keyCodeFilePath = FileUtility.joinPath(getExtractingDest().getAbsolutePath(), "key_code.py");
 		return FileUtility.writeToFile(sb.toString().trim(), new File(keyCodeFilePath), false);
+	}
+
+	/**
+	 * Add a new line of code that defines the field constant with field
+	 * name and its integer value.
+	 */
+	private void addCode(StringBuilder sb, String name, int code) {
+		sb.append(name + " = " + code);
+		sb.append("\n");
 	}
 
 	/**
