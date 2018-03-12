@@ -6,7 +6,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 
 import core.controller.Core;
-import core.keyChain.GlobalEventsManager;
+import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.Language;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.languageHandler.sourceGenerator.CSharpSourceGenerator;

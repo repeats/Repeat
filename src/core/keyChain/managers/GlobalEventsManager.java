@@ -1,4 +1,4 @@
-package core.keyChain;
+package core.keyChain.managers;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -17,12 +17,8 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 
 import core.config.Config;
 import core.controller.Core;
-import core.keyChain.managers.AggregateKeyStrokeManager;
-import core.keyChain.managers.KeyChainManager;
-import core.keyChain.managers.KeySequenceManager;
-import core.keyChain.managers.KeyStrokeManager;
-import core.keyChain.managers.MouseGestureManager;
-import core.keyChain.managers.PhraseManager;
+import core.keyChain.KeyStroke;
+import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
 import globalListener.GlobalKeyListener;
