@@ -1,4 +1,4 @@
-package core.keyChain;
+package core.keyChain.managers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 import core.config.Config;
+import core.keyChain.KeyStroke;
+import core.keyChain.RollingKeySeries;
+import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
 public abstract class RollingKeySeriesManager extends KeyStrokeManager {

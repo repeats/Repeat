@@ -1,4 +1,4 @@
-package core.keyChain;
+package core.keyChain.managers;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import core.config.Config;
+import core.keyChain.KeyStroke;
+import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
 public class AggregateKeyStrokeManager extends KeyStrokeManager {

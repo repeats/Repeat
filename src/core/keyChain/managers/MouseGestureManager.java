@@ -1,4 +1,4 @@
-package core.keyChain;
+package core.keyChain.managers;
 
 import java.awt.Point;
 import java.io.IOException;
@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 import org.jnativehook.mouse.NativeMouseEvent;
 
 import core.config.Config;
+import core.keyChain.KeyStroke;
+import core.keyChain.MouseGesture;
+import core.keyChain.TaskActivation;
 import core.keyChain.mouseGestureRecognition.MouseGestureClassifier;
 import core.userDefinedTask.UserDefinedAction;
 import globalListener.GlobalMouseListener;

@@ -1,10 +1,13 @@
-package core.keyChain;
+package core.keyChain.managers;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import core.config.Config;
+import core.keyChain.KeySequence;
+import core.keyChain.KeyStroke;
+import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
 public class KeySequenceManager extends RollingKeySeriesManager {

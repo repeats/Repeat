@@ -1,4 +1,4 @@
-package core.keyChain;
+package core.keyChain.managers;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import core.config.Config;
+import core.keyChain.KeyChain;
+import core.keyChain.KeyStroke;
+import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
 public class KeyChainManager extends KeyStrokeManager {
