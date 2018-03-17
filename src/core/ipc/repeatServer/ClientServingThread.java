@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -180,7 +181,8 @@ class ClientServingThread implements Runnable, ILoggable {
 	 * @return decoded message.
 	 */
 	private String decode(byte[] bytes) {
-		CharBuffer result = ControllerServer.ENCODING.decode(ByteBuffer.wrap(bytes));
+		byte[] base64Decoded = Base64.getDecoder().decode(bytes);
+		CharBuffer result = ControllerServer.ENCODING.decode(ByteBuffer.wrap(base64Decoded));
 		return result.toString().trim();
 	}
 

@@ -2,6 +2,7 @@ package core.ipc.repeatServer;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,7 +86,7 @@ public class MainMessageSender implements ILoggable {
 	 * @return byte array representing bytes to send to client.
 	 */
 	private byte[] encode(String message) {
-		return message.getBytes(ControllerServer.ENCODING);
+		return Base64.getEncoder().encode(message.getBytes(ControllerServer.ENCODING));
 	}
 
 	@Override
