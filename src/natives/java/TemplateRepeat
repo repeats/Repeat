@@ -23,7 +23,7 @@ import utilities.swing.SwingUtil.DialogUtil;
 
 public class CustomAction extends UserDefinedAction {
     public void action(final Core c) throws InterruptedException {
-    	SharedVariables v = new SharedVariables(getNamespace());
+        SharedVariables v = new SharedVariables(getNamespace());
         KeyboardCore k = c.keyBoard();
         MouseCore m = c.mouse();
         TaskInvoker ti = this.taskInvoker; // To execute other tasks dynamically.
@@ -32,14 +32,14 @@ public class CustomAction extends UserDefinedAction {
         KeySequence invokingKeySequence = activation.getFirstKeySequence();
         List<KeyStroke> kc = invokingKeyChain == null ? new ArrayList<KeyStroke>() : invokingKeyChain.getKeyStrokes();
         List<KeyStroke> ks = invokingKeySequence == null ? new ArrayList<KeyStroke>() : invokingKeySequence.getKeyStrokes();
-		MouseGesture mg = activation.getFirstMouseGesture();
-		ActivationPhrase p = activation.getFirsPhrase();
+        MouseGesture mg = activation.getFirstMouseGesture();
+        ActivationPhrase p = activation.getFirsPhrase();
         /*Begin generated code*/
 
     }
 
     @Override
     public String getNamespace() {
-    	return SharedVariables.GLOBAL_NAMESPACE;
+        return SharedVariables.GLOBAL_NAMESPACE;
     }
 }
