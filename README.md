@@ -7,7 +7,7 @@ Tired of clicking the same spot on your screen again and again? Got bored of typ
 Demo
 ====
 
-Note that the following gifs are at 1x speedup. Actions are activated by different preset hot keys.
+Note that the following gifs are at 1x speedup. Actions are activated by different preset hot keys created using this program.
 
 ![Keyboard demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_keys.gif)
 
