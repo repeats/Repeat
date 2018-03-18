@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import utilities.Function;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.ipc.repeatClient.CSharpIPCClientService;
@@ -14,6 +13,7 @@ import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatClient.ScalaIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
 import core.languageHandler.Language;
+import utilities.Function;
 
 public final class IPCServiceManager {
 

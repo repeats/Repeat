@@ -358,6 +358,7 @@ public class MainFrame extends JFrame {
 		bGroupLanguage.add(rbmiCompileCS);
 
 		rbmiCompileScala = new JRadioButtonMenuItem("Scala");
+		rbmiCompileScala.setEnabled(false);
 		rbmiCompileScala.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
