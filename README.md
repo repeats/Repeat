@@ -6,6 +6,16 @@ Tired of clicking the same spot on your screen again and again? Got bored of typ
 
 Demo
 ====
+
+Note that the following gifs are at 1x speedup. Actions are activated by different preset hot keys created using this program.
+
+![Keyboard demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_keys.gif)
+
+![Mouse demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_mouse.gif)
+
+![Mouse gesture demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_gesture.gif)
+
+
 [Task creation and playback](https://youtu.be/5ZS2X8DtDhk)
 
 [Mouse gesture activation](https://youtu.be/ay9UwPX83vs)
