@@ -9,13 +9,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import utilities.FileUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.languageHandler.Language;
+import utilities.FileUtility;
 
 public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
@@ -107,7 +107,6 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 
 	@Override
 	public void changeCompilationButton(JButton bCompile) {
-		bCompile.setText("Load source");
 		File interpreter = getPath();
 		getLogger().info("Using python interpreter at " + interpreter.getAbsolutePath());
 	}

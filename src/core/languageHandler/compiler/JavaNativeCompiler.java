@@ -351,7 +351,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 
 	@Override
 	public void changeCompilationButton(JButton bCompile) {
-		bCompile.setText("Compile source");
+		// Nothing to do at the moment.
 	}
 
 	@Override

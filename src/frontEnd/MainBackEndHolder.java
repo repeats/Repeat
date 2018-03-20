@@ -326,7 +326,7 @@ public class MainBackEndHolder {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					main.bRun.setText("Run Compiled Action");
+					main.bRun.setIcon(BootStrapResources.PLAY_COMPILED_IMAGE);
 				}
 			});
 		} else {
@@ -356,7 +356,7 @@ public class MainBackEndHolder {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					main.bRun.setText("Stop running");
+					main.bRun.setIcon(BootStrapResources.STOP_COMPILED_IMAGE);
 				}
 			});
 		}
