@@ -165,6 +165,12 @@ public class MainBackEndHolder {
 	/************************************************Config*******************************************************/
 	protected void loadConfig(File file) {
 		config.loadConfig(file);
+		// Populate tasks with task invoker.
+		for (TaskGroup taskGroup : taskGroups) {
+			for (UserDefinedAction task : taskGroup.getTasks()) {
+				task.setTaskInvoker(taskInvoker);
+			}
+		}
 
 		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
