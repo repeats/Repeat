@@ -165,12 +165,7 @@ public class MainBackEndHolder {
 	/************************************************Config*******************************************************/
 	protected void loadConfig(File file) {
 		config.loadConfig(file);
-		// Populate tasks with task invoker.
-		for (TaskGroup taskGroup : taskGroups) {
-			for (UserDefinedAction task : taskGroup.getTasks()) {
-				task.setTaskInvoker(taskInvoker);
-			}
-		}
+		setTaskInvoker();
 
 		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
@@ -730,6 +725,17 @@ public class MainBackEndHolder {
 		main.taSource.setText(source);
 	}
 
+	/**
+	 * Populate all tasks with task invoker to dynamically execute other tasks.
+	 */
+	private void setTaskInvoker() {
+		for (TaskGroup taskGroup : taskGroups) {
+			for (UserDefinedAction task : taskGroup.getTasks()) {
+				task.setTaskInvoker(taskInvoker);
+			}
+		}
+	}
+
 	/*************************************************************************************************************/
 	/********************************************Source code related**********************************************/
 
@@ -761,6 +767,7 @@ public class MainBackEndHolder {
 
 		if (taskGroups.size() > existingGroupCount) {
 			currentGroup = taskGroups.get(existingGroupCount); // Take the new group with lowest index.
+			setTaskInvoker();
 		} else {
 			JOptionPane.showMessageDialog(main, "No new task group found!");
 			return;
