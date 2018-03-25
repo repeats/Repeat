@@ -13,7 +13,7 @@ import argo.jdom.JsonNode;
  */
 public class KeySequence extends KeySeries {
 
-	private static final Logger LOGGER = Logger.getLogger(KeyChain.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(KeySequence.class.getName());
 
 	public KeySequence() {
 		super();
@@ -21,6 +21,11 @@ public class KeySequence extends KeySeries {
 
 	public KeySequence(List<KeyStroke> keys) {
 		super(keys);
+	}
+
+	@Override
+	public KeySequence clone() {
+		return new KeySequence(keys);
 	}
 
 	/**

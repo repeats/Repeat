@@ -54,7 +54,7 @@ public class KeySequenceManager extends RollingKeySeriesManager {
 			TaskActivation activation = action.getActivation();
 			for (KeySequence sequence : activation.getKeySequences()) {
 				if (currentRollingKeySeries.collideWith(sequence)) {
-					action.setInvoker(TaskActivation.newBuilder().withKeySequence(sequence).build());
+					action.setInvoker(TaskActivation.newBuilder().withKeySequence(sequence.clone()).build());
 					output.add(action);
 				}
 			}

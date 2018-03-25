@@ -34,6 +34,11 @@ public class ActivationPhrase extends KeySeries {
 	}
 
 	@Override
+	public ActivationPhrase clone() {
+		return of(value);
+	}
+
+	@Override
 	public boolean collideWith(KeySeries series) {
 		if (!(series instanceof ActivationPhrase)) {
 			throw new IllegalStateException("Cannot check collision with class " + series.getClass());

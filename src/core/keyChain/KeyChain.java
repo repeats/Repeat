@@ -31,6 +31,11 @@ public class KeyChain extends KeySeries {
 		super();
 	}
 
+	@Override
+	public KeyChain clone() {
+		return new KeyChain(keys);
+	}
+
 	/**
 	 * Check if two {@link KeyChain} will collide when applied. Formally, return
 	 * true if triggering one KeyChain forces the other to be triggered. To trigger

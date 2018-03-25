@@ -146,11 +146,6 @@ public abstract class KeySeries implements IJsonable {
 	}
 
 	@Override
-	public KeyChain clone() {
-		return new KeyChain(keys);
-	}
-
-	@Override
 	public int hashCode() {
 		return this.toString().hashCode();
 	}
