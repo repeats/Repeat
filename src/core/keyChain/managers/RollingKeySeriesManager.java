@@ -2,6 +2,7 @@ package core.keyChain.managers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -31,13 +32,26 @@ public abstract class RollingKeySeriesManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public abstract Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke);
+	synchronized public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
+		currentRollingKeySeries.addKeyStroke(stroke);
+		if (!getConfig().isExecuteOnKeyReleased()) {
+			return considerTaskExecution(stroke);
+		}
+
+		return Collections.<UserDefinedAction>emptySet();
+	}
 
 	@Override
-	public abstract Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke);
+	synchronized public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+		if (getConfig().isExecuteOnKeyReleased()) {
+			return considerTaskExecution(stroke);
+		}
+
+		return Collections.<UserDefinedAction>emptySet();
+	}
 
 	@Override
-	public final void clear() {
+	synchronized public final void clear() {
 		currentRollingKeySeries.clearKeys();
 	}
 
@@ -87,7 +101,11 @@ public abstract class RollingKeySeriesManager extends KeyStrokeManager {
 			clear();
 			return null;
 		}
-		return tasksToExecute();
+
+		if (key.equals(currentRollingKeySeries.getLast())) {
+			return tasksToExecute();
+		}
+		return Set.of();
 	}
 
 	protected abstract Set<UserDefinedAction> tasksToExecute();

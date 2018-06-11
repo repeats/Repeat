@@ -1,12 +1,10 @@
 package core.keyChain.managers;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import core.config.Config;
 import core.keyChain.KeySequence;
-import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
@@ -14,25 +12,6 @@ public class KeySequenceManager extends RollingKeySeriesManager {
 
 	public KeySequenceManager(Config config) {
 		super(config);
-	}
-
-	@Override
-	public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
-		currentRollingKeySeries.addKeyStroke(stroke);
-		if (!getConfig().isExecuteOnKeyReleased()) {
-			return considerTaskExecution(stroke);
-		}
-
-		return Collections.<UserDefinedAction>emptySet();
-	}
-
-	@Override
-	public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
-		if (getConfig().isExecuteOnKeyReleased()) {
-			return considerTaskExecution(stroke);
-		}
-
-		return Collections.<UserDefinedAction>emptySet();
 	}
 
 	@Override

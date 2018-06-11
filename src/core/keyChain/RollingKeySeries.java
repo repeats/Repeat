@@ -60,6 +60,13 @@ public class RollingKeySeries extends KeySeries {
 		}
 	}
 
+	/**
+	 * @return last key stroke in the series.
+	 */
+	public KeyStroke getLast() {
+		return keys.getLast();
+	}
+
 
 	/**
 	 * Get the string which would be typed out if all keys in this {@link KeySequence} are pressed in the specified order.
