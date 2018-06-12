@@ -99,13 +99,13 @@ public abstract class RollingKeySeriesManager extends KeyStrokeManager {
 	protected final Set<UserDefinedAction> considerTaskExecution(KeyStroke key) {
 		if (key.getKey() == Config.HALT_TASK && getConfig().isEnabledHaltingKeyPressed()) {
 			clear();
-			return null;
+			return Collections.<UserDefinedAction>emptySet();
 		}
 
 		if (key.equals(currentRollingKeySeries.getLast())) {
 			return tasksToExecute();
 		}
-		return Set.of();
+		return Collections.<UserDefinedAction>emptySet();
 	}
 
 	protected abstract Set<UserDefinedAction> tasksToExecute();
