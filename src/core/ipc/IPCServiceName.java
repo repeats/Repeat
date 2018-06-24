@@ -3,7 +3,7 @@ package core.ipc;
 import core.languageHandler.Language;
 
 public enum IPCServiceName {
-	CONTROLLER_SERVER(0, "controller_service"),
+	CONTROLLER_SERVER(0, "controller_server"),
     PYTHON(1, Language.PYTHON.toString()),
     CSHARP(2, Language.CSHARP.toString()),
     SCALA(3, Language.SCALA.toString()),
