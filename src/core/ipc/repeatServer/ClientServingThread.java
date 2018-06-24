@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Base64;
@@ -20,7 +21,7 @@ import utilities.ILoggable;
 
 class ClientServingThread implements Runnable, ILoggable {
 
-	private static final int MAX_RETRY = 100;
+	private static final int MAX_MESSAGE_RETRY = 100;
 	private static final int NULL_CHARACTER = 0x00;
 
 	protected static final int MESSAGE_DELIMITER = 0x02;
@@ -33,15 +34,12 @@ class ClientServingThread implements Runnable, ILoggable {
 	private final ServerMainProcessor requestProcessor;
 	private final MainMessageSender messageSender;
 
-	private int retryCount;
-
 	protected ClientServingThread(Core core, Socket socket) {
 		this.socket = socket;
 
 		messageSender = new MainMessageSender();
 		requestProcessor = new ServerMainProcessor(core, messageSender);
 
-		retryCount = 0;
 		stopped = false;
 	}
 
@@ -93,7 +91,10 @@ class ClientServingThread implements Runnable, ILoggable {
 	private boolean processLoop() {
 		try {
         	return process();
-        } catch (IOException e) {
+        } catch (SocketException e) {
+        	getLogger().log(Level.WARNING, "Socket Exception when serving client", e);
+        	return false;
+		} catch (IOException e) {
         	getLogger().log(Level.WARNING, "IO Exception when serving client", e);
         	return false;
 		} catch (Exception e) {
@@ -111,7 +112,7 @@ class ClientServingThread implements Runnable, ILoggable {
 		List<String> messages = getMessages();
 		if (messages == null || messages.size() == 0) {
 			getLogger().warning("Messages is null or messages size is 0. " + messages);
-			return false;
+			return true;
 		}
 
 		boolean result = true;
@@ -131,10 +132,11 @@ class ClientServingThread implements Runnable, ILoggable {
 		/**
 		 * Create a blocking read waiting for the next communication
 		 */
+		int retryCount = 0;
 		int firstCharacter = reader.read();
 		if (firstCharacter == -1) {
 			retryCount++;
-			if (retryCount < MAX_RETRY) {
+			if (retryCount < MAX_MESSAGE_RETRY) {
 				return null;
 			} else {
 				getLogger().log(Level.WARNING, "Max retry reached.");
