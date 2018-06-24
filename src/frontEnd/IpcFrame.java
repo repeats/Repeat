@@ -2,6 +2,8 @@ package frontEnd;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -108,6 +110,12 @@ public class IpcFrame extends JFrame {
 		);
 
 		tIpc = new JTable();
+		tIpc.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				ipcBackEndHolder.keyReleasedIPCTable(e);
+			}
+		});
 		tIpc.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {

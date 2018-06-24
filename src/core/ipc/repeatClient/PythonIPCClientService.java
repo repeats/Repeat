@@ -2,8 +2,10 @@ package core.ipc.repeatClient;
 
 import java.util.logging.Logger;
 
-import staticResources.BootStrapResources;
+import core.ipc.IPCServiceManager;
+import core.ipc.IPCServiceName;
 import core.languageHandler.Language;
+import staticResources.BootStrapResources;
 
 public class PythonIPCClientService extends IPCClientService {
 
@@ -19,6 +21,10 @@ public class PythonIPCClientService extends IPCClientService {
 
 	@Override
 	protected String[] getLaunchCmd() {
-		return new String[] { executingProgram.getAbsolutePath(), "-u", BootStrapResources.getBootstrapResource(Language.PYTHON).getIPCClient().getAbsolutePath() };
+		String pythonBinary = executingProgram.getAbsolutePath();
+		String mainFile = BootStrapResources.getBootstrapResource(Language.PYTHON).getIPCClient().getAbsolutePath();
+		int port = IPCServiceManager.getIPCService(IPCServiceName.CONTROLLER_SERVER).getPort();
+
+		return new String[] { pythonBinary, "-u", mainFile, "--port", port + ""};
 	}
 }

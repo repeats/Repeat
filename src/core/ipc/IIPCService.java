@@ -2,9 +2,9 @@ package core.ipc;
 
 import java.io.IOException;
 
-import utilities.ILoggable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
+import utilities.ILoggable;
 
 public abstract class IIPCService implements ILoggable {
 
@@ -58,12 +58,13 @@ public abstract class IIPCService implements ILoggable {
 
 	public abstract boolean isRunning();
 
-	public void setPort(int newPort) {
+	public boolean setPort(int newPort) {
 		if (isRunning()) {
 			getLogger().warning("Cannot change port while running");
-			return;
+			return false;
 		}
 		this.port = newPort;
+		return true;
 	}
 
 	public final int getPort() {

@@ -2,9 +2,11 @@ package core.ipc.repeatClient;
 
 import java.util.logging.Logger;
 
+import core.ipc.IPCServiceManager;
+import core.ipc.IPCServiceName;
+import core.languageHandler.Language;
 import staticResources.BootStrapResources;
 import utilities.OSIdentifier;
-import core.languageHandler.Language;
 
 public class CSharpIPCClientService extends IPCClientService {
 
@@ -25,7 +27,8 @@ public class CSharpIPCClientService extends IPCClientService {
 	@Override
 	protected String[] getLaunchCmd() {
 		if (OSIdentifier.IS_WINDOWS) {
-			return new String[] { executingProgram.getAbsolutePath() };
+			int port = IPCServiceManager.getIPCService(IPCServiceName.CONTROLLER_SERVER).getPort();
+			return new String[] { executingProgram.getAbsolutePath(), "--port", port + "" };
 		} else {
 			getLogger().info("C# compiler disabled. This only runs on Windows operating system.");
 			return null;

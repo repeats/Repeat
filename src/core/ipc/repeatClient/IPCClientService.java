@@ -127,8 +127,9 @@ public abstract class IPCClientService extends IIPCService {
 	}
 
 	@Override
-	public final void setPort(int newPort) {
+	public final boolean setPort(int newPort) {
 		this.port = newPort;
+		return true;
 	}
 
 	@Override

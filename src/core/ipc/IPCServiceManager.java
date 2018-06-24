@@ -48,6 +48,9 @@ public final class IPCServiceManager {
 	}
 
 	public static IIPCService getIPCService(IPCServiceName name) {
+		if (name == null) {
+			return null;
+		}
 		return ipcServices[name.value()];
 	}
 
@@ -95,8 +98,8 @@ public final class IPCServiceManager {
 
 		for (JsonNode language : ipcSettings) {
 			String name = language.getStringValue("name");
-			Language currentLanguage = Language.identify(name);
-			IIPCService service = IPCServiceManager.getIPCService(currentLanguage);
+			IIPCService service = IPCServiceManager.getIPCService(IPCServiceName.identifyService(name));
+
 			if (service != null) {
 				boolean newResult = service.extractSpecificConfig(language.getNode("config"));
 				if (!newResult) {
@@ -111,17 +114,17 @@ public final class IPCServiceManager {
 
 	public static JsonNode jsonize() {
 		return JsonNodeFactories.array(
-				new Function<Language, JsonNode>() {
+				new Function<IPCServiceName, JsonNode>() {
 					@Override
-					public JsonNode apply(Language l) {
-						IIPCService service = getIPCService(l);
+					public JsonNode apply(IPCServiceName n) {
+						IIPCService service = getIPCService(n);
 
 						return JsonNodeFactories.object(
-								JsonNodeFactories.field("name", JsonNodeFactories.string(l.toString())),
+								JsonNodeFactories.field("name", JsonNodeFactories.string(n.toString())),
 								JsonNodeFactories.field("config", service == null ? JsonNodeFactories.nullNode(): service.getSpecificConfig())
 								);
 					}
-				}.map(Language.values())
+				}.map(IPCServiceName.values())
 			);
 	}
 

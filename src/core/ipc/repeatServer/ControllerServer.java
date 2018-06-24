@@ -11,8 +11,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
 import core.ipc.IIPCService;
+import utilities.JSONUtility;
 
 public class ControllerServer extends IIPCService {
 
@@ -116,6 +119,32 @@ public class ControllerServer extends IIPCService {
 	@Override
 	public String getName() {
 		return "Controller server";
+	}
+
+	@Override
+	protected JsonNode getSpecificConfig() {
+		 return JSONUtility.addChild(super.getSpecificConfig(), "port", JsonNodeFactories.number(port));
+	}
+
+	@Override
+	protected boolean extractSpecificConfig(JsonNode node) {
+		boolean result = true;
+		if (!super.extractSpecificConfig(node)) {
+			getLogger().warning("Cannot parse parent config for " + ControllerServer.class);
+			result = false;
+		}
+
+		try {
+			String portString = node.getNumberValue("port");
+			int port = Integer.parseInt(portString);
+			return result && setPort(port);
+		} catch (NumberFormatException e) {
+			getLogger().log(Level.WARNING, "Controller service port is not an integer.", e);
+			return false;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Cannot parse controller config.", e);
+			return false;
+		}
 	}
 
 	@Override

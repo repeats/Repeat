@@ -1,5 +1,6 @@
 package frontEnd;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -7,12 +8,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.ILoggable;
-import utilities.swing.SwingUtil;
+import javax.swing.JOptionPane;
+
 import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
+import core.ipc.IPCServiceName;
+import utilities.ILoggable;
+import utilities.swing.SwingUtil;
 
 public class IpcBackendHolder implements ILoggable {
+
+	private static final Logger LOGGER = Logger.getLogger(IpcBackendHolder.class.getName());
+
+	private static final int MIN_PORT = 1024;
+	private static final int MAX_PORT = 65535;
+
 	private final IpcFrame frame;
 	private ScheduledFuture<?> scheduled;
 
@@ -82,6 +92,33 @@ public class IpcBackendHolder implements ILoggable {
 
 		IIPCService output = IPCServiceManager.getIPCService(selected);
 		return output;
+	}
+
+	protected void keyReleasedIPCTable(KeyEvent e) {
+		int col = frame.tIpc.getSelectedColumn();
+		if (col != IpcFrame.COLUMN_PORT) {
+			return;
+		}
+
+		IIPCService service = getSelectedService();
+		IIPCService controllerService = IPCServiceManager.getIPCService(IPCServiceName.CONTROLLER_SERVER);
+		if (service != controllerService) {
+			return;
+		}
+
+		String portString = SwingUtil.TableUtil.getStringValueTable(frame.tIpc, frame.tIpc.getSelectedRow(), col);
+		try {
+			int port = Integer.parseInt(portString);
+			if (port < MIN_PORT || port > MAX_PORT) {
+				JOptionPane.showMessageDialog(frame, "Port must be integer from " + MIN_PORT + " to " + MAX_PORT, "Incorrect port", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			if (controllerService.setPort(port)) {
+				LOGGER.warning("Remember to restart the server and all the clients for this to take effect!");
+			}
+		} catch (NumberFormatException ex) {
+			JOptionPane.showMessageDialog(frame, "Port must be integer from " + MIN_PORT + " to " + MAX_PORT, "Incorrect port", JOptionPane.WARNING_MESSAGE);
+		}
 	}
 
 	protected void mouseReleasedIPCTable(MouseEvent e) {
