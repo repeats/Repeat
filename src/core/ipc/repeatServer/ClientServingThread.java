@@ -21,6 +21,7 @@ import utilities.ILoggable;
 
 class ClientServingThread implements Runnable, ILoggable {
 
+	private static final long READ_LOOP_SLEEP_DURATION_MS = 500;
 	private static final int MAX_MESSAGE_RETRY = 100;
 	private static final int NULL_CHARACTER = 0x00;
 
@@ -103,7 +104,7 @@ class ClientServingThread implements Runnable, ILoggable {
 		}
 	}
 
-	private boolean process() throws IOException {
+	private boolean process() throws IOException, InterruptedException {
 		if (reader == null || writer == null) {
 			getLogger().warning("Unable to process with reader " + reader + " and writer " + writer);
 			return false;
@@ -112,7 +113,7 @@ class ClientServingThread implements Runnable, ILoggable {
 		List<String> messages = getMessages();
 		if (messages == null || messages.size() == 0) {
 			getLogger().warning("Messages is null or messages size is 0. " + messages);
-			return true;
+			return false;
 		}
 
 		boolean result = true;
@@ -128,20 +129,21 @@ class ClientServingThread implements Runnable, ILoggable {
 		return result;
 	}
 
-	private List<String> getMessages() throws IOException {
+	private List<String> getMessages() throws IOException, InterruptedException {
 		/**
 		 * Create a blocking read waiting for the next communication
 		 */
 		int retryCount = 0;
 		int firstCharacter = reader.read();
-		if (firstCharacter == -1) {
+		while (firstCharacter == -1) {
 			retryCount++;
 			if (retryCount < MAX_MESSAGE_RETRY) {
-				return null;
+				Thread.sleep(READ_LOOP_SLEEP_DURATION_MS);
 			} else {
 				getLogger().log(Level.WARNING, "Max retry reached.");
 				return null;
 			}
+			firstCharacter = reader.read();
 		}
 
 		/**
