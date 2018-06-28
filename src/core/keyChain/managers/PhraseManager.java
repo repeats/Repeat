@@ -5,6 +5,7 @@ import java.util.Set;
 
 import core.config.Config;
 import core.keyChain.ActivationPhrase;
+import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
@@ -12,6 +13,12 @@ public class PhraseManager extends RollingKeySeriesManager {
 
 	public PhraseManager(Config config) {
 		super(config);
+	}
+
+	@Override
+	synchronized public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+		currentRollingKeySeries.addKeyStroke(stroke);
+		return super.onKeyStrokeReleased(stroke);
 	}
 
 	@Override

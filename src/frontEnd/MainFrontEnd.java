@@ -1,7 +1,6 @@
 package frontEnd;
 
 import java.awt.EventQueue;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.ConsoleHandler;
@@ -22,12 +21,12 @@ import utilities.logging.ExceptionUtility;
 import utilities.logging.OutStream;
 import utilities.swing.KeyChainInputPanel;
 
-public class Main {
+public class MainFrontEnd {
 
-	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(MainFrontEnd.class.getName());
 	private static MainFrame createdFrame;
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void run() {
 		/*************************************************************************************/
 		// Get the logger for "org.jnativehook" and set the level to WARNING to begin with.
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
@@ -134,4 +133,5 @@ public class Main {
 			}
 		});
 	}
+
 }
