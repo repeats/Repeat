@@ -5,6 +5,10 @@ import frontEnd.MainFrontEnd;
 public class Main {
 
 	public static void main(String[] args) {
-		MainFrontEnd.run();
+		if (args.length == 0) {
+			MainFrontEnd.run();
+		} else {
+
+		}
 	}
 }

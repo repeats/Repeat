@@ -60,23 +60,23 @@ public class MainBackEndHolder {
 	private static final Logger LOGGER = Logger.getLogger(MainBackEndHolder.class.getName());
 
 	protected ScheduledThreadPoolExecutor executor;
-	protected Thread compiledExecutor;
+	private Thread compiledExecutor;
 
 	protected Recorder recorder;
 
-	protected UserDefinedAction customFunction;
+	private UserDefinedAction customFunction;
 
 	protected final List<TaskGroup> taskGroups;
-	protected TaskGroup currentGroup;
-	protected int selectedTaskIndex;
+	private TaskGroup currentGroup;
+	private int selectedTaskIndex;
 
-	protected final TaskInvoker taskInvoker; // To allow executing other tasks programmatically.
+	private final TaskInvoker taskInvoker; // To allow executing other tasks programmatically.
 	protected final GlobalEventsManager keysManager;
 
 	protected final Config config;
 
 	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
-	protected boolean isRecording, isReplaying, isRunning;
+	private boolean isRecording, isReplaying, isRunning;
 
 	private File tempSourceFile;
 
