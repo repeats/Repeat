@@ -1,5 +1,6 @@
 package main;
 
+import cli.MainCli;
 import frontEnd.MainFrontEnd;
 
 public class Main {
@@ -8,7 +9,8 @@ public class Main {
 		if (args.length == 0) {
 			MainFrontEnd.run();
 		} else {
-
+			MainCli cli = new MainCli();
+			cli.process(args);
 		}
 	}
 }
