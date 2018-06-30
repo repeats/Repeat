@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
+import cli.server.CliServer;
 import core.ipc.repeatClient.CSharpIPCClientService;
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatClient.ScalaIPCClientService;
@@ -19,7 +20,7 @@ public final class IPCServiceManager {
 
 	private static final Logger LOGGER = Logger.getLogger(IPCServiceManager.class.getName());
 
-	public static final int IPC_SERVICE_COUNT = 4;
+	public static final int IPC_SERVICE_COUNT = IPCServiceName.values().length;
 	private static final long INTER_SERVICE_BOOT_TIME_MS = 2000;
 	private static final IIPCService[] ipcServices;
 	private static final Map<Language, Integer> ipcByLanugage;
@@ -27,6 +28,7 @@ public final class IPCServiceManager {
 	static {
 		ipcServices = new IIPCService[IPC_SERVICE_COUNT];
 		ipcServices[IPCServiceName.CONTROLLER_SERVER.value()] =  new ControllerServer();
+		ipcServices[IPCServiceName.CLI_SERVER.value()] =  new CliServer();
 		ipcServices[IPCServiceName.PYTHON.value()] = new PythonIPCClientService();
 		ipcServices[IPCServiceName.CSHARP.value()] = new CSharpIPCClientService();
 		ipcServices[IPCServiceName.SCALA.value()] = new ScalaIPCClientService();

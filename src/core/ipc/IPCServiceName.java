@@ -4,9 +4,10 @@ import core.languageHandler.Language;
 
 public enum IPCServiceName {
 	CONTROLLER_SERVER(0, "controller_server"),
-    PYTHON(1, Language.PYTHON.toString()),
-    CSHARP(2, Language.CSHARP.toString()),
-    SCALA(3, Language.SCALA.toString()),
+	CLI_SERVER(1, "cli_server"),
+    PYTHON(2, Language.PYTHON.toString()),
+    CSHARP(3, Language.CSHARP.toString()),
+    SCALA(4, Language.SCALA.toString()),
     ;
 
     private final int index;

@@ -14,10 +14,10 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
-import core.ipc.IIPCService;
+import core.ipc.IPCServiceWithModifablePort;
 import utilities.JSONUtility;
 
-public class ControllerServer extends IIPCService {
+public class ControllerServer extends IPCServiceWithModifablePort {
 
 	protected static final Charset ENCODING = StandardCharsets.UTF_8;
 	private static final int DEFAULT_PORT = 9999;
@@ -124,27 +124,6 @@ public class ControllerServer extends IIPCService {
 	@Override
 	protected JsonNode getSpecificConfig() {
 		 return JSONUtility.addChild(super.getSpecificConfig(), "port", JsonNodeFactories.number(port));
-	}
-
-	@Override
-	protected boolean extractSpecificConfig(JsonNode node) {
-		boolean result = true;
-		if (!super.extractSpecificConfig(node)) {
-			getLogger().warning("Cannot parse parent config for " + ControllerServer.class);
-			result = false;
-		}
-
-		try {
-			String portString = node.getNumberValue("port");
-			int port = Integer.parseInt(portString);
-			return result && setPort(port);
-		} catch (NumberFormatException e) {
-			getLogger().log(Level.WARNING, "Controller service port is not an integer.", e);
-			return false;
-		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Cannot parse controller config.", e);
-			return false;
-		}
 	}
 
 	@Override
