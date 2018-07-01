@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -478,7 +479,7 @@ public class MainBackEndHolder {
 		main.taSource.setText(sourceCode.toString());
 	}
 
-	private void removeTask(UserDefinedAction task) {
+	private void unregisterTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
 		if (!TaskSourceManager.removeTask(task)) {
 			JOptionPane.showMessageDialog(main, "Encountered error removing source file " + task.getSourcePath());
@@ -512,7 +513,7 @@ public class MainBackEndHolder {
 
 		if (selectedRow >= 0 && selectedRow < currentGroup.getTasks().size()) {
 			UserDefinedAction selectedTask = currentGroup.getTasks().get(selectedRow);
-			removeTask(selectedTask);
+			unregisterTask(selectedTask);
 
 			currentGroup.getTasks().remove(selectedRow);
 			selectedTaskIndex = - 1; // Reset selected index
@@ -521,6 +522,24 @@ public class MainBackEndHolder {
 			writeConfigFile();
 		} else {
 			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
+		}
+	}
+
+	public void removeTask(UserDefinedAction toRemove) {
+		for (TaskGroup group : taskGroups) {
+			for (Iterator<UserDefinedAction> iterator = group.getTasks().iterator(); iterator.hasNext();) {
+				UserDefinedAction action = iterator.next();
+				if (action != toRemove) {
+					continue;
+				}
+				unregisterTask(action);
+
+				iterator.remove();
+
+				renderTasks();
+				writeConfigFile();
+				return;
+			}
 		}
 	}
 
@@ -587,7 +606,7 @@ public class MainBackEndHolder {
 			UserDefinedAction toRemove = currentGroup.getTasks().get(selected);
 			customFunction.override(toRemove);
 
-			removeTask(toRemove);
+			unregisterTask(toRemove);
 			keysManager.registerTask(customFunction);
 			currentGroup.getTasks().set(selected, customFunction);
 

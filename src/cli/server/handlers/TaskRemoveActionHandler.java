@@ -25,7 +25,7 @@ public class TaskRemoveActionHandler extends TaskActionHandler {
 			return CliRpcCodec.prepareResponse(exchange, 400, "Unable to find task.");
 		}
 
-		return null;
+		backEndHolder.removeTask(task);
+		return CliRpcCodec.prepareResponse(exchange, 200, "Removed task " + task.getName());
 	}
-
 }
