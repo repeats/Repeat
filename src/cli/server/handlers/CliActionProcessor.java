@@ -1,4 +1,4 @@
-package cli.handlers;
+package cli.server.handlers;
 
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;

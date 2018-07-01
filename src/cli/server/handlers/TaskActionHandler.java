@@ -1,4 +1,4 @@
-package cli.handlers;
+package cli.server.handlers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
