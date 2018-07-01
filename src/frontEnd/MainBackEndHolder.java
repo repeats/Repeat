@@ -212,7 +212,9 @@ public class MainBackEndHolder {
 		try {
 			IPCServiceManager.initiateServices(this);
 		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Unable to launch ipcs.", e);
+			LOGGER.log(Level.WARNING, "IO Exception when launching ipcs.", e);
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Exception when launching ipcs.", e);
 		}
 	}
 
@@ -1031,6 +1033,10 @@ public class MainBackEndHolder {
 	/***************************************Generic Getters and Setters*******************************************/
 	public void addTaskGroup(TaskGroup group) {
 		taskGroups.add(group);
+	}
+
+	public void clearTaskGroup() {
+		taskGroups.clear();
 	}
 
 	/**

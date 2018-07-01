@@ -16,6 +16,11 @@ public class TaskMessage implements IJsonable {
 	private String name;
 	private int index;
 
+	private TaskMessage() {}
+	public static TaskMessage of() {
+		return new TaskMessage();
+	}
+
 	private TaskMessage(String name, int index) {
 		this.name = name;
 		this.index = index;

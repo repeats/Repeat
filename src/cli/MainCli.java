@@ -5,13 +5,15 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cli.client.handlers.TaskActionHandler;
 import cli.server.handlers.CliActionProcessor;
-import cli.server.handlers.TaskActionHandler;
+import core.config.CliConfig;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
-import utilities.StringUtilities;
+import net.sourceforge.argparse4j.inf.Subparsers;
+import utilities.HttpClient;
 
 public class MainCli {
 
@@ -25,15 +27,19 @@ public class MainCli {
 	}
 
 	private ArgumentParser setupParser() {
-		ArgumentParser parser = ArgumentParsers.newFor("Checksum").build()
+		ArgumentParser parser = ArgumentParsers.newFor("Repeat").build()
                 .defaultHelp(true)
-                .description("Calculate checksum of given files.");
-        parser.addArgument("module")
-        		.required(true)
-        		.type(String.class)
-                .help("Main module for action. Pick one from " + StringUtilities.join(processors.keySet(), ", ") + ".");
+                .description("Execute Repeat operations in the terminal.");
+		parser.addArgument("-h", "--host").type(String.class)
+				.setDefault("localhost")
+				.help("Specify a custom host at which the Repeat server is running.");
+		parser.addArgument("-p", "--port").type(Integer.class)
+				.help("Specify a custom port at which the Repeat server is running."
+						+ "If not specified, port value is read from config file.");
+
+		Subparsers subParsers = parser.addSubparsers().help("Help for each individual command.");
         for (CliActionProcessor processor : processors.values()) {
-        	processor.addArguments(parser);
+        	processor.addArguments(subParsers);
         }
 
         return parser;
@@ -48,6 +54,20 @@ public class MainCli {
             parser.handleError(e);
             CliExitCodes.INVALID_ARGUMENTS.exit();;
         }
+        CliConfig config = new CliConfig();
+		config.loadConfig(null);
+		// Override port if provided.
+		Integer customPort = namespace.getInt("port");
+		if (customPort != null) {
+			config.setServerPort(customPort);
+		}
+
+		String serverAddress = String.format("%s:%s", namespace.getString("host"), config.getServerPort());
+        HttpClient client = new HttpClient(serverAddress, HttpClient.Config.of());
+        for (CliActionProcessor processor : processors.values()) {
+        	processor.setHttpClient(client);
+        }
+
         String action = namespace.get("module");
         CliActionProcessor processor = processors.get(action);
         if (processor == null) {

@@ -71,8 +71,8 @@ public final class IPCServiceManager {
 			if (!service.isLaunchAtStartup()) {
 				continue;
 			}
-			service.startRunning();
 			LOGGER.info("Starting ipc service " + service.getName());
+			service.startRunning();
 			if (name == IPCServiceName.CLI_SERVER) {
 				CliServer server = (CliServer) service;
 				server.setMainBackEndHolder(backEndHolder);

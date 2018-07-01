@@ -1,47 +1,61 @@
 package cli.server.handlers;
 
-import java.util.logging.Level;
+import java.io.IOException;
 import java.util.logging.Logger;
 
-import cli.CliExitCodes;
-import cli.MainCli;
-import net.sourceforge.argparse4j.inf.ArgumentParser;
-import net.sourceforge.argparse4j.inf.Namespace;
+import com.sun.net.httpserver.HttpExchange;
 
-public class TaskActionHandler implements CliActionProcessor {
+import argo.jdom.JsonNode;
+import cli.messages.TaskIdentifier;
+import cli.server.CliRpcCodec;
+import core.userDefinedTask.TaskGroup;
+import core.userDefinedTask.UserDefinedAction;
+import utilities.IoUtil;
 
-	private static final Logger LOGGER = Logger.getLogger(MainCli.class.getName());
+public abstract class TaskActionHandler extends HttpHandlerWithBackend {
+
+	private static final Logger LOGGER = Logger.getLogger(TaskActionHandler.class.getName());
+
+	private static final String ACCEPTED_METHOD = "POST";
 
 	@Override
-	public void addArguments(ArgumentParser parser) {
-		parser.addArgument("-a", "--action").required(true)
-        		.choices("add", "remove", "execute")
-        		.help("Specify action on task.");
-		parser.addArgument("-n", "--name").required(true)
-				.help("Name of the task, or its index (zero based) in the group if the task exists. "
-						+ "This tries to interpret this as an integer index first, then as a task name. "
-						+ "For remove action, if multiple tasks share the same name, "
-						+ "only the first one in the list will be removed.");
-		parser.addArgument("-g", "--group").setDefault("")
-				.help("Name of the group,  or its index (zero based). "
-						+ "This tries to interpret this as an integer index first, then as a group name."
-						+ "If not specified then the first group will be used.");
-		parser.addArgument("-s", "--source_file").setDefault("")
-				.help("Path to the source file. Required when adding new task.");
+	protected final void handleWithBackend(HttpExchange exchange) throws IOException {
+		if (!exchange.getRequestMethod().equalsIgnoreCase(ACCEPTED_METHOD)) {
+			CliRpcCodec.prepareResponse(exchange, 400, "Method must be " + ACCEPTED_METHOD);
+			return;
+		}
+
+		JsonNode request = CliRpcCodec.decodeRequest(IoUtil.streamToBytes(exchange.getRequestBody()));
+		if (request == null) {
+			LOGGER.warning("Failed to parse request into JSON!");
+			CliRpcCodec.prepareResponse(exchange, 400, "Cannot parse request!");
+			return;
+		}
 	}
 
-	@Override
-	public void handle(Namespace namespace) {
-		String action = namespace.getString("action");
-		if (action.equals("add")) {
-			System.out.println("Adding action.");
-		} else if (action.equals("remove")) {
-			System.out.println("Removing action.");
-		} else if (action.equals("execute")) {
-			System.out.println("Execute action.");
-		} else {
-			LOGGER.log(Level.SEVERE, "Unknown task action " + action);
-			CliExitCodes.UNKNOWN_ACTION.exit();
+	protected abstract Void handleTaskActionWithBackend(HttpExchange exchange, JsonNode request) throws IOException;
+
+	protected UserDefinedAction getTask(TaskGroup group, TaskIdentifier taskIdentifier) {
+		UserDefinedAction task = null;
+		if (group != null) {
+			task = group.getTask(taskIdentifier.getTask().getIndex());
+			if (task == null) {
+				task = group.getTask(taskIdentifier.getTask().getName());
+			}
+			return task;
 		}
+
+		return backEndHolder.getTask(taskIdentifier.getTask().getName());
+	}
+
+	protected TaskGroup getGroup(TaskIdentifier taskIdentifier) {
+		TaskGroup group = null;
+		if (taskIdentifier.getGroup() != null) {
+			group = backEndHolder.getTaskGroup(taskIdentifier.getGroup().getIndex());
+			if (group == null) {
+				group = backEndHolder.getTaskGroup(taskIdentifier.getGroup().getName());
+			}
+		}
+		return group;
 	}
 }

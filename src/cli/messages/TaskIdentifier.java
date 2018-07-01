@@ -13,7 +13,10 @@ public class TaskIdentifier implements IJsonable {
 	private TaskMessage task;
 	private TaskGroupMessage group;
 
-	public TaskIdentifier() {}
+	private TaskIdentifier() {}
+	public static TaskIdentifier of() {
+		return new TaskIdentifier();
+	}
 
 	private TaskIdentifier(TaskMessage task, TaskGroupMessage group) {
 		this.task = task;

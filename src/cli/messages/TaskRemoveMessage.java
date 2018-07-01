@@ -9,15 +9,15 @@ import argo.jdom.JsonRootNode;
 import argo.jdom.JsonStringNode;
 import utilities.IJsonable;
 
-public class TaskExecuteMessage implements IJsonable {
+public class TaskRemoveMessage implements IJsonable {
 	private TaskIdentifier taskIdentifier;
 
-	private TaskExecuteMessage() {}
-	public static TaskExecuteMessage of() {
-		return new TaskExecuteMessage();
+	private TaskRemoveMessage() {}
+	public static TaskRemoveMessage of() {
+		return new TaskRemoveMessage();
 	}
 
-	private TaskExecuteMessage(TaskIdentifier taskIdentifier) {
+	private TaskRemoveMessage(TaskIdentifier taskIdentifier) {
 		this.taskIdentifier = taskIdentifier;
 	}
 
@@ -30,20 +30,20 @@ public class TaskExecuteMessage implements IJsonable {
 		return JsonNodeFactories.object(data);
 	}
 
-	public static TaskExecuteMessage parseJSON(JsonNode node) {
+	public static TaskRemoveMessage parseJSON(JsonNode node) {
 		TaskIdentifier taskIdentifier = null;
 		if (node.isObjectNode("task_identifier")) {
 			taskIdentifier = TaskIdentifier.parseJSON(node.getNode("task_identifier"));
 		}
 
-		return new TaskExecuteMessage(taskIdentifier);
+		return new TaskRemoveMessage(taskIdentifier);
 	}
 
 	public TaskIdentifier getTaskIdentifier() {
 		return taskIdentifier;
 	}
 
-	public TaskExecuteMessage setTaskIdentifier(TaskIdentifier taskIdentifier) {
+	public TaskRemoveMessage setTaskIdentifier(TaskIdentifier taskIdentifier) {
 		this.taskIdentifier = taskIdentifier;
 		return this;
 	}

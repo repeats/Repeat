@@ -16,7 +16,10 @@ public class TaskGroupMessage implements IJsonable {
 	private String name;
 	private int index;
 
-	public TaskGroupMessage() {}
+	private TaskGroupMessage() {}
+	public static TaskGroupMessage of() {
+		return new TaskGroupMessage();
+	}
 
 	private TaskGroupMessage(String name, int index) {
 		this.name = name;
@@ -40,7 +43,7 @@ public class TaskGroupMessage implements IJsonable {
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(JsonNodeFactories.field("index", JsonNodeFactories.number(index)),
-				JsonNodeFactories.field("name", JsonNodeFactories.string(name)));
+				JsonNodeFactories.field("name", JsonNodeFactories.string(name == null ? "" : name)));
 	}
 
 	public String getName() {

@@ -4,7 +4,8 @@ public enum CliExitCodes {
 	// Exit codes 1 - 2, 126 - 165, and 255 are reserved.
 	INVALID_ARGUMENTS(3),
 	UNKNOWN_MODULE(4),
-	UNKNOWN_ACTION(5);
+	UNKNOWN_ACTION(5),
+	IO_EXCEPTION(6);
 
 	private int code;
 

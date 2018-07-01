@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;
+import cli.server.CliServer;
 import core.ipc.IPCServiceManager;
+import core.ipc.IPCServiceName;
 import core.keyChain.KeyChain;
 import core.userDefinedTask.TaskGroup;
 
@@ -55,19 +57,18 @@ public class Parser2_5 extends ConfigParser {
 				LOGGER.log(Level.WARNING, "Dynamic Compiler Manager failed to parse JSON metadata");
 			}
 
-			List<TaskGroup> taskGroups = config.getBackEnd().getTaskGroups();
-			taskGroups.clear();
+			config.getBackEnd().clearTaskGroup();
 			for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
 				TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
 				if (taskGroup != null) {
-					taskGroups.add(taskGroup);
+					config.getBackEnd().addTaskGroup(taskGroup);
 				}
 			}
 
-			if (taskGroups.isEmpty()) {
-				taskGroups.add(new TaskGroup("default"));
+			if (config.getBackEnd().getTaskGroups().isEmpty()) {
+				config.getBackEnd().addTaskGroup(new TaskGroup("default"));
 			}
-			config.getBackEnd().setCurrentTaskGroup(taskGroups.get(0));
+			config.getBackEnd().setCurrentTaskGroup(config.getBackEnd().getTaskGroups().get(0));
 			return true;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to parse json", e);
@@ -87,5 +88,22 @@ public class Parser2_5 extends ConfigParser {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	protected boolean extractData(CliConfig config, JsonRootNode root) {
+		try {
+			List<JsonNode> ipcSettings = root.getArrayNode("ipc_settings");
+			if (!IPCServiceManager.parseJSON(ipcSettings)) {
+				LOGGER.log(Level.WARNING, "IPC Service Manager failed to parse JSON metadata");
+			}
+
+			CliServer cliServer = (CliServer) IPCServiceManager.getIPCService(IPCServiceName.CLI_SERVER);
+			config.setServerPort(cliServer.getPort());
+			return true;
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Unable to parse json", e);
+			return false;
+		}
 	}
 }

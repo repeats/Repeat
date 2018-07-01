@@ -18,6 +18,11 @@ public abstract class IPCServiceWithModifablePort extends IIPCService {
 			result = false;
 		}
 
+		// If port not specified then use default port.
+		if (!node.isNumberValue("port")) {
+			return result;
+		}
+
 		try {
 			String portString = node.getNumberValue("port");
 			int port = Integer.parseInt(portString);

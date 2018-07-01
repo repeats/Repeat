@@ -1,10 +1,11 @@
-package cli.server;
+package cli.server.handlers;
 
 import java.io.IOException;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import cli.server.CliRpcCodec;
 import frontEnd.MainBackEndHolder;
 
 public abstract class HttpHandlerWithBackend implements HttpHandler {
@@ -17,7 +18,7 @@ public abstract class HttpHandlerWithBackend implements HttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		if (backEndHolder == null) {
-			Codec.prepareResponse(exchange, 500, "Missing backend...");
+			CliRpcCodec.prepareResponse(exchange, 500, "Missing backend...");
 			return;
 		}
 		handleWithBackend(exchange);

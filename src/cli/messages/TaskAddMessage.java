@@ -14,7 +14,10 @@ public class TaskAddMessage implements IJsonable {
 	private TaskIdentifier taskIdentifier;
 	private String filePath;
 
-	public TaskAddMessage() {}
+	private TaskAddMessage() {}
+	public static TaskAddMessage of() {
+		return new TaskAddMessage();
+	}
 
 	private TaskAddMessage(TaskIdentifier taskIdentifier, String name, String filePath) {
 		this.taskIdentifier = taskIdentifier;

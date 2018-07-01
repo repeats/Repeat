@@ -3,10 +3,10 @@ package core.config;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import utilities.JSONUtility;
 
 abstract class ConfigParser {
 
@@ -91,4 +91,8 @@ abstract class ConfigParser {
 	}
 
 	protected abstract boolean internalImportData(Config config, JsonRootNode data);
+
+	protected boolean extractData(CliConfig config, JsonRootNode root) {
+		throw new UnsupportedOperationException("This version does not support loading CLI server port.");
+	}
 }
