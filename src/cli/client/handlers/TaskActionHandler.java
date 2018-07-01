@@ -27,7 +27,8 @@ public class TaskActionHandler extends CliActionProcessor {
 
 	@Override
 	public void addArguments(Subparsers subparsers) {
-		Subparser parser = subparsers.addParser("task").help("Task management.");
+		Subparser parser = subparsers.addParser("task").setDefault("module", "task").help("Task management.");
+
 		parser.addArgument("-a", "--action").required(true)
         		.choices("add", "remove", "execute")
         		.help("Specify action on task.");
@@ -72,7 +73,7 @@ public class TaskActionHandler extends CliActionProcessor {
 		TaskAddMessage message = TaskAddMessage.of().setFilePath(filePath)
 				.setTaskIdentifier(TaskIdentifier.of().setGroup(taskGroupMessage).setTask(taskMessage));
 		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
-		sendRequest(data);
+		sendRequest("/task/add", data);
 	}
 
 	private void handleRemove(Namespace namespace) {
@@ -82,7 +83,7 @@ public class TaskActionHandler extends CliActionProcessor {
 		TaskRemoveMessage message = TaskRemoveMessage.of()
 				.setTaskIdentifier(TaskIdentifier.of().setGroup(taskGroupMessage).setTask(taskMessage));
 		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
-		sendRequest(data);
+		sendRequest("/task/remove", data);
 	}
 
 	private void handleExecute(Namespace namespace) {
@@ -92,7 +93,7 @@ public class TaskActionHandler extends CliActionProcessor {
 		TaskExecuteMessage message = TaskExecuteMessage.of()
 				.setTaskIdentifier(TaskIdentifier.of().setGroup(taskGroupMessage).setTask(taskMessage));
 		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
-		sendRequest(data);
+		sendRequest("/task/execute", data);
 	}
 
 	private TaskGroupMessage getGroup(Namespace namespace) {
@@ -117,11 +118,10 @@ public class TaskActionHandler extends CliActionProcessor {
 		return taskMessage;
 	}
 
-	private void sendRequest(byte[] data) {
+	private void sendRequest(String path, byte[] data) {
 		try {
-			byte[] responseData = httpClient.sendPost("/task/execute", data);
+			byte[] responseData = httpClient.sendPost(path, data);
 			String responseString = CliRpcCodec.decode(responseData);
-			System.out.println(responseString);
 			LOGGER.info(responseString);
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Encountered IOException when talking to server.", e);

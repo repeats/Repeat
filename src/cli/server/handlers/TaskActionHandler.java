@@ -31,6 +31,8 @@ public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 			CliRpcCodec.prepareResponse(exchange, 400, "Cannot parse request!");
 			return;
 		}
+
+		handleTaskActionWithBackend(exchange, request);
 	}
 
 	protected abstract Void handleTaskActionWithBackend(HttpExchange exchange, JsonNode request) throws IOException;

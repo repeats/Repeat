@@ -30,7 +30,7 @@ public class MainCli {
 		ArgumentParser parser = ArgumentParsers.newFor("Repeat").build()
                 .defaultHelp(true)
                 .description("Execute Repeat operations in the terminal.");
-		parser.addArgument("-h", "--host").type(String.class)
+		parser.addArgument("-s", "--host").type(String.class)
 				.setDefault("localhost")
 				.help("Specify a custom host at which the Repeat server is running.");
 		parser.addArgument("-p", "--port").type(Integer.class)
@@ -52,7 +52,7 @@ public class MainCli {
             namespace = parser.parseArgs(args);
         } catch (ArgumentParserException e) {
             parser.handleError(e);
-            CliExitCodes.INVALID_ARGUMENTS.exit();;
+            CliExitCodes.INVALID_ARGUMENTS.exit();
         }
         CliConfig config = new CliConfig();
 		config.loadConfig(null);

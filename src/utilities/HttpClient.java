@@ -58,8 +58,6 @@ public class HttpClient {
 			connection.setRequestProperty("Content-Length", Integer.toString(data.length));
 			connection.setRequestProperty("Content-Language", "en-US");
 
-			System.out.println("Here");
-
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);
 			connection.setReadTimeout(timeout);
@@ -68,8 +66,6 @@ public class HttpClient {
 			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 			wr.write(data);
 			wr.close();
-
-			System.out.println("Heree");
 
 			// Get response.
 			InputStream is = connection.getInputStream();
