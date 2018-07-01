@@ -157,7 +157,7 @@ public class Config implements ILoggable {
 
 	private void defaultExtract() {
 		List<TaskGroup> taskGroups = backEnd.getTaskGroups();
-		taskGroups.add(new TaskGroup("default"));
+		backEnd.addTaskGroup(new TaskGroup("default"));
 		backEnd.setCurrentTaskGroup(taskGroups.get(0));
 	}
 

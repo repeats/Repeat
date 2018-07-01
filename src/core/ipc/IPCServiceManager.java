@@ -14,6 +14,7 @@ import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatClient.ScalaIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
 import core.languageHandler.Language;
+import frontEnd.MainBackEndHolder;
 import utilities.Function;
 
 public final class IPCServiceManager {
@@ -64,7 +65,7 @@ public final class IPCServiceManager {
 		return ipcServices[index];
 	}
 
-	public static void initiateServices() throws IOException {
+	public static void initiateServices(MainBackEndHolder backEndHolder) throws IOException {
 		for (IPCServiceName name : IPCServiceName.values()) {
 			IIPCService service = IPCServiceManager.getIPCService(name);
 			if (!service.isLaunchAtStartup()) {
@@ -72,6 +73,10 @@ public final class IPCServiceManager {
 			}
 			service.startRunning();
 			LOGGER.info("Starting ipc service " + service.getName());
+			if (name == IPCServiceName.CLI_SERVER) {
+				CliServer server = (CliServer) service;
+				server.setMainBackEndHolder(backEndHolder);
+			}
 
 			try {
 				Thread.sleep(INTER_SERVICE_BOOT_TIME_MS);

@@ -210,7 +210,7 @@ public class MainBackEndHolder {
 		}, 0, 1500, TimeUnit.MILLISECONDS);
 
 		try {
-			IPCServiceManager.initiateServices();
+			IPCServiceManager.initiateServices(this);
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Unable to launch ipcs.", e);
 		}
@@ -484,6 +484,10 @@ public class MainBackEndHolder {
 	}
 
 	protected void addCurrentTask() {
+		addCurrentTask(currentGroup);
+	}
+
+	public void addCurrentTask(TaskGroup group) {
 		if (customFunction != null) {
 			customFunction.setName("New task");
 			currentGroup.getTasks().add(customFunction);
@@ -875,8 +879,8 @@ public class MainBackEndHolder {
 		getCompiler().promptChangePath(main);
 	}
 
-	protected void compileSource() {
-		String source = main.taSource.getText().replaceAll("\t", "    "); // Use spaces instead of tabs
+	public boolean compileSource(String source) {
+		source = source.replaceAll("\t", "    "); // Use spaces instead of tabs
 
 		AbstractNativeCompiler compiler = getCompiler();
 		Pair<DynamicCompilerOutput, UserDefinedAction> compilationResult = compiler.compile(source);
@@ -884,7 +888,7 @@ public class MainBackEndHolder {
 		UserDefinedAction createdInstance = compilationResult.getB();
 
 		if (compilerStatus != DynamicCompilerOutput.COMPILATION_SUCCESS) {
-			return;
+			return false;
 		}
 
 		customFunction = createdInstance;
@@ -893,7 +897,9 @@ public class MainBackEndHolder {
 
 		if (!TaskSourceManager.submitTask(customFunction, source)) {
 			JOptionPane.showMessageDialog(main, "Error writing source file...");
+			return false;
 		}
+		return true;
 	}
 
 	/*************************************************************************************************************/
@@ -1022,8 +1028,37 @@ public class MainBackEndHolder {
 	}
 
 	/*************************************************************************************************************/
+	/***************************************Generic Getters and Setters*******************************************/
+	public void addTaskGroup(TaskGroup group) {
+		taskGroups.add(group);
+	}
+
+	/**
+	 * Get the task group with the index, returning null if index is out of range.
+	 */
+	public TaskGroup getTaskGroup(int index) {
+		if (index < 0 || index >= taskGroups.size()) {
+			return null;
+		}
+		return taskGroups.get(index);
+	}
+
+	/**
+	 * Get the first task group with the given name, or null if no such group
+	 * exists.
+	 */
+	public TaskGroup getTaskGroup(String name) {
+		for (TaskGroup group : taskGroups) {
+			if (group.getName().equals(name)) {
+				return group;
+			}
+		}
+		return null;
+	}
+
+	/** Retrieve an immutable view of the list of task groups. */
 	public List<TaskGroup> getTaskGroups() {
-		return taskGroups;
+		return Collections.unmodifiableList(taskGroups);
 	}
 
 	protected TaskGroup getCurrentTaskGroup() {
@@ -1036,5 +1071,19 @@ public class MainBackEndHolder {
 			this.currentGroup = currentTaskGroup;
 			keysManager.setCurrentTaskGroup(currentTaskGroup);
 		}
+	}
+
+	/**
+	 * Get first task with given name in the task group.
+	 * Returning null if no task with given name exists.
+	 */
+	public UserDefinedAction getTask(String name) {
+		for (TaskGroup group : taskGroups) {
+			UserDefinedAction task = group.getTask(name);
+			if (task != null) {
+				return task;
+			}
+		}
+		return null;
 	}
 }

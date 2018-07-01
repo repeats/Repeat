@@ -6,12 +6,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.IJsonable;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.compiler.DynamicCompilerManager;
+import utilities.IJsonable;
 
 public class TaskGroup implements IJsonable {
 
@@ -31,6 +31,29 @@ public class TaskGroup implements IJsonable {
 
 	public List<UserDefinedAction> getTasks() {
 		return tasks;
+	}
+
+	/**
+	 * Get task based on given index, returning null if index out of bound.
+	 */
+	public UserDefinedAction getTask(int index) {
+		if (index < 0 || index >= tasks.size()) {
+			return null;
+		}
+
+		return tasks.get(index);
+	}
+
+	/**
+	 * Get first task with given name, or null if no such task exists.
+	 */
+	public UserDefinedAction getTask(String name) {
+		for (UserDefinedAction task : tasks) {
+			if (task.getName().equals(name)) {
+				return task;
+			}
+		}
+		return null;
 	}
 
 	public String getName() {

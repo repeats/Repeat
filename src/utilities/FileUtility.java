@@ -29,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import frontEnd.BlankClass;
+import main.BlankClass;
 
 /**
  * Provide file reading and writing utilities

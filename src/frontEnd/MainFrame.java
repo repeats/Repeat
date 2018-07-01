@@ -581,7 +581,7 @@ public class MainFrame extends JFrame {
 		bCompile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.compileSource();
+				backEnd.compileSource(taSource.getText());
 			}
 		});
 
