@@ -6,6 +6,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.IJsonable;
+import utilities.NumberUtility;
 
 public class TaskGroupMessage implements IJsonable {
 
@@ -14,7 +15,7 @@ public class TaskGroupMessage implements IJsonable {
 	private static final int UNKNOWN_INDEX = -1;
 
 	private String name;
-	private int index;
+	private int index = UNKNOWN_INDEX;
 
 	private TaskGroupMessage() {}
 	public static TaskGroupMessage of() {
@@ -27,17 +28,20 @@ public class TaskGroupMessage implements IJsonable {
 	}
 
 	public static TaskGroupMessage parseJSON(JsonNode node) {
-		if (node.isNumberValue("index")) {
+		if (node.isNumberValue("index") && NumberUtility.isNonNegativeInteger(node.getNumberValue("index"))) {
 			int index = Integer.parseInt(node.getNumberValue("index"));
 			return new TaskGroupMessage("", index);
 		}
 
 		if (node.isStringValue("name")) {
-			return new TaskGroupMessage(node.getStringValue("name"), UNKNOWN_INDEX);
+			String value = node.getStringValue("name");
+			if (!value.isEmpty()) {
+				return new TaskGroupMessage(node.getStringValue("name"), UNKNOWN_INDEX);
+			}
 		}
 
-		LOGGER.warning("Unable to parse task group message. Neither field name nor index was present.");
-		return null;
+		LOGGER.warning("Unable to parse task group message. Neither field name nor index was present. Using default value.");
+		return new TaskGroupMessage("", 0);
 	}
 
 	@Override

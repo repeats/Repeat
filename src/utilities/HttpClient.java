@@ -67,8 +67,14 @@ public class HttpClient {
 			wr.write(data);
 			wr.close();
 
-			// Get response.
-			InputStream is = connection.getInputStream();
+			InputStream is = null;
+			int code = connection.getResponseCode();
+			if (code != 200) {
+				LOGGER.warning("Server responded with non OK code " + code);
+				is = connection.getErrorStream();
+			} else { // Get response.
+				is = connection.getInputStream();
+			}
 			byte[] output = IoUtil.streamToBytes(is);
 			is.close();
 			return output;

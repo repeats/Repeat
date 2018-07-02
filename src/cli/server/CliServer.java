@@ -27,6 +27,7 @@ public class CliServer extends IPCServiceWithModifablePort {
 
 	private Map<String, HttpHandlerWithBackend> handlers;
 
+	private MainBackEndHolder backEndHolder;
 	private Thread mainThread;
 	private HttpServer server;
 
@@ -35,6 +36,11 @@ public class CliServer extends IPCServiceWithModifablePort {
 	}
 
 	public synchronized void setMainBackEndHolder(MainBackEndHolder backEndHolder) {
+		this.backEndHolder = backEndHolder;
+		if (handlers == null) {
+			return;
+		}
+
 		for (HttpHandlerWithBackend handler : handlers.values()) {
 			handler.setMainBackEndHolder(backEndHolder);
 		}
@@ -51,6 +57,7 @@ public class CliServer extends IPCServiceWithModifablePort {
 	@Override
 	protected void start() throws IOException {
 		handlers = createHandlers();
+		setMainBackEndHolder(backEndHolder);
 
 		HttpServer server = HttpServer.create(new InetSocketAddress(port), SYSTEM_DEFAULT_CONNECTION_BACKLOG);
 		server.createContext("/test", new UpAndRunningHandler());

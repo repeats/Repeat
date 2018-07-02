@@ -6,6 +6,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.IJsonable;
+import utilities.NumberUtility;
 
 public class TaskMessage implements IJsonable {
 
@@ -14,7 +15,7 @@ public class TaskMessage implements IJsonable {
 	private static final int UNKNOWN_INDEX = -1;
 
 	private String name;
-	private int index;
+	private int index = UNKNOWN_INDEX;
 
 	private TaskMessage() {}
 	public static TaskMessage of() {
@@ -27,7 +28,7 @@ public class TaskMessage implements IJsonable {
 	}
 
 	public static TaskMessage parseJSON(JsonNode node) {
-		if (node.isNumberValue("index")) {
+		if (node.isNumberValue("index") && NumberUtility.isNonNegativeInteger(node.getNumberValue("index"))) {
 			int index = Integer.parseInt(node.getNumberValue("index"));
 			return new TaskMessage("", index);
 		}

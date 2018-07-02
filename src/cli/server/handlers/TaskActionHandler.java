@@ -21,6 +21,7 @@ public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 	@Override
 	protected final void handleWithBackend(HttpExchange exchange) throws IOException {
 		if (!exchange.getRequestMethod().equalsIgnoreCase(ACCEPTED_METHOD)) {
+			LOGGER.warning("Ignoring request with unknown method " + exchange.getRequestMethod());
 			CliRpcCodec.prepareResponse(exchange, 400, "Method must be " + ACCEPTED_METHOD);
 			return;
 		}

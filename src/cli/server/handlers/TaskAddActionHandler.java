@@ -38,7 +38,6 @@ public class TaskAddActionHandler extends TaskActionHandler {
 			return CliRpcCodec.prepareResponse(exchange, 400, "Unable to identify task group.");
 		}
 
-
 		Path path = Paths.get(message.getFilePath());
 		if (!Files.isRegularFile(path)) {
 			return CliRpcCodec.prepareResponse(exchange, 400, "Path " + path + " is not a file.");
@@ -49,7 +48,7 @@ public class TaskAddActionHandler extends TaskActionHandler {
 			return CliRpcCodec.prepareResponse(exchange, 500, "Unable to read source file.");
 		}
 
-		if (!backEndHolder.compileSource(source)) {
+		if (!backEndHolder.compileSource(source, message.getTaskIdentifier().getTask().getName())) {
 			return CliRpcCodec.prepareResponse(exchange, 500, "Unable to compile source file.");
 		}
 

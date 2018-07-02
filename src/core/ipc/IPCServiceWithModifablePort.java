@@ -3,7 +3,8 @@ package core.ipc;
 import java.util.logging.Level;
 
 import argo.jdom.JsonNode;
-import core.ipc.repeatServer.ControllerServer;
+import argo.jdom.JsonNodeFactories;
+import utilities.JSONUtility;
 
 /**
  * IPC service with modifiable port to start at. E.g. a server.
@@ -14,7 +15,7 @@ public abstract class IPCServiceWithModifablePort extends IIPCService {
 	protected boolean extractSpecificConfig(JsonNode node) {
 		boolean result = true;
 		if (!super.extractSpecificConfig(node)) {
-			getLogger().warning("Cannot parse parent config for " + ControllerServer.class);
+			getLogger().warning("Cannot parse parent config for " + IPCServiceWithModifablePort.class);
 			result = false;
 		}
 
@@ -34,5 +35,10 @@ public abstract class IPCServiceWithModifablePort extends IIPCService {
 			getLogger().log(Level.WARNING, "Cannot parse controller config.", e);
 			return false;
 		}
+	}
+
+	@Override
+	protected final JsonNode getSpecificConfig() {
+		 return JSONUtility.addChild(super.getSpecificConfig(), "port", JsonNodeFactories.number(port));
 	}
 }

@@ -68,15 +68,15 @@ public final class IPCServiceManager {
 	public static void initiateServices(MainBackEndHolder backEndHolder) throws IOException {
 		for (IPCServiceName name : IPCServiceName.values()) {
 			IIPCService service = IPCServiceManager.getIPCService(name);
+			if (name == IPCServiceName.CLI_SERVER) {
+				CliServer server = (CliServer) service;
+				server.setMainBackEndHolder(backEndHolder);
+			}
 			if (!service.isLaunchAtStartup()) {
 				continue;
 			}
 			LOGGER.info("Starting ipc service " + service.getName());
 			service.startRunning();
-			if (name == IPCServiceName.CLI_SERVER) {
-				CliServer server = (CliServer) service;
-				server.setMainBackEndHolder(backEndHolder);
-			}
 
 			try {
 				Thread.sleep(INTER_SERVICE_BOOT_TIME_MS);

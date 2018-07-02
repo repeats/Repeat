@@ -11,11 +11,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import argo.jdom.JsonNode;
-import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
 import core.ipc.IPCServiceWithModifablePort;
-import utilities.JSONUtility;
 
 public class ControllerServer extends IPCServiceWithModifablePort {
 
@@ -119,11 +116,6 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 	@Override
 	public String getName() {
 		return "Controller server";
-	}
-
-	@Override
-	protected JsonNode getSpecificConfig() {
-		 return JSONUtility.addChild(super.getSpecificConfig(), "port", JsonNodeFactories.number(port));
 	}
 
 	@Override

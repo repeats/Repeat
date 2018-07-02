@@ -102,7 +102,8 @@ public class IpcBackendHolder implements ILoggable {
 
 		IIPCService service = getSelectedService();
 		IIPCService controllerService = IPCServiceManager.getIPCService(IPCServiceName.CONTROLLER_SERVER);
-		if (service != controllerService) {
+		IIPCService cliServer = IPCServiceManager.getIPCService(IPCServiceName.CLI_SERVER);
+		if (service != controllerService && service != cliServer) {
 			return;
 		}
 
@@ -113,7 +114,7 @@ public class IpcBackendHolder implements ILoggable {
 				JOptionPane.showMessageDialog(frame, "Port must be integer from " + MIN_PORT + " to " + MAX_PORT, "Incorrect port", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-			if (controllerService.setPort(port)) {
+			if (service.setPort(port)) {
 				LOGGER.warning("Remember to restart the server and all the clients for this to take effect!");
 			}
 		} catch (NumberFormatException ex) {

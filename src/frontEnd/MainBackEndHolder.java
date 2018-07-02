@@ -492,7 +492,9 @@ public class MainBackEndHolder {
 
 	public void addCurrentTask(TaskGroup group) {
 		if (customFunction != null) {
-			customFunction.setName("New task");
+			if (customFunction.getName() == null || customFunction.getName().isEmpty()) {
+				customFunction.setName("New task");
+			}
 			currentGroup.getTasks().add(customFunction);
 
 			customFunction = null;
@@ -900,13 +902,20 @@ public class MainBackEndHolder {
 		getCompiler().promptChangePath(main);
 	}
 
-	public boolean compileSource(String source) {
+	protected boolean compileSource(String source) {
+		return compileSource(source, null);
+	}
+
+	public boolean compileSource(String source, String taskName) {
 		source = source.replaceAll("\t", "    "); // Use spaces instead of tabs
 
 		AbstractNativeCompiler compiler = getCompiler();
 		Pair<DynamicCompilerOutput, UserDefinedAction> compilationResult = compiler.compile(source);
 		DynamicCompilerOutput compilerStatus = compilationResult.getA();
 		UserDefinedAction createdInstance = compilationResult.getB();
+		if (taskName != null && !taskName.isEmpty()) {
+			createdInstance.setName(taskName);
+		}
 
 		if (compilerStatus != DynamicCompilerOutput.COMPILATION_SUCCESS) {
 			return false;

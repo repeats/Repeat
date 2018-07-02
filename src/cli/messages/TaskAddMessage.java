@@ -19,7 +19,7 @@ public class TaskAddMessage implements IJsonable {
 		return new TaskAddMessage();
 	}
 
-	private TaskAddMessage(TaskIdentifier taskIdentifier, String name, String filePath) {
+	private TaskAddMessage(TaskIdentifier taskIdentifier, String filePath) {
 		this.taskIdentifier = taskIdentifier;
 		this.filePath = filePath;
 	}
@@ -30,17 +30,12 @@ public class TaskAddMessage implements IJsonable {
 			taskIdentifier = TaskIdentifier.parseJSON(node.getNode("task_identifier"));
 		}
 
-		String name = "";
-		if (node.isStringValue("name")) {
-			name = node.getStringValue("name");
-		}
-
 		String filePath = "";
 		if (node.isStringValue("file_path")) {
 			filePath = node.getStringValue("file_path");
 		}
 
-		return new TaskAddMessage(taskIdentifier, name, filePath);
+		return new TaskAddMessage(taskIdentifier, filePath);
 	}
 
 	@Override
