@@ -3,14 +3,16 @@ package cli.server.handlers;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import com.sun.net.httpserver.HttpExchange;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.nio.protocol.HttpAsyncExchange;
+import org.apache.http.protocol.HttpContext;
 
 import argo.jdom.JsonNode;
 import cli.messages.TaskIdentifier;
 import cli.server.CliRpcCodec;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
-import utilities.IoUtil;
 
 public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 
@@ -19,24 +21,26 @@ public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 	private static final String ACCEPTED_METHOD = "POST";
 
 	@Override
-	protected final void handleWithBackend(HttpExchange exchange) throws IOException {
-		if (!exchange.getRequestMethod().equalsIgnoreCase(ACCEPTED_METHOD)) {
-			LOGGER.warning("Ignoring request with unknown method " + exchange.getRequestMethod());
+	protected void handleWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
+			throws HttpException, IOException {
+		String method = request.getRequestLine().getMethod();
+		if (!method.equalsIgnoreCase(ACCEPTED_METHOD)) {
+			LOGGER.warning("Ignoring request with unknown method " + method);
 			CliRpcCodec.prepareResponse(exchange, 400, "Method must be " + ACCEPTED_METHOD);
 			return;
 		}
 
-		JsonNode request = CliRpcCodec.decodeRequest(IoUtil.streamToBytes(exchange.getRequestBody()));
-		if (request == null) {
+		JsonNode requestData = CliRpcCodec.decodeRequest(getRequestBody(request));
+		if (requestData == null) {
 			LOGGER.warning("Failed to parse request into JSON!");
 			CliRpcCodec.prepareResponse(exchange, 400, "Cannot parse request!");
 			return;
 		}
 
-		handleTaskActionWithBackend(exchange, request);
+		handleTaskActionWithBackend(exchange, requestData);
 	}
 
-	protected abstract Void handleTaskActionWithBackend(HttpExchange exchange, JsonNode request) throws IOException;
+	protected abstract Void handleTaskActionWithBackend(HttpAsyncExchange exchange, JsonNode request) throws IOException;
 
 	protected UserDefinedAction getTask(TaskGroup group, TaskIdentifier taskIdentifier) {
 		UserDefinedAction task = null;

@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cli.client.handlers.CliActionProcessor;
 import cli.client.handlers.TaskActionHandler;
-import cli.server.handlers.CliActionProcessor;
 import core.config.CliConfig;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;

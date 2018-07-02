@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.net.httpserver.HttpExchange;
+import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import argo.jdom.JsonNode;
 import cli.messages.TaskExecuteMessage;
@@ -18,7 +18,7 @@ public class TaskExecuteActionHandler extends TaskActionHandler {
 	private static final Logger LOGGER = Logger.getLogger(TaskExecuteActionHandler.class.getName());
 
 	@Override
-	protected Void handleTaskActionWithBackend(HttpExchange exchange, JsonNode request) throws IOException {
+	protected Void handleTaskActionWithBackend(HttpAsyncExchange exchange, JsonNode request) throws IOException {
 		TaskExecuteMessage message = TaskExecuteMessage.parseJSON(request);
 		if (message.getTaskIdentifier() == null) {
 			return CliRpcCodec.prepareResponse(exchange, 400, "Missing task identifier.");

@@ -1,12 +1,14 @@
 package cli.server;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import com.sun.net.httpserver.HttpExchange;
+import org.apache.http.HttpResponse;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.nio.protocol.BasicAsyncResponseProducer;
+import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import argo.jdom.JsonNode;
 import utilities.JSONUtility;
@@ -27,16 +29,16 @@ public class CliRpcCodec {
 		return JSONUtility.jsonFromString(decode(data));
 	}
 
-	public static Void prepareResponse(HttpExchange exchange, int code, String data) throws IOException {
+	public static Void prepareResponse(HttpAsyncExchange exchange, int code, String data) throws IOException {
 		return prepareResponse(exchange, code, data.getBytes(CliRpcCodec.ENCODING));
 	}
 
-	private static Void prepareResponse(HttpExchange exchange, int code, byte[] data) throws IOException {
+	private static Void prepareResponse(HttpAsyncExchange exchange, int code, byte[] data) throws IOException {
 		byte[] encodedData = encode(data);
-		exchange.sendResponseHeaders(code, encodedData.length);
-		OutputStream responseBody = exchange.getResponseBody();
-        responseBody.write(encodedData);
-        responseBody.close();
+		HttpResponse response = exchange.getResponse();
+		response.setStatusCode(code);
+		response.setEntity(new ByteArrayEntity(encodedData));
+		exchange.submitResponse(new BasicAsyncResponseProducer(response));
         return null;
 	}
 }

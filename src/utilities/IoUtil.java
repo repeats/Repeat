@@ -16,6 +16,8 @@ public class IoUtil {
 
 	/**
 	 * Read all content from an input stream to a byte array.
+	 * This does not close the input channel after reading. The caller
+	 * is responsible for doing that.
 	 */
 	public static byte[] streamToBytes(InputStream in) throws IOException {
 	    ReadableByteChannel channel = Channels.newChannel(in);
@@ -27,7 +29,6 @@ public class IoUtil {
 	        outChannel.write(byteBuffer);
 	        byteBuffer.compact(); // Make buffer ready for reading.
 	    }
-	    channel.close();
 	    outChannel.close();
 	    return bout.toByteArray();
 	}

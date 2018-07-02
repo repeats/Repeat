@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
-import com.sun.net.httpserver.HttpExchange;
+import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import argo.jdom.JsonNode;
 import cli.messages.TaskAddMessage;
@@ -19,7 +19,7 @@ public class TaskAddActionHandler extends TaskActionHandler {
 	private static final Logger LOGGER = Logger.getLogger(TaskAddActionHandler.class.getName());
 
 	@Override
-	protected Void handleTaskActionWithBackend(HttpExchange exchange, JsonNode request) throws IOException {
+	protected Void handleTaskActionWithBackend(HttpAsyncExchange exchange, JsonNode request) throws IOException {
 		TaskAddMessage message = TaskAddMessage.parseJSON(request);
 		if (message.getTaskIdentifier() == null) {
 			return CliRpcCodec.prepareResponse(exchange, 400, "Missing task identifier.");

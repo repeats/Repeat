@@ -2,7 +2,7 @@ package cli.server.handlers;
 
 import java.io.IOException;
 
-import com.sun.net.httpserver.HttpExchange;
+import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import argo.jdom.JsonNode;
 import cli.messages.TaskExecuteMessage;
@@ -13,7 +13,7 @@ import core.userDefinedTask.UserDefinedAction;
 public class TaskRemoveActionHandler extends TaskActionHandler {
 
 	@Override
-	protected Void handleTaskActionWithBackend(HttpExchange exchange, JsonNode request) throws IOException {
+	protected Void handleTaskActionWithBackend(HttpAsyncExchange exchange, JsonNode request) throws IOException {
 		TaskExecuteMessage message = TaskExecuteMessage.parseJSON(request);
 		if (message.getTaskIdentifier() == null) {
 			return CliRpcCodec.prepareResponse(exchange, 400, "Missing task identifier.");

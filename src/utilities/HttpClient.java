@@ -46,42 +46,39 @@ public class HttpClient {
 	public byte[] sendPost(String path, byte[] data) throws IOException {
 		HttpURLConnection connection = null;
 
-		try {
-			String urlPath = String.format("%s://%s%s", protocol, serverAddress, path);
-			LOGGER.info("Sending POST request to " + urlPath);
+		String urlPath = String.format("%s://%s%s", protocol, serverAddress, path);
+		LOGGER.info("Sending POST request to " + urlPath);
 
-			// Create connection.
-			URL url = new URL(urlPath);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			connection.setRequestProperty("Content-Length", Integer.toString(data.length));
-			connection.setRequestProperty("Content-Language", "en-US");
+		// Create connection.
+		URL url = new URL(urlPath);
+		connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		connection.setRequestProperty("Content-Length", Integer.toString(data.length));
+		connection.setRequestProperty("Content-Language", "en-US");
 
-			connection.setUseCaches(false);
-			connection.setDoOutput(true);
-			connection.setReadTimeout(timeout);
+		connection.setUseCaches(false);
+		connection.setDoOutput(true);
+		connection.setReadTimeout(timeout);
+		connection.connect();
 
-			// Send request.
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.write(data);
-			wr.close();
+		// Send request.
+		DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+		wr.write(data);
+		wr.flush();
+		wr.close();
 
-			InputStream is = null;
-			int code = connection.getResponseCode();
-			if (code != 200) {
-				LOGGER.warning("Server responded with non OK code " + code);
-				is = connection.getErrorStream();
-			} else { // Get response.
-				is = connection.getInputStream();
-			}
-			byte[] output = IoUtil.streamToBytes(is);
-			is.close();
-			return output;
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
+		InputStream is = null;
+		int code = connection.getResponseCode();
+		if (code != 200) {
+			LOGGER.warning("Server responded with non OK code " + code);
+			is = connection.getErrorStream();
+		} else { // Get response.
+			is = connection.getInputStream();
 		}
+		byte[] output = IoUtil.streamToBytes(is);
+		connection.disconnect();
+		is.close();
+		return output;
 	}
 }

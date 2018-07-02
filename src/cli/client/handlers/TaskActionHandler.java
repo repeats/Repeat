@@ -14,7 +14,6 @@ import cli.messages.TaskIdentifier;
 import cli.messages.TaskMessage;
 import cli.messages.TaskRemoveMessage;
 import cli.server.CliRpcCodec;
-import cli.server.handlers.CliActionProcessor;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;

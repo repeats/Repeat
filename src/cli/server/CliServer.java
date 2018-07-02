@@ -1,14 +1,16 @@
 package cli.server;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.net.httpserver.HttpServer;
+import org.apache.http.ExceptionLogger;
+import org.apache.http.impl.nio.bootstrap.HttpServer;
+import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 
 import cli.server.handlers.HttpHandlerWithBackend;
 import cli.server.handlers.TaskAddActionHandler;
@@ -21,7 +23,6 @@ import frontEnd.MainBackEndHolder;
 
 public class CliServer extends IPCServiceWithModifablePort {
 
-	private static final int SYSTEM_DEFAULT_CONNECTION_BACKLOG = 0;
 	private static final int TERMINATION_DELAY_SECOND = 1;
 	private static final int DEFAULT_PORT = CliConfig.DEFAULT_SERVER_PORT;
 
@@ -59,26 +60,35 @@ public class CliServer extends IPCServiceWithModifablePort {
 		handlers = createHandlers();
 		setMainBackEndHolder(backEndHolder);
 
-		HttpServer server = HttpServer.create(new InetSocketAddress(port), SYSTEM_DEFAULT_CONNECTION_BACKLOG);
-		server.createContext("/test", new UpAndRunningHandler());
+		ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
+                .setListenerPort(port)
+                .setServerInfo("RepeatCli")
+				.setExceptionLogger(ExceptionLogger.STD_ERR)
+				.registerHandler("/test", new UpAndRunningHandler());
 		for (Entry<String, HttpHandlerWithBackend> entry : handlers.entrySet()) {
-			server.createContext(entry.getKey(), entry.getValue());
+			serverBootstrap.registerHandler(entry.getKey(), entry.getValue());
 		}
-        server.setExecutor(null); // Creates a default executor.
-        this.server = server;
-        mainThread = new Thread() {
+		server = serverBootstrap.create();
+
+		mainThread = new Thread() {
         	@Override
         	public void run() {
-        		server.start();
+        		try {
+					server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+				} catch (InterruptedException e) {
+					getLogger().log(Level.SEVERE, "Interrupted when waiting for CLI server.", e);
+				}
+        		getLogger().info("Finished waiting for CLI server termination...");
         	}
         };
+        server.start();
         mainThread.start();
         getLogger().info("CLI server up and running...");
 	}
 
 	@Override
 	protected void stop() throws IOException {
-		server.stop(TERMINATION_DELAY_SECOND);
+		server.shutdown(TERMINATION_DELAY_SECOND, TimeUnit.SECONDS);
 		try {
 			mainThread.join();
 			getLogger().info("CLI server terminated...");
