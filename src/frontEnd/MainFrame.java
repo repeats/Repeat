@@ -43,9 +43,13 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
 
 import org.jnativehook.NativeHookException;
 
@@ -63,6 +67,8 @@ public class MainFrame extends JFrame {
 
 
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
+	private static final int MAX_STATUS_LINE_COUNT = 4096;
+
 	protected static final int TTASK_COLUMN_TASK_NAME = 0;
 	protected static final int TTASK_COLUMN_TASK_HOTKEY = 1;
 	protected static final int TTASK_COLUMN_ENABLED = 2;
@@ -838,6 +844,32 @@ public class MainFrame extends JFrame {
 					.addContainerGap())
 		);
 		taStatus = new JTextArea();
+		taStatus.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						int linesToRemove = taStatus.getLineCount() - MAX_STATUS_LINE_COUNT;
+						if (linesToRemove <= 0) {
+							return;
+						}
+						try {
+							int removeOffset = taStatus.getLineEndOffset(linesToRemove - 1);
+							taStatus.replaceRange("", 0, removeOffset);
+						} catch (BadLocationException e) {
+							LOGGER.log(Level.SEVERE, "Bad location when deleting old lines.", e);
+						}
+					}
+				});
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {}
+	    });
 		final LogPopupMenu mainLogPopupMenu = new LogPopupMenu(taStatus);
 		taStatus.setComponentPopupMenu(mainLogPopupMenu);
 
