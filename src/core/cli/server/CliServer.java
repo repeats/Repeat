@@ -12,14 +12,14 @@ import org.apache.http.ExceptionLogger;
 import org.apache.http.impl.nio.bootstrap.HttpServer;
 import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 
-import core.cli.server.handlers.HttpHandlerWithBackend;
 import core.cli.server.handlers.TaskAddActionHandler;
 import core.cli.server.handlers.TaskExecuteActionHandler;
 import core.cli.server.handlers.TaskListActionHandler;
 import core.cli.server.handlers.TaskRemoveActionHandler;
-import core.cli.server.handlers.UpAndRunningHandler;
 import core.config.CliConfig;
 import core.ipc.IPCServiceWithModifablePort;
+import core.webcommon.HttpHandlerWithBackend;
+import core.webcommon.UpAndRunningHandler;
 import frontEnd.MainBackEndHolder;
 
 public class CliServer extends IPCServiceWithModifablePort {

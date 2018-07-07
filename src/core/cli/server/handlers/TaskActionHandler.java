@@ -14,6 +14,7 @@ import core.cli.messages.TaskIdentifier;
 import core.cli.server.CliRpcCodec;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
+import core.webcommon.HttpHandlerWithBackend;
 
 public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 

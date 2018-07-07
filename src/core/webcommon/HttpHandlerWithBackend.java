@@ -1,4 +1,4 @@
-package core.cli.server.handlers;
+package core.webcommon;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package core.cli.server.handlers;
+package core.webcommon;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -26,7 +26,7 @@ public class UpAndRunningHandler implements HttpAsyncRequestHandler<HttpRequest>
 	public void handle(HttpRequest request, HttpAsyncExchange exchange, HttpContext context) throws HttpException, IOException {
 		LOGGER.info("Server is up and running.");
 
-		String responseText = "This is the response.";
+		String responseText = "This is a sample response.";
 		HttpResponse response = exchange.getResponse();
 		response.setStatusCode(HttpStatus.SC_OK);
 		response.setEntity(new StringEntity(responseText));
