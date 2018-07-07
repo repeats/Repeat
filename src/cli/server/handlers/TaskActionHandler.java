@@ -9,6 +9,7 @@ import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
 import argo.jdom.JsonNode;
+import cli.messages.TaskGroupMessage;
 import cli.messages.TaskIdentifier;
 import cli.server.CliRpcCodec;
 import core.userDefinedTask.TaskGroup;
@@ -56,6 +57,12 @@ public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 	}
 
 	protected TaskGroup getGroup(TaskIdentifier taskIdentifier) {
+		int index = taskIdentifier.getGroup().getIndex();
+		String name = taskIdentifier.getGroup().getName();
+		if (index == TaskGroupMessage.UNKNOWN_INDEX && name.isEmpty()) {
+			index = 0;
+		}
+
 		TaskGroup group = null;
 		if (taskIdentifier.getGroup() != null) {
 			group = backEndHolder.getTaskGroup(taskIdentifier.getGroup().getIndex());

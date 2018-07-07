@@ -1,18 +1,13 @@
 package cli.messages;
 
-import java.util.logging.Logger;
-
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.IJsonable;
-import utilities.NumberUtility;
 
 public class TaskGroupMessage implements IJsonable {
 
-	private static final Logger LOGGER = Logger.getLogger(TaskGroupMessage.class.getName());
-
-	private static final int UNKNOWN_INDEX = -1;
+	public static final int UNKNOWN_INDEX = -1;
 
 	private String name;
 	private int index = UNKNOWN_INDEX;
@@ -28,20 +23,18 @@ public class TaskGroupMessage implements IJsonable {
 	}
 
 	public static TaskGroupMessage parseJSON(JsonNode node) {
-		if (node.isNumberValue("index") && NumberUtility.isNonNegativeInteger(node.getNumberValue("index"))) {
-			int index = Integer.parseInt(node.getNumberValue("index"));
-			return new TaskGroupMessage("", index);
+		int index = UNKNOWN_INDEX;
+		String name = "";
+
+		if (node.isNumberValue("index")) {
+			index = Integer.parseInt(node.getNumberValue("index"));
 		}
 
 		if (node.isStringValue("name")) {
-			String value = node.getStringValue("name");
-			if (!value.isEmpty()) {
-				return new TaskGroupMessage(node.getStringValue("name"), UNKNOWN_INDEX);
-			}
+			name = node.getStringValue("name");
 		}
 
-		LOGGER.warning("Unable to parse task group message. Neither field name nor index was present. Using default value.");
-		return new TaskGroupMessage("", 0);
+		return new TaskGroupMessage(name, index);
 	}
 
 	@Override

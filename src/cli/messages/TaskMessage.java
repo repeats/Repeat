@@ -1,16 +1,11 @@
 package cli.messages;
 
-import java.util.logging.Logger;
-
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.IJsonable;
-import utilities.NumberUtility;
 
 public class TaskMessage implements IJsonable {
-
-	private static final Logger LOGGER = Logger.getLogger(TaskMessage.class.getName());
 
 	private static final int UNKNOWN_INDEX = -1;
 
@@ -28,17 +23,18 @@ public class TaskMessage implements IJsonable {
 	}
 
 	public static TaskMessage parseJSON(JsonNode node) {
-		if (node.isNumberValue("index") && NumberUtility.isNonNegativeInteger(node.getNumberValue("index"))) {
-			int index = Integer.parseInt(node.getNumberValue("index"));
-			return new TaskMessage("", index);
+		int index = UNKNOWN_INDEX;
+		String name = "";
+
+		if (node.isNumberValue("index")) {
+			index = Integer.parseInt(node.getNumberValue("index"));
 		}
 
 		if (node.isStringValue("name")) {
-			return new TaskMessage(node.getStringValue("name"), UNKNOWN_INDEX);
+			name = node.getStringValue("name");
 		}
 
-		LOGGER.warning("Unable to parse task message. Neither field name nor index was present.");
-		return null;
+		return new TaskMessage(name, index);
 	}
 
 	@Override
