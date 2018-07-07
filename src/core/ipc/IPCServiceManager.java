@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
-import cli.server.CliServer;
+import core.cli.server.CliServer;
 import core.ipc.repeatClient.CSharpIPCClientService;
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatClient.ScalaIPCClientService;

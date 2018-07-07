@@ -1,6 +1,6 @@
 package main;
 
-import cli.MainCli;
+import core.cli.MainCli;
 import frontEnd.MainFrontEnd;
 
 public class Main {

@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;
-import cli.server.CliServer;
+import core.cli.server.CliServer;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.keyChain.KeyChain;
