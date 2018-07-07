@@ -11,12 +11,14 @@ import cli.messages.TaskAddMessage;
 import cli.messages.TaskExecuteMessage;
 import cli.messages.TaskGroupMessage;
 import cli.messages.TaskIdentifier;
+import cli.messages.TaskListMessage;
 import cli.messages.TaskMessage;
 import cli.messages.TaskRemoveMessage;
 import cli.server.CliRpcCodec;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;
+import utilities.IJsonable;
 import utilities.JSONUtility;
 import utilities.NumberUtility;
 
@@ -29,9 +31,9 @@ public class TaskActionHandler extends CliActionProcessor {
 		Subparser parser = subparsers.addParser("task").setDefault("module", "task").help("Task management.");
 
 		parser.addArgument("-a", "--action").required(true)
-        		.choices("add", "remove", "execute")
+        		.choices("add", "remove", "execute", "ls", "list")
         		.help("Specify action on task.");
-		parser.addArgument("-n", "--name").required(true)
+		parser.addArgument("-n", "--name").setDefault("")
 				.help("Name of the task, or its index (zero based) in the group if the task exists. "
 						+ "This tries to interpret this as an integer index first, then as a task name. "
 						+ "For remove action, if multiple tasks share the same name, "
@@ -53,6 +55,8 @@ public class TaskActionHandler extends CliActionProcessor {
 			handleRemove(namespace);
 		} else if (action.equals("execute")) {
 			handleExecute(namespace);
+		} else if (action.equals("ls") || action.equals("list")) {
+			handleList(namespace);
 		} else {
 			LOGGER.log(Level.SEVERE, "Unknown task action " + action);
 			CliExitCodes.UNKNOWN_ACTION.exit();
@@ -71,8 +75,7 @@ public class TaskActionHandler extends CliActionProcessor {
 
 		TaskAddMessage message = TaskAddMessage.of().setFilePath(filePath)
 				.setTaskIdentifier(TaskIdentifier.of().setGroup(taskGroupMessage).setTask(taskMessage));
-		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
-		sendRequest("/task/add", data);
+		sendRequest("/task/add", message);
 	}
 
 	private void handleRemove(Namespace namespace) {
@@ -81,8 +84,7 @@ public class TaskActionHandler extends CliActionProcessor {
 
 		TaskRemoveMessage message = TaskRemoveMessage.of()
 				.setTaskIdentifier(TaskIdentifier.of().setGroup(taskGroupMessage).setTask(taskMessage));
-		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
-		sendRequest("/task/remove", data);
+		sendRequest("/task/remove", message);
 	}
 
 	private void handleExecute(Namespace namespace) {
@@ -91,8 +93,13 @@ public class TaskActionHandler extends CliActionProcessor {
 
 		TaskExecuteMessage message = TaskExecuteMessage.of()
 				.setTaskIdentifier(TaskIdentifier.of().setGroup(taskGroupMessage).setTask(taskMessage));
-		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
-		sendRequest("/task/execute", data);
+		sendRequest("/task/execute", message);
+	}
+
+	private void handleList(Namespace namespace) {
+		TaskGroupMessage taskGroupMessage = getGroup(namespace);
+		TaskListMessage message = TaskListMessage.of().setGroup(taskGroupMessage);
+		sendRequest("/task/list", message);
 	}
 
 	private TaskGroupMessage getGroup(Namespace namespace) {
@@ -108,6 +115,11 @@ public class TaskActionHandler extends CliActionProcessor {
 
 	private TaskMessage getTask(Namespace namespace) {
 		String taskName = namespace.getString("name");
+		if (taskName.isEmpty()) {
+			LOGGER.warning("Task must be specified.");
+			CliExitCodes.INVALID_ARGUMENTS.exit();
+		}
+
 		TaskMessage taskMessage = TaskMessage.of();
 		if (NumberUtility.isNonNegativeInteger(taskName)) {
 			taskMessage.setIndex(Integer.parseInt(taskName));
@@ -115,6 +127,11 @@ public class TaskActionHandler extends CliActionProcessor {
 			taskMessage.setName(taskName);
 		}
 		return taskMessage;
+	}
+
+	private void sendRequest(String path, IJsonable message) {
+		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
+		sendRequest(path, data);
 	}
 
 	private void sendRequest(String path, byte[] data) {

@@ -15,6 +15,7 @@ import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 import cli.server.handlers.HttpHandlerWithBackend;
 import cli.server.handlers.TaskAddActionHandler;
 import cli.server.handlers.TaskExecuteActionHandler;
+import cli.server.handlers.TaskListActionHandler;
 import cli.server.handlers.TaskRemoveActionHandler;
 import cli.server.handlers.UpAndRunningHandler;
 import core.config.CliConfig;
@@ -52,6 +53,7 @@ public class CliServer extends IPCServiceWithModifablePort {
 		output.put("/task/add", new TaskAddActionHandler());
 		output.put("/task/remove", new TaskRemoveActionHandler());
 		output.put("/task/execute", new TaskExecuteActionHandler());
+		output.put("/task/list", new TaskListActionHandler());
 		return output;
 	}
 

@@ -57,17 +57,21 @@ public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 	}
 
 	protected TaskGroup getGroup(TaskIdentifier taskIdentifier) {
-		int index = taskIdentifier.getGroup().getIndex();
-		String name = taskIdentifier.getGroup().getName();
+		return getGroup(taskIdentifier.getGroup());
+	}
+
+	protected TaskGroup getGroup(TaskGroupMessage taskGroup) {
+		int index = taskGroup.getIndex();
+		String name = taskGroup.getName();
 		if (index == TaskGroupMessage.UNKNOWN_INDEX && name.isEmpty()) {
 			index = 0;
 		}
 
 		TaskGroup group = null;
-		if (taskIdentifier.getGroup() != null) {
-			group = backEndHolder.getTaskGroup(taskIdentifier.getGroup().getIndex());
+		if (taskGroup != null) {
+			group = backEndHolder.getTaskGroup(index);
 			if (group == null) {
-				group = backEndHolder.getTaskGroup(taskIdentifier.getGroup().getName());
+				group = backEndHolder.getTaskGroup(name);
 			}
 		}
 		return group;
