@@ -1,0 +1,47 @@
+.table-header-fixed {
+    width: 100% 
+}
+
+.table-header-fixed > thead,
+.table-header-fixed > tbody,
+.table-header-fixed > thead > tr,
+.table-header-fixed > tbody > tr,
+.table-header-fixed > thead > tr > th,
+.table-header-fixed > tbody > tr > td {
+    display: block;
+}
+
+.table-header-fixed > tbody > tr:after,
+.table-header-fixed > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.table-header-fixed > tbody {
+    overflow-y: auto;
+    height: 25vh;
+}
+
+.table-header-fixed > tbody > tr > td,
+.table-header-fixed > thead > tr > th {
+    width: 20%;
+    float: left;
+}
+
+.dropdown-menu .dropdown-menu {
+	position: static;
+	float: none;
+	padding: 5px 0;
+	margin: 2px 0 0;
+	list-style: none;
+	font-size: 14px;
+	background-color: #fff;
+	border: none;
+	border: none;
+	border-radius: 0;
+	-webkit-box-shadow: none;
+	box-shadow:none;
+	background-clip: padding-box;
+}
