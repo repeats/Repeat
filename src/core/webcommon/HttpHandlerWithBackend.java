@@ -1,6 +1,7 @@
 package core.webcommon;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -13,10 +14,11 @@ import org.apache.http.nio.protocol.HttpAsyncRequestHandler;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
-import core.cli.server.CliRpcCodec;
 import frontEnd.MainBackEndHolder;
 
 public abstract class HttpHandlerWithBackend implements HttpAsyncRequestHandler<HttpRequest> {
+
+	private static final Logger LOGGER = Logger.getLogger(HttpHandlerWithBackend.class.getName());
 
 	protected MainBackEndHolder backEndHolder;
 
@@ -28,7 +30,8 @@ public abstract class HttpHandlerWithBackend implements HttpAsyncRequestHandler<
 	public void handle(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
 		if (backEndHolder == null) {
-			CliRpcCodec.prepareResponse(exchange, 500, "Missing backend...");
+			LOGGER.warning("Missing backend...");
+			HttpServerUtilities.prepareResponse(exchange, 500, "");
 			return;
 		}
 

@@ -2,9 +2,10 @@ package staticResources;
 
 import java.awt.Image;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,9 @@ public class BootStrapResources {
 	private static final Map<Language, String> LANGUAGE_API;
 	private static final Map<Language, String> NATIVE_LANGUAGE_TEMPLATES;
 	private static final Map<Language, AbstractNativeBootstrapResource> NATIVE_BOOTSTRAP_RESOURCES;
+	private static final Set<AbstractBootstrapResource> BOOTSTRAP_RESOURCES;
+
+	private static final WebUIResources webUIResource;
 
 	public static final Image TRAY_IMAGE;
 	public static final ImageIcon COMPILE_IMAGE, PLAY_COMPILED_IMAGE, STOP_COMPILED_IMAGE, EDIT_CODE, RELOAD;
@@ -74,6 +78,16 @@ public class BootStrapResources {
 		NATIVE_BOOTSTRAP_RESOURCES.put(Language.PYTHON, new PythonResources());
 		NATIVE_BOOTSTRAP_RESOURCES.put(Language.CSHARP, new CSharpResources());
 		NATIVE_BOOTSTRAP_RESOURCES.put(Language.SCALA, new ScalaResources());
+
+		/*********************************************************************************/
+		BOOTSTRAP_RESOURCES = new HashSet<>();
+		BOOTSTRAP_RESOURCES.addAll(NATIVE_BOOTSTRAP_RESOURCES.values());
+		webUIResource = new WebUIResources();
+		BOOTSTRAP_RESOURCES.add(webUIResource);
+	}
+
+	public static WebUIResources getWebUIResource() {
+		return webUIResource;
 	}
 
 	public static AbstractNativeBootstrapResource getBootstrapResource(Language language) {
@@ -81,11 +95,8 @@ public class BootStrapResources {
 	}
 
 	public static void extractResources() throws IOException {
-		for (Language language : Language.values()) {
-			AbstractNativeBootstrapResource resource = NATIVE_BOOTSTRAP_RESOURCES.get(language);
-			if (resource != null) {
-				resource.extractResources();
-			}
+		for (AbstractBootstrapResource resource : BOOTSTRAP_RESOURCES) {
+			resource.extractResources();
 		}
 	}
 
@@ -104,10 +115,6 @@ public class BootStrapResources {
 
 	protected static String getFile(String path) {
 		return FileUtility.readFromStream(BootStrapResources.class.getResourceAsStream(path)).toString();
-	}
-
-	public static InputStream test() {
-		return BootStrapResources.class.getResourceAsStream("/python");
 	}
 
 	public static String getAbout() {

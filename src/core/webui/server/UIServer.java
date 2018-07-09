@@ -15,8 +15,11 @@ import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 import core.config.WebUIConfig;
 import core.ipc.IPCServiceWithModifablePort;
 import core.webcommon.HttpHandlerWithBackend;
+import core.webcommon.StaticFileServingHandler;
 import core.webcommon.UpAndRunningHandler;
+import core.webui.server.handlers.IndexPageHandler;
 import frontEnd.MainBackEndHolder;
+import staticResources.BootStrapResources;
 
 public class UIServer extends IPCServiceWithModifablePort {
 	private static final int TERMINATION_DELAY_SECOND = 1;
@@ -44,7 +47,9 @@ public class UIServer extends IPCServiceWithModifablePort {
 	}
 
 	private Map<String, HttpHandlerWithBackend> createHandlers() {
+		ResourceManager resourceManager = new ResourceManager(BootStrapResources.getWebUIResource().getRoot());
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
+		output.put("/", new IndexPageHandler(resourceManager));
 		return output;
 	}
 
@@ -57,7 +62,8 @@ public class UIServer extends IPCServiceWithModifablePort {
                 .setListenerPort(port)
                 .setServerInfo("Repeat")
 				.setExceptionLogger(ExceptionLogger.STD_ERR)
-				.registerHandler("/test", new UpAndRunningHandler());
+				.registerHandler("/test", new UpAndRunningHandler())
+				.registerHandler("/static/*", new StaticFileServingHandler(BootStrapResources.getWebUIResource().getStaticDir().getAbsolutePath()));
 		for (Entry<String, HttpHandlerWithBackend> entry : handlers.entrySet()) {
 			serverBootstrap.registerHandler(entry.getKey(), entry.getValue());
 		}
@@ -69,9 +75,9 @@ public class UIServer extends IPCServiceWithModifablePort {
         		try {
 					server.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 				} catch (InterruptedException e) {
-					getLogger().log(Level.SEVERE, "Interrupted when waiting for CLI server.", e);
+					getLogger().log(Level.SEVERE, "Interrupted when waiting for UI server.", e);
 				}
-        		getLogger().info("Finished waiting for CLI server termination...");
+        		getLogger().info("Finished waiting for UI server termination...");
         	}
         };
         server.start();
@@ -84,7 +90,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		server.shutdown(TERMINATION_DELAY_SECOND, TimeUnit.SECONDS);
 		try {
 			mainThread.join();
-			getLogger().info("CLI server terminated...");
+			getLogger().info("UI server terminated...");
 		} catch (InterruptedException e) {
 			getLogger().log(Level.WARNING, "Interrupted when waiting for server to terminate.", e);
 		}

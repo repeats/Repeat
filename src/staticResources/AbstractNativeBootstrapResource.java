@@ -2,39 +2,28 @@ package staticResources;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
-import utilities.FileUtility;
-import utilities.Function;
-import utilities.ILoggable;
 import core.languageHandler.Language;
 
-public abstract class AbstractNativeBootstrapResource implements ILoggable {
+public abstract class AbstractNativeBootstrapResource extends AbstractBootstrapResource {
+
+	private static final Logger LOGGER = Logger.getLogger(AbstractNativeBootstrapResource.class.getName());
+
+	@Override
 	protected final void extractResources() throws IOException {
-		if (!FileUtility.createDirectory(getExtractingDest().getAbsolutePath())) {
-			getLogger().warning("Failed to extract " + getName() + " resources");
-			return;
-		}
-
-		final String path = getRelativeSourcePath();
-		FileUtility.extractFromCurrentJar(path, getExtractingDest(), new Function<String, Boolean>() {
-			@Override
-			public Boolean apply(String name) {
-				return correctExtension(name);
-			}
-		});
-
+		super.extractResources();
 		if (!generateKeyCode()) {
-			getLogger().warning("Unable to generate key code");
+			LOGGER.warning("Unable to generate key code");
 		}
 	}
 
-	protected boolean correctExtension(String name) {
-		return name.endsWith(".exe") || name.endsWith(".dll");
+	@Override
+	protected final String getName() {
+		return getLanguage().name();
 	}
 
-	protected abstract String getRelativeSourcePath();
-	protected abstract File getExtractingDest();
-	protected abstract Language getName();
+	protected abstract Language getLanguage();
 	protected abstract boolean generateKeyCode();
 	public abstract File getIPCClient();
 }

@@ -5,12 +5,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.nio.protocol.BasicAsyncResponseProducer;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import argo.jdom.JsonNode;
+import core.webcommon.HttpServerUtilities;
 import utilities.JSONUtility;
 
 public class CliRpcCodec {
@@ -34,11 +32,6 @@ public class CliRpcCodec {
 	}
 
 	private static Void prepareResponse(HttpAsyncExchange exchange, int code, byte[] data) throws IOException {
-		byte[] encodedData = encode(data);
-		HttpResponse response = exchange.getResponse();
-		response.setStatusCode(code);
-		response.setEntity(new ByteArrayEntity(encodedData));
-		exchange.submitResponse(new BasicAsyncResponseProducer(response));
-        return null;
+		return HttpServerUtilities.prepareResponse(exchange, code, encode(data));
 	}
 }

@@ -5,11 +5,8 @@ import java.util.logging.Logger;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.nio.protocol.BasicAsyncRequestConsumer;
-import org.apache.http.nio.protocol.BasicAsyncResponseProducer;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.nio.protocol.HttpAsyncRequestConsumer;
 import org.apache.http.nio.protocol.HttpAsyncRequestHandler;
@@ -27,10 +24,7 @@ public class UpAndRunningHandler implements HttpAsyncRequestHandler<HttpRequest>
 		LOGGER.info("Server is up and running.");
 
 		String responseText = "This is a sample response.";
-		HttpResponse response = exchange.getResponse();
-		response.setStatusCode(HttpStatus.SC_OK);
-		response.setEntity(new StringEntity(responseText));
-		exchange.submitResponse(new BasicAsyncResponseProducer(response));
+		HttpServerUtilities.prepareResponse(exchange, HttpStatus.SC_OK, responseText);
 	}
 
 	@Override

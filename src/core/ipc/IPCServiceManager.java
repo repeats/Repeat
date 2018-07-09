@@ -14,6 +14,7 @@ import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatClient.ScalaIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
 import core.languageHandler.Language;
+import core.webui.server.UIServer;
 import frontEnd.MainBackEndHolder;
 import utilities.Function;
 
@@ -30,6 +31,7 @@ public final class IPCServiceManager {
 		ipcServices = new IIPCService[IPC_SERVICE_COUNT];
 		ipcServices[IPCServiceName.CONTROLLER_SERVER.value()] =  new ControllerServer();
 		ipcServices[IPCServiceName.CLI_SERVER.value()] =  new CliServer();
+		ipcServices[IPCServiceName.WEB_UI_SERVER.value()] =  new UIServer();
 		ipcServices[IPCServiceName.PYTHON.value()] = new PythonIPCClientService();
 		ipcServices[IPCServiceName.CSHARP.value()] = new CSharpIPCClientService();
 		ipcServices[IPCServiceName.SCALA.value()] = new ScalaIPCClientService();
@@ -70,6 +72,9 @@ public final class IPCServiceManager {
 			IIPCService service = IPCServiceManager.getIPCService(name);
 			if (name == IPCServiceName.CLI_SERVER) {
 				CliServer server = (CliServer) service;
+				server.setMainBackEndHolder(backEndHolder);
+			} else if (name == IPCServiceName.WEB_UI_SERVER) {
+				UIServer server = (UIServer) service;
 				server.setMainBackEndHolder(backEndHolder);
 			}
 			if (!service.isLaunchAtStartup()) {

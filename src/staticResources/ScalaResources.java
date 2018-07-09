@@ -1,21 +1,15 @@
 package staticResources;
 
 import java.io.File;
-import java.util.logging.Logger;
 
-import utilities.FileUtility;
 import core.languageHandler.Language;
+import utilities.FileUtility;
 
 public class ScalaResources extends AbstractNativeBootstrapResource {
 
 	@Override
 	protected boolean correctExtension(String name) {
 		return name.endsWith(".jar");
-	}
-
-	@Override
-	public Logger getLogger() {
-		return Logger.getLogger(ScalaResources.class.getName());
 	}
 
 	@Override
@@ -29,7 +23,7 @@ public class ScalaResources extends AbstractNativeBootstrapResource {
 	}
 
 	@Override
-	protected Language getName() {
+	protected Language getLanguage() {
 		return Language.SCALA;
 	}
 

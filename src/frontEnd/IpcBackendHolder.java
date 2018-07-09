@@ -103,7 +103,8 @@ public class IpcBackendHolder implements ILoggable {
 		IIPCService service = getSelectedService();
 		IIPCService controllerService = IPCServiceManager.getIPCService(IPCServiceName.CONTROLLER_SERVER);
 		IIPCService cliServer = IPCServiceManager.getIPCService(IPCServiceName.CLI_SERVER);
-		if (service != controllerService && service != cliServer) {
+		IIPCService webUIServer = IPCServiceManager.getIPCService(IPCServiceName.WEB_UI_SERVER);
+		if (service != controllerService && service != cliServer && service != webUIServer) {
 			return;
 		}
 

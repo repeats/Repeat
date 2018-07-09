@@ -4,7 +4,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.logging.Logger;
 
 import core.keyChain.KeyStroke;
 import core.languageHandler.Language;
@@ -78,11 +77,6 @@ public class PythonResources extends AbstractNativeBootstrapResource {
 	}
 
 	@Override
-	public Logger getLogger() {
-		return Logger.getLogger(PythonResources.class.getName());
-	}
-
-	@Override
 	protected String getRelativeSourcePath() {
 		return "natives/python";
 	}
@@ -93,7 +87,7 @@ public class PythonResources extends AbstractNativeBootstrapResource {
 	}
 
 	@Override
-	protected Language getName() {
+	protected Language getLanguage() {
 		return Language.PYTHON;
 	}
 

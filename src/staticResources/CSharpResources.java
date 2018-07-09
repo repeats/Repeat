@@ -1,10 +1,9 @@
 package staticResources;
 
 import java.io.File;
-import java.util.logging.Logger;
 
-import utilities.FileUtility;
 import core.languageHandler.Language;
+import utilities.FileUtility;
 
 
 public class CSharpResources extends AbstractNativeBootstrapResource {
@@ -15,17 +14,12 @@ public class CSharpResources extends AbstractNativeBootstrapResource {
 	}
 
 	@Override
-	public Logger getLogger() {
-		return Logger.getLogger(CSharpResources.class.getName());
-	}
-
-	@Override
 	protected File getExtractingDest() {
 		return new File(FileUtility.joinPath("resources", "csharp"));
 	}
 
 	@Override
-	protected Language getName() {
+	protected Language getLanguage() {
 		return Language.CSHARP;
 	}
 

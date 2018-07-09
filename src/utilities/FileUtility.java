@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -543,19 +544,37 @@ public class FileUtility {
 		    jar.close();
 		} else { // Run with IDE
 			final URL url = FileUtility.class.getResource("/" + path);
-			if (url != null) {
-				try {
-					final File apps = new File(url.toURI());
-					for (File app : apps.listFiles()) {
+			if (url == null) {
+				return;
+			}
+			try {
+				File root = new File(url.toURI());
+				Path rootPath = root.toPath();
+				Stack<File> dirs = new Stack<>();
+				dirs.push(root);
+
+				while (!dirs.isEmpty()) {
+					File dir = dirs.pop();
+					for (File app : dir.listFiles()) {
+						if (app.isDirectory()) {
+							dirs.push(app);
+							continue;
+						}
+
 						if (!filteringFunction.apply(app.getAbsolutePath())) {
 							continue;
 						}
-						Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), app.getName()));
+
+						String relativeDir = rootPath.relativize(dir.toPath()).toString();
+						Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), relativeDir, app.getName()));
+						if (!destinationPath.getParent().toFile().exists()) {
+							destinationPath.getParent().toFile().mkdirs();
+						}
 						Files.copy(app.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 					}
-				} catch (URISyntaxException ex) {
-					// never happens
 				}
+			} catch (URISyntaxException ex) {
+				// never happens
 			}
 		}
 	}
