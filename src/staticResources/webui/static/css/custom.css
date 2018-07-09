@@ -1,3 +1,6 @@
+tr { cursor: default; }
+.table-highlight { background: #e0ecff; }
+
 .table-header-fixed {
     width: 100% 
 }

@@ -17,6 +17,7 @@ import core.ipc.IPCServiceWithModifablePort;
 import core.webcommon.HttpHandlerWithBackend;
 import core.webcommon.StaticFileServingHandler;
 import core.webcommon.UpAndRunningHandler;
+import core.webui.server.handlers.IPCPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
 import frontEnd.MainBackEndHolder;
 import staticResources.BootStrapResources;
@@ -50,6 +51,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		ResourceManager resourceManager = new ResourceManager(BootStrapResources.getWebUIResource().getRoot());
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
 		output.put("/", new IndexPageHandler(resourceManager));
+		output.put("/ipc", new IPCPageHandler(resourceManager));
 		return output;
 	}
 
