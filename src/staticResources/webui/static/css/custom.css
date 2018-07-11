@@ -1,3 +1,7 @@
+.btn-span {
+	width: 100%;
+}
+
 tr { cursor: default; }
 .table-highlight { background: #e0ecff; }
 
@@ -32,6 +36,8 @@ tr { cursor: default; }
     width: 20%;
     float: left;
 }
+
+.top-buffer { margin-top:20px; }
 
 .dropdown-menu .dropdown-menu {
 	position: static;
