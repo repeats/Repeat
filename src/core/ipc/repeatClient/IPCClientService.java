@@ -10,8 +10,8 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.ipc.IIPCService;
-import utilities.JSONUtility;
 import utilities.StringUtilities;
+import utilities.json.JSONUtility;
 
 public abstract class IPCClientService extends IIPCService {
 

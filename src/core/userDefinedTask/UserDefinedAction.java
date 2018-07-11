@@ -18,8 +18,8 @@ import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import utilities.FileUtility;
-import utilities.IJsonable;
 import utilities.ILoggable;
+import utilities.json.IJsonable;
 
 public abstract class UserDefinedAction implements IJsonable, ILoggable {
 

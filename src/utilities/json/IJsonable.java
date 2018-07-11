@@ -1,4 +1,4 @@
-package utilities;
+package utilities.json;
 
 import argo.jdom.JsonRootNode;
 

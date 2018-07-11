@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 abstract class ConfigParser {
 

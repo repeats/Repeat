@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.userDefinedTask.UsageStatistics;
+import utilities.json.JSONUtility;
 
 public class Parser1_7 extends ConfigParser {
 

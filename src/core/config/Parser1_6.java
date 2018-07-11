@@ -3,10 +3,10 @@ package core.config;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utilities.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import utilities.json.JSONUtility;
 
 public class Parser1_6 extends ConfigParser {
 

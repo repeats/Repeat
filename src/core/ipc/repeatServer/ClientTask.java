@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import utilities.IJsonable;
+import utilities.json.IJsonable;
 
 /**
  * This class is very similar to <class> UserDefinedAction </class>, except that this is meant to be

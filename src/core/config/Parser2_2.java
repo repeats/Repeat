@@ -9,7 +9,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.languageHandler.Language;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 public class Parser2_2 extends ConfigParser {
 

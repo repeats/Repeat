@@ -7,7 +7,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import argo.jdom.JsonStringNode;
-import utilities.IJsonable;
+import utilities.json.IJsonable;
 
 public class TaskExecuteMessage implements IJsonable {
 	private TaskIdentifier taskIdentifier;

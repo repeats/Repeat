@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import utilities.IJsonable;
+import utilities.json.IJsonable;
 
 /**
  * Represents a key stroke on the keyboard.

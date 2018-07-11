@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;

@@ -21,7 +21,7 @@ import core.userDefinedTask.TaskGroup;
 import frontEnd.MainBackEndHolder;
 import utilities.FileUtility;
 import utilities.ILoggable;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 public class Config implements ILoggable {
 

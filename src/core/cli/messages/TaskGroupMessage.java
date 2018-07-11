@@ -3,7 +3,7 @@ package core.cli.messages;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import utilities.IJsonable;
+import utilities.json.IJsonable;
 
 public class TaskGroupMessage implements IJsonable {
 

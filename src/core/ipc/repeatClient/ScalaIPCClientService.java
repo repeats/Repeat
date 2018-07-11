@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 
 import staticResources.BootStrapResources;
 import utilities.FileUtility;
-import utilities.JSONUtility;
 import utilities.StringUtilities;
+import utilities.json.JSONUtility;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.languageHandler.Language;

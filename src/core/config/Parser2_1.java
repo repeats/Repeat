@@ -8,7 +8,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.Function;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 public class Parser2_1 extends ConfigParser {
 

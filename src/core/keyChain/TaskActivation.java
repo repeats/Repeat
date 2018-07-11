@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import utilities.IJsonable;
-import utilities.JSONUtility;
+import utilities.json.IJsonable;
+import utilities.json.JSONUtility;
 
 
 /**

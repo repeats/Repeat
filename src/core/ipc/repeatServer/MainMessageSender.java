@@ -10,7 +10,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.ILoggable;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 /**
  * This class sends messages to the ipc client

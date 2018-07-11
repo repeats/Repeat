@@ -10,7 +10,7 @@ import com.sun.glass.events.KeyEvent;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 public class Parser2_0 extends ConfigParser {
 

@@ -38,10 +38,10 @@ import core.userDefinedTask.DormantUserDefinedTask;
 import core.userDefinedTask.UserDefinedAction;
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.JSONUtility;
 import utilities.Pair;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
+import utilities.json.JSONUtility;
 import utilities.swing.SwingUtil;
 
 public class JavaNativeCompiler extends AbstractNativeCompiler {

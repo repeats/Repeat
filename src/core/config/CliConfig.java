@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 
 import argo.jdom.JsonRootNode;
 import utilities.FileUtility;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 public class CliConfig {
 	public static final int DEFAULT_SERVER_PORT = 65432;

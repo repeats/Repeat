@@ -18,9 +18,9 @@ import core.cli.server.CliRpcCodec;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;
-import utilities.IJsonable;
-import utilities.JSONUtility;
 import utilities.NumberUtility;
+import utilities.json.IJsonable;
+import utilities.json.JSONUtility;
 
 public class TaskActionHandler extends CliActionProcessor {
 

@@ -4,7 +4,7 @@ import java.util.logging.Level;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
-import utilities.JSONUtility;
+import utilities.json.JSONUtility;
 
 /**
  * IPC service with modifiable port to start at. E.g. a server.

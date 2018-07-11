@@ -11,7 +11,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.compiler.DynamicCompilerManager;
-import utilities.IJsonable;
+import utilities.json.IJsonable;
 
 public class TaskGroup implements IJsonable {
 

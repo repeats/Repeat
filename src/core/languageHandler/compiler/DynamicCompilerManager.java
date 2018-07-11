@@ -13,7 +13,7 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.languageHandler.Language;
 import utilities.FileUtility;
-import utilities.IJsonable;
+import utilities.json.IJsonable;
 
 public class DynamicCompilerManager implements IJsonable {
 

@@ -10,9 +10,9 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.Function;
-import utilities.IJsonable;
 import utilities.KeyCodeToChar;
 import utilities.StringUtilities;
+import utilities.json.IJsonable;
 
 public abstract class KeySeries implements IJsonable {
 
