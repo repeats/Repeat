@@ -78,7 +78,7 @@ public class MainFrontEnd {
 				createdFrame.backEnd.renderTaskGroup();
 				createdFrame.backEnd.renderTasks();
 
-				PrintStream printStream = new PrintStream(new OutStream(createdFrame.taStatus));
+				PrintStream printStream = new PrintStream(new OutStream(createdFrame.taStatus, createdFrame.backEnd.logHolder));
 				System.setOut(printStream);
 				System.setErr(printStream);
 				Logger.getLogger("").addHandler(new ConsoleHandler());
