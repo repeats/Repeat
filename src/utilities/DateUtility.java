@@ -2,8 +2,10 @@ package utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class DateUtility {
 
@@ -49,6 +51,40 @@ public class DateUtility {
 		Calendar output = Calendar.getInstance();
 		output.setTime(date);
 		return output;
+	}
+
+	/**
+	 * Convert a long duration into readable string.
+	 */
+	public static String durationToString(long durationMillis) {
+		int millis = (int) (durationMillis % 1000);
+		long seconds = durationMillis / 1000;
+		long minutes = seconds / 60;
+		long hours = minutes / 60;
+		long days = hours / 24;
+		long years = days / 365;
+
+		List<String> results = new ArrayList<>();
+
+		if (years != 0) {
+			results.add(years + " y");
+		}
+		if (days != 0) {
+			results.add(days % 365 + " d");
+		}
+		if (hours != 0) {
+			results.add(hours % 24 + " h");
+		}
+		if (minutes != 0) {
+			results.add(minutes % 60 + " m");
+		}
+		if (seconds != 0) {
+			results.add(seconds % 60 + " s");
+		}
+		if (millis != 0) {
+			results.add(millis + " ms");
+		}
+		return StringUtilities.join(results, ", ");
 	}
 
 	private DateUtility() {}

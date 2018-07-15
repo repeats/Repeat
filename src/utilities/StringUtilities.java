@@ -3,6 +3,7 @@ package utilities;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 /**
  * Provide static interface to utilities
@@ -11,6 +12,13 @@ import java.util.Iterator;
  *
  */
 public class StringUtilities {
+
+	/**
+	 * Returns whether a string is null or empty.
+	 */
+	public static boolean isNullOrEmpty(String s) {
+		return s == null || s.isEmpty();
+	}
 
 	/**
 	 * Convert a color to its hex representation. E.g. red --> #ff0000
@@ -171,47 +179,59 @@ public class StringUtilities {
 
 		return -1;
 	}
-	
+
 	/**
 	 * Calculate the Levenshtein distance between two strings using dynamic programming.
 	 * This implementation is based on the pseudocode presented on Wikipedia.
-	 * 
+	 *
 	 * @param l first string
 	 * @param r second string
 	 * @return the Levenshtein distance between two strings
 	 */
 	public static int levenshteinDistance(String l, String r) {
-		if (l == null && r == null) return 0;
-		if (l == null) return r.length();
-		if (r == null) return l.length();
-		
-		if (l.isEmpty() && r.isEmpty()) return 0;
-		if (l.isEmpty()) return r.length();
-		if (r.isEmpty()) return l.length();
-		
+		if (l == null && r == null) {
+			return 0;
+		}
+		if (l == null) {
+			return r.length();
+		}
+		if (r == null) {
+			return l.length();
+		}
+
+		if (l.isEmpty() && r.isEmpty()) {
+			return 0;
+		}
+		if (l.isEmpty()) {
+			return r.length();
+		}
+		if (r.isEmpty()) {
+			return l.length();
+		}
+
 		int m = l.length();
 		int n = r.length();
-		
+
 		int[][] d = new int[m+1][n+1];
 		for (int i = 0; i < m; i++) {
 			d[i][0] = i;
 		}
-		
+
 		for (int j = 0; j < n; j++) {
 			d[0][j] = j;
 		}
-		
+
 		for (int i = 1; i <= m; i++) {
 			for (int j = 1; j <= n; j++) {
 				char cl = l.charAt(i-1);
 				char cr = r.charAt(j-1);
-				
+
 				int cost = cl == cr ? 0 : 1;
-				
+
 				d[i][j] = Math.min(
 							Math.min(d[i-1][j] + 1, d[i][j-1] + 1),
 							d[i-1][j-1] + cost);
-				
+
 				// Uncomment this for Optimal Alignment String Distance calculation
 				// Transposition
 //				if (i > 1 && j > 1 && cl == r.charAt(j-2) && l.charAt(i-2) == cr) {
@@ -219,8 +239,36 @@ public class StringUtilities {
 //				}
 			}
 		}
-		
+
 		return d[m][n];
+	}
+
+	private static final Pattern CAMEL_CASE_TO_SNAKE = Pattern.compile("([a-z])([A-Z]+)");
+
+	/**
+	 * Simple conversion from snake case to camel case.
+	 * This does not take into account special cases like
+	 * "a__3".
+	 */
+	public static String toCamelCase(String snakeCase) {
+		StringBuilder sb = new StringBuilder(snakeCase);
+		for (int i = 0; i < sb.length(); i++) {
+		    if (sb.charAt(i) == '_') {
+		        sb.deleteCharAt(i);
+		        sb.replace(i, i+1, String.valueOf(Character.toUpperCase(sb.charAt(i))));
+		    }
+		}
+
+		return sb.toString();
+	}
+
+	/**
+	 * Simple conversion from camel case to snake case.
+	 * This does not take into account special cases like
+	 * "AA3" or "A__A3".
+	 */
+	public static String toSnakeCase(String camelCase) {
+		return CAMEL_CASE_TO_SNAKE.matcher(camelCase).replaceAll("$1_$2").toLowerCase();
 	}
 
 	/**
