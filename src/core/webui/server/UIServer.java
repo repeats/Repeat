@@ -20,6 +20,12 @@ import core.webcommon.UpAndRunningHandler;
 import core.webui.server.handlers.IPCPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
 import core.webui.server.handlers.TaskActivationPageHandler;
+import core.webui.server.handlers.TaskGroupsPageHandler;
+import core.webui.server.handlers.internals.GetLogsHandler;
+import core.webui.server.handlers.internals.GetSourceTemplateHandler;
+import core.webui.server.handlers.internals.ModifyTaskNameHandler;
+import core.webui.server.handlers.internals.ToggleTaskEnabledHandler;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import frontEnd.MainBackEndHolder;
 import staticResources.BootStrapResources;
 
@@ -30,11 +36,13 @@ public class UIServer extends IPCServiceWithModifablePort {
 	private Map<String, HttpHandlerWithBackend> handlers;
 
 	private MainBackEndHolder backEndHolder;
+	private final ObjectRenderer objectRenderer;
 	private Thread mainThread;
 	private HttpServer server;
 
 	public UIServer() {
 		setPort(DEFAULT_PORT);
+		objectRenderer = new ObjectRenderer(BootStrapResources.getWebUIResource().getTemplateDir());
 	}
 
 	public synchronized void setMainBackEndHolder(MainBackEndHolder backEndHolder) {
@@ -49,13 +57,17 @@ public class UIServer extends IPCServiceWithModifablePort {
 	}
 
 	private Map<String, HttpHandlerWithBackend> createHandlers() {
-		ResourceManager resourceManager = new ResourceManager(BootStrapResources.getWebUIResource().getRoot());
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
-		output.put("/", new IndexPageHandler(resourceManager));
-		output.put("/ipcs", new IPCPageHandler(resourceManager));
-		output.put("/task-activation", new TaskActivationPageHandler(resourceManager));
+		output.put("/", new IndexPageHandler(objectRenderer));
+		output.put("/ipcs", new IPCPageHandler(objectRenderer));
+		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
+		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer));
 
-		output.put("/internal/ipcs", null);
+		output.put("/internals/get/logs", new GetLogsHandler());
+		output.put("/internals/get/source-templates", new GetSourceTemplateHandler());
+		output.put("/internals/modify/task-name", new ModifyTaskNameHandler());
+		output.put("/internals/modify/task-activation", new ModifyTaskNameHandler());
+		output.put("/internals/toggle/task-enabled", new ToggleTaskEnabledHandler());
 		return output;
 	}
 

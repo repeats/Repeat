@@ -874,7 +874,7 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/***************************************Source compilation****************************************************/
 
-	protected Language getSelectedLanguage() {
+	public Language getSelectedLanguage() {
 		for (JRadioButtonMenuItem rbmi : main.rbmiSelection.keySet()) {
 			if (rbmi.isSelected()) {
 				return main.rbmiSelection.get(rbmi);
@@ -1095,7 +1095,7 @@ public class MainBackEndHolder {
 		return Collections.unmodifiableList(taskGroups);
 	}
 
-	protected TaskGroup getCurrentTaskGroup() {
+	public TaskGroup getCurrentTaskGroup() {
 		return this.currentGroup;
 	}
 

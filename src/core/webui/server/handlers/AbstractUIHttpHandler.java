@@ -1,12 +1,12 @@
 package core.webui.server.handlers;
 
-import core.webcommon.HttpHandlerWithBackend;
-import core.webui.server.ResourceManager;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public abstract class AbstractUIHttpHandler extends HttpHandlerWithBackend {
-	protected ResourceManager resourceManager;
+public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHandler {
+	protected ObjectRenderer objectRenderer;
 
-	public AbstractUIHttpHandler(ResourceManager resourceManager) {
-		this.resourceManager = resourceManager;
+	public AbstractUIHttpHandler(ObjectRenderer objectRenderer, String allowedMethod) {
+		super(allowedMethod);
+		this.objectRenderer = objectRenderer;
 	}
 }

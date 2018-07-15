@@ -16,5 +16,4 @@ public class GetIPCsHandler extends HttpHandlerWithBackend {
 			throws HttpException, IOException {
 
 	}
-
 }
