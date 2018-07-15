@@ -1,5 +1,8 @@
 function registerSourceTextArea() {
-    $('#source-code').bind('input propertychange', function() {
+    var sourceCodeTextArea = $('#source-code');
+    getSourceTemplate(sourceCodeTextArea);
+
+    sourceCodeTextArea.bind('input propertychange', function() {
         var textArea = $(this);
         var val = textArea.val();
         if (val == "") {

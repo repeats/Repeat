@@ -1,9 +1,12 @@
-function registerTableTasksOnClick() {
-    var table = document.getElementById("tableTasks");
-    if (table == null) {
-        return;
-    }
+function registerTableTasks() {
+    registerCells(document.getElementById("tableTasks"));
 
+    $('#modal-task-name-save').click(function() {
+        newNameOnClick();
+    });
+}
+
+function registerCells(table) {
     // Start from row = 1 since row = 0 is the headings.
     for (var i = 1; i < table.rows.length; i++) {
         for (var j = 0; j < table.rows[i].cells.length; j++)
@@ -14,10 +17,6 @@ function registerTableTasksOnClick() {
             };
         }(table.rows[i].cells[j], i, j);
     }
-
-    $('#modal-task-name-save').click(function() {
-        newNameOnClick();
-    });
 }
 
 function tableTaskOnClick(cell, row, col) {
@@ -33,6 +32,7 @@ function tableTaskOnClick(cell, row, col) {
 
     if (col == 2) { // Enable/disable.
         $.post("/internals/toggle/task-enabled", JSON.stringify({task: row}), function(status){
+            refreshTasks();
         }).fail(function(response) {
             alert('Error toggling state: ' + response.responseText);
         });
@@ -44,7 +44,19 @@ function newNameOnClick() {
     var newName = $('#new-task-name').val();
 
     $.post("/internals/modify/task-name", JSON.stringify({task: row, name: newName}), function(status){
+        refreshTasks();
     }).fail(function(response) {
         alert('Error changing name: ' + response.responseText);
+    });
+}
+
+function refreshTasks(tableElement) {
+    var tableElement = $("#tableTasks");
+
+    $.get("/internals/get/rendered-tasks", function(data) {
+        tableElement.html(data);
+        registerCells(document.getElementById("tableTasks"));
+    }).fail(function(response) {
+        alert('Error refreshing table: ' + response.responseText);
     });
 }

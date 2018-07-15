@@ -210,7 +210,7 @@
                 <div class="row">
                     <div class="col-xs-6">
                         <button title="${tooltips.record}" type="button" class="btn btn-default repeat-btn-record">&nbsp</button>
-                        Mouse position: <button type="button" class="btn btn-default">263, 2382</button>
+                        Mouse position: <button id="mouse-position" type="button" class="btn btn-default">0, 0</button>
                     </div>
                     <div class="col-xs-6">
                         <div class="btn-group pull-right">
@@ -262,8 +262,8 @@
                         </div>
                         <div class="row">
                             <div class="col-xs-12 form-group">
-                                <label for="comment">Main log:</label>
-                                <textarea class="form-control" rows="25" id="comment" wrap="off"></textarea>
+                                <label for="main-log">Main log:</label>
+                                <textarea class="form-control" rows="25" id="main-log" wrap="off"></textarea>
                             </div> 
                         </div>
                     </div>
@@ -283,14 +283,18 @@
     <@common_js_fragment.fragment/>
 
     <!--  JavaScript for this page.    -->
-    <script src="/static/js/repeat/table-tasks.js"></script>
+    <script src="/static/js/repeat/logs-textarea.js"></script>
+    <script src="/static/js/repeat/mouse-position.js"></script>
     <script src="/static/js/repeat/source-textarea.js"></script>
+    <script src="/static/js/repeat/table-tasks.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function(){
             $('.dropdown-toggle').dropdown();
+            registerLogHandler();
+            registerMousePosition();
             registerSourceTextArea();
-            registerTableTasksOnClick();
+            registerTableTasks();
         });
     </script>
 
