@@ -64,6 +64,9 @@ public class RollingKeySeries extends KeySeries {
 	 * @return last key stroke in the series.
 	 */
 	public KeyStroke getLast() {
+		if (keys.size() == 0) {
+			return null;
+		}
 		return keys.getLast();
 	}
 
