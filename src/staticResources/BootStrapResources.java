@@ -32,7 +32,7 @@ public class BootStrapResources {
 	public static final Image TRAY_IMAGE;
 	public static final ImageIcon COMPILE_IMAGE, PLAY_COMPILED_IMAGE, STOP_COMPILED_IMAGE, EDIT_CODE, RELOAD;
 	public static final ImageIcon UP, DOWN, DELETE, ADD, EDIT, MOVE, REFRESH;
-	public static final ImageIcon RECORD, STOP, PLAY, SELECT;
+	public static final ImageIcon RECORD, STOP, PLAY;
 
 	static {
 		TRAY_IMAGE = getImage("/staticResources/Repeat.jpg");
@@ -56,8 +56,6 @@ public class BootStrapResources {
 		STOP = getIcon("/toolbarButtonGraphics/media/Stop16.gif");
 
 		PLAY = getIcon("/toolbarButtonGraphics/media/Play16.gif");
-
-		SELECT = getIcon("/toolbarButtonGraphics/general/Preferences24.gif");
 
 		/*********************************************************************************/
 		LANGUAGE_API = new HashMap<>();

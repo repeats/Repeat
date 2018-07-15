@@ -1,38 +1,43 @@
+<#import "/fragments/tasks.ftlh" as task_fragment>
+<#import "/fragments/task_groups_dropdown.ftlh" as task_groups_dropdown_fragment>
+<#import "/fragments/common_header.ftlh" as common_header_fragment>
+<#import "/fragments/footer.ftlh" as footer_fragment>
+<#import "/fragments/common_js.ftlh" as common_js_fragment>
+
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="/static/img/favicon.ico">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <@common_header_fragment.fragment/>
 
-    <title>Repeat</title>
-
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
-    <meta name="viewport" content="width=device-width" />
-
-
-    <!-- Bootstrap core CSS     -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
-
-    <!-- Custom CSS     -->
-    <link href="/static/css/custom.css" rel="stylesheet" />
-
-    <!-- Animation library for notifications   -->
-    <link href="/static/css/animate.min.css" rel="stylesheet"/>
-
-    <!--  Light Bootstrap Table core CSS    -->
-    <link href="/static/css/light-bootstrap-dashboard.css?v=1.4.0" rel="stylesheet"/>
-
-    <!--     Fonts and icons     -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
-    <link href="/static/css/pe-icon-7-stroke.css" rel="stylesheet" />
-
+    <!-- Custom button CSS     -->
+    <link href="/static/css/custom-buttons.css" rel="stylesheet" />
 </head>
 <body>
 
 <div class="wrapper">
     <!-- Modals -->
+    <div id="modal-task-name" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Enter a new task name.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label" for="new-task-name">New name:</label>
+                        <input class="form-check-input" name="new-task-name" type="text" id="new-task-name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-task-name-row" style="display:none;">0</div>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="modal-task-name-save">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="modal-compiling-languages" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -204,47 +209,39 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-xs-6">
-                        <button type="button" class="btn btn-default">Record</button>
+                        <button title="${tooltips.record}" type="button" class="btn btn-default repeat-btn-record">&nbsp</button>
+                        Mouse position: <button type="button" class="btn btn-default">263, 2382</button>
                     </div>
                     <div class="col-xs-6">
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Task groups</button>
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="caret"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">default</a></li>
-                                <li><a href="#">Group 1</a></li>
-                                <li><a href="#">Group 2</a></li>
-                            </ul>
+                            <@task_groups_dropdown_fragment.fragment/>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-6">
-                        <button type="button" class="btn btn-default">Play</button>
+                        <button title="${tooltips.replay}" type="button" class="btn btn-default repeat-btn-replay">&nbsp</button>
                         Repeat <button type="button" class="btn btn-default">1</button> times(s) with delay each time <button type="button" class="btn btn-default">0</button> ms, and speed up of <button type="button" class="btn btn-default">1.0</button>
                     </div>
                     <div class="col-xs-6 pull-right">
-                        <span class="align-middle pull-right"><div>Execution time: <span class="label label-info">126s</span></div></span>
+                        <span class="align-middle pull-right"><div>Execution time: <span class="label label-info">${executionTime}</span></div></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-6">
-                        <button type="button" class="btn btn-default">Compile</button>
-                        <button type="button" class="btn btn-default">Run</button>
-                        <button type="button" class="btn btn-default">Edit</button>
-                        <button type="button" class="btn btn-default">Load source</button>
+                        <button title="${tooltips.compile}" type="button" class="btn btn-default repeat-btn-compile">&nbsp</button>
+                        <button title="${tooltips.run}" type="button" class="btn btn-default repeat-btn-run">&nbsp</button>
+                        <button title="${tooltips.editCode}" type="button" class="btn btn-default repeat-btn-edit-code">&nbsp</button>
+                        <button title="${tooltips.reload}" type="button" class="btn btn-default repeat-btn-reload">&nbsp</button>
                     </div>
                     <div class="col-xs-6">
                         <div class="pull-right">
-                            <button type="button" class="btn btn-default">Add</button>
-                            <button type="button" class="btn btn-default">Overwrite</button>
-                            <button type="button" class="btn btn-default">Delete</button>
-                            <button type="button" class="btn btn-default">Move up</button>
-                            <button type="button" class="btn btn-default">Move down</button>
-                            <button type="button" class="btn btn-default">Change group</button>
+                            <button title="${tooltips.add}" type="button" class="btn btn-default repeat-btn-add">&nbsp</button>
+                            <button title="${tooltips.overwrite}" type="button" class="btn btn-default repeat-btn-overwrite">&nbsp</button>
+                            <button title="${tooltips.delete}" type="button" class="btn btn-default repeat-btn-delete">&nbsp</button>
+                            <button title="${tooltips.up}" type="button" class="btn btn-default repeat-btn-up">&nbsp</button>
+                            <button title="${tooltips.down}" type="button" class="btn btn-default repeat-btn-down">&nbsp</button>
+                            <button title="${tooltips.changeGroup}" type="button" class="btn btn-default repeat-btn-change-group">&nbsp</button>
                         </div>
                     </div>
                 </div>
@@ -253,72 +250,13 @@
                         <div class="col-xs-12 form-group">
                             <label for="source-code">Source code:</label>
                             <textarea class="form-control" rows="40" id="source-code" wrap="off"></textarea>
-                        </div> 
+                        </div>
                     </div>
                     <div class="col-xs-6">
                         <div class="row">
                             <div class="col-xs-12 header-fixed">
-                                <table class="table table-striped table-header-fixed" >
-                                    <thead class="thead-dark">
-                                        <tr>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Activation</th>
-                                            <th scope="col">Enabled</th>
-                                            <th scope="col">Use Count</th>
-                                            <th scope="col">Last Used</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>test</td>
-                                        <td>A+S+D</td>
-                                        <td>true</td>
-                                        <td>327</td>
-                                        <td>21/7/2018</td>
-                                    </tr>
-                                    <tr>
-                                        <td>test2</td>
-                                        <td>S+D+F</td>
-                                        <td>true</td>
-                                        <td>37</td>
-                                        <td>21/7/2018</td>
-                                    </tr>
-                                    <tr>
-                                        <td>test3</td>
-                                        <td>S+D+F</td>
-                                        <td>true</td>
-                                        <td>37</td>
-                                        <td>21/7/2018</td>
-                                    </tr>
-                                    <tr>
-                                        <td>test4</td>
-                                        <td>S+D+F</td>
-                                        <td>true</td>
-                                        <td>37</td>
-                                        <td>21/7/2018</td>
-                                    </tr>
-                                    <tr>
-                                        <td>test5</td>
-                                        <td>S+D+F</td>
-                                        <td>true</td>
-                                        <td>37</td>
-                                        <td>21/7/2018</td>
-                                    </tr>
-                                    <tr>
-                                        <td>test6</td>
-                                        <td>S+D+F</td>
-                                        <td>true</td>
-                                        <td>37</td>
-                                        <td>21/7/2018</td>
-                                    </tr>
-                                    <tr>
-                                        <td>test7</td>
-                                        <td>S+D+F</td>
-                                        <td>true</td>
-                                        <td>37</td>
-                                        <td>21/7/2018</td>
-                                    </tr>
-                                    </tbody>
+                                <table id="tableTasks" class="table table-striped table-header-fixed" >
+                                    <@task_fragment.fragment/>
                                 </table>
                             </div>
                         </div>
@@ -336,45 +274,23 @@
         </div>
 
 
-        <footer class="footer">
-            <div class="container-fluid">
-                <nav class="pull-left">
-                    <ul>
-                        <li>
-                            <a href="https://github.com/repeats/Repeat">
-                                Github
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <p class="copyright pull-right">
-                    &copy; <script>document.write(new Date().getFullYear())</script> <a href="mailto:hptruong93@gmail.com">HP Truong</a>, Repeat yourself with some intelligence.
-                </p>
-            </div>
-        </footer>
-
+        <@footer_fragment.fragment/>
     </div>
 </div>
 
 
 </body>
+    <@common_js_fragment.fragment/>
 
-    <!--   Core JS Files   -->
-    <script src="/static/js/jquery.3.2.1.min.js" type="text/javascript"></script>
-    <script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
-
-    <!--  Charts Plugin -->
-    <script src="/static/js/chartist.min.js"></script>
-
-    <!--  Notifications Plugin    -->
-    <script src="/static/js/bootstrap-notify.js"></script>
-
-    <!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
-    <script src="/static/js/light-bootstrap-dashboard.js?v=1.4.0"></script>
+    <!--  JavaScript for this page.    -->
+    <script src="/static/js/repeat/table-tasks.js"></script>
+    <script src="/static/js/repeat/source-textarea.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function(){
             $('.dropdown-toggle').dropdown();
+            registerSourceTextArea();
+            registerTableTasksOnClick();
         });
     </script>
 

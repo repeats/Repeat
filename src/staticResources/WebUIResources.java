@@ -39,4 +39,11 @@ public class WebUIResources extends AbstractBootstrapResource {
 	public File getStaticDir() {
 		return new File(FileUtility.joinPath(getRoot().getAbsolutePath(), "static"));
 	}
+
+	/**
+	 * Returns the directory containing all HTML templates.
+	 */
+	public File getTemplateDir() {
+		return new File(FileUtility.joinPath(getRoot().getAbsolutePath(), "templates"));
+	}
 }

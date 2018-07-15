@@ -1,0 +1,79 @@
+.repeat-btn-record {
+	border: none;
+	background-image: url( '/static/img/buttons/record.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-replay {
+	border: none;
+	background-image: url( '/static/img/buttons/replay.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-stop {
+	border: none;
+	background-image: url( '/static/img/buttons/stop.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-compile {
+	border: none;
+	background-image: url( '/static/img/buttons/compile.png' );
+	background-size: 80%;
+}
+
+.repeat-btn-run {
+	border: none;
+	background-image: url( '/static/img/buttons/play_compiled.png' );
+	background-size: 100%;
+}
+
+.repeat-btn-edit-code {
+	border: none;
+	background-image: url( '/static/img/buttons/edit_code.png' );
+	background-size: 100%;
+}
+
+.repeat-btn-reload {
+	border: none;
+	background-image: url( '/static/img/buttons/reload.png' );
+	background-size: 100%;
+}
+
+
+
+.repeat-btn-add {
+	border: none;
+	background-image: url( '/static/img/buttons/add.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-overwrite {
+	border: none;
+	background-image: url( '/static/img/buttons/overwrite.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-delete {
+	border: none;
+	background-image: url( '/static/img/buttons/delete.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-up {
+	border: none;
+	background-image: url( '/static/img/buttons/up.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-down {
+	border: none;
+	background-image: url( '/static/img/buttons/down.gif' );
+	background-size: 100%;
+}
+
+.repeat-btn-change-group {
+	border: none;
+	background-image: url( '/static/img/buttons/change_group.gif' );
+	background-size: 100%;
+}

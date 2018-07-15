@@ -1,36 +1,11 @@
+<#import "/fragments/common_header.ftlh" as common_header_fragment>
+<#import "/fragments/footer.ftlh" as footer_fragment>
+<#import "/fragments/common_js.ftlh" as common_js_fragment>
+
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="/static/img/favicon.ico">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
-    <title>Repeat</title>
-
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
-    <meta name="viewport" content="width=device-width" />
-
-
-    <!-- Bootstrap core CSS     -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
-
-    <!-- Custom CSS     -->
-    <link href="/static/css/custom.css" rel="stylesheet" />
-
-    <!-- Animation library for notifications   -->
-    <link href="/static/css/animate.min.css" rel="stylesheet"/>
-
-    <!--  Light Bootstrap Table core CSS    -->
-    <link href="/static/css/light-bootstrap-dashboard.css?v=1.4.0" rel="stylesheet"/>
-
-    <!--  CSS for Demo Purpose, don't include it in your project     
-    <link href="/static/css/demo.css" rel="stylesheet" />-->
-
-    <!--     Fonts and icons     -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
-    <link href="/static/css/pe-icon-7-stroke.css" rel="stylesheet" />
-
+    <@common_header_fragment.fragment/>
 </head>
 <body>
 
@@ -76,12 +51,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>A+S+D</td>
-                                </tr>
-                                <tr>
-                                    <td>S+D+F</td>
-                                </tr>
+                                <#list activation.keyChains as chain>
+                                    <tr>
+                                        <td>${chain}</td>
+                                    </tr>
+                                </#list>
                             </tbody>
                         </table>
                     </div>
@@ -94,12 +68,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>A+S+D</td>
-                                </tr>
-                                <tr>
-                                    <td>S+D+F</td>
-                                </tr>
+                                <#list activation.keySequences as sequence>
+                                    <tr>
+                                        <td>${sequence}</td>
+                                    </tr>
+                                </#list>
                             </tbody>
                         </table>
                     </div>
@@ -114,12 +87,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Phrase 1</td>
-                            </tr>
-                            <tr>
-                                <td>Phrase 2</td>
-                            </tr>
+                            <#list activation.phrases as phrase>
+                                <tr>
+                                    <td>${phrase}</td>
+                                </tr>
+                            </#list>
                         </tbody>
                     </table>
                 </div>
@@ -127,53 +99,31 @@
                     <div class="form-group">
                         <span class="label label-default">Mouse gestures (hold shift to select more than one)</span>
                         <select multiple class="form-control" size="9">
-                            <option>Alpha</option>
-                            <option>Circle Left</option>
-                            <option>Gamma</option>
-                            <option>Greater than</option>
-                            <option>Less than</option>
-                            <option>N</option>
-                            <option>Square</option>
-                            <option>Square root</option>
-                            <option>Tilda</option>
+                            <option <#if activation.mouseGestures.alpha> selected </#if>>Alpha</option>
+                            <option <#if activation.mouseGestures.circleLeft> selected </#if>>Circle Left</option>
+                            <option <#if activation.mouseGestures.gamma> selected </#if>>Gamma</option>
+                            <option <#if activation.mouseGestures.greaterThan> selected </#if>>Greater than</option>
+                            <option <#if activation.mouseGestures.hat> selected </#if>>Hat</option>
+                            <option <#if activation.mouseGestures.lessThan> selected </#if>>Less than</option>
+                            <option <#if activation.mouseGestures.n> selected </#if>>N</option>
+                            <option <#if activation.mouseGestures.square> selected </#if>>Square</option>
+                            <option <#if activation.mouseGestures.squareRoot> selected </#if>>Square root</option>
+                            <option <#if activation.mouseGestures.tilda> selected </#if>>Tilda</option>
+                            <option <#if activation.mouseGestures.triangle> selected </#if>>Triangle</option>
+                            <option <#if activation.mouseGestures.z> selected </#if>>Z</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <footer class="footer">
-            <div class="container-fluid">
-                <nav class="pull-left">
-                    <ul>
-                        <li>
-                            <a href="https://github.com/repeats/Repeat">
-                                Github
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <p class="copyright pull-right">
-                    &copy; <script>document.write(new Date().getFullYear())</script> <a href="mailto:hptruong93@gmail.com">HP Truong</a>, Repeat yourself with some intelligence.
-                </p>
-            </div>
-        </footer>
-
+        <@footer_fragment.fragment/>
     </div>
 </div>
 
 
 </body>
-    <!--   Core JS Files   -->
-    <script src="/static/js/jquery.3.2.1.min.js" type="text/javascript"></script>
-    <script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
-
-    <!--  Notifications Plugin    -->
-    <script src="/static/js/bootstrap-notify.js"></script>
-
-    <!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
-    <script src="/static/js/light-bootstrap-dashboard.js?v=1.4.0"></script>
+    <@common_js_fragment.fragment/>
 
     <script type="text/javascript">
     $(document).ready(function(){
