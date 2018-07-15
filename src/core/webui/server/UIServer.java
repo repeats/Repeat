@@ -21,7 +21,12 @@ import core.webui.server.handlers.IPCPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
 import core.webui.server.handlers.TaskActivationPageHandler;
 import core.webui.server.handlers.TaskGroupsPageHandler;
+import core.webui.server.handlers.internals.ActionCompileTaskHandler;
+import core.webui.server.handlers.internals.ActionEditSourceHandler;
+import core.webui.server.handlers.internals.ActionRunCompiledTaskHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
+import core.webui.server.handlers.internals.GetMousePositionHandler;
+import core.webui.server.handlers.internals.GetRenderedTasks;
 import core.webui.server.handlers.internals.GetSourceTemplateHandler;
 import core.webui.server.handlers.internals.ModifyTaskNameHandler;
 import core.webui.server.handlers.internals.ToggleTaskEnabledHandler;
@@ -63,11 +68,21 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
 		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer));
 
+		output.put("/internals/action/compile-task", new ActionCompileTaskHandler());
+		output.put("/internals/action/edit-source", new ActionEditSourceHandler());
+		output.put("/internals/action/run-compiled-task", new ActionRunCompiledTaskHandler());
+
+		output.put("/internals/get/editted-source", null);
+		output.put("/internals/get/mouse-position", new GetMousePositionHandler());
 		output.put("/internals/get/logs", new GetLogsHandler());
 		output.put("/internals/get/source-templates", new GetSourceTemplateHandler());
-		output.put("/internals/modify/task-name", new ModifyTaskNameHandler());
+		output.put("/internals/get/rendered-tasks", new GetRenderedTasks(objectRenderer));
+
 		output.put("/internals/modify/task-activation", new ModifyTaskNameHandler());
+		output.put("/internals/modify/task-name", new ModifyTaskNameHandler());
+
 		output.put("/internals/toggle/task-enabled", new ToggleTaskEnabledHandler());
+
 		return output;
 	}
 

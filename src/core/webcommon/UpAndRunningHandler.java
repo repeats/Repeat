@@ -24,7 +24,7 @@ public class UpAndRunningHandler implements HttpAsyncRequestHandler<HttpRequest>
 		LOGGER.info("Server is up and running.");
 
 		String responseText = "This is a sample response.";
-		HttpServerUtilities.prepareResponse(exchange, HttpStatus.SC_OK, responseText);
+		HttpServerUtilities.prepareTextResponse(exchange, HttpStatus.SC_OK, responseText);
 	}
 
 	@Override

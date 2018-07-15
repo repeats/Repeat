@@ -34,12 +34,12 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 	public Void handleRequest(HttpRequest request, HttpAsyncExchange exchange, HttpContext context) throws HttpException, IOException {
 		LOGGER.fine("Path is " + request.getRequestLine().getUri());
 		if (!request.getRequestLine().getMethod().equalsIgnoreCase("GET")) {
-			return HttpServerUtilities.prepareResponse(exchange, 400, "Only accept GET requests.");
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Only accept GET requests.");
 		}
 
 		String requestUri = request.getRequestLine().getUri();
 		if (!requestUri.startsWith("/static/")) {
-			return HttpServerUtilities.prepareResponse(exchange, 500, "URI must start with '/static/'.");
+			return HttpServerUtilities.prepareTextResponse(exchange, 500, "URI must start with '/static/'.");
 		}
 
 		String uriWithoutParamter = "";
@@ -52,7 +52,7 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 	                   uri.getFragment()).toString();
 		} catch (URISyntaxException e) {
 			LOGGER.log(Level.WARNING, "Encountered exception when trying to remove query parameters.", e);
-			return HttpServerUtilities.prepareResponse(exchange, 500, "Encountered exception when trying to remove query parameters.");
+			return HttpServerUtilities.prepareTextResponse(exchange, 500, "Encountered exception when trying to remove query parameters.");
 		}
 
 		String path = uriWithoutParamter.substring("/static/".length());
@@ -60,11 +60,11 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 		File file = new File(root, URLDecoder.decode(path, "UTF-8"));
 		HttpResponse response = exchange.getResponse();
 		if (!file.exists()) {
-			return HttpServerUtilities.prepareResponse(exchange, 404, String.format("File does not exist %s.", file.getAbsolutePath()));
+			return HttpServerUtilities.prepareTextResponse(exchange, 404, String.format("File does not exist %s.", file.getAbsolutePath()));
         } else if (!file.canRead() || file.isDirectory()) {
-        	return HttpServerUtilities.prepareResponse(exchange, 403, String.format("Cannot read file %s.", file.getAbsolutePath()));
+        	return HttpServerUtilities.prepareTextResponse(exchange, 403, String.format("Cannot read file %s.", file.getAbsolutePath()));
         } else  if (!file.canRead()) {
-        	return HttpServerUtilities.prepareResponse(exchange, 400, String.format("Path is a directory %s.", file.getAbsolutePath()));
+        	return HttpServerUtilities.prepareTextResponse(exchange, 400, String.format("Path is a directory %s.", file.getAbsolutePath()));
         } else {
             response.setStatusCode(HttpStatus.SC_OK);
             String contentType = contentType(file.toPath());

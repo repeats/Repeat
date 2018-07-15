@@ -118,7 +118,7 @@ public class HttpServerUtilities {
 			location = builder.clearParameters().setPath(dest).build().toString();
 		} catch (URISyntaxException e) {
 			LOGGER.log(Level.WARNING, "Unable to parse request URI.", e);
-			return prepareResponse(exchange, 500, "Unable to parse request URI.");
+			return prepareTextResponse(exchange, 500, "Unable to parse request URI.");
 		}
 
 		HttpResponse response = exchange.getResponse();
@@ -136,20 +136,20 @@ public class HttpServerUtilities {
 	}
 
 	public static Void prepareHttpResponse(HttpAsyncExchange exchange, int code, String data) throws IOException {
+		return prepareStringResponse(exchange, code, data, "text/html");
+	}
+
+	public static Void prepareTextResponse(HttpAsyncExchange exchange, int code, String data) throws IOException {
+		return prepareStringResponse(exchange, code, data, "text/plain");
+	}
+
+	private static Void prepareStringResponse(HttpAsyncExchange exchange, int code, String data, String contentType) throws IOException {
 		HttpResponse response = exchange.getResponse();
 		response.setStatusCode(code);
 		StringEntity entity = new StringEntity(data);
 		entity.setContentEncoding("UTF-8");
-		entity.setContentType("text/html");
+		entity.setContentType(contentType);
 		response.setEntity(entity);
-		exchange.submitResponse(new BasicAsyncResponseProducer(response));
-        return null;
-	}
-
-	public static Void prepareResponse(HttpAsyncExchange exchange, int code, String data) throws IOException {
-		HttpResponse response = exchange.getResponse();
-		response.setStatusCode(code);
-		response.setEntity(new StringEntity(data));
 		exchange.submitResponse(new BasicAsyncResponseProducer(response));
         return null;
 	}

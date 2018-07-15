@@ -60,6 +60,8 @@ public class MainBackEndHolder {
 
 	private static final Logger LOGGER = Logger.getLogger(MainBackEndHolder.class.getName());
 
+	protected StringBuffer logHolder;
+
 	protected ScheduledThreadPoolExecutor executor;
 	private Thread compiledExecutor;
 
@@ -86,6 +88,8 @@ public class MainBackEndHolder {
 	public MainBackEndHolder(MainFrame main) {
 		this.main = main;
 		config = new Config(this);
+
+		logHolder = new StringBuffer();
 
 		executor = new ScheduledThreadPoolExecutor(5);
 
@@ -315,7 +319,7 @@ public class MainBackEndHolder {
 		}
 	}
 
-	protected void switchRunningCompiledAction() {
+	public void switchRunningCompiledAction() {
 		if (isRunning) {
 			isRunning = false;
 			if (compiledExecutor != null) {
@@ -433,19 +437,26 @@ public class MainBackEndHolder {
 	/*****************************************Task related********************************************************/
 
 	/**
+	 * @see #editSourceCode(String)
+	 */
+	protected void editSourceCode() {
+		editSourceCode(main.taSource.getText());
+	}
+
+	/**
 	 * Edit source code using the default program to open the source code file (with appropriate extension
 	 * depending on the currently selected language).
 	 *
 	 * This does not update the source code in the text area in the main GUI.
 	 */
-	protected void editSourceCode() {
+	public void editSourceCode(String source) {
 		AbstractNativeCompiler currentCompiler = getCompiler();
 		// Create a temporary file
 		try {
 			tempSourceFile = File.createTempFile("source", currentCompiler.getExtension());
 			tempSourceFile.deleteOnExit();
 
-			FileUtility.writeToFile(main.taSource.getText(), tempSourceFile, false);
+			FileUtility.writeToFile(source, tempSourceFile, false);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(main, "Encountered error creating temporary source file.\n" + e.getMessage());
 			return;
@@ -465,18 +476,20 @@ public class MainBackEndHolder {
 	/**
 	 * Load the source code from the temporary source code file into the text area (if the source code file exists).
 	 */
-	protected void reloadSourceCode() {
+	public String reloadSourceCode() {
 		if (tempSourceFile == null || !tempSourceFile.exists()) {
 			JOptionPane.showMessageDialog(main, "Temp file not accessible.");
-			return;
+			return null;
 		}
 
 		StringBuffer sourceCode = FileUtility.readFromFile(tempSourceFile);
 		if (sourceCode == null) {
 			JOptionPane.showMessageDialog(main, "Unable to read from temp file.");
-			return;
+			return null;
 		}
-		main.taSource.setText(sourceCode.toString());
+		String source = sourceCode.toString();
+		main.taSource.setText(source);
+		return source;
 	}
 
 	private void unregisterTask(UserDefinedAction task) {
@@ -1059,6 +1072,10 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/***************************************Generic Getters and Setters*******************************************/
+	public String getLogs() {
+		return logHolder.toString();
+	}
+
 	public void addTaskGroup(TaskGroup group) {
 		taskGroups.add(group);
 	}

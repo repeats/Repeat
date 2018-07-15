@@ -19,8 +19,6 @@ public class GetLogsHandler extends AbstractSingleMethodHttpHandler {
 	@Override
 	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
-
-		return HttpServerUtilities.prepareResponse(exchange, 200, "");
+		return HttpServerUtilities.prepareTextResponse(exchange, 200, backEndHolder.getLogs());
 	}
-
 }
