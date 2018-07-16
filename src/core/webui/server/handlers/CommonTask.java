@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import core.ipc.IIPCService;
+import core.ipc.IPCServiceManager;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
 import frontEnd.MainBackEndHolder;
@@ -15,6 +17,44 @@ public class CommonTask {
 
 	private CommonTask() {}
 
+	public static IIPCService getIPCService(Map<String, String> params) {
+		String indexString = params.get("ipc");
+		if (indexString == null || !NumberUtility.isNonNegativeInteger(indexString)) {
+			LOGGER.warning("IPC index must be non-negative integer.");
+			return null;
+		}
+
+		int index = Integer.parseInt(indexString);
+		if (index >= IPCServiceManager.IPC_SERVICE_COUNT) {
+			LOGGER.warning("IPC index out of bound: " + index);
+			return null;
+		}
+
+		return IPCServiceManager.getIPCService(index);
+	}
+
+	public static int getTaskIndexFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params, TaskGroup group) {
+		String taskValue = params.get("task");
+		if (taskValue == null) {
+			LOGGER.warning("Missing task.");
+			return -1;
+		}
+
+		if (!NumberUtility.isNonNegativeInteger(taskValue)) {
+			LOGGER.warning("Group and task indices must be positive integers.");
+			return -1;
+		}
+
+		int taskIndex = Integer.parseInt(taskValue);
+		List<UserDefinedAction> tasks = group.getTasks();
+		if (taskIndex >= tasks.size()) {
+			LOGGER.warning("No such task with index.");
+			return -1;
+		}
+
+		return taskIndex;
+	}
+
 	public static UserDefinedAction getTaskFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		TaskGroup group = getTaskGroup(backEndHolder, params);
 		if (group == null) {
@@ -22,18 +62,12 @@ public class CommonTask {
 			return null;
 		}
 
-		String taskValue = params.get("task");
-		if (taskValue == null) {
-			LOGGER.warning("Missing task.");
+		int taskIndex = getTaskIndexFromRequest(backEndHolder, params, group);
+		if (taskIndex == -1) {
+			LOGGER.warning("Cannot find task index.");
 			return null;
 		}
 
-		if (!NumberUtility.isNonNegativeInteger(taskValue)) {
-			LOGGER.warning("Group and task indices must be positive integers.");
-			return null;
-		}
-
-		int taskIndex = Integer.parseInt(taskValue);
 		List<UserDefinedAction> tasks = group.getTasks();
 		if (taskIndex >= tasks.size()) {
 			LOGGER.warning("No such task with index.");

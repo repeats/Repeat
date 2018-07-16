@@ -2,9 +2,7 @@ package core.webui.server.handlers.internals;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -17,11 +15,11 @@ import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
-import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
+import core.webui.server.handlers.renderedobjects.RenderedTaskGroupButton;
 
-public class GetRenderedTasks extends AbstractUIHttpHandler {
+public class GetRenderedTaskGroupsDropdown extends AbstractUIHttpHandler {
 
-	public GetRenderedTasks(ObjectRenderer objectRenderer) {
+	public GetRenderedTaskGroupsDropdown(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.GET_METHOD);
 	}
 
@@ -30,10 +28,9 @@ public class GetRenderedTasks extends AbstractUIHttpHandler {
 			throws HttpException, IOException {
 		Map<String, Object> data = new HashMap<>();
 		TaskGroup group = backEndHolder.getCurrentTaskGroup();
-		List<RenderedUserDefinedAction> taskList = group.getTasks().stream().map(RenderedUserDefinedAction::fromUserDefinedAction).collect(Collectors.toList());
-		data.put("tasks", taskList);
+		data.put("task_group", RenderedTaskGroupButton.fromTaskGroups(group, backEndHolder.getTaskGroups()));
 
-		String page = objectRenderer.render("rendered_tasks", data);
+		String page = objectRenderer.render("rendered_task_groups_dropdown", data);
 		if (page == null) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Failed to render page.");
 		}

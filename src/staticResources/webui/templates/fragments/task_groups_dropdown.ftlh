@@ -4,7 +4,7 @@
         <span class="caret"></span>
         <span class="sr-only">Toggle Dropdown</span>
     </button>
-    <ul class="dropdown-menu">
+    <ul id="task-groups-dropdown" class="dropdown-menu">
         <#list task_group.groups as group>
         <li><a href="#">${group.name}</a></li>
         </#list>

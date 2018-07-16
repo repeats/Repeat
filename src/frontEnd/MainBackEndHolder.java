@@ -252,7 +252,7 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/****************************************Record and replay****************************************************/
-	protected void switchRecord() {
+	public void switchRecord() {
 		if (isReplaying) { // Do not switch record when replaying.
 			return;
 		}
@@ -273,7 +273,7 @@ public class MainBackEndHolder {
 		}
 	}
 
-	protected void switchReplay() {
+	public void switchReplay() {
 		if (isRecording) { // Cannot switch replay when recording.
 			return;
 		}
@@ -499,7 +499,7 @@ public class MainBackEndHolder {
 		}
 	}
 
-	protected void addCurrentTask() {
+	public void addCurrentTask() {
 		addCurrentTask(currentGroup);
 	}
 
@@ -524,6 +524,10 @@ public class MainBackEndHolder {
 
 	protected void removeCurrentTask() {
 		int selectedRow = main.tTasks.getSelectedRow();
+		removeCurrentTask(selectedRow);
+	}
+
+	public void removeCurrentTask(int selectedRow) {
 		selectedTaskIndex = selectedRow;
 
 		if (selectedRow >= 0 && selectedRow < currentGroup.getTasks().size()) {
@@ -536,7 +540,7 @@ public class MainBackEndHolder {
 			renderTasks();
 			writeConfigFile();
 		} else {
-			JOptionPane.showMessageDialog(main, "Select a row from the table to remove");
+			LOGGER.info("Select a row from the table to remove.");
 		}
 	}
 
@@ -560,15 +564,24 @@ public class MainBackEndHolder {
 
 	protected void moveTaskUp() {
 		int selected = main.tTasks.getSelectedRow();
-		if (selected >= 1) {
-			Collections.swap(currentGroup.getTasks(), selected, selected - 1);
-			main.tTasks.setRowSelectionInterval(selected - 1, selected - 1);
-			renderTasks();
+		moveTaskUp(selected);
+	}
+
+	public void moveTaskUp(int selected) {
+		if (selected < 1) {
+			return;
 		}
+		Collections.swap(currentGroup.getTasks(), selected, selected - 1);
+		main.tTasks.setRowSelectionInterval(selected - 1, selected - 1);
+		renderTasks();
 	}
 
 	protected void moveTaskDown() {
 		int selected = main.tTasks.getSelectedRow();
+		moveTaskDown(selected);
+	}
+
+	public void moveTaskDown(int selected) {
 		if (selected >= 0 && selected < currentGroup.getTasks().size() - 1) {
 			Collections.swap(currentGroup.getTasks(), selected, selected + 1);
 			main.tTasks.setRowSelectionInterval(selected + 1, selected + 1);
@@ -610,28 +623,32 @@ public class MainBackEndHolder {
 		}
 	}
 
-	protected void overrideTask() {
+	protected void overwriteTask() {
 		int selected = main.tTasks.getSelectedRow();
 		if (selected >= 0) {
-			if (customFunction == null) {
-				JOptionPane.showMessageDialog(main, "Nothing to override. Compile first?");
-				return;
-			}
-
-			UserDefinedAction toRemove = currentGroup.getTasks().get(selected);
-			customFunction.override(toRemove);
-
-			unregisterTask(toRemove);
-			keysManager.registerTask(customFunction);
-			currentGroup.getTasks().set(selected, customFunction);
-
-			LOGGER.info("Successfully overridden task " + customFunction.getName());
-			customFunction = null;
-			if (!config.writeConfig()) {
-				LOGGER.warning("Unable to update config.");
-			}
+			overwriteTask(selected);
 		} else {
 			JOptionPane.showMessageDialog(main, "Select a task to override");
+		}
+	}
+
+	public void overwriteTask(int selected) {
+		if (customFunction == null) {
+			LOGGER.info("Nothing to override. Compile first?");
+			return;
+		}
+
+		UserDefinedAction toRemove = currentGroup.getTasks().get(selected);
+		customFunction.override(toRemove);
+
+		unregisterTask(toRemove);
+		keysManager.registerTask(customFunction);
+		currentGroup.getTasks().set(selected, customFunction);
+
+		LOGGER.info("Successfully overridden task " + customFunction.getName());
+		customFunction = null;
+		if (!config.writeConfig()) {
+			LOGGER.warning("Unable to update config.");
 		}
 	}
 
@@ -742,27 +759,35 @@ public class MainBackEndHolder {
 	}
 
 	private void loadSource(int row) {
-		// Load source if possible
-		if (row < 0 || row >= currentGroup.getTasks().size()) {
+		String source = getSource(row);
+		if (source == null) {
 			return;
 		}
+
+		main.taSource.setText(source);
+	}
+
+	public String getSource(int row) {
+		// Load source if possible
+		if (row < 0 || row >= currentGroup.getTasks().size()) {
+			return null;
+		}
 		if (selectedTaskIndex == row) {
-			return;
+			return null;
 		}
 
 		UserDefinedAction task = currentGroup.getTasks().get(row);
 		String source = task.getSource();
 
 		if (source == null) {
-			JOptionPane.showMessageDialog(main, "Cannot retrieve source code for task " + task.getName() + ".\nTry recompiling and add again");
-			return;
+			LOGGER.warning("Cannot retrieve source code for task " + task.getName() + ".\nTry recompiling and add again");
+			return null;
 		}
 
 		if (!task.getCompiler().equals(getCompiler().getName())) {
 			main.languageSelection.get(task.getCompiler()).setSelected(true);
 		}
-
-		main.taSource.setText(source);
+		return source;
 	}
 
 	/**

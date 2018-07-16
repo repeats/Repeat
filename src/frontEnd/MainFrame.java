@@ -667,7 +667,7 @@ public class MainFrame extends JFrame {
 		bModifyTask.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.overrideTask();
+				backEnd.overwriteTask();
 			}
 		});
 

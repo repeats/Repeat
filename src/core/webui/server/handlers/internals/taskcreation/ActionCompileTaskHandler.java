@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internals;
+package core.webui.server.handlers.internals.taskcreation;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +30,7 @@ public class ActionCompileTaskHandler extends AbstractSingleMethodHttpHandler {
 
 		String source = new String(data, StandardCharsets.UTF_8);
 		boolean result = backEndHolder.compileSource(source, null);
-		if (result) {
+		if (!result) {
 			LOGGER.warning("Unable to compile source code.");
 		}
 

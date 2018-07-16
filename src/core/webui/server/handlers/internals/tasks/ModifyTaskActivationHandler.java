@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internals;
+package core.webui.server.handlers.internals.tasks;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

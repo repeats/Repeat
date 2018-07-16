@@ -209,18 +209,18 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-xs-6">
-                        <button title="${tooltips.record}" type="button" class="btn btn-default repeat-btn-record">&nbsp</button>
+                        <button id="button-record" title="${tooltips.record}" type="button" class="btn btn-default repeat-btn-record">&nbsp</button>
                         Mouse position: <button id="mouse-position" type="button" class="btn btn-default">0, 0</button>
                     </div>
                     <div class="col-xs-6">
-                        <div class="btn-group pull-right">
+                        <div id="task-groups-dropdown-container" class="btn-group pull-right">
                             <@task_groups_dropdown_fragment.fragment/>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-6">
-                        <button title="${tooltips.replay}" type="button" class="btn btn-default repeat-btn-replay">&nbsp</button>
+                        <button id="button-replay" title="${tooltips.replay}" type="button" class="btn btn-default repeat-btn-replay">&nbsp</button>
                         Repeat <button type="button" class="btn btn-default">1</button> times(s) with delay each time <button type="button" class="btn btn-default">0</button> ms, and speed up of <button type="button" class="btn btn-default">1.0</button>
                     </div>
                     <div class="col-xs-6 pull-right">
@@ -229,19 +229,19 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-6">
-                        <button title="${tooltips.compile}" type="button" class="btn btn-default repeat-btn-compile">&nbsp</button>
-                        <button title="${tooltips.run}" type="button" class="btn btn-default repeat-btn-run">&nbsp</button>
-                        <button title="${tooltips.editCode}" type="button" class="btn btn-default repeat-btn-edit-code">&nbsp</button>
-                        <button title="${tooltips.reload}" type="button" class="btn btn-default repeat-btn-reload">&nbsp</button>
+                        <button id="button-compile" title="${tooltips.compile}" type="button" class="btn btn-default repeat-btn-compile">&nbsp</button>
+                        <button id="button-run" title="${tooltips.run}" type="button" class="btn btn-default repeat-btn-run">&nbsp</button>
+                        <button id="button-edit-code" title="${tooltips.editCode}" type="button" class="btn btn-default repeat-btn-edit-code">&nbsp</button>
+                        <button id="button-reload" title="${tooltips.reload}" type="button" class="btn btn-default repeat-btn-reload">&nbsp</button>
                     </div>
                     <div class="col-xs-6">
                         <div class="pull-right">
-                            <button title="${tooltips.add}" type="button" class="btn btn-default repeat-btn-add">&nbsp</button>
-                            <button title="${tooltips.overwrite}" type="button" class="btn btn-default repeat-btn-overwrite">&nbsp</button>
-                            <button title="${tooltips.delete}" type="button" class="btn btn-default repeat-btn-delete">&nbsp</button>
-                            <button title="${tooltips.up}" type="button" class="btn btn-default repeat-btn-up">&nbsp</button>
-                            <button title="${tooltips.down}" type="button" class="btn btn-default repeat-btn-down">&nbsp</button>
-                            <button title="${tooltips.changeGroup}" type="button" class="btn btn-default repeat-btn-change-group">&nbsp</button>
+                            <button id="button-add" title="${tooltips.add}" type="button" class="btn btn-default repeat-btn-add">&nbsp</button>
+                            <button id="button-overwrite" title="${tooltips.overwrite}" type="button" class="btn btn-default repeat-btn-overwrite">&nbsp</button>
+                            <button id="button-delete" title="${tooltips.delete}" type="button" class="btn btn-default repeat-btn-delete">&nbsp</button>
+                            <button id="button-up" title="${tooltips.up}" type="button" class="btn btn-default repeat-btn-up">&nbsp</button>
+                            <button id="button-down" title="${tooltips.down}" type="button" class="btn btn-default repeat-btn-down">&nbsp</button>
+                            <button id="button-change-group" title="${tooltips.changeGroup}" type="button" class="btn btn-default repeat-btn-change-group">&nbsp</button>
                         </div>
                     </div>
                 </div>
@@ -255,7 +255,7 @@
                     <div class="col-xs-6">
                         <div class="row">
                             <div class="col-xs-12 header-fixed">
-                                <table id="tableTasks" class="table table-striped table-header-fixed" >
+                                <table id="table-tasks" class="table table-header-fixed" >
                                     <@task_fragment.fragment/>
                                 </table>
                             </div>
@@ -283,18 +283,24 @@
     <@common_js_fragment.fragment/>
 
     <!--  JavaScript for this page.    -->
+    <script src="/static/js/repeat/button-index-page-actions.js"></script>
     <script src="/static/js/repeat/logs-textarea.js"></script>
     <script src="/static/js/repeat/mouse-position.js"></script>
+    <script src="/static/js/repeat/record-replay.js"></script>
     <script src="/static/js/repeat/source-textarea.js"></script>
+    <script src="/static/js/repeat/task-groups-dropdown.js"></script>
     <script src="/static/js/repeat/table-tasks.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function(){
             $('.dropdown-toggle').dropdown();
+            registerIndexPageButtonActions();
             registerLogHandler();
             registerMousePosition();
+            registerRecordReplayActions();
             registerSourceTextArea();
             registerTableTasks();
+            registerTaskGroupsDropdownEvents();
         });
     </script>
 
