@@ -1,12 +1,11 @@
 function registerTableTasks() {
-    registerCells(document.getElementById("table-tasks"));
+    registerCells();
 
-    $('#modal-task-name-save').click(function() {
-        newNameOnClick();
-    });
+    $('#modal-task-name-save').click(newNameOnClick);
 }
 
-function registerCells(table) {
+function registerCells() {
+    var table = document.getElementById("table-tasks");
     /* Get all rows from your 'table' but not the first one 
     * that includes headers. */
     var rows = $('#table-tasks').find("tr").not(":first");
@@ -45,8 +44,8 @@ function tableTaskOnClick(cell, row, col) {
     }
 
     if (col == 2) { // Enable/disable.
-        $.post("/internals/toggle/task-enabled", JSON.stringify({task: row}), function(status) {
-            refreshTasksWithoutIndex();
+        $.post("/internals/toggle/task-enabled", JSON.stringify({task: row}), function(data) {
+            refreshTasksWithDataAndIndex(data, row);
         }).fail(function(response) {
             alert('Error toggling state: ' + response.responseText);
         });
@@ -55,31 +54,27 @@ function tableTaskOnClick(cell, row, col) {
     fillSourceForTask(row);
 }
 
-function newNameOnClick() {
+function newNameOnClick(e) {
     var row = $('#modal-task-name-row').val();
     var newName = $('#new-task-name').val();
 
-    $.post("/internals/modify/task-name", JSON.stringify({task: row, name: newName}), function(status) {
-        refreshTasksWithoutIndex();
+    $.post("/internals/modify/task-name", JSON.stringify({task: row, name: newName}), function(data) {
+        refreshTasksWithDataAndIndex(data, row);
     }).fail(function(response) {
         alert('Error changing name: ' + response.responseText);
     });
 }
 
-function refreshTasksWithoutIndex() {
+function refreshTasksWithData(data) {
     var index = getSelectedTaskIndex();
-    refreshTasksWithSelectedIndex(index);    
+    refreshTasksWithDataAndIndex(data, index);
 }
 
-function refreshTasksWithSelectedIndex(index) {
+function refreshTasksWithDataAndIndex(data, index) {
     var tableElement = $("#table-tasks");
-    $.get("/internals/get/rendered-tasks", function(data) {
-        tableElement.html(data);
-        registerCells(document.getElementById("table-tasks"));
-        setSelectedTask(index);
-    }).fail(function(response) {
-        alert('Error refreshing table: ' + response.responseText);
-    });
+    tableElement.html(data);
+    registerCells();
+    setSelectedTask(index);
 }
 
 function setSelectedTask(index) {

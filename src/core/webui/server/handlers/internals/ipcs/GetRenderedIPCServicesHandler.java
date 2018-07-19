@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internals.taskmanagement;
+package core.webui.server.handlers.internals.ipcs;
 
 import java.io.IOException;
 
@@ -11,15 +11,15 @@ import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class GetRenderedTasks extends AbstractUIHttpHandler {
+public class GetRenderedIPCServicesHandler extends AbstractUIHttpHandler {
 
-	public GetRenderedTasks(ObjectRenderer objectRenderer) {
+	public GetRenderedIPCServicesHandler(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.GET_METHOD);
 	}
 
 	@Override
 	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
-		return renderedTaskGroup(exchange);
+		return renderedIpcServices(exchange);
 	}
 }

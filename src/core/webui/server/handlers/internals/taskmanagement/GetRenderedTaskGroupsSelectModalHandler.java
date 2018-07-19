@@ -1,8 +1,10 @@
-package core.webui.server.handlers.internals;
+package core.webui.server.handlers.internals.taskmanagement;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -15,11 +17,11 @@ import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
-import core.webui.server.handlers.renderedobjects.RenderedTaskGroupButton;
+import core.webui.server.handlers.renderedobjects.RenderedTaskGroupForSelectModal;
 
-public class GetRenderedTaskGroupsDropdown extends AbstractUIHttpHandler {
+public class GetRenderedTaskGroupsSelectModalHandler extends AbstractUIHttpHandler {
 
-	public GetRenderedTaskGroupsDropdown(ObjectRenderer objectRenderer) {
+	public GetRenderedTaskGroupsSelectModalHandler(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.GET_METHOD);
 	}
 
@@ -28,14 +30,14 @@ public class GetRenderedTaskGroupsDropdown extends AbstractUIHttpHandler {
 			throws HttpException, IOException {
 		Map<String, Object> data = new HashMap<>();
 		TaskGroup group = backEndHolder.getCurrentTaskGroup();
-		data.put("taskGroup", RenderedTaskGroupButton.fromTaskGroups(group, backEndHolder.getTaskGroups()));
+		List<TaskGroup> groups = backEndHolder.getTaskGroups();
+		data.put("groups", groups.stream().map(g -> RenderedTaskGroupForSelectModal.fromTaskGroups(g, group)).collect(Collectors.toList()));
 
-		String page = objectRenderer.render("rendered_task_groups_dropdown", data);
+		String page = objectRenderer.render("rendered_task_groups_select_modal", data);
 		if (page == null) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Failed to render page.");
 		}
 
 		return HttpServerUtilities.prepareHttpResponse(exchange, HttpStatus.SC_OK, page);
 	}
-
 }

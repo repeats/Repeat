@@ -7,9 +7,9 @@ function registerTaskGroupsDropdownEvents() {
 }
 
 function selectTaskGroup(index) {
-	$.post("/internals/action/switch-task-group", JSON.stringify({group: index}), function(status) {
+	$.post("/internals/action/switch-task-group", JSON.stringify({group: index}), function(data) {
         refreshTaskGroupDropDown();
-        refreshTasksWithoutIndex();
+        refreshTasksWithData(data);
     }).fail(function(response) {
         alert('Error sending request to switch task group: ' + response.responseText);
     });

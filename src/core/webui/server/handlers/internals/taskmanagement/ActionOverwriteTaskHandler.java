@@ -10,12 +10,14 @@ import org.apache.http.protocol.HttpContext;
 
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class ActionOverwriteTaskHandler extends AbstractSingleMethodHttpHandler {
+public class ActionOverwriteTaskHandler extends AbstractUIHttpHandler {
 
-	public ActionOverwriteTaskHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ActionOverwriteTaskHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -31,6 +33,6 @@ public class ActionOverwriteTaskHandler extends AbstractSingleMethodHttpHandler 
 		}
 
 		backEndHolder.overwriteTask(index);
-		return HttpServerUtilities.prepareTextResponse(exchange, 200, "");
+		return renderedTaskGroup(exchange);
 	}
 }

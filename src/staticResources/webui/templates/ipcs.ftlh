@@ -15,6 +15,31 @@
 <body>
 
 <div class="wrapper">
+    <!-- Modals -->
+    <div id="modal-ipc-port" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Enter a new port:</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label" for="new-ipc-port">New port:</label>
+                        <input class="form-check-input" name="new-ipc-port" type="text" id="new-ipc-port">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-ipc-service-row" style="display:none;">0</div>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="modal-ipc-port-save">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modals -->
+
     <div class="main-panel">
         <nav class="navbar navbar-default navbar-fixed">
             <div class="container-fluid">
@@ -43,11 +68,11 @@
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
-                    <button title="${tooltips.run}" type="button" class="btn btn-default repeat-btn-replay">&nbsp</button>
-                    <button title="${tooltips.stop}" type="button" class="btn btn-default repeat-btn-stop">&nbsp</button>
+                    <button id="button-run" title="${tooltips.run}" type="button" class="btn btn-default repeat-btn-replay">&nbsp</button>
+                    <button id="button-stop" title="${tooltips.stop}" type="button" class="btn btn-default repeat-btn-stop">&nbsp</button>
                 </div>
                 <div class="row">
-                    <table class="table">
+                    <table id="ipcs-table" class="table">
                         <@ipcs_fragment.fragment/>
                     </table>
                 </div>
@@ -63,23 +88,12 @@
 </body>
     <@common_js_fragment.fragment/>
 
+    <!--  JavaScript for this page.    -->
+    <script src="/static/js/repeat/ipcs.js"></script>
+
     <script type="text/javascript">
     $(document).ready(function(){
-        $(function() {
-            /* Get all rows from your 'table' but not the first one 
-            * that includes headers. */
-            var rows = $('tr').not(":first");
-
-            /* Create 'click' event handler for rows */
-            rows.on('click', function(e) {
-                /* Get current row */
-                var row = $(this);
-
-                /* Otherwise just highlight one row and clean others */
-                rows.removeClass('table-highlight');
-                row.addClass('table-highlight');
-            });
-        });
+        registerIpcPage();
     });
     </script>
 

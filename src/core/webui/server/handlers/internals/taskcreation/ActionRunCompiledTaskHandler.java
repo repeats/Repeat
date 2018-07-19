@@ -19,7 +19,7 @@ public class ActionRunCompiledTaskHandler extends AbstractSingleMethodHttpHandle
 	@Override
 	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
-		backEndHolder.switchRunningCompiledAction();
+		backEndHolder.runCompiledAction();
 		return HttpServerUtilities.prepareTextResponse(exchange, 200, "");
 	}
 

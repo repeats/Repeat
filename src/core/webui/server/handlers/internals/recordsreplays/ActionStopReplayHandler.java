@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internals.taskmanagement;
+package core.webui.server.handlers.internals.recordsreplays;
 
 import java.io.IOException;
 
@@ -7,19 +7,19 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
+import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
-import core.webui.server.handlers.AbstractUIHttpHandler;
-import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class GetRenderedTasks extends AbstractUIHttpHandler {
+public class ActionStopReplayHandler extends AbstractSingleMethodHttpHandler {
 
-	public GetRenderedTasks(ObjectRenderer objectRenderer) {
-		super(objectRenderer, AbstractSingleMethodHttpHandler.GET_METHOD);
+	public ActionStopReplayHandler() {
+		super(AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
 	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
-		return renderedTaskGroup(exchange);
+		backEndHolder.stopReplay();
+		return HttpServerUtilities.prepareHttpResponse(exchange, 200, "");
 	}
 }

@@ -10,12 +10,14 @@ import org.apache.http.protocol.HttpContext;
 
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class ActionMoveTaskUpHandler extends AbstractSingleMethodHttpHandler {
+public class ActionMoveTaskUpHandler extends AbstractUIHttpHandler {
 
-	public ActionMoveTaskUpHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ActionMoveTaskUpHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -31,6 +33,6 @@ public class ActionMoveTaskUpHandler extends AbstractSingleMethodHttpHandler {
 		}
 
 		backEndHolder.moveTaskUp(index);
-		return HttpServerUtilities.prepareTextResponse(exchange, 200, "");
+		return renderedTaskGroup(exchange);
 	}
 }

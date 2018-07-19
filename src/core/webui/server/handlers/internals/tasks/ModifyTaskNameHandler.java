@@ -11,13 +11,15 @@ import org.apache.http.protocol.HttpContext;
 import core.userDefinedTask.UserDefinedAction;
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import utilities.StringUtilities;
 
-public class ModifyTaskNameHandler extends AbstractSingleMethodHttpHandler {
+public class ModifyTaskNameHandler extends AbstractUIHttpHandler {
 
-	public ModifyTaskNameHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ModifyTaskNameHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -38,6 +40,6 @@ public class ModifyTaskNameHandler extends AbstractSingleMethodHttpHandler {
 		}
 
 		task.setName(name);
-		return HttpServerUtilities.prepareHttpResponse(exchange, 200, "");
+		return renderedTaskGroup(exchange);
 	}
 }

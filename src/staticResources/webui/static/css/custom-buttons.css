@@ -28,6 +28,12 @@
 	background-size: 100%;
 }
 
+.repeat-btn-stop-running-compiled {
+	border: none;
+	background-image: url( '/static/img/buttons/stop.gif' );
+	background-size: 100%;
+}
+
 .repeat-btn-edit-code {
 	border: none;
 	background-image: url( '/static/img/buttons/edit_code.png' );

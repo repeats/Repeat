@@ -67,7 +67,7 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
         	return HttpServerUtilities.prepareTextResponse(exchange, 400, String.format("Path is a directory %s.", file.getAbsolutePath()));
         } else {
             response.setStatusCode(HttpStatus.SC_OK);
-            response.addHeader("Cache-Control", "max-age=31536000"); // Max age = 1 year.
+            response.addHeader("Cache-Control", "max-age=86400"); // Max age = 1 day.
             String contentType = contentType(file.toPath());
             NFileEntity body = new NFileEntity(file, ContentType.create(contentType));
             response.setEntity(body);

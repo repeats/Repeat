@@ -15,9 +15,9 @@ import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class ActionStopIPCServiceHandler extends AbstractUIHttpHandler {
+public class ToggleIPCServiceLaunchAtStartupHandler extends AbstractUIHttpHandler {
 
-	public ActionStopIPCServiceHandler(ObjectRenderer objectRenderer) {
+	public ToggleIPCServiceLaunchAtStartupHandler(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
@@ -34,11 +34,7 @@ public class ActionStopIPCServiceHandler extends AbstractUIHttpHandler {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Unable to get IPC service.");
 		}
 
-		try {
-			service.stopRunning();
-		} catch (IOException e) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Unable to stop IPC service.");
-		}
+		service.setLaunchAtStartup(!service.isLaunchAtStartup());
 		return renderedIpcServices(exchange);
 	}
 }

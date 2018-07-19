@@ -11,12 +11,14 @@ import org.apache.http.protocol.HttpContext;
 import core.ipc.IIPCService;
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class ActionRunIPCServiceHandler extends AbstractSingleMethodHttpHandler {
+public class ActionRunIPCServiceHandler extends AbstractUIHttpHandler {
 
-	public ActionRunIPCServiceHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ActionRunIPCServiceHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -37,7 +39,7 @@ public class ActionRunIPCServiceHandler extends AbstractSingleMethodHttpHandler 
 		} catch (IOException e) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Unable to start IPC service.");
 		}
-		return HttpServerUtilities.prepareHttpResponse(exchange, 200, "");
+		return renderedIpcServices(exchange);
 	}
 
 }

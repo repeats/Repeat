@@ -8,13 +8,11 @@ import java.util.Map;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
-import org.apache.http.HttpStatus;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
 import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedIPCService;
 import core.webui.server.handlers.renderedobjects.TooltipsIPCPage;
@@ -37,10 +35,6 @@ public class IPCPageHandler extends AbstractUIHttpHandler {
 		data.put("ipcs", services);
 		data.put("tooltips", new TooltipsIPCPage());
 
-		String page = objectRenderer.render("ipcs", data);
-		if (page == null) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Failed to render page.");
-		}
-		return HttpServerUtilities.prepareHttpResponse(exchange, HttpStatus.SC_OK, page);
+		return renderedPage(exchange, "ipcs", data);
 	}
 }

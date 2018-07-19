@@ -12,12 +12,14 @@ import org.apache.http.protocol.HttpContext;
 import core.userDefinedTask.TaskGroup;
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import utilities.NumberUtility;
 
-public class ActionSwitchTaskGroupHandler extends AbstractSingleMethodHttpHandler {
+public class ActionSwitchTaskGroupHandler extends AbstractUIHttpHandler {
 
-	public ActionSwitchTaskGroupHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ActionSwitchTaskGroupHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -39,6 +41,6 @@ public class ActionSwitchTaskGroupHandler extends AbstractSingleMethodHttpHandle
 		}
 
 		backEndHolder.setCurrentTaskGroup(groups.get(index));
-		return HttpServerUtilities.prepareTextResponse(exchange, 200, "");
+		return renderedTaskGroup(exchange);
 	}
 }

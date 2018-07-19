@@ -12,13 +12,15 @@ import core.ipc.IIPCService;
 import core.ipc.IPCServiceWithModifablePort;
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import utilities.NumberUtility;
 
-public class ModifyIPCServicePortHandler extends AbstractSingleMethodHttpHandler {
+public class ModifyIPCServicePortHandler extends AbstractUIHttpHandler {
 
-	public ModifyIPCServicePortHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ModifyIPCServicePortHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -49,6 +51,6 @@ public class ModifyIPCServicePortHandler extends AbstractSingleMethodHttpHandler
 		}
 
 		service.setPort(port);
-		return HttpServerUtilities.prepareHttpResponse(exchange, 200, "");
+		return renderedIpcServices(exchange);
 	}
 }

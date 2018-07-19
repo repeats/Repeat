@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
-import org.apache.http.HttpStatus;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
@@ -37,11 +36,6 @@ public class TaskActivationPageHandler extends AbstractUIHttpHandler {
 		Map<String, Object> data = new HashMap<>();
 		data.put("activation", RenderedActivation.fromActivation(task.getActivation()));
 
-		String page = objectRenderer.render("task_activation", data);
-		if (page == null) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Failed to render page.");
-		}
-
-		return HttpServerUtilities.prepareHttpResponse(exchange, HttpStatus.SC_OK, page);
+		return renderedPage(exchange, "task_activation", data);
 	}
 }

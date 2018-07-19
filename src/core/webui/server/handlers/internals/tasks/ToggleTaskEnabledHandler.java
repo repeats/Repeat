@@ -11,12 +11,14 @@ import org.apache.http.protocol.HttpContext;
 import core.userDefinedTask.UserDefinedAction;
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class ToggleTaskEnabledHandler extends AbstractSingleMethodHttpHandler {
+public class ToggleTaskEnabledHandler extends AbstractUIHttpHandler {
 
-	public ToggleTaskEnabledHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ToggleTaskEnabledHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -33,6 +35,6 @@ public class ToggleTaskEnabledHandler extends AbstractSingleMethodHttpHandler {
 		}
 
 		task.setEnabled(!task.isEnabled());
-		return HttpServerUtilities.prepareHttpResponse(exchange, 200, "");
+		return renderedTaskGroup(exchange);
 	}
 }

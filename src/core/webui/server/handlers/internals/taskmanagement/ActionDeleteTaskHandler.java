@@ -10,12 +10,14 @@ import org.apache.http.protocol.HttpContext;
 
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
+import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class ActionDeleteTaskHandler extends AbstractSingleMethodHttpHandler {
+public class ActionDeleteTaskHandler extends AbstractUIHttpHandler {
 
-	public ActionDeleteTaskHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public ActionDeleteTaskHandler(ObjectRenderer objectRenderer) {
+		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -31,6 +33,6 @@ public class ActionDeleteTaskHandler extends AbstractSingleMethodHttpHandler {
 		}
 
 		backEndHolder.removeCurrentTask(index);
-		return HttpServerUtilities.prepareTextResponse(exchange, 200, "");
+		return renderedTaskGroup(exchange);
 	}
 }

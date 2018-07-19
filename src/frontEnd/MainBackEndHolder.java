@@ -79,7 +79,7 @@ public class MainBackEndHolder {
 	protected final Config config;
 
 	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
-	private boolean isRecording, isReplaying, isRunning;
+	private boolean isRecording, isReplaying, isRunningCompiledTask;
 
 	private File tempSourceFile;
 
@@ -252,7 +252,21 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/****************************************Record and replay****************************************************/
-	public void switchRecord() {
+	public synchronized void startRecording() {
+		if (isRecording) {
+			return;
+		}
+		switchRecord();
+	}
+
+	public synchronized void stopRecording() {
+		if (!isRecording) {
+			return;
+		}
+		switchRecord();
+	}
+
+	protected synchronized void switchRecord() {
 		if (isReplaying) { // Do not switch record when replaying.
 			return;
 		}
@@ -273,7 +287,21 @@ public class MainBackEndHolder {
 		}
 	}
 
-	public void switchReplay() {
+	public synchronized void startReplay() {
+		if (isReplaying) {
+			return;
+		}
+		switchReplay();
+	}
+
+	public synchronized void stopReplay() {
+		if (!isReplaying) {
+			return;
+		}
+		switchReplay();
+	}
+
+	protected void switchReplay() {
 		if (isRecording) { // Cannot switch replay when recording.
 			return;
 		}
@@ -319,9 +347,23 @@ public class MainBackEndHolder {
 		}
 	}
 
-	public void switchRunningCompiledAction() {
-		if (isRunning) {
-			isRunning = false;
+	public synchronized void runCompiledAction() {
+		if (isRunningCompiledTask) {
+			return;
+		}
+		switchRunningCompiledAction();
+	}
+
+	public synchronized void stopRunningCompiledAction() {
+		if (!isRunningCompiledTask) {
+			return;
+		}
+		switchRunningCompiledAction();
+	}
+
+	protected synchronized void switchRunningCompiledAction() {
+		if (isRunningCompiledTask) {
+			isRunningCompiledTask = false;
 			if (compiledExecutor != null) {
 				if (compiledExecutor != Thread.currentThread()) {
 					while (compiledExecutor.isAlive()) {
@@ -342,7 +384,7 @@ public class MainBackEndHolder {
 				return;
 			}
 
-			isRunning = true;
+			isRunningCompiledTask = true;
 
 			compiledExecutor = new Thread(new Runnable() {
 			    @Override
@@ -604,23 +646,26 @@ public class MainBackEndHolder {
 				return;
 			}
 
-			TaskGroup destination = taskGroups.get(newGroupIndex);
-			if (destination == currentGroup) {
-				JOptionPane.showMessageDialog(main, "Cannot move to the same group...");
-				return;
-			}
-
-			if (currentGroup.isEnabled() ^ destination.isEnabled()) {
-				JOptionPane.showMessageDialog(main, "Two groups must be both enabled or disabled to move...");
-				return;
-			}
-
-			UserDefinedAction toMove = currentGroup.getTasks().remove(selected);
-			destination.getTasks().add(toMove);
-
-			renderTasks();
-			writeConfigFile();
+			changeTaskGroup(selected, newGroupIndex);
 		}
+	}
+
+	public void changeTaskGroup(int taskIndex, int newGroupIndex) {
+		TaskGroup destination = taskGroups.get(newGroupIndex);
+		if (destination == currentGroup) {
+			LOGGER.warning("Cannot move to the same group.");
+			return;
+		}
+
+		if (currentGroup.isEnabled() ^ destination.isEnabled()) {
+			LOGGER.warning("Two groups must be both enabled or disabled to move...");
+			return;
+		}
+
+		UserDefinedAction toMove = currentGroup.getTasks().remove(taskIndex);
+		destination.getTasks().add(toMove);
+		renderTasks();
+		writeConfigFile();
 	}
 
 	protected void overwriteTask() {
@@ -1097,6 +1142,18 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/***************************************Generic Getters and Setters*******************************************/
+	public synchronized boolean isRecording() {
+		return isRecording;
+	}
+
+	public synchronized boolean isReplaying() {
+		return isReplaying;
+	}
+
+	public synchronized boolean isRunningCompiledAction() {
+		return isRunningCompiledTask;
+	}
+
 	public String getLogs() {
 		return logHolder.toString();
 	}

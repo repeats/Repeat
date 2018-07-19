@@ -32,7 +32,7 @@
                 </div>
                 <div class="modal-footer">
                     <div id="modal-task-name-row" style="display:none;">0</div>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="modal-task-name-save">Save</button>
+                    <button id="modal-task-name-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -69,7 +69,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -105,7 +105,26 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-move-to-task-group" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select a task group.</h4>
+                </div>
+                <div class="modal-body" id="modal-move-to-task-group-body">
+                    <!-- Will be filled in at query time. -->
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-move-to-task-group-row" style="display:none;">0</div>
+                    <button id="modal-move-to-task-group-move" type="button" class="btn btn-primary" data-dismiss="modal">Move</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -283,6 +302,7 @@
     <@common_js_fragment.fragment/>
 
     <!--  JavaScript for this page.    -->
+    <script src="/static/js/repeat/polling-common.js"></script>
     <script src="/static/js/repeat/button-index-page-actions.js"></script>
     <script src="/static/js/repeat/logs-textarea.js"></script>
     <script src="/static/js/repeat/mouse-position.js"></script>
