@@ -14,6 +14,7 @@ import org.apache.http.protocol.HttpContext;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
+import core.webui.server.handlers.renderedobjects.RenderedReplayConfig;
 import core.webui.server.handlers.renderedobjects.RenderedTaskGroupButton;
 import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
 import core.webui.server.handlers.renderedobjects.TooltipsIndexPage;
@@ -29,6 +30,7 @@ public class IndexPageHandler extends AbstractUIHttpHandler {
 	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
 		Map<String, Object> data = new HashMap<>();
+		data.put("replayConfig", RenderedReplayConfig.fromReplayConfig(backEndHolder.getReplayConfig()));
 
 		TaskGroup group = backEndHolder.getCurrentTaskGroup();
 		data.put("taskGroup", RenderedTaskGroupButton.fromTaskGroups(group, backEndHolder.getTaskGroups()));

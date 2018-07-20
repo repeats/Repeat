@@ -16,6 +16,28 @@
 
 <div class="wrapper">
     <!-- Modals -->
+    <div id="modal-replay-config" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="modal-replay-config-title" class="modal-title">Enter a replay config.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label id="label-replay-config" class="form-check-label" for="new-replay-config-value">New replay config:</label>
+                        <input class="form-check-input" name="new-replay-config-value" type="text" id="new-replay-config-value">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-replay-config-param-name" style="display:none;">0</div>
+                    <button id="modal-replay-config-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="modal-task-name" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -240,7 +262,7 @@
                 <div class="row">
                     <div class="col-xs-6">
                         <button id="button-replay" title="${tooltips.replay}" type="button" class="btn btn-default repeat-btn-replay">&nbsp</button>
-                        Repeat <button type="button" class="btn btn-default">1</button> times(s) with delay each time <button type="button" class="btn btn-default">0</button> ms, and speed up of <button type="button" class="btn btn-default">1.0</button>
+                        Repeat <button id="button-replay-count" type="button" class="btn btn-default">${replayConfig.count}</button> times(s) with delay each time <button id="button-replay-delay" type="button" class="btn btn-default">${replayConfig.delay}</button> ms, and speed up of <button id="button-replay-speedup" type="button" class="btn btn-default">${replayConfig.speedup}</button>
                     </div>
                     <div class="col-xs-6 pull-right">
                         <span class="align-middle pull-right"><div>Execution time: <span class="label label-info">${executionTime}</span></div></span>

@@ -33,6 +33,6 @@ public class ActionDeleteTaskHandler extends AbstractUIHttpHandler {
 		}
 
 		backEndHolder.removeCurrentTask(index);
-		return renderedTaskGroup(exchange);
+		return renderedTaskForGroup(exchange);
 	}
 }

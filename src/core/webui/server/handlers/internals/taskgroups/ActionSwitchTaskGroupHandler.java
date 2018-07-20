@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internals;
+package core.webui.server.handlers.internals.taskgroups;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +29,15 @@ public class ActionSwitchTaskGroupHandler extends AbstractUIHttpHandler {
 		if (params == null) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Unable to get POST parameters.");
 		}
+
+		String rendering = params.get("render");
+		if (rendering == null) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Missing `render` parameter.");
+		}
+		if (!rendering.equals("tasks") && !rendering.equals("groups")) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Render parameter only takes `tasks` or `groups`.");
+		}
+
 		String groupIndex = params.get("group");
 		if (groupIndex == null || !NumberUtility.isNonNegativeInteger(groupIndex)) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Group index must be provided as non-negative integer.");
@@ -41,6 +50,12 @@ public class ActionSwitchTaskGroupHandler extends AbstractUIHttpHandler {
 		}
 
 		backEndHolder.setCurrentTaskGroup(groups.get(index));
-		return renderedTaskGroup(exchange);
+
+		if (rendering.equals("tasks")) {
+			return renderedTaskForGroup(exchange);
+		} else if (rendering.equals("groups")) {
+			return renderedTaskGroups(exchange);
+		}
+		return null;
 	}
 }

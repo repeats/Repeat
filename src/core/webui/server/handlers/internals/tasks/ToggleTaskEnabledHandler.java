@@ -35,6 +35,6 @@ public class ToggleTaskEnabledHandler extends AbstractUIHttpHandler {
 		}
 
 		task.setEnabled(!task.isEnabled());
-		return renderedTaskGroup(exchange);
+		return renderedTaskForGroup(exchange);
 	}
 }

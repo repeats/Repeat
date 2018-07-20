@@ -21,7 +21,6 @@ import core.webui.server.handlers.IPCPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
 import core.webui.server.handlers.TaskActivationPageHandler;
 import core.webui.server.handlers.TaskGroupsPageHandler;
-import core.webui.server.handlers.internals.ActionSwitchTaskGroupHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
 import core.webui.server.handlers.internals.GetRenderedTaskGroupsDropdown;
@@ -30,6 +29,7 @@ import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.GetRenderedIPCServicesHandler;
 import core.webui.server.handlers.internals.ipcs.ModifyIPCServicePortHandler;
 import core.webui.server.handlers.internals.ipcs.ToggleIPCServiceLaunchAtStartupHandler;
+import core.webui.server.handlers.internals.recordsreplays.ActionChangeReplayConfigHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartRecordingHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartReplayHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStopRecordingHandler;
@@ -43,6 +43,13 @@ import core.webui.server.handlers.internals.taskcreation.ActionStopRunningCompil
 import core.webui.server.handlers.internals.taskcreation.GetEdittedSourceHandler;
 import core.webui.server.handlers.internals.taskcreation.GetIsRunningCompiledTaskHandler;
 import core.webui.server.handlers.internals.taskcreation.GetSourceTemplateHandler;
+import core.webui.server.handlers.internals.taskgroups.ActionAddTaskGroupHandler;
+import core.webui.server.handlers.internals.taskgroups.ActionChangeTaskGroupNameHandler;
+import core.webui.server.handlers.internals.taskgroups.ActionDeleteTaskGroupHandler;
+import core.webui.server.handlers.internals.taskgroups.ActionMoveTaskGroupDownHandler;
+import core.webui.server.handlers.internals.taskgroups.ActionMoveTaskGroupUpHandler;
+import core.webui.server.handlers.internals.taskgroups.ActionSwitchTaskGroupHandler;
+import core.webui.server.handlers.internals.taskgroups.ToggleTaskGroupEnabledHandler;
 import core.webui.server.handlers.internals.taskmanagement.ActionAddTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.ActionChangeTaskGroupForTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.ActionDeleteTaskHandler;
@@ -94,12 +101,18 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer));
 
 		output.put("/internals/action/add-task", new ActionAddTaskHandler(objectRenderer));
+		output.put("/internals/action/add-task-group", new ActionAddTaskGroupHandler(objectRenderer));
+		output.put("/internals/action/change-task-group-name", new ActionChangeTaskGroupNameHandler(objectRenderer));
 		output.put("/internals/action/change-task-group-for-task", new ActionChangeTaskGroupForTaskHandler(objectRenderer));
+		output.put("/internals/action/change-replay-config", new ActionChangeReplayConfigHandler());
 		output.put("/internals/action/compile-task", new ActionCompileTaskHandler());
 		output.put("/internals/action/delete-task", new ActionDeleteTaskHandler(objectRenderer));
+		output.put("/internals/action/delete-task-group", new ActionDeleteTaskGroupHandler(objectRenderer));
 		output.put("/internals/action/edit-source", new ActionEditSourceHandler());
 		output.put("/internals/action/move-task-up", new ActionMoveTaskUpHandler(objectRenderer));
+		output.put("/internals/action/move-task-group-up", new ActionMoveTaskGroupUpHandler(objectRenderer));
 		output.put("/internals/action/move-task-down", new ActionMoveTaskDownHandler(objectRenderer));
+		output.put("/internals/action/move-task-group-down", new ActionMoveTaskGroupDownHandler(objectRenderer));
 		output.put("/internals/action/overwrite-task", new ActionOverwriteTaskHandler(objectRenderer));
 		output.put("/internals/action/run-compiled-task", new ActionRunCompiledTaskHandler());
 		output.put("/internals/action/run-ipc-service", new ActionRunIPCServiceHandler(objectRenderer));
@@ -129,6 +142,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/modify/task-name", new ModifyTaskNameHandler(objectRenderer));
 
 		output.put("/internals/toggle/ipc-service-launch-at-startup", new ToggleIPCServiceLaunchAtStartupHandler(objectRenderer));
+		output.put("/internals/toggle/task-group-enabled", new ToggleTaskGroupEnabledHandler(objectRenderer));
 		output.put("/internals/toggle/task-enabled", new ToggleTaskEnabledHandler(objectRenderer));
 
 		return output;

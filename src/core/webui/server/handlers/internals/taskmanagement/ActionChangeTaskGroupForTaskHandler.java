@@ -37,6 +37,6 @@ public class ActionChangeTaskGroupForTaskHandler extends AbstractUIHttpHandler {
 		}
 
 		backEndHolder.changeTaskGroup(taskIndex, groupIndex);
-		return renderedTaskGroup(exchange);
+		return renderedTaskForGroup(exchange);
 	}
 }

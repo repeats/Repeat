@@ -8,7 +8,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -224,14 +223,7 @@ public class TaskGroupFrame extends JFrame {
 		String[] name = SwingUtil.OptionPaneUtil.getInputs(new String[]{"New group name"});
 		if (name != null && name.length == 1) {
 			String newName = name[0];
-			for (TaskGroup group : backEnd.taskGroups) {
-				if (group.getName().equals(newName)) {
-					JOptionPane.showMessageDialog(TaskGroupFrame.this, "This name already exists. Try again.");
-					return;
-				}
-			}
-
-			backEnd.taskGroups.add(new TaskGroup(newName));
+			backEnd.addTaskGroup(newName);
 			renderTaskGroup();
 		}
 	}
@@ -248,7 +240,7 @@ public class TaskGroupFrame extends JFrame {
 	private void moveGroupUp() {
 		int selected = tGroups.getSelectedRow();
 		if (selected >= 1) {
-			Collections.swap(backEnd.taskGroups, selected, selected - 1);
+			backEnd.moveTaskGroupUp(selected);
 			tGroups.setRowSelectionInterval(selected - 1, selected - 1);
 			renderTaskGroup();
 		}
@@ -257,7 +249,7 @@ public class TaskGroupFrame extends JFrame {
 	private void moveGroupDown() {
 		int selected = tGroups.getSelectedRow();
 		if (selected >= 0 && selected < backEnd.taskGroups.size() - 1) {
-			Collections.swap(backEnd.taskGroups, selected, selected + 1);
+			backEnd.moveTaskGroupDown(selected);
 			tGroups.setRowSelectionInterval(selected + 1, selected + 1);
 			renderTaskGroup();
 		}

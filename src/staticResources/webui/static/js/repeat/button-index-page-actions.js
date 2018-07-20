@@ -1,4 +1,9 @@
 function registerIndexPageButtonActions() {
+    $("#button-replay-count").click(buttonReplayCountAction);
+    $("#button-replay-delay").click(buttonReplayDelayAction);
+    $("#button-replay-speedup").click(buttonReplaySpeedupAction);
+    $("#modal-replay-config-save").click(buttonReplayConfigSaveAction);
+
     $("#button-compile").click(buttonCompileAction)
     $("#button-run").click(buttonRunAction)
     $("#button-edit-code").click(buttonEditCodeAction)
@@ -12,6 +17,55 @@ function registerIndexPageButtonActions() {
     $("#button-change-group").click(buttonChangeGroupAction)
     $("#modal-move-to-task-group-move").click(buttonMoveGroupAction);
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+function buttonReplayCountAction(e) {
+    $("#modal-replay-config-title").html("Enter replay count.");
+    $("#label-replay-config").html("New replay count:");
+    $("#modal-replay-config-param-name").html("count");
+    $("#new-replay-config-value").val($("#button-replay-count").html());
+    $("#modal-replay-config").modal();
+}
+
+function buttonReplayDelayAction(e) {
+    $("#modal-replay-config-title").html("Enter replay delay.");
+    $("#label-replay-config").html("New replay delay:");
+    $("#modal-replay-config-param-name").html("delay");
+    $("#new-replay-config-value").val($("#button-replay-delay").html());
+    $("#modal-replay-config").modal();
+}
+
+function buttonReplaySpeedupAction(e) {
+    $("#modal-replay-config-title").html("Enter replay speedup.");
+    $("#label-replay-config").html("New replay speedup:");
+    $("#modal-replay-config-param-name").html("speedup");
+    $("#new-replay-config-value").val($("#button-replay-speedup").html());
+    $("#modal-replay-config").modal();
+}
+
+function buttonReplayConfigSaveAction(e) {
+    var value = $("#new-replay-config-value").val();
+    var name = $("#modal-replay-config-param-name").html();
+
+    var postData = {}
+    postData[name] = value
+
+    $.post("/internals/action/change-replay-config", JSON.stringify(postData), function(data) {
+        var response = JSON.parse(data);
+        $("#button-replay-count").html(response.count);
+        $("#button-replay-delay").html(response.delay);
+        $("#button-replay-speedup").html(response.speedup);
+    }).fail(function(response) {
+        alert('Error sending request to change replay config: ' + response.responseText);
+    })
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 function buttonCompileAction(e) {
     var source = $("#source-code").val();
@@ -64,6 +118,10 @@ function buttonReloadAction(e) {
         alert('Error sending request get editted source: ' + response.responseText);
     });
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 function buttonAddAction(e) {
     $.post("/internals/action/add-task", function(data) {

@@ -40,6 +40,6 @@ public class ModifyTaskNameHandler extends AbstractUIHttpHandler {
 		}
 
 		task.setName(name);
-		return renderedTaskGroup(exchange);
+		return renderedTaskForGroup(exchange);
 	}
 }

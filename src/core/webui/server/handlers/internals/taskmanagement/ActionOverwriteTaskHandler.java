@@ -33,6 +33,6 @@ public class ActionOverwriteTaskHandler extends AbstractUIHttpHandler {
 		}
 
 		backEndHolder.overwriteTask(index);
-		return renderedTaskGroup(exchange);
+		return renderedTaskForGroup(exchange);
 	}
 }

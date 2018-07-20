@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internals.taskmanagement;
+package core.webui.server.handlers.internals.taskgroups;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,9 +14,9 @@ import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 
-public class ActionMoveTaskDownHandler extends AbstractUIHttpHandler {
+public class ActionDeleteTaskGroupHandler extends AbstractUIHttpHandler {
 
-	public ActionMoveTaskDownHandler(ObjectRenderer objectRenderer) {
+	public ActionDeleteTaskGroupHandler(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
@@ -27,12 +27,12 @@ public class ActionMoveTaskDownHandler extends AbstractUIHttpHandler {
 		if (params == null) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Failed to parse POST data.");
 		}
-		int index = CommonTask.getTaskIndexFromRequest(backEndHolder, params, backEndHolder.getCurrentTaskGroup());
+		int index = CommonTask.getTaskGroupIndexFromRequest(backEndHolder, params);
 		if (index == -1) {
-			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Cannot find task from request data.");
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Cannot find task group from request data.");
 		}
 
-		backEndHolder.moveTaskDown(index);
-		return renderedTaskForGroup(exchange);
+		backEndHolder.removeTaskGroup(index);
+		return renderedTaskGroups(exchange);
 	}
 }

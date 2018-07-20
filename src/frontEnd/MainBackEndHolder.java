@@ -40,6 +40,7 @@ import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.PythonRemoteCompiler;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.recorder.Recorder;
+import core.recorder.ReplayConfig;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskInvoker;
 import core.userDefinedTask.TaskSourceManager;
@@ -48,7 +49,6 @@ import staticResources.BootStrapResources;
 import utilities.DateUtility;
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.NumberUtility;
 import utilities.OSIdentifier;
 import utilities.Pair;
 import utilities.StringUtilities;
@@ -65,6 +65,7 @@ public class MainBackEndHolder {
 	protected ScheduledThreadPoolExecutor executor;
 	private Thread compiledExecutor;
 
+	private ReplayConfig replayConfig;
 	protected Recorder recorder;
 
 	private UserDefinedAction customFunction;
@@ -98,6 +99,7 @@ public class MainBackEndHolder {
 
 		taskInvoker = new TaskInvoker(taskGroups);
 		keysManager = new GlobalEventsManager(config);
+		replayConfig = ReplayConfig.of();
 		recorder = new Recorder(keysManager);
 
 		switchRecord = new UserDefinedAction() {
@@ -287,6 +289,18 @@ public class MainBackEndHolder {
 		}
 	}
 
+	public void setReplayCount(long count) {
+		replayConfig = ReplayConfig.of(count, replayConfig.getDelay(), replayConfig.getSpeedup());
+	}
+
+	public void setReplayDelay(long delay) {
+		replayConfig = ReplayConfig.of(replayConfig.getCount(), delay, replayConfig.getSpeedup());
+	}
+
+	public void setReplaySpeedup(float speedup) {
+		replayConfig = ReplayConfig.of(replayConfig.getCount(), replayConfig.getDelay(), speedup);
+	}
+
 	public synchronized void startReplay() {
 		if (isReplaying) {
 			return;
@@ -330,20 +344,13 @@ public class MainBackEndHolder {
 				}
 			});
 
-			String repeatText = main.tfRepeatCount.getText();
-			String delayText = main.tfRepeatDelay.getText();
-			if (NumberUtility.isPositiveInteger(repeatText) && NumberUtility.isNonNegativeInteger(delayText)) {
-				long repeatCount = Long.parseLong(repeatText);
-				long delay = Long.parseLong(delayText);
-
-				recorder.replay(repeatCount, delay, new Function<Void, Void>() {
-					@Override
-					public Void apply(Void r) {
-						switchReplay();
-						return null;
-					}
-				}, 5, false);
-			}
+			recorder.replay(replayConfig.getCount(), replayConfig.getDelay(), new Function<Void, Void>() {
+				@Override
+				public Void apply(Void r) {
+					switchReplay();
+					return null;
+				}
+			}, 5, false);
 		}
 	}
 
@@ -455,7 +462,18 @@ public class MainBackEndHolder {
 		return result;
 	}
 
-	protected void removeTaskGroup(int index) {
+	public void addTaskGroup(String name) {
+		for (TaskGroup group : taskGroups) {
+			if (group.getName().equals(name)) {
+				LOGGER.warning("This name already exists. Try again.");
+				return;
+			}
+		}
+
+		taskGroups.add(new TaskGroup(name));
+	}
+
+	public void removeTaskGroup(int index) {
 		if (index < 0 || index >= taskGroups.size()) {
 			return;
 		}
@@ -473,6 +491,20 @@ public class MainBackEndHolder {
 			keysManager.unregisterTask(action);
 		}
 		renderTaskGroup();
+	}
+
+	public void moveTaskGroupUp(int index) {
+		if (index < 0 || index >= taskGroups.size()) {
+			return;
+		}
+		Collections.swap(taskGroups, index, index - 1);
+	}
+
+	public void moveTaskGroupDown(int index) {
+		if (index < 0 || index >= taskGroups.size()) {
+			return;
+		}
+		Collections.swap(taskGroups, index, index + 1);
 	}
 
 	/*************************************************************************************************************/
@@ -1108,20 +1140,8 @@ public class MainBackEndHolder {
 	 * @return if the speedup was successfully parsed and applied.
 	 */
 	private boolean applySpeedup() {
-		String speedupText = main.tfSpeedup.getText();
-		try {
-			float speedup = Float.parseFloat(speedupText);
-			if (speedup <= 0) {
-				JOptionPane.showMessageDialog(main, "Speedup has to be positive.", "Invalid speedup", JOptionPane.WARNING_MESSAGE);
-				return false;
-			}
-
-			recorder.setSpeedup(speedup);
-			return true;
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(main, " Malformed literal.", "Invalid speedup", JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
+		recorder.setSpeedup(replayConfig.getSpeedup());
+		return true;
 	}
 
 	/*************************************************************************************************************/
@@ -1146,12 +1166,20 @@ public class MainBackEndHolder {
 		return isRecording;
 	}
 
+	public ReplayConfig getReplayConfig() {
+		return replayConfig;
+	}
+
 	public synchronized boolean isReplaying() {
 		return isReplaying;
 	}
 
 	public synchronized boolean isRunningCompiledAction() {
 		return isRunningCompiledTask;
+	}
+
+	public GlobalEventsManager getKeysManager() {
+		return keysManager;
 	}
 
 	public String getLogs() {

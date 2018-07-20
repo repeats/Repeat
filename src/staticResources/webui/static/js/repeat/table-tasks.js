@@ -5,7 +5,6 @@ function registerTableTasks() {
 }
 
 function registerCells() {
-    var table = document.getElementById("table-tasks");
     /* Get all rows from your 'table' but not the first one 
     * that includes headers. */
     var rows = $('#table-tasks').find("tr").not(":first");
@@ -20,6 +19,7 @@ function registerCells() {
         row.addClass('table-highlight');
     });
 
+    var table = document.getElementById("table-tasks");
     // Start from row = 1 since row = 0 is the headings.
     for (var i = 1; i < table.rows.length; i++) {
         for (var j = 0; j < table.rows[i].cells.length; j++)

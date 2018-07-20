@@ -56,7 +56,7 @@ public class CommonTask {
 	}
 
 	public static UserDefinedAction getTaskFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
-		TaskGroup group = getTaskGroup(backEndHolder, params);
+		TaskGroup group = getTaskGroupFromRequest(backEndHolder, params, true);
 		if (group == null) {
 			LOGGER.warning("Cannot get group.");
 			return null;
@@ -85,17 +85,20 @@ public class CommonTask {
 		}
 
 		int groupIndex = Integer.parseInt(groupValue);
-		if (groupIndex > backEndHolder.getTaskGroups().size()) {
+		if (groupIndex >= backEndHolder.getTaskGroups().size()) {
 			LOGGER.warning("Group index out of bound.");
 			return -1;
 		}
 		return groupIndex;
 	}
 
-	private static TaskGroup getTaskGroup(MainBackEndHolder backEndHolder, Map<String, String> params) {
+	public static TaskGroup getTaskGroupFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params, boolean useCurrentIfNotProvided) {
 		String groupValue = params.get("group");
 		if (groupValue == null) {
-			return backEndHolder.getCurrentTaskGroup();
+			if (useCurrentIfNotProvided) {
+				return backEndHolder.getCurrentTaskGroup();
+			}
+			return null;
 		}
 
 		int groupIndex = getTaskGroupIndexFromRequest(backEndHolder, params);

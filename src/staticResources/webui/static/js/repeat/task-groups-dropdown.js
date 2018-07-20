@@ -2,12 +2,12 @@ function registerTaskGroupsDropdownEvents() {
 	var groups = $("#task-groups-dropdown").find("li");
 	groups.click(function() {
 		var index = $(this).index();
-		selectTaskGroup(index);
+		selectTaskGroupFromDropdown(index);
 	});
 }
 
-function selectTaskGroup(index) {
-	$.post("/internals/action/switch-task-group", JSON.stringify({group: index}), function(data) {
+function selectTaskGroupFromDropdown(index) {
+	$.post("/internals/action/switch-task-group", JSON.stringify({group: index, render: "tasks"}), function(data) {
         refreshTaskGroupDropDown();
         refreshTasksWithData(data);
     }).fail(function(response) {

@@ -59,6 +59,7 @@ import core.languageHandler.Language;
 import core.recorder.Recorder;
 import staticResources.BootStrapResources;
 import utilities.FileUtility;
+import utilities.NumberUtility;
 import utilities.swing.LinedTextArea;
 import utilities.swing.SwingUtil;
 
@@ -596,12 +597,36 @@ public class MainFrame extends JFrame {
 		tfRepeatCount = new JTextField("1");
 		tfRepeatCount.setEnabled(false);
 		tfRepeatCount.setColumns(10);
+		tfRepeatCount.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String repeatText = tfRepeatCount.getText();
+				if (!NumberUtility.isPositiveInteger(repeatText)) {
+					tfRepeatCount.setText("1");
+					JOptionPane.showMessageDialog(MainFrame.this, "Repeat count must be positive integer.", "Invalid count.", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				backEnd.setReplayCount(Long.parseLong(repeatText));
+			}
+		});
 
 		JLabel lblNewLabel_1 = new JLabel("with delay each time");
 
 		tfRepeatDelay = new JTextField("0");
 		tfRepeatDelay.setEnabled(false);
 		tfRepeatDelay.setColumns(10);
+		tfRepeatDelay.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String delayText = tfRepeatDelay.getText();
+				if (!NumberUtility.isNonNegativeInteger(delayText)) {
+					tfRepeatCount.setText("0");
+					JOptionPane.showMessageDialog(MainFrame.this, "Delay must be non-negative integer.", "Invalid delay.", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				backEnd.setReplayCount(Long.parseLong(delayText));
+			}
+		});
 
 		JLabel lblNewLabel_2 = new JLabel("ms, and speedup of ");
 
@@ -701,6 +726,26 @@ public class MainFrame extends JFrame {
 		tfSpeedup.setText("1.0");
 		tfSpeedup.setEnabled(false);
 		tfSpeedup.setColumns(10);
+		tfSpeedup.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String speedupText = tfSpeedup.getText();
+				double speedup = 1;
+				try {
+					speedup = Double.parseDouble(speedupText);
+					if (speedup < 0) {
+						tfSpeedup.setText("1.0");
+						JOptionPane.showMessageDialog(MainFrame.this, "Speedup must be positive.", "Invalid speedup.", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+				} catch (NumberFormatException ex) {
+					tfSpeedup.setText("1.0");
+					JOptionPane.showMessageDialog(MainFrame.this, "Speedup must be a number.", "Invalid speedup.", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				backEnd.setReplaySpeedup(Float.parseFloat(speedupText));
+			}
+		});
 
 		JButton bEdit = new JButton();
 		bEdit.setIcon(BootStrapResources.EDIT_CODE);

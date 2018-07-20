@@ -1,3 +1,6 @@
+<#import "/fragments/key_chains.ftlh" as key_chains_fragment>
+<#import "/fragments/key_sequences.ftlh" as key_sequences_fragment>
+<#import "/fragments/phrases.ftlh" as phrases_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
 <#import "/fragments/footer.ftlh" as footer_fragment>
 <#import "/fragments/common_js.ftlh" as common_js_fragment>
@@ -25,7 +28,7 @@
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-left">
                         <li>
-                           <a href="">
+                            <a href="">
                                <p>Task Name</p>
                             </a>
                         </li>
@@ -38,6 +41,14 @@
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
+                    <div class="col-xs-6">
+                        <div><button type="button" class="btn btn-default btn-span">Save</button></div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div><a href="/"><button type="button" class="btn btn-default btn-span">Cancel</button></a></div>
+                    </div>
+                </div>
+                <div class="row top-buffer">
                     <span class="label label-default">Start pressing keys</span>
                     <div><button type="button" class="btn btn-default btn-span">A+S+D</button></div>
                 </div>
@@ -51,11 +62,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <#list activation.keyChains as chain>
-                                    <tr>
-                                        <td>${chain}</td>
-                                    </tr>
-                                </#list>
+                                <@key_chains_fragment.fragment/>
                             </tbody>
                         </table>
                     </div>
@@ -68,11 +75,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <#list activation.keySequences as sequence>
-                                    <tr>
-                                        <td>${sequence}</td>
-                                    </tr>
-                                </#list>
+                                <@key_sequences_fragment.fragment/>
                             </tbody>
                         </table>
                     </div>
@@ -87,11 +90,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <#list activation.phrases as phrase>
-                                <tr>
-                                    <td>${phrase}</td>
-                                </tr>
-                            </#list>
+                            <@phrases_fragment.fragment/>
                         </tbody>
                     </table>
                 </div>

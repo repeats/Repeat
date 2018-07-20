@@ -14,6 +14,52 @@
 <body>
 
 <div class="wrapper">
+    <!-- Modals -->
+    <div id="modal-new-task-group" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Enter a name for the new task group:</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label" for="name-for-new-task-group">Name:</label>
+                        <input class="form-check-input" name="name-for-new-task-group" type="text" id="name-for-new-task-group">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-new-task-group-save" type="button" class="btn btn-primary" data-dismiss="modal">Create</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-task-group-name" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Enter a new name for task group:</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label" for="new-task-group-name">Name:</label>
+                        <input class="form-check-input" name="new-task-group-name" type="text" id="new-task-group-name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-task-group-name-row" style="display:none;">0</div>
+                    <button id="modal-task-group-name-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modals -->
+
     <div class="main-panel">
         <nav class="navbar navbar-default navbar-fixed">
             <div class="container-fluid">
@@ -42,13 +88,13 @@
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
-                    <button title="${tooltips.add}" type="button" class="btn btn-default repeat-btn-add">&nbsp</button>
-                    <button title="${tooltips.remove}" type="button" class="btn btn-default repeat-btn-delete">&nbsp</button>
-                    <button title="${tooltips.up}" type="button" class="btn btn-default repeat-btn-up">&nbsp</button>
-                    <button title="${tooltips.down}" type="button" class="btn btn-default repeat-btn-down">&nbsp</button>
+                    <button id="button-add" title="${tooltips.add}" type="button" class="btn btn-default repeat-btn-add">&nbsp</button>
+                    <button id="button-delete" title="${tooltips.remove}" type="button" class="btn btn-default repeat-btn-delete">&nbsp</button>
+                    <button id="button-up" title="${tooltips.up}" type="button" class="btn btn-default repeat-btn-up">&nbsp</button>
+                    <button id="button-down" title="${tooltips.down}" type="button" class="btn btn-default repeat-btn-down">&nbsp</button>
                 </div>
                 <div class="row">
-                    <table class="table">
+                    <table id="table-task-groups" class="table">
                         <@task_groups_fragment.fragment/>
                     </table>
                 </div>
@@ -64,23 +110,12 @@
 </body>
     <@common_js_fragment.fragment/>
 
+    <!--  JavaScript for this page.    -->
+    <script src="/static/js/repeat/task-groups.js"></script>
+
     <script type="text/javascript">
     $(document).ready(function(){
-        $(function() {
-            /* Get all rows from your 'table' but not the first one 
-            * that includes headers. */
-            var rows = $('tr').not(":first");
-
-            /* Create 'click' event handler for rows */
-            rows.on('click', function(e) {
-                /* Get current row */
-                var row = $(this);
-
-                /* Otherwise just highlight one row and clean others */
-                rows.removeClass('table-highlight');
-                row.addClass('table-highlight');
-            });
-        });
+        registerTaskGroups();
     });
     </script>
 

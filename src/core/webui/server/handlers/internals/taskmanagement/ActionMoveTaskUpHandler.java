@@ -33,6 +33,6 @@ public class ActionMoveTaskUpHandler extends AbstractUIHttpHandler {
 		}
 
 		backEndHolder.moveTaskUp(index);
-		return renderedTaskGroup(exchange);
+		return renderedTaskForGroup(exchange);
 	}
 }

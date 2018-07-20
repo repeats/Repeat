@@ -15,6 +15,9 @@ function createPollingButtonFunction(params) {
             } else {
                 $("#" + params.buttonId).removeClass(params.onClass);
                 $("#" + params.buttonId).addClass(params.offClass);
+                if (typeof params.onFinish != 'undefined') {
+                    params.onFinish();
+                }
             }
         }).fail(function(response) {
             state.backOff = Math.min(3600000, Math.floor(state.backOff * 2));
