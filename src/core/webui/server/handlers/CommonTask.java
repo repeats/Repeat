@@ -41,7 +41,7 @@ public class CommonTask {
 		}
 
 		if (!NumberUtility.isNonNegativeInteger(taskValue)) {
-			LOGGER.warning("Group and task indices must be positive integers.");
+			LOGGER.warning("Task indices must be non-negative integers.");
 			return -1;
 		}
 
@@ -80,7 +80,7 @@ public class CommonTask {
 	public static int getTaskGroupIndexFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		String groupValue = params.get("group");
 		if (!NumberUtility.isNonNegativeInteger(groupValue)) {
-			LOGGER.warning("Group index must be positive integers.");
+			LOGGER.warning("Group index must be non-negative integers.");
 			return -1;
 		}
 

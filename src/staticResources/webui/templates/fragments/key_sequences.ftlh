@@ -1,7 +1,14 @@
 <#macro fragment>
-    <#list activation.keySequences as sequence>
+    <thead class="thead-dark">
         <tr>
-            <td>${sequence}</td>
+            <th scope="col">Key sequences (Double click to remove)</th>
         </tr>
-    </#list>
+    </thead>
+    <tbody>
+        <#list activation.keySequences as sequence>
+            <tr>
+                <td>${sequence}</td>
+            </tr>
+        </#list>
+    </tbody>
 </#macro>

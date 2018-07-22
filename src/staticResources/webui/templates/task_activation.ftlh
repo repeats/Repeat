@@ -13,6 +13,30 @@
 <body>
 
 <div class="wrapper">
+    <!-- Modals -->
+    <div id="modal-phrase" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Enter a phrase.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label" for="new-phrase">Phrase:</label>
+                        <input class="form-check-input" name="new-phrase" type="text" id="new-phrase">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-phrase-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modals -->
+
     <div class="main-panel">
         <nav class="navbar navbar-default navbar-fixed">
             <div class="container-fluid">
@@ -29,7 +53,7 @@
                     <ul class="nav navbar-nav navbar-left">
                         <li>
                             <a href="">
-                               <p>Task Name</p>
+                               <p>Task Activation</p>
                             </a>
                         </li>
                         <li class="separator hidden-lg"></li>
@@ -40,64 +64,42 @@
 
         <div class="content">
             <div class="container-fluid">
+                <div id="task-activation-task-group-index" style="display:none;">${groupIndex}</div>
+                <div id="task-activation-task-index" style="display:none;">${taskIndex}</div>
+                <div id="task-activation-constructor-id" style="display:none;">${taskActivationConstructorId}</div>
                 <div class="row">
-                    <div class="col-xs-6">
-                        <div><button type="button" class="btn btn-default btn-span">Save</button></div>
-                    </div>
-                    <div class="col-xs-6">
-                        <div><a href="/"><button type="button" class="btn btn-default btn-span">Cancel</button></a></div>
-                    </div>
+                    <span class="label label-warning">Moving tasks around when editting its activation may result in undefined behavior!</span>
+                    <div><button id="button-save" type="button" class="btn btn-default btn-span">Save</button></div>
                 </div>
                 <div class="row top-buffer">
-                    <span class="label label-default">Start pressing keys</span>
-                    <div><button type="button" class="btn btn-default btn-span">A+S+D</button></div>
+                    <span class="label label-default">Start pressing keys when enabled</span>
+                    <div><button id="button-strokes" type="button" class="btn btn-default btn-span">None</button></div>
                 </div>
                 <div class="row top-buffer">
                     <div class="col-xs-6">
-                        <button type="button" class="btn btn-default btn-span">Add key chain</button>
-                        <table class="table">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th scope="col">Key chains (Double click to remove)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <@key_chains_fragment.fragment/>
-                            </tbody>
+                        <button id="button-add-key-chain" type="button" class="btn btn-default btn-span">Add key chain</button>
+                        <table id="table-key-chains" class="table">
+                            <@key_chains_fragment.fragment/>
                         </table>
                     </div>
                     <div class="col-xs-6">
-                        <button type="button" class="btn btn-default btn-span">Add key sequence</button>
-                        <table class="table">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th scope="col">Key sequences (Double click to remove)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <@key_sequences_fragment.fragment/>
-                            </tbody>
+                        <button id="button-add-key-sequence" type="button" class="btn btn-default btn-span">Add key sequence</button>
+                        <table id="table-key-sequences" class="table">
+                            <@key_sequences_fragment.fragment/>
                         </table>
                     </div>
                 </div>
                 <div class="row">
                     <span class="label label-default">Phrases</span>
-                    <button type="button" class="btn btn-default btn-span">Add phrase</button>
-                    <table class="table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">Phrases (Double click to remove)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <@phrases_fragment.fragment/>
-                        </tbody>
+                    <button id="button-add-phrase" type="button" class="btn btn-default btn-span">Add phrase</button>
+                    <table id="table-phrases" class="table">
+                        <@phrases_fragment.fragment/>
                     </table>
                 </div>
                 <div class="row">
                     <div class="form-group">
                         <span class="label label-default">Mouse gestures (hold shift to select more than one)</span>
-                        <select multiple class="form-control" size="9">
+                        <select id="mouse-gestures-selection" multiple class="form-control" size="9">
                             <option <#if activation.mouseGestures.alpha> selected </#if>>Alpha</option>
                             <option <#if activation.mouseGestures.circleLeft> selected </#if>>Circle Left</option>
                             <option <#if activation.mouseGestures.gamma> selected </#if>>Gamma</option>
@@ -124,8 +126,12 @@
 </body>
     <@common_js_fragment.fragment/>
 
+    <!--  JavaScript for this page.    -->
+    <script src="/static/js/repeat/task-activation.js"></script>
+
     <script type="text/javascript">
     $(document).ready(function(){
+        registerTaskActivationActions();
     });
     </script>
 

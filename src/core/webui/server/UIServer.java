@@ -14,19 +14,17 @@ import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 
 import core.config.WebUIConfig;
 import core.ipc.IPCServiceWithModifablePort;
+import core.keyChain.TaskActivationConstructorManager;
 import core.webcommon.HttpHandlerWithBackend;
 import core.webcommon.StaticFileServingHandler;
 import core.webcommon.UpAndRunningHandler;
-import core.webui.server.handlers.IPCPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
-import core.webui.server.handlers.TaskActivationPageHandler;
-import core.webui.server.handlers.TaskGroupsPageHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
 import core.webui.server.handlers.internals.GetRenderedTaskGroupsDropdown;
 import core.webui.server.handlers.internals.ipcs.ActionRunIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
-import core.webui.server.handlers.internals.ipcs.GetRenderedIPCServicesHandler;
+import core.webui.server.handlers.internals.ipcs.IPCPageHandler;
 import core.webui.server.handlers.internals.ipcs.ModifyIPCServicePortHandler;
 import core.webui.server.handlers.internals.ipcs.ToggleIPCServiceLaunchAtStartupHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionChangeReplayConfigHandler;
@@ -36,6 +34,17 @@ import core.webui.server.handlers.internals.recordsreplays.ActionStopRecordingHa
 import core.webui.server.handlers.internals.recordsreplays.ActionStopReplayHandler;
 import core.webui.server.handlers.internals.recordsreplays.GetIsRecordingHandler;
 import core.webui.server.handlers.internals.recordsreplays.GetIsReplayingHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddPhraseHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddStrokesAsKeyChainHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddStrokesAsKeySequenceHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationGetStrokesHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationRemoveKeyChainHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationRemoveKeySequenceHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationRemovePhraseHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationSetMouseGesturesHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationStartListeningHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationStopListeningHandler;
+import core.webui.server.handlers.internals.taskactivation.TaskActivationPageHandler;
 import core.webui.server.handlers.internals.taskcreation.ActionCompileTaskHandler;
 import core.webui.server.handlers.internals.taskcreation.ActionEditSourceHandler;
 import core.webui.server.handlers.internals.taskcreation.ActionRunCompiledTaskHandler;
@@ -49,6 +58,7 @@ import core.webui.server.handlers.internals.taskgroups.ActionDeleteTaskGroupHand
 import core.webui.server.handlers.internals.taskgroups.ActionMoveTaskGroupDownHandler;
 import core.webui.server.handlers.internals.taskgroups.ActionMoveTaskGroupUpHandler;
 import core.webui.server.handlers.internals.taskgroups.ActionSwitchTaskGroupHandler;
+import core.webui.server.handlers.internals.taskgroups.TaskGroupsPageHandler;
 import core.webui.server.handlers.internals.taskgroups.ToggleTaskGroupEnabledHandler;
 import core.webui.server.handlers.internals.taskmanagement.ActionAddTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.ActionChangeTaskGroupForTaskHandler;
@@ -57,9 +67,8 @@ import core.webui.server.handlers.internals.taskmanagement.ActionMoveTaskDownHan
 import core.webui.server.handlers.internals.taskmanagement.ActionMoveTaskUpHandler;
 import core.webui.server.handlers.internals.taskmanagement.ActionOverwriteTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.GetRenderedTaskGroupsSelectModalHandler;
-import core.webui.server.handlers.internals.taskmanagement.GetRenderedTasks;
+import core.webui.server.handlers.internals.tasks.ActionSaveTaskActivationHandler;
 import core.webui.server.handlers.internals.tasks.GetSourceForTaskHandler;
-import core.webui.server.handlers.internals.tasks.ModifyTaskActivationHandler;
 import core.webui.server.handlers.internals.tasks.ModifyTaskNameHandler;
 import core.webui.server.handlers.internals.tasks.ToggleTaskEnabledHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
@@ -73,12 +82,15 @@ public class UIServer extends IPCServiceWithModifablePort {
 	private Map<String, HttpHandlerWithBackend> handlers;
 
 	private MainBackEndHolder backEndHolder;
+	private TaskActivationConstructorManager taskActivationConstructorManager;
 	private final ObjectRenderer objectRenderer;
 	private Thread mainThread;
 	private HttpServer server;
 
 	public UIServer() {
 		setPort(DEFAULT_PORT);
+
+		taskActivationConstructorManager = new TaskActivationConstructorManager();
 		objectRenderer = new ObjectRenderer(BootStrapResources.getWebUIResource().getTemplateDir());
 	}
 
@@ -98,7 +110,19 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/", new IndexPageHandler(objectRenderer));
 		output.put("/ipcs", new IPCPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
-		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer));
+		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer, taskActivationConstructorManager));
+
+		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/start-listening", new ActionTaskActivationStartListeningHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/stop-listening", new ActionTaskActivationStopListeningHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/key-chain/remove", new ActionTaskActivationRemoveKeyChainHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/key-sequence/remove", new ActionTaskActivationRemoveKeySequenceHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/mouse-gestures/set", new ActionTaskActivationSetMouseGesturesHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/phrase/add", new ActionTaskActivationAddPhraseHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/phrase/remove", new ActionTaskActivationRemovePhraseHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/strokes/add-as-key-chain", new ActionTaskActivationAddStrokesAsKeyChainHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/strokes/add-as-key-sequence", new ActionTaskActivationAddStrokesAsKeySequenceHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/strokes/get", new ActionTaskActivationGetStrokesHandler(objectRenderer, taskActivationConstructorManager));
 
 		output.put("/internals/action/add-task", new ActionAddTaskHandler(objectRenderer));
 		output.put("/internals/action/add-task-group", new ActionAddTaskGroupHandler(objectRenderer));
@@ -132,13 +156,10 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/get/logs", new GetLogsHandler());
 		output.put("/internals/get/source-for-task", new GetSourceForTaskHandler());
 		output.put("/internals/get/source-templates", new GetSourceTemplateHandler());
-		output.put("/internals/get/rendered-ipcs", new GetRenderedIPCServicesHandler(objectRenderer));
-		output.put("/internals/get/rendered-tasks", new GetRenderedTasks(objectRenderer));
 		output.put("/internals/get/rendered-task-groups-dropdown", new GetRenderedTaskGroupsDropdown(objectRenderer));
 		output.put("/internals/get/rendered-task-groups-select-modal", new GetRenderedTaskGroupsSelectModalHandler(objectRenderer));
 
 		output.put("/internals/modify/ipc-service-port", new ModifyIPCServicePortHandler(objectRenderer));
-		output.put("/internals/modify/task-activation", new ModifyTaskActivationHandler());
 		output.put("/internals/modify/task-name", new ModifyTaskNameHandler(objectRenderer));
 
 		output.put("/internals/toggle/ipc-service-launch-at-startup", new ToggleIPCServiceLaunchAtStartupHandler(objectRenderer));
@@ -151,6 +172,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 	@Override
 	protected void start() throws IOException {
 		handlers = createHandlers();
+		taskActivationConstructorManager.start();
 		setMainBackEndHolder(backEndHolder);
 
 		ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
@@ -182,6 +204,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 	@Override
 	protected void stop() throws IOException {
+		taskActivationConstructorManager.stop();
 		server.shutdown(TERMINATION_DELAY_SECOND, TimeUnit.SECONDS);
 		try {
 			mainThread.join();

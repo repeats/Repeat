@@ -212,7 +212,6 @@
                                         Setting
                                         <b class="caret"></b>
                                     </p>
-
                               </a>
                               <ul class="dropdown-menu">
                                 <li><a href="#">Hotkeys...</a></li>

@@ -6,6 +6,22 @@ import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivation;
 
 public class RenderedMouseGestureActivation {
+
+	public static final MouseGesture[] INDICES = new MouseGesture[] {
+		MouseGesture.ALPHA,
+		MouseGesture.CIRCLE_LEFT,
+		MouseGesture.GAMMA,
+		MouseGesture.GREATER_THAN,
+		MouseGesture.HAT,
+		MouseGesture.LESS_THAN,
+		MouseGesture.N,
+		MouseGesture.SQUARE,
+		MouseGesture.SQUARE_ROOT,
+		MouseGesture.TILDA,
+		MouseGesture.TRIANGLE,
+		MouseGesture.Z,
+	};
+
 	private boolean alpha;
 	private boolean circleLeft;
 	private boolean gamma;

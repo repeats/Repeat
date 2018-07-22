@@ -2,6 +2,7 @@ package core.keyChain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -301,7 +302,7 @@ public class TaskActivation implements IJsonable {
 			return this;
 		}
 
-		public Builder withHotKeys(Set<KeyChain> keys) {
+		public Builder withHotKeys(Collection<KeyChain> keys) {
 			this.hotkeys.clear();
 			this.hotkeys.addAll(keys);
 			return this;
@@ -318,7 +319,7 @@ public class TaskActivation implements IJsonable {
 			return this;
 		}
 
-		public Builder withMouseGestures(Set<MouseGesture> gestures) {
+		public Builder withMouseGestures(Collection<MouseGesture> gestures) {
 			this.mouseGestures.clear();
 			this.mouseGestures.addAll(gestures);
 			return this;
@@ -335,7 +336,7 @@ public class TaskActivation implements IJsonable {
 			return this;
 		}
 
-		public Builder withKeySequence(Set<KeySequence> keySequences) {
+		public Builder withKeySequence(Collection<KeySequence> keySequences) {
 			this.keySequences.clear();
 			this.keySequences.addAll(keySequences);
 			return this;
@@ -352,7 +353,7 @@ public class TaskActivation implements IJsonable {
 			return this;
 		}
 
-		public Builder withPhrases(Set<ActivationPhrase> phrases) {
+		public Builder withPhrases(Collection<ActivationPhrase> phrases) {
 			this.phrases.clear();
 			this.phrases.addAll(phrases);
 			return this;

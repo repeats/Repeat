@@ -1,7 +1,14 @@
 <#macro fragment>
-    <#list activation.keyChains as chain>
+    <thead class="thead-dark">
         <tr>
-            <td>${chain}</td>
+            <th scope="col">Key chains (Double click to remove)</th>
         </tr>
-    </#list>
+    </thead>
+    <tbody>
+        <#list activation.keyChains as chain>
+            <tr>
+                <td>${chain}</td>
+            </tr>
+        </#list>
+    </tbody>
 </#macro>

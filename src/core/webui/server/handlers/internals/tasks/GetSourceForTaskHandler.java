@@ -30,6 +30,7 @@ public class GetSourceForTaskHandler extends AbstractSingleMethodHttpHandler {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Task index must be provided as a non-negative integer.");
 		}
 		int index = Integer.parseInt(indexString);
+
 		String source = backEndHolder.getSource(index);
 		if (source == null) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 500, "Unable to get source code.");

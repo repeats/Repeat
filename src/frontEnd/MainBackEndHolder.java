@@ -74,7 +74,8 @@ public class MainBackEndHolder {
 	private TaskGroup currentGroup;
 	private int selectedTaskIndex;
 
-	private final TaskInvoker taskInvoker; // To allow executing other tasks programmatically.
+	// To allow executing other tasks programmatically.
+	private final TaskInvoker taskInvoker;
 	protected final GlobalEventsManager keysManager;
 
 	protected final Config config;
@@ -92,7 +93,7 @@ public class MainBackEndHolder {
 
 		logHolder = new StringBuffer();
 
-		executor = new ScheduledThreadPoolExecutor(5);
+		executor = new ScheduledThreadPoolExecutor(10);
 
 		taskGroups = new ArrayList<>();
 		selectedTaskIndex = -1;
@@ -849,9 +850,6 @@ public class MainBackEndHolder {
 		if (row < 0 || row >= currentGroup.getTasks().size()) {
 			return null;
 		}
-		if (selectedTaskIndex == row) {
-			return null;
-		}
 
 		UserDefinedAction task = currentGroup.getTasks().get(row);
 		String source = task.getSource();
@@ -1220,6 +1218,17 @@ public class MainBackEndHolder {
 	/** Retrieve an immutable view of the list of task groups. */
 	public List<TaskGroup> getTaskGroups() {
 		return Collections.unmodifiableList(taskGroups);
+	}
+
+	public int getCurentTaskGroupIndex() {
+		TaskGroup current = getCurrentTaskGroup();
+		for (int i = 0; i < taskGroups.size(); i++) {
+			TaskGroup group = taskGroups.get(i);
+			if (group == current) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	public TaskGroup getCurrentTaskGroup() {

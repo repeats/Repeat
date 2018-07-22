@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,17 +112,27 @@ public class HttpServerUtilities {
 		return output;
 	}
 
-	public static Void redirect(HttpAsyncExchange exchange, String dest) throws IOException {
+	/**
+	 * Construct an HTTP redirect response. Note that this uses code 302, not 301.
+	 *
+	 * @param dest path to the destination. This is absolute path not including the domain.
+	 */
+	public static Void redirect(HttpAsyncExchange exchange, String dest, Map<String, String> params) throws IOException {
 		String location = "";
 		try {
 			URIBuilder builder = new URIBuilder(exchange.getRequest().getRequestLine().getUri());
-			location = builder.clearParameters().setPath(dest).build().toString();
+			builder.clearParameters();
+			for (Entry<String, String> entry : params.entrySet()) {
+				builder.setParameter(entry.getKey(), entry.getValue());
+			}
+			location = builder.setPath(dest).build().toString();
 		} catch (URISyntaxException e) {
 			LOGGER.log(Level.WARNING, "Unable to parse request URI.", e);
 			return prepareTextResponse(exchange, 500, "Unable to parse request URI.");
 		}
 
 		HttpResponse response = exchange.getResponse();
+		response.setStatusCode(302);
 		response.addHeader("Location", location);
 		exchange.submitResponse(new BasicAsyncResponseProducer(response));
 		return null;

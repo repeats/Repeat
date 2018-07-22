@@ -1,4 +1,4 @@
-package core.webui.server.handlers;
+package core.webui.server.handlers.internals.ipcs;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +13,8 @@ import org.apache.http.protocol.HttpContext;
 
 import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
+import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedIPCService;
 import core.webui.server.handlers.renderedobjects.TooltipsIPCPage;

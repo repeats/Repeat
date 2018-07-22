@@ -1,7 +1,14 @@
 <#macro fragment>
-    <#list activation.phrases as phrase>
+    <thead class="thead-dark">
         <tr>
-            <td>${phrase}</td>
+            <th scope="col">Phrases (Double click to remove)</th>
         </tr>
-    </#list>
+    </thead>
+    <tbody>
+        <#list activation.phrases as phrase>
+            <tr>
+                <td>${phrase}</td>
+            </tr>
+        </#list>
+    </tbody>
 </#macro>
