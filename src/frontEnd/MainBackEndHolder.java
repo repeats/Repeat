@@ -24,6 +24,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 
 import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
 
 import core.config.Config;
 import core.controller.Core;
@@ -228,10 +229,25 @@ public class MainBackEndHolder {
 	}
 
 	protected void stopBackEndActivities() {
+		executor.shutdown();
+		try {
+			LOGGER.info("Waiting for main executor to terminate...");
+			executor.awaitTermination(5, TimeUnit.SECONDS);
+			LOGGER.info("Main executor terminated.");
+		} catch (InterruptedException e) {
+			LOGGER.log(Level.WARNING, "Interrupted while awaiting backend executor termination.", e);
+		}
+
 		try {
 			IPCServiceManager.stopServices();
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Unable to stop ipcs.", e);
+		}
+
+		try {
+			GlobalScreen.unregisterNativeHook();
+		} catch (NativeHookException e) {
+			LOGGER.log(Level.WARNING, "Unable to unregister Native Hook.", e);
 		}
 	}
 

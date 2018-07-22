@@ -233,11 +233,10 @@
                                         Help
                                         <b class="caret"></b>
                                     </p>
-
                               </a>
                               <ul class="dropdown-menu">
-                                <li><a href="#">API</a></li>
-                                <li><a href="#">About</a></li>
+                                <li><a href="/api">API</a></li>
+                                <li><a href="/about">About</a></li>
                               </ul>
                         </li>
                         <li class="separator hidden-lg"></li>

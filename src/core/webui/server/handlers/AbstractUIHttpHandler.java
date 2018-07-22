@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.http.HttpStatus;
@@ -21,8 +20,6 @@ import core.webui.server.handlers.renderedobjects.RenderedTaskGroup;
 import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
 
 public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHandler {
-
-	private static final Logger LOGGER = Logger.getLogger(AbstractUIHttpHandler.class.getName());
 
 	protected ObjectRenderer objectRenderer;
 

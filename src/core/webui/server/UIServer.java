@@ -18,6 +18,7 @@ import core.keyChain.TaskActivationConstructorManager;
 import core.webcommon.HttpHandlerWithBackend;
 import core.webcommon.StaticFileServingHandler;
 import core.webcommon.UpAndRunningHandler;
+import core.webui.server.handlers.AboutPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
@@ -111,6 +112,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/ipcs", new IPCPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
 		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/about", new AboutPageHandler(objectRenderer));
 
 		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/start-listening", new ActionTaskActivationStartListeningHandler(objectRenderer, taskActivationConstructorManager));
