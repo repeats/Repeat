@@ -1,15 +1,32 @@
 package main;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import utilities.logging.LogHolder;
 
 public class BlankClass {
-	public static void main(String[] args) {
-		List<Integer> l1 = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
-		List<Integer> l2 = new ArrayList<>(l1);
-		l1.add(5);
-		System.out.println(l1.size());
-		System.out.println(l2.size());
+	public static void main(String[] args) throws InterruptedException {
+		long time = System.currentTimeMillis();
+
+		LogHolder h = new LogHolder();
+		insert(h, '0');
+		insert(h, '1');
+		insert(h, '\n');
+		insert(h, '2');
+		insert(h, '3');
+		insert(h, '4');
+		insert(h, '5');
+		insert(h, '6');
+		insert(h, '7');
+		insert(h, '\n');
+		insert(h, '8');
+		insert(h, '9');
+		insert(h, '0');
+
+		System.out.println("__________________________");
+		System.out.println(h.getContentSince(time).replaceAll("\n", "X"));
+	}
+
+	private static void insert(LogHolder h, char c) throws InterruptedException {
+		h.write(c);
+		Thread.sleep(50);
 	}
 }

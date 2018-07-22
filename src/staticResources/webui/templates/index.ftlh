@@ -11,6 +11,8 @@
 
     <!-- Custom button CSS     -->
     <link href="/static/css/custom-buttons.css" rel="stylesheet" />
+    <!-- Source code text area CSS     -->
+    <link rel="stylesheet" href="/static/css/codemirror.css">
 </head>
 <body>
 
@@ -289,7 +291,7 @@
                     <div class="col-xs-6">
                         <div class="col-xs-12 form-group">
                             <label for="source-code">Source code:</label>
-                            <textarea class="form-control" rows="40" id="source-code" wrap="off"></textarea>
+                            <textarea class="form-control" id="source-code"></textarea>
                         </div>
                     </div>
                     <div class="col-xs-6">
@@ -323,6 +325,8 @@
     <@common_js_fragment.fragment/>
 
     <!--  JavaScript for this page.    -->
+    <script src="/static/js/codemirror.js"></script>
+
     <script src="/static/js/repeat/polling-common.js"></script>
     <script src="/static/js/repeat/button-index-page-actions.js"></script>
     <script src="/static/js/repeat/logs-textarea.js"></script>

@@ -11,9 +11,9 @@ import javax.swing.JTextArea;
  */
 public class OutStream extends OutputStream {
     private final JTextArea textArea;
-    private final StringBuffer contentHolder;
+    private final LogHolder contentHolder;
 
-    public OutStream(JTextArea textArea, StringBuffer contentHolder) {
+    public OutStream(JTextArea textArea, LogHolder contentHolder) {
         this.textArea = textArea;
         this.contentHolder = contentHolder;
     }
@@ -21,7 +21,7 @@ public class OutStream extends OutputStream {
     @Override
     public void write(int b) throws IOException {
     	String s = String.valueOf((char)b);
-    	contentHolder.append(s);
+    	contentHolder.write(b);
 
         textArea.append(s);
         textArea.setCaretPosition(textArea.getDocument().getLength());

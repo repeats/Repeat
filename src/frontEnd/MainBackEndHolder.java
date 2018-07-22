@@ -53,6 +53,7 @@ import utilities.OSIdentifier;
 import utilities.Pair;
 import utilities.StringUtilities;
 import utilities.ZipUtility;
+import utilities.logging.LogHolder;
 import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil;
 
@@ -60,7 +61,7 @@ public class MainBackEndHolder {
 
 	private static final Logger LOGGER = Logger.getLogger(MainBackEndHolder.class.getName());
 
-	protected StringBuffer logHolder;
+	protected LogHolder logHolder;
 
 	protected ScheduledThreadPoolExecutor executor;
 	private Thread compiledExecutor;
@@ -91,7 +92,7 @@ public class MainBackEndHolder {
 		this.main = main;
 		config = new Config(this);
 
-		logHolder = new StringBuffer();
+		logHolder = new LogHolder();
 
 		executor = new ScheduledThreadPoolExecutor(10);
 
@@ -1180,8 +1181,8 @@ public class MainBackEndHolder {
 		return keysManager;
 	}
 
-	public String getLogs() {
-		return logHolder.toString();
+	public String getLogsSince(long time) {
+		return logHolder.getContentSince(time);
 	}
 
 	public void addTaskGroup(TaskGroup group) {

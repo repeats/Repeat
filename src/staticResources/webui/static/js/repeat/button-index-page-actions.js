@@ -68,7 +68,7 @@ function buttonReplayConfigSaveAction(e) {
 //////////////////////////////////////////////////////////////////////////////////
 
 function buttonCompileAction(e) {
-    var source = $("#source-code").val();
+    var source = _internalEditor.getValue();
 
     $.post("/internals/action/compile-task", source, function(status) {
         // Nothing to do.

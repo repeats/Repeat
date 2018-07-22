@@ -68,7 +68,7 @@ public class MainFrame extends JFrame {
 
 
 	private static final Logger LOGGER = Logger.getLogger(MainFrame.class.getName());
-	private static final int MAX_STATUS_LINE_COUNT = 4096;
+	public static final int MAX_STATUS_LINE_COUNT = 4096;
 
 	protected static final int TTASK_COLUMN_TASK_NAME = 0;
 	protected static final int TTASK_COLUMN_TASK_HOTKEY = 1;
