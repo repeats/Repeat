@@ -16,8 +16,8 @@ import core.languageHandler.sourceGenerator.ScalaSourceGenerator;
 import core.scheduler.SchedulingData;
 import globalListener.GlobalKeyListener;
 import globalListener.GlobalMouseListener;
-import utilities.NativeHookCodeConverter;
 import utilities.Function;
+import utilities.NativeHookCodeConverter;
 
 public class Recorder {
 
@@ -181,6 +181,10 @@ public class Recorder {
 
 	public void setRecordMode(int mode) {
 		this.mode = mode;
+	}
+
+	public int getRecordMode() {
+		return mode;
 	}
 
 	public void record() {

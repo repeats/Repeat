@@ -339,7 +339,7 @@ public class MainFrame extends JFrame {
 		rbmiCompileJava.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.refreshCompilingLanguage();
+				backEnd.setCompilingLanguage(Language.JAVA);
 			}
 		});
 		bGroupLanguage.add(rbmiCompileJava);
@@ -349,7 +349,7 @@ public class MainFrame extends JFrame {
 		rbmiCompilePython.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.refreshCompilingLanguage();
+				backEnd.setCompilingLanguage(Language.PYTHON);
 			}
 		});
 		bGroupLanguage.add(rbmiCompilePython);
@@ -358,7 +358,7 @@ public class MainFrame extends JFrame {
 		rbmiCompileCS.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.refreshCompilingLanguage();
+				backEnd.setCompilingLanguage(Language.CSHARP);
 			}
 		});
 		mnNewMenu_3.add(rbmiCompileCS);
@@ -369,7 +369,7 @@ public class MainFrame extends JFrame {
 		rbmiCompileScala.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				backEnd.refreshCompilingLanguage();
+				backEnd.setCompilingLanguage(Language.SCALA);
 			}
 		});
 		mnNewMenu_3.add(rbmiCompileScala);

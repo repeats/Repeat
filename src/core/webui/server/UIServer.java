@@ -19,6 +19,7 @@ import core.webcommon.HttpHandlerWithBackend;
 import core.webcommon.StaticFileServingHandler;
 import core.webcommon.UpAndRunningHandler;
 import core.webui.server.handlers.AboutPageHandler;
+import core.webui.server.handlers.ApiPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
@@ -28,6 +29,17 @@ import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.IPCPageHandler;
 import core.webui.server.handlers.internals.ipcs.ModifyIPCServicePortHandler;
 import core.webui.server.handlers.internals.ipcs.ToggleIPCServiceLaunchAtStartupHandler;
+import core.webui.server.handlers.internals.menu.MenuCleanUnusedSourcesActionHandler;
+import core.webui.server.handlers.internals.menu.MenuExecuteOnReleaseActionHandler;
+import core.webui.server.handlers.internals.menu.MenuExitActionHandler;
+import core.webui.server.handlers.internals.menu.MenuForceExitActionHandler;
+import core.webui.server.handlers.internals.menu.MenuGetCompilingLanguagesActionHandler;
+import core.webui.server.handlers.internals.menu.MenuGetGeneratedSourceHandler;
+import core.webui.server.handlers.internals.menu.MenuHaltAllTasksActionHandler;
+import core.webui.server.handlers.internals.menu.MenuHaltTaskByEscapeActionHandler;
+import core.webui.server.handlers.internals.menu.MenuRecordMouseClickOnlyActionHandler;
+import core.webui.server.handlers.internals.menu.MenuSaveConfigActionHandler;
+import core.webui.server.handlers.internals.menu.MenuSetCompilingLanguagesActionHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionChangeReplayConfigHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartRecordingHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartReplayHandler;
@@ -112,7 +124,22 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/ipcs", new IPCPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
 		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/api", new ApiPageHandler());
 		output.put("/about", new AboutPageHandler(objectRenderer));
+
+		output.put("/internals/menu/file/save-config", new MenuSaveConfigActionHandler());
+		output.put("/internals/menu/file/clean-unused-sources", new MenuCleanUnusedSourcesActionHandler());
+		output.put("/internals/menu/file/force-exit", new MenuForceExitActionHandler());
+		output.put("/internals/menu/file/exit", new MenuExitActionHandler());
+
+		output.put("/internals/menu/tools/halt-all-tasks", new MenuHaltAllTasksActionHandler());
+		output.put("/internals/menu/tools/generate-source", new MenuGetGeneratedSourceHandler());
+		output.put("/internals/menu/tools/get-compiling-languages-options", new MenuGetCompilingLanguagesActionHandler(objectRenderer));
+		output.put("/internals/menu/tools/set-compiling-language", new MenuSetCompilingLanguagesActionHandler(objectRenderer));
+
+		output.put("/internals/menu/settings/record-mouse-click-only", new MenuRecordMouseClickOnlyActionHandler());
+		output.put("/internals/menu/settings/halt-task-by-escape", new MenuHaltTaskByEscapeActionHandler());
+		output.put("/internals/menu/settings/execute-on-release", new MenuExecuteOnReleaseActionHandler());
 
 		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/start-listening", new ActionTaskActivationStartListeningHandler(objectRenderer, taskActivationConstructorManager));

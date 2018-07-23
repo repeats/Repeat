@@ -12,9 +12,11 @@ import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
+import core.languageHandler.Language;
 import core.userDefinedTask.TaskGroup;
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
+import core.webui.server.handlers.renderedobjects.RenderedCompilingLanguage;
 import core.webui.server.handlers.renderedobjects.RenderedIPCService;
 import core.webui.server.handlers.renderedobjects.RenderedTaskGroup;
 import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
@@ -56,6 +58,17 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 			.collect(Collectors.toList()));
 
 		return renderedPage(exchange, "rendered_task_groups", data);
+	}
+
+	protected final Void renderedCompilingLanguages(HttpAsyncExchange exchange) throws IOException {
+		Language selected = backEndHolder.getSelectedLanguage();
+		Map<String, Object> data = new HashMap<>();
+		List<RenderedCompilingLanguage> languages = new ArrayList<>();
+		for (Language language : Language.values()) {
+			languages.add(RenderedCompilingLanguage.forLanguage(language, language == selected));
+		}
+		data.put("compilingLanguages", languages);
+		return renderedPage(exchange, "rendered_compiling_languages", data);
 	}
 
 	protected final Void renderedPage(HttpAsyncExchange exchange, String template, Map<String, Object> data) throws IOException {

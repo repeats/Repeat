@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,6 +65,7 @@ public class MainBackEndHolder {
 
 	protected ScheduledThreadPoolExecutor executor;
 	private Thread compiledExecutor;
+	private Language compilingLanguage;
 
 	private ReplayConfig replayConfig;
 	protected Recorder recorder;
@@ -96,6 +96,7 @@ public class MainBackEndHolder {
 		logHolder = new LogHolder();
 
 		executor = new ScheduledThreadPoolExecutor(10);
+		compilingLanguage = Language.JAVA;
 
 		taskGroups = new ArrayList<>();
 		selectedTaskIndex = -1;
@@ -251,7 +252,7 @@ public class MainBackEndHolder {
 		}
 	}
 
-	protected void exit() {
+	public void exit() {
 		stopBackEndActivities();
 
 		if (!writeConfigFile()) {
@@ -902,10 +903,13 @@ public class MainBackEndHolder {
 		main.taSource.setText(sb.toString());
 	}
 
-	protected void generateSource() {
+	public String generateSource() {
+		String source = "";
 		if (applySpeedup()) {
-			main.taSource.setText(recorder.getGeneratedCode(getSelectedLanguage()));
+			source = recorder.getGeneratedCode(getSelectedLanguage());
+			main.taSource.setText(source);
 		}
+		return source;
 	}
 
 	protected void importTasks(File inputFile) {
@@ -959,7 +963,7 @@ public class MainBackEndHolder {
 		JOptionPane.showMessageDialog(main, "Data exported to " + zipPath);
 	}
 
-	protected void cleanUnusedSource() {
+	public void cleanUnusedSource() {
 		List<File> files = FileUtility.walk(FileUtility.joinPath("data", "source"));
 		Set<String> allNames = new HashSet<>(new Function<File, String>() {
 			@Override
@@ -980,45 +984,36 @@ public class MainBackEndHolder {
 
 		allNames.removeAll(using);
 		if (allNames.size() == 0) {
-			JOptionPane.showMessageDialog(main, "Nothing to clean...");
+			LOGGER.info("Nothing to clean...");
 			return;
 		}
 
-		String[] titles = new String[allNames.size()];
-		Arrays.fill(titles, "Deleting");
-		int confirmDelete = SwingUtil.OptionPaneUtil.confirmValues("Delete these files?", titles, allNames.toArray(new String[0]));
-		if (confirmDelete == JOptionPane.OK_OPTION) {
-			int count = 0, failed = 0;
-			for (String name : allNames) {
-				if (FileUtility.removeFile(new File(name))) {
-					count++;
-				} else {
-					failed++;
-				}
+		int count = 0, failed = 0;
+		for (String name : allNames) {
+			if (FileUtility.removeFile(new File(name))) {
+				count++;
+			} else {
+				failed++;
 			}
-
-			JOptionPane.showMessageDialog(main, "Successfully cleaned " + count + " files.\n Failed to clean " + failed + " files.");
 		}
+
+		LOGGER.info("Successfully cleaned " + count + " files.\n Failed to clean " + failed + " files.");
 	}
 
 	/*************************************************************************************************************/
 	/***************************************Source compilation****************************************************/
 
 	public Language getSelectedLanguage() {
-		for (JRadioButtonMenuItem rbmi : main.rbmiSelection.keySet()) {
-			if (rbmi.isSelected()) {
-				return main.rbmiSelection.get(rbmi);
-			}
-		}
-
-		throw new IllegalStateException("Undefined state. No language selected.");
+		return compilingLanguage;
 	}
 
 	protected AbstractNativeCompiler getCompiler() {
 		return config.getCompilerFactory().getCompiler(getSelectedLanguage());
 	}
 
-	protected void refreshCompilingLanguage() {
+	public void setCompilingLanguage(Language language) {
+		compilingLanguage = language;
+
 		customFunction = null;
 		getCompiler().changeCompilationButton(main.bCompile);
 		promptSource();
@@ -1119,7 +1114,7 @@ public class MainBackEndHolder {
 		config.setUseTrayIcon(trayIconEnabled);
 	}
 
-	protected void haltAllTasks() {
+	public void haltAllTasks() {
 		keysManager.haltAllTasks();
 	}
 
@@ -1177,6 +1172,14 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/***************************************Generic Getters and Setters*******************************************/
+	public Recorder getRecorder() {
+		return recorder;
+	}
+
+	public Config getConfig() {
+		return config;
+	}
+
 	public synchronized boolean isRecording() {
 		return isRecording;
 	}

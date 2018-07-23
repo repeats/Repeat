@@ -1,3 +1,4 @@
+<#import "/fragments/compiling_languages.ftlh" as compiling_languages_fragment>
 <#import "/fragments/tasks.ftlh" as task_fragment>
 <#import "/fragments/task_groups_dropdown.ftlh" as task_groups_dropdown_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
@@ -18,6 +19,26 @@
 
 <div class="wrapper">
     <!-- Modals -->
+    <div id="modal-force-exit-confirm" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Confirm force exit.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label">Forcing exit will not do any clean up so you may have stale resources and background processes. Are you sure?</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-force-exit-confirm-ok" type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="modal-replay-config" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -70,29 +91,11 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Select a compiling language.</h4>
                 </div>
-                <div class="modal-body">
-                    <div class="form-check">
-                        <input class="form-check-input" name="radio-compiling-language" type="radio" id="radio-compiling-java" checked>
-                        <label class="form-check-label" for="radio-compiling-java">Java</label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" name="radio-compiling-language" type="radio" id="radio-compiling-python">
-                        <label class="form-check-label" for="radio-compiling-python">Python</label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" name="radio-compiling-language" type="radio" id="radio-compiling-cs">
-                        <label class="form-check-label" for="radio-compiling-cs">C#</label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" name="radio-compiling-language" type="radio" id="radio-compiling-scala" disabled>
-                        <label class="form-check-label" for="radio-compiling-scala">Scala</label>
-                    </div>
+                <div id="modal-compiling-languages-body" class="modal-body">
+                    <@compiling_languages_fragment.fragment/>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    <button id="modal-compiling-languages-select" type="button" class="btn btn-primary" data-dismiss="modal">Select</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -180,51 +183,46 @@
                                     </p>
                               </a>
                               <ul class="dropdown-menu">
-                                <li><a href="#">Load config...</a></li>
-                                <li><a href="#">Save config</a></li>
+                                <li id="menu-save-config"><a href="#">Save config</a></li>
                                 <li class="divider"></li>
-                                <li><a href="#">Load source...</a></li>
-                                <li><a href="#">Save source...</a></li>
-                                <li><a href="#">Clean unused sources</a></li>
-                                <li><a href="#">Import...</a></li>
-                                <li><a href="#">Export</a></li>
+                                <li id="menu-clean-unused-sources"><a href="#">Clean unused sources</a></li>
+                                <li id="menu-import"><a href="#">Import...</a></li>
+                                <li id="menu-export"><a href="#">Export</a></li>
                                 <li class="divider"></li>
-                                <li><a href="#">Force exit...</a></li>
-                                <li><a href="#">Exit</a></li>
+                                <li id="menu-force-exit"><a href="#">Force exit...</a></li>
+                                <li id="menu-exit"><a href="#">Exit</a></li>
                               </ul>
                         </li>
                         <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <p>
-                                        Tool
+                                        Tools
                                         <b class="caret"></b>
                                     </p>
                               </a>
                               <ul class="dropdown-menu">
-                                <li><a href="#">Halt all tasks</a></li>
-                                <li><a href="#">Generate source</a></li>
+                                <li id="menu-halt-all-tasks"><a href="#">Halt all tasks</a></li>
+                                <li id="menu-generate-source"><a href="#">Generate source</a></li>
                                 <li><a href="/ipcs">Native Modules...</a></li>
-                                <li><a href="#" data-toggle="modal" data-target="#modal-compiling-languages">Compiling languages...</a></li>
-                                <li><a href="#">Common tools</a></li>
+                                <li id="menu-compiling-languages"><a href="#">Compiling languages...</a></li>
                               </ul>
                         </li>
                         <li class="dropdown">
                               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <p>
-                                        Setting
+                                        Settings
                                         <b class="caret"></b>
                                     </p>
                               </a>
                               <ul class="dropdown-menu">
-                                <li><a href="#">Hotkeys...</a></li>
-                                <li><a href="#">Set compiler path...</a></li>
-                                <li><a href="#">Configure compiler...</a></li>
-                                <li><a href="#">Record mouse click only</a></li>
-                                <li><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" checked/>&nbsp;Halt task by ESC</a></li>
-                                <li><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox"/>&nbsp;Execute on release</a></li>
+                                <li id="menu-hotkeys"><a href="#">Hotkeys...</a></li>
+                                <li id="menu-compiler-path"><a href="#">Set compiler path...</a></li>
+                                <li id="menu-configure-compiler"><a href="#">Configure compiler...</a></li>
+                                <li id="menu-record-mouse-click-only"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.recordMouseClickOnly> checked </#if>/>&nbsp;Record mouse click only</a></li>
+                                <li id="menu-halt-task-by-escape"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.haltTaskByEscape> checked </#if>/>&nbsp;Halt task by ESC</a></li>
+                                <li id="menu-execute-on-release"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.executeOnRelease> checked </#if>/>&nbsp;Execute on release</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#" data-toggle="modal" data-target="#modal-debug-level">Debug level...</a></li>
-                                <li><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" checked/>&nbsp;Use tray icon</a></li>
                               </ul>
                         </li>
                         <li class="dropdown">
@@ -326,6 +324,7 @@
     <!--  JavaScript for this page.    -->
     <script src="/static/js/codemirror.js"></script>
 
+    <script src="/static/js/repeat/menu-index-page.js"></script>
     <script src="/static/js/repeat/polling-common.js"></script>
     <script src="/static/js/repeat/button-index-page-actions.js"></script>
     <script src="/static/js/repeat/logs-textarea.js"></script>
@@ -345,6 +344,7 @@
             registerSourceTextArea();
             registerTableTasks();
             registerTaskGroupsDropdownEvents();
+            registerMenuIndexPageActions();
         });
     </script>
 
