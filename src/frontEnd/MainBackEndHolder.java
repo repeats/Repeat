@@ -1007,7 +1007,7 @@ public class MainBackEndHolder {
 		return compilingLanguage;
 	}
 
-	protected AbstractNativeCompiler getCompiler() {
+	public AbstractNativeCompiler getCompiler() {
 		return config.getCompilerFactory().getCompiler(getSelectedLanguage());
 	}
 
@@ -1093,7 +1093,20 @@ public class MainBackEndHolder {
 				break;
 			}
 		}
-		config.setNativeHookDebugLevel(debugLevel);
+
+		changeDebugLevel(debugLevel);
+	}
+
+	public void changeDebugLevel(Level level) {
+		final JRadioButtonMenuItem[] buttons = {main.rbmiDebugSevere, main.rbmiDebugWarning, main.rbmiDebugInfo, main.rbmiDebugFine};
+
+		for (int i = 0; i < DEBUG_LEVELS.length; i++) {
+			if (DEBUG_LEVELS[i] == level) {
+				buttons[i].setSelected(true);
+				break;
+			}
+		}
+		config.setNativeHookDebugLevel(level);
 
 		// Get the logger for "org.jnativehook" and set the level to appropriate level.
 		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());

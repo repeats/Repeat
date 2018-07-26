@@ -52,8 +52,14 @@ public class ScalaRemoteCompiler extends AbstractRemoteNativeCompiler {
 	}
 
 	@Override
-	public void setPath(File path) {
+	public boolean canSetPath() {
+		return false;
+	}
+
+	@Override
+	public boolean setPath(File path) {
 		// Intentionally left blank
+		return false;
 	}
 
 	@Override

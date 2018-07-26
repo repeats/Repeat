@@ -21,13 +21,11 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Enter a name for the new task group:</h4>
+                    <h4 class="modal-title">Enter a name for the new task group</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-check">
-                        <label class="form-check-label" for="name-for-new-task-group">Name:</label>
-                        <input class="form-check-input" name="name-for-new-task-group" type="text" id="name-for-new-task-group">
-                    </div>
+                    <div>Name:</div>
+                    <input class="form-control" name="name-for-new-task-group" type="text" id="name-for-new-task-group">
                 </div>
                 <div class="modal-footer">
                     <button id="modal-new-task-group-save" type="button" class="btn btn-primary" data-dismiss="modal">Create</button>
@@ -42,13 +40,11 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Enter a new name for task group:</h4>
+                    <h4 class="modal-title">Enter a new name for task group</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-check">
-                        <label class="form-check-label" for="new-task-group-name">Name:</label>
-                        <input class="form-check-input" name="new-task-group-name" type="text" id="new-task-group-name">
-                    </div>
+                    <div>Name:</div>
+                    <input class="form-control" name="new-task-group-name" type="text" id="new-task-group-name">
                 </div>
                 <div class="modal-footer">
                     <div id="modal-task-group-name-row" style="display:none;">0</div>

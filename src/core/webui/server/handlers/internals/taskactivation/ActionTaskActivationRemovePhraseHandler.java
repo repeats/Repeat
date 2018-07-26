@@ -28,6 +28,6 @@ public class ActionTaskActivationRemovePhraseHandler extends AbstractTaskActivat
 		}
 
 		constructor.removePhrase(Integer.parseInt(index));
-		return renderedTaskActivationPage(exchange, "rendered_phrases", constructor.getActivation());
+		return renderedTaskActivationPage(exchange, "fragments/phrases", constructor.getActivation());
 	}
 }

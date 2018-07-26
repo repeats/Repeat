@@ -34,9 +34,10 @@ function registerCells() {
 
 function tableTaskOnClick(cell, row, col) {
     if (col == 0) { // Name.
-        $('#modal-task-name-row').val(row);
-        $('#new-task-name').val(cell.textContent);
-        $('#modal-task-name').modal();
+        $("#modal-task-name-row").val(row);
+        $("#new-task-name").val(cell.textContent);
+        $("#modal-task-name").modal();
+        utils_FocusInputForModal("new-task-name");
     }
 
     if (col == 1) { // Activation.

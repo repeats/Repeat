@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -233,8 +234,44 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	}
 
 	@Override
-	public void setPath(File path) {
-		home = path;
+	public boolean canSetPath() {
+		return true;
+	}
+
+	@Override
+	public boolean setPath(File path) {
+		if (Files.isDirectory(path.toPath())) {
+			home = path;
+			return true;
+		}
+		getLogger().warning("Path must be directory.");
+		return false;
+	}
+
+	public List<String> getClassPath() {
+		return Arrays.asList(classPaths);
+	}
+
+	public boolean setClassPath(List<String> paths) {
+		Optional<String> invalidPath = paths.stream().filter(p -> !Files.isReadable(Paths.get(p))).findFirst();
+		if (invalidPath.isPresent()) {
+			getLogger().warning("Path " + invalidPath.get() + " is not valid (does not exist or cannot be read).");
+			return false;
+		}
+
+		String[] newPaths = new String[paths.size()];
+		for (int i = 0; i < paths.size(); i++) {
+			newPaths[i] = paths.get(i);
+		}
+		classPaths = newPaths;
+
+		try {
+			applyClassPath();
+			return true;
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Unable to configure the new classpath.", e);
+			return false;
+		}
 	}
 
 	@Override
@@ -387,15 +424,6 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 			}
 		}
 
-		classPaths = new String[validPaths.size()];
-		for (int i = 0; i < validPaths.size(); i++) {
-			classPaths[i] = validPaths.get(i);
-		}
-
-		try {
-			applyClassPath();
-		} catch (Exception e) {
-			getLogger().log(Level.WARNING, "Unable to configure the new classpath.", e);
-		}
+		setClassPath(validPaths);
 	}
 }

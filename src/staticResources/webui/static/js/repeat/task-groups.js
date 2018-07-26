@@ -43,6 +43,7 @@ function tableTaskGroupsOnClick(cell, row, col) {
         $('#modal-task-group-name-row').val(row);
         $('#new-task-group-name').val(cell.textContent);
         $('#modal-task-group-name').modal();
+        utils_FocusInputForModal("new-task-group-name");
     }
 
     if (col == 2) { // Enabled.
@@ -76,6 +77,7 @@ function buttonSaveTaskGroupNameAction(e) {
 function buttonAddTaskGroupAction(e) {
     $('#name-for-new-task-group').val("");
     $('#modal-new-task-group').modal();
+    utils_FocusInputForModal("name-for-new-task-group");
 }
 
 function buttonAddNewTaskGroupAction(e) {

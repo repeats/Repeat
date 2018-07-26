@@ -20,7 +20,7 @@ function refreshLog(textArea, state) {
             textArea.scrollTop(textArea[0].scrollHeight - textArea.height());
         }
     }).fail(function(response) {
-        state.backOff = Math.min(60000, Math.floor(state.backOff * 2));
+        state.backOff = Math.min(3600000, Math.floor(state.backOff * 2));
     }).always(function() {
         scheduleNext(state);
     });

@@ -6,3 +6,5 @@
     </div>
     </#list>
 </#macro>
+
+<@fragment/>

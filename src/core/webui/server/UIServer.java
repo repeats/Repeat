@@ -33,13 +33,20 @@ import core.webui.server.handlers.internals.menu.MenuCleanUnusedSourcesActionHan
 import core.webui.server.handlers.internals.menu.MenuExecuteOnReleaseActionHandler;
 import core.webui.server.handlers.internals.menu.MenuExitActionHandler;
 import core.webui.server.handlers.internals.menu.MenuForceExitActionHandler;
+import core.webui.server.handlers.internals.menu.MenuGetCompilerConfigOptionActionHandler;
+import core.webui.server.handlers.internals.menu.MenuGetCompilerPathActionHandler;
 import core.webui.server.handlers.internals.menu.MenuGetCompilingLanguagesActionHandler;
+import core.webui.server.handlers.internals.menu.MenuGetDebugLevelOptionsActionHandler;
 import core.webui.server.handlers.internals.menu.MenuGetGeneratedSourceHandler;
 import core.webui.server.handlers.internals.menu.MenuHaltAllTasksActionHandler;
 import core.webui.server.handlers.internals.menu.MenuHaltTaskByEscapeActionHandler;
 import core.webui.server.handlers.internals.menu.MenuRecordMouseClickOnlyActionHandler;
 import core.webui.server.handlers.internals.menu.MenuSaveConfigActionHandler;
+import core.webui.server.handlers.internals.menu.MenuSetCompilerConfigActionHandler;
+import core.webui.server.handlers.internals.menu.MenuSetCompilerPathActionHandler;
 import core.webui.server.handlers.internals.menu.MenuSetCompilingLanguagesActionHandler;
+import core.webui.server.handlers.internals.menu.MenuSetDebugLevelActionHandler;
+import core.webui.server.handlers.internals.menu.MenuUseTrayIconActionHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionChangeReplayConfigHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartRecordingHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartReplayHandler;
@@ -137,9 +144,16 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/menu/tools/get-compiling-languages-options", new MenuGetCompilingLanguagesActionHandler(objectRenderer));
 		output.put("/internals/menu/tools/set-compiling-language", new MenuSetCompilingLanguagesActionHandler(objectRenderer));
 
+		output.put("/internals/menu/settings/get-compiler-path", new MenuGetCompilerPathActionHandler());
+		output.put("/internals/menu/settings/set-compiler-path", new MenuSetCompilerPathActionHandler());
+		output.put("/internals/menu/settings/compiler-config-options", new MenuGetCompilerConfigOptionActionHandler(objectRenderer));
+		output.put("/internals/menu/settings/set-compiler-config", new MenuSetCompilerConfigActionHandler());
 		output.put("/internals/menu/settings/record-mouse-click-only", new MenuRecordMouseClickOnlyActionHandler());
 		output.put("/internals/menu/settings/halt-task-by-escape", new MenuHaltTaskByEscapeActionHandler());
+		output.put("/internals/menu/settings/debug-level-options", new MenuGetDebugLevelOptionsActionHandler(objectRenderer));
+		output.put("/internals/menu/settings/set-debug-level", new MenuSetDebugLevelActionHandler());
 		output.put("/internals/menu/settings/execute-on-release", new MenuExecuteOnReleaseActionHandler());
+		output.put("/internals/menu/settings/use-tray-icon", new MenuUseTrayIconActionHandler());
 
 		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/start-listening", new ActionTaskActivationStartListeningHandler(objectRenderer, taskActivationConstructorManager));

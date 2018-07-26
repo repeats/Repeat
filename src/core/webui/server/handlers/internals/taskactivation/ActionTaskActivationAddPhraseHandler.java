@@ -26,6 +26,6 @@ public class ActionTaskActivationAddPhraseHandler extends AbstractTaskActivation
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "No phrase provided.");
 		}
 		constructor.addPhrase(phrase);
-		return renderedTaskActivationPage(exchange, "rendered_phrases", constructor.getActivation());
+		return renderedTaskActivationPage(exchange, "fragments/phrases", constructor.getActivation());
 	}
 }

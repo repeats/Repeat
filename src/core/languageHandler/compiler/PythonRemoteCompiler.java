@@ -1,6 +1,7 @@
 package core.languageHandler.compiler;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,8 +32,18 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 	}
 
 	@Override
-	public void setPath(File file) {
-		interpreter = file;
+	public boolean canSetPath() {
+		return true;
+	}
+
+	@Override
+	public boolean setPath(File file) {
+		if (Files.isExecutable(file.toPath())) {
+			interpreter = file;
+			return true;
+		}
+		getLogger().warning("Python interpreter must be an executable.");
+		return false;
 	}
 
 	@Override

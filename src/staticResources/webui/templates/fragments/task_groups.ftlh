@@ -18,3 +18,5 @@
         </#list>
     </tbody>
 </#macro>
+
+<@fragment/>

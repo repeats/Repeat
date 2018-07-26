@@ -22,13 +22,11 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Enter a new port:</h4>
+                    <h4 class="modal-title">Enter a new port</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-check">
-                        <label class="form-check-label" for="new-ipc-port">New port:</label>
-                        <input class="form-check-input" name="new-ipc-port" type="text" id="new-ipc-port">
-                    </div>
+                    <div>New port:</div>
+                    <input class="form-control" name="new-ipc-port" type="text" id="new-ipc-port">
                 </div>
                 <div class="modal-footer">
                     <div id="modal-ipc-service-row" style="display:none;">0</div>

@@ -123,7 +123,7 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 	public abstract File getPath();
 
 	@Override
-	public abstract void setPath(File path);
+	public abstract boolean setPath(File path);
 
 	@Override
 	public abstract boolean parseCompilerSpecificArgs(JsonNode node);

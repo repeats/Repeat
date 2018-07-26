@@ -39,7 +39,7 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 		}
 		data.put("ipcs", services);
 
-		return renderedPage(exchange, "rendered_ipcs", data);
+		return renderedPage(exchange, "fragments/ipcs", data);
 	}
 
 	protected final Void renderedTaskForGroup(HttpAsyncExchange exchange) throws IOException {
@@ -48,7 +48,7 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 		List<RenderedUserDefinedAction> taskList = group.getTasks().stream().map(RenderedUserDefinedAction::fromUserDefinedAction).collect(Collectors.toList());
 		data.put("tasks", taskList);
 
-		return renderedPage(exchange, "rendered_tasks", data);
+		return renderedPage(exchange, "fragments/tasks", data);
 	}
 
 	protected final Void renderedTaskGroups(HttpAsyncExchange exchange) throws IOException {
@@ -57,7 +57,7 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 			.stream().map(g -> RenderedTaskGroup.fromTaskGroup(g, g == backEndHolder.getCurrentTaskGroup()))
 			.collect(Collectors.toList()));
 
-		return renderedPage(exchange, "rendered_task_groups", data);
+		return renderedPage(exchange, "fragments/task_groups", data);
 	}
 
 	protected final Void renderedCompilingLanguages(HttpAsyncExchange exchange) throws IOException {
@@ -68,7 +68,7 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 			languages.add(RenderedCompilingLanguage.forLanguage(language, language == selected));
 		}
 		data.put("compilingLanguages", languages);
-		return renderedPage(exchange, "rendered_compiling_languages", data);
+		return renderedPage(exchange, "fragments/compiling_languages", data);
 	}
 
 	protected final Void renderedPage(HttpAsyncExchange exchange, String template, Map<String, Object> data) throws IOException {

@@ -28,6 +28,6 @@ public class ActionTaskActivationRemoveKeySequenceHandler extends AbstractTaskAc
 		}
 
 		constructor.removeKeySequence(Integer.parseInt(index));
-		return renderedTaskActivationPage(exchange, "rendered_key_sequences", constructor.getActivation());
+		return renderedTaskActivationPage(exchange, "fragments/key_sequences", constructor.getActivation());
 	}
 }

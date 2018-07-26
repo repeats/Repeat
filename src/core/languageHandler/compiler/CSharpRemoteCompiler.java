@@ -26,8 +26,14 @@ public class CSharpRemoteCompiler extends AbstractRemoteNativeCompiler {
 	}
 
 	@Override
-	public void setPath(File file) {
+	public boolean canSetPath() {
+		return false;
+	}
+
+	@Override
+	public boolean setPath(File file) {
 		this.path = file;
+		return true;
 	}
 
 	@Override

@@ -54,3 +54,9 @@ tr { cursor: default; }
 	box-shadow:none;
 	background-clip: padding-box;
 }
+
+/*Overriding bootstrap theme*/
+.main-panel > .content {
+    padding: 10px 5px;
+    min-height: calc(100% - 123px);
+}

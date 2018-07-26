@@ -2,12 +2,12 @@
 
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
-  height: 1000px;
+  height: 740px;
   color: black;
   direction: ltr;
 
   font-family: times;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* PADDING */

@@ -30,12 +30,11 @@ public class GetRenderedTaskGroupsDropdown extends AbstractUIHttpHandler {
 		TaskGroup group = backEndHolder.getCurrentTaskGroup();
 		data.put("taskGroup", RenderedTaskGroupButton.fromTaskGroups(group, backEndHolder.getTaskGroups()));
 
-		String page = objectRenderer.render("rendered_task_groups_dropdown", data);
+		String page = objectRenderer.render("fragments/task_groups_dropdown", data);
 		if (page == null) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Failed to render page.");
 		}
 
 		return HttpServerUtilities.prepareHttpResponse(exchange, HttpStatus.SC_OK, page);
 	}
-
 }

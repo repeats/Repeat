@@ -1,4 +1,3 @@
-<#import "/fragments/ipcs.ftlh" as ipcs_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
 <#import "/fragments/footer.ftlh" as footer_fragment>
 <#import "/fragments/common_js.ftlh" as common_js_fragment>

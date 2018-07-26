@@ -28,6 +28,7 @@ function buttonReplayCountAction(e) {
     $("#modal-replay-config-param-name").html("count");
     $("#new-replay-config-value").val($("#button-replay-count").html());
     $("#modal-replay-config").modal();
+    utils_FocusInputForModal("new-replay-config-value");
 }
 
 function buttonReplayDelayAction(e) {
@@ -36,6 +37,7 @@ function buttonReplayDelayAction(e) {
     $("#modal-replay-config-param-name").html("delay");
     $("#new-replay-config-value").val($("#button-replay-delay").html());
     $("#modal-replay-config").modal();
+    utils_FocusInputForModal("new-replay-config-value");
 }
 
 function buttonReplaySpeedupAction(e) {
@@ -44,6 +46,7 @@ function buttonReplaySpeedupAction(e) {
     $("#modal-replay-config-param-name").html("speedup");
     $("#new-replay-config-value").val($("#button-replay-speedup").html());
     $("#modal-replay-config").modal();
+    utils_FocusInputForModal("new-replay-config-value");
 }
 
 function buttonReplayConfigSaveAction(e) {

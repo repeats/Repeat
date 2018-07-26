@@ -12,3 +12,5 @@
         </#list>
     </tbody>
 </#macro>
+
+<@fragment/>

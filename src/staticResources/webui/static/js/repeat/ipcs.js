@@ -42,9 +42,10 @@ function tableIpcOnClick(cell, row, col) {
         }
 
         // Modify port.
-        $('#modal-ipc-service-row').val(row);
-        $('#new-ipc-port').val(cell.textContent);
-        $('#modal-ipc-port').modal();
+        $("#modal-ipc-service-row").val(row);
+        $("#new-ipc-port").val(cell.textContent);
+        $("#modal-ipc-port").modal();
+        utils_FocusInputForModal("new-ipc-port");
     }
     if (col == 3) { // Launch at startup.
         $.post("/internals/toggle/ipc-service-launch-at-startup", JSON.stringify({ipc: row}), function(data) {
@@ -56,8 +57,8 @@ function tableIpcOnClick(cell, row, col) {
 }
 
 function buttonSavePortAction(e) {
-    var row = $('#modal-ipc-service-row').val();
-    var newPort = $('#new-ipc-port').val();
+    var row = $("#modal-ipc-service-row").val();
+    var newPort = $("#new-ipc-port").val();
 
     $.post("/internals/modify/ipc-service-port", JSON.stringify({ipc: row, port: newPort}), function(data) {
         refreshIpcsWithDataAndIndex(data, row);

@@ -23,6 +23,6 @@ public class ActionTaskActivationAddStrokesAsKeySequenceHandler extends Abstract
 		constructor.addAsKeySequence();
 		constructor.stopListening();
 
-		return renderedTaskActivationPage(exchange, "rendered_key_sequences", constructor.getActivation());
+		return renderedTaskActivationPage(exchange, "fragments/key_sequences", constructor.getActivation());
 	}
 }
