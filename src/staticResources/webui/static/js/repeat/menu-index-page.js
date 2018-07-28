@@ -1,5 +1,7 @@
 function registerMenuIndexPageActions() {
     $("#menu-save-config").click(menuSaveConfigAction);
+    $("#menu-import").click(menuImportAction);
+    $("#menu-export").click(menuExportAction);
     $("#menu-clean-unused-sources").click(menuCleanUnusedSourcesAction);
     $("#menu-force-exit").click(menuForceExitAction);
     $("#menu-exit").click(menuExitAction);
@@ -17,6 +19,8 @@ function registerMenuIndexPageActions() {
     $("#menu-debug-level").click(menuDebugLevelAction);
     $("menu-use-tray-icon").click(menuUseTrayIconAction);
 
+    $("#modal-import-tasks-import").click(importTasksAction);
+    $("#modal-export-tasks-export").click(exportTasksAction);
     $("#modal-force-exit-confirm-ok").click(forceExitAfterConfirmed);
     $("#modal-compiling-languages-select").click(selectCompilingLanguageAction);
     $("#modal-set-compiler-path-save").click(setCompilerPathAction);
@@ -33,6 +37,36 @@ function menuSaveConfigAction(e) {
         // Nothing to do.
     }).fail(function(response) {
         alert('Error saving config: ' + response.responseText);
+    });
+}
+
+function menuImportAction(e) {
+    $("#modal-import-tasks").modal();
+    utils_FocusInputForModal("import-tasks-file");
+}
+
+function importTasksAction(e) {
+    var path = $("#import-tasks-file").val();
+
+    $.post("/internals/menu/file/import-tasks", JSON.stringify({ path: path }), function(data) {
+        // Nothing to do.
+    }).fail(function(response) {
+        alert('Error importing tasks: ' + response.responseText);
+    });
+}
+
+function menuExportAction(e) {
+    $("#modal-export-tasks").modal();
+    utils_FocusInputForModal("export-tasks-dir");
+}
+
+function exportTasksAction(e) {
+    var path = $("#export-tasks-dir").val();
+
+    $.post("/internals/menu/file/export-tasks", JSON.stringify({ path: path }), function(data) {
+        // Nothing to do.
+    }).fail(function(response) {
+        alert('Error exporting tasks: ' + response.responseText);
     });
 }
 

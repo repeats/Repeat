@@ -32,6 +32,7 @@ import core.webui.server.handlers.internals.ipcs.ToggleIPCServiceLaunchAtStartup
 import core.webui.server.handlers.internals.menu.MenuCleanUnusedSourcesActionHandler;
 import core.webui.server.handlers.internals.menu.MenuExecuteOnReleaseActionHandler;
 import core.webui.server.handlers.internals.menu.MenuExitActionHandler;
+import core.webui.server.handlers.internals.menu.MenuExportTaskActionHandler;
 import core.webui.server.handlers.internals.menu.MenuForceExitActionHandler;
 import core.webui.server.handlers.internals.menu.MenuGetCompilerConfigOptionActionHandler;
 import core.webui.server.handlers.internals.menu.MenuGetCompilerPathActionHandler;
@@ -40,6 +41,7 @@ import core.webui.server.handlers.internals.menu.MenuGetDebugLevelOptionsActionH
 import core.webui.server.handlers.internals.menu.MenuGetGeneratedSourceHandler;
 import core.webui.server.handlers.internals.menu.MenuHaltAllTasksActionHandler;
 import core.webui.server.handlers.internals.menu.MenuHaltTaskByEscapeActionHandler;
+import core.webui.server.handlers.internals.menu.MenuImportTaskActionHandler;
 import core.webui.server.handlers.internals.menu.MenuRecordMouseClickOnlyActionHandler;
 import core.webui.server.handlers.internals.menu.MenuSaveConfigActionHandler;
 import core.webui.server.handlers.internals.menu.MenuSetCompilerConfigActionHandler;
@@ -135,6 +137,8 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/about", new AboutPageHandler(objectRenderer));
 
 		output.put("/internals/menu/file/save-config", new MenuSaveConfigActionHandler());
+		output.put("/internals/menu/file/import-tasks", new MenuImportTaskActionHandler());
+		output.put("/internals/menu/file/export-tasks", new MenuExportTaskActionHandler());
 		output.put("/internals/menu/file/clean-unused-sources", new MenuCleanUnusedSourcesActionHandler());
 		output.put("/internals/menu/file/force-exit", new MenuForceExitActionHandler());
 		output.put("/internals/menu/file/exit", new MenuExitActionHandler());

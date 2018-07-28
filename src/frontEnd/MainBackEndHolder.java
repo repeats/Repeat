@@ -912,7 +912,7 @@ public class MainBackEndHolder {
 		return source;
 	}
 
-	protected void importTasks(File inputFile) {
+	public void importTasks(File inputFile) {
 		ZipUtility.unZipFile(inputFile.getAbsolutePath(), ".");
 		File src = new File("tmp");
 		File dst = new File(".");
@@ -940,7 +940,7 @@ public class MainBackEndHolder {
 		}
 	}
 
-	protected void exportTasks(File outputDirectory) {
+	public void exportTasks(File outputDirectory) {
 		File destination = new File(FileUtility.joinPath(outputDirectory.getAbsolutePath(), "tmp"));
 		String zipPath = FileUtility.joinPath(outputDirectory.getAbsolutePath(), "repeat_export.zip");
 

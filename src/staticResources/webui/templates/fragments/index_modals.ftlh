@@ -2,6 +2,44 @@
 <#import "/fragments/debug_levels.ftlh" as debug_levels_fragment>
 
 <#macro fragment>
+    <div id="modal-import-tasks" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select a file to import tasks from</h4>
+                </div>
+                <div class="modal-body">
+                    <div>File path to import from:</div>
+                    <input class="form-control" type="text" id="import-tasks-file">
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-import-tasks-import" type="button" class="btn btn-primary" data-dismiss="modal">Import</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-export-tasks" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Select a directory to export tasks to</h4>
+                </div>
+                <div class="modal-body">
+                    <div>File path to export to:</div>
+                    <input class="form-control" type="text" id="export-tasks-dir">
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-export-tasks-export" type="button" class="btn btn-primary" data-dismiss="modal">Export</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="modal-force-exit-confirm" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
@@ -17,7 +55,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="modal-force-exit-confirm-ok" type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -39,7 +77,7 @@
                 <div class="modal-footer">
                     <div id="modal-replay-config-param-name" style="display:none;">0</div>
                     <button id="modal-replay-config-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -59,7 +97,7 @@
                 <div class="modal-footer">
                     <div id="modal-task-name-row" style="display:none;">0</div>
                     <button id="modal-task-name-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -79,7 +117,7 @@
                     <a class="btn btn-default form-control" href="/task-activation?task=mouseGestureActivation"> Mouse gesture activation </a>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -98,7 +136,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="modal-set-compiler-path-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
