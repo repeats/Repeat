@@ -8,6 +8,7 @@ function registerMenuIndexPageActions() {
     $("#menu-generate-source").click(menuGenerateSourceAction);
     $("#menu-compiling-languages").click(menuCompilingLanguagesAction);
 
+    $("#menu-hotkeys").click(menuHotkeysAction);
     $("#menu-compiler-path").click(menuSetCompilerPathAction);
     $("#menu-configure-compiler").click(menuConfigureCompilerAction);
     $("#menu-record-mouse-click-only").click(menuRecordMouseClickOnlyAction);
@@ -66,6 +67,10 @@ function menuExitAction(e) {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
+
+function menuHotkeysAction(e) {
+    $("#modal-set-hotkeys").modal();
+}
 
 function menuSetCompilerPathAction(e) {
     $.get("/internals/menu/settings/get-compiler-path", function(data) {

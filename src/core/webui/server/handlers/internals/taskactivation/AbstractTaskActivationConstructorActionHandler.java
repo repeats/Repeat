@@ -9,14 +9,13 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
-import core.keyChain.TaskActivation;
 import core.keyChain.TaskActivationConstructor;
 import core.keyChain.TaskActivationConstructorManager;
 import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
-import core.webui.server.handlers.renderedobjects.RenderedActivation;
+import core.webui.server.handlers.renderedobjects.RenderedTaskActivation;
 
 public abstract class AbstractTaskActivationConstructorActionHandler extends AbstractUIHttpHandler {
 
@@ -48,9 +47,9 @@ public abstract class AbstractTaskActivationConstructorActionHandler extends Abs
 		return handleRequestWithBackendAndConstructor(exchange, constructor, params);
 	}
 
-	protected final Void renderedTaskActivationPage(HttpAsyncExchange exchange, String template, TaskActivation activation) throws IOException {
+	protected final Void renderedTaskActivationPage(HttpAsyncExchange exchange, String template, TaskActivationConstructor constructor) throws IOException {
 		Map<String, Object> data = new HashMap<>();
-		data.put("activation", RenderedActivation.fromActivation(activation));
+		data.put("activation", RenderedTaskActivation.fromActivation(constructor));
 		return renderedPage(exchange, template, data);
 	}
 

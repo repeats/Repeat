@@ -77,13 +77,13 @@
                 </div>
                 <div class="row top-buffer">
                     <div class="col-xs-6">
-                        <button id="button-add-key-chain" type="button" class="btn btn-default btn-span">Add key chain</button>
+                        <button id="button-add-key-chain" type="button" class="btn btn-default btn-span" <#if activation.config.disableKeyChain> disabled </#if>>Add key chain</button>
                         <table id="table-key-chains" class="table">
                             <@key_chains_fragment.fragment/>
                         </table>
                     </div>
                     <div class="col-xs-6">
-                        <button id="button-add-key-sequence" type="button" class="btn btn-default btn-span">Add key sequence</button>
+                        <button id="button-add-key-sequence" type="button" class="btn btn-default btn-span" <#if activation.config.disableKeySequence> disabled </#if>>Add key sequence</button>
                         <table id="table-key-sequences" class="table">
                             <@key_sequences_fragment.fragment/>
                         </table>
@@ -91,7 +91,7 @@
                 </div>
                 <div class="row">
                     <span class="label label-default">Phrases</span>
-                    <button id="button-add-phrase" type="button" class="btn btn-default btn-span">Add phrase</button>
+                    <button id="button-add-phrase" type="button" class="btn btn-default btn-span" <#if activation.config.disablePhrase> disabled </#if>>Add phrase</button>
                     <table id="table-phrases" class="table">
                         <@phrases_fragment.fragment/>
                     </table>
@@ -100,6 +100,7 @@
                     <div class="form-group">
                         <span class="label label-default">Mouse gestures (hold shift to select more than one)</span>
                         <select id="mouse-gestures-selection" multiple class="form-control" size="9">
+                            <#if !activation.config.disableMouseGesture>
                             <option <#if activation.mouseGestures.alpha> selected </#if>>Alpha</option>
                             <option <#if activation.mouseGestures.circleLeft> selected </#if>>Circle Left</option>
                             <option <#if activation.mouseGestures.gamma> selected </#if>>Gamma</option>
@@ -112,6 +113,7 @@
                             <option <#if activation.mouseGestures.tilda> selected </#if>>Tilda</option>
                             <option <#if activation.mouseGestures.triangle> selected </#if>>Triangle</option>
                             <option <#if activation.mouseGestures.z> selected </#if>>Z</option>
+                            </#if>
                         </select>
                     </div>
                 </div>

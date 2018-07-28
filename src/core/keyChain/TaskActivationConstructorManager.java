@@ -74,8 +74,12 @@ public class TaskActivationConstructorManager {
 	}
 
 	public synchronized String addNew(TaskActivation source) {
+		return addNew(source, TaskActivationConstructor.Config.of());
+	}
+
+	public synchronized String addNew(TaskActivation source, TaskActivationConstructor.Config config) {
 		String id = UUID.randomUUID().toString();
-		TaskActivationConstructor constructor = new TaskActivationConstructor(source);
+		TaskActivationConstructor constructor = new TaskActivationConstructor(source, config);
 
 		constructors.put(id, constructor);
 		lastUsed.put(id, System.currentTimeMillis());

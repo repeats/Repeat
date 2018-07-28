@@ -28,6 +28,6 @@ public class ActionTaskActivationRemoveKeyChainHandler extends AbstractTaskActiv
 		}
 
 		constructor.removeKeyChain(Integer.parseInt(index));
-		return renderedTaskActivationPage(exchange, "fragments/key_chains", constructor.getActivation());
+		return renderedTaskActivationPage(exchange, "fragments/key_chains", constructor);
 	}
 }

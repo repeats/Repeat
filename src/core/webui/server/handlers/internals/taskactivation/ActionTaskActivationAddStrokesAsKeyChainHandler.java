@@ -23,6 +23,6 @@ public class ActionTaskActivationAddStrokesAsKeyChainHandler extends AbstractTas
 		constructor.addAsKeyChain();
 		constructor.stopListening();
 
-		return renderedTaskActivationPage(exchange, "fragments/key_chains", constructor.getActivation());
+		return renderedTaskActivationPage(exchange, "fragments/key_chains", constructor);
 	}
 }

@@ -64,6 +64,26 @@
             </div>
         </div>
     </div>
+    <div id="modal-set-hotkeys" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Pick a hotkey to configure</h4>
+                </div>
+                <div class="modal-body">
+                    <a class="btn btn-default form-control" href="/task-activation?task=record"> Start/Stop recording </a>
+                    <a class="btn btn-default form-control" href="/task-activation?task=replay"> Start/stop replaying </a>
+                    <a class="btn btn-default form-control" href="/task-activation?task=runCompiled"> Run/Stop compiled action </a>
+                    <a class="btn btn-default form-control" href="/task-activation?task=mouseGestureActivation"> Mouse gesture activation </a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="modal-set-compiler-path" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
