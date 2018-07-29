@@ -5,6 +5,8 @@ import java.awt.Desktop;
 import java.awt.SystemTray;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -863,7 +865,6 @@ public class MainBackEndHolder {
 		keysManager.haltAllTasks();
 	}
 
-	/*************************************************************************************************************/
 	/**
 	 * Apply the current speedup in the textbox.
 	 * This attempts to parse the speedup.
@@ -873,6 +874,22 @@ public class MainBackEndHolder {
 	private boolean applySpeedup() {
 		recorder.setSpeedup(replayConfig.getSpeedup());
 		return true;
+	}
+
+	/*************************************************************************************************************/
+	/***************************************User Interface********************************************************/
+	protected void launchUI() {
+		int port = IPCServiceManager.getIPCService(IPCServiceName.WEB_UI_SERVER).getPort();
+		String url = "http://localhost:" + port;
+
+		int selected = JOptionPane.showConfirmDialog(null, "Initialization finished. UI server is at " + url + ". Go there?", "Server ready!", JOptionPane.YES_NO_OPTION);
+		if (selected == JOptionPane.OK_OPTION) {
+			try {
+				Desktop.getDesktop().browse(new URI(url));
+			} catch (IOException | URISyntaxException e) {
+				LOGGER.log(Level.WARNING, "Unable to go to UI server.", e);
+			}
+		}
 	}
 
 	/*************************************************************************************************************/

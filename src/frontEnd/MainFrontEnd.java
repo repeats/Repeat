@@ -62,5 +62,6 @@ public class MainFrontEnd {
 		/*************************************************************************************/
 
 		backEnd.initiateBackEndActivities();
+		backEnd.launchUI();
 	}
 }

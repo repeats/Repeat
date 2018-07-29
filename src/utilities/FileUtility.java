@@ -529,6 +529,7 @@ public class FileUtility {
 		    while(entries.hasMoreElements()) {
 		    	JarEntry entry = entries.nextElement();
 		        String name = entry.getName();
+
 		        if (!name.startsWith(path + "/")) { // Filter according to the path
 		        	continue;
 		        }
@@ -538,7 +539,17 @@ public class FileUtility {
 		        }
 
 		        InputStream inputStream = jar.getInputStream(entry);
-		        Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), FileUtility.getFileName(name)));
+		        int prefixIndex = (path + "/").length();
+		        Path destinationPath = Paths.get(FileUtility.joinPath(destination.getAbsolutePath(), name.substring(prefixIndex)));
+		        if (entry.isDirectory()) {
+		        	LOGGER.info("Creating " + destinationPath.toString());
+		        	destinationPath.toFile().mkdirs();
+		    		continue;
+		    	}
+
+		        if (!destinationPath.getParent().toFile().exists()) {
+					destinationPath.getParent().toFile().mkdirs();
+				}
 		        Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
 		    }
 		    jar.close();

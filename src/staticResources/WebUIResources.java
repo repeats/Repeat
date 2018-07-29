@@ -23,7 +23,7 @@ public class WebUIResources extends AbstractBootstrapResource {
 
 	@Override
 	protected String getRelativeSourcePath() {
-		return "staticResources/webui/";
+		return "staticResources/webui";
 	}
 
 	/**
