@@ -51,6 +51,8 @@ The recommended way to launch the program is through terminal:
      $cd <jar_directory>
      $java -jar Repeat.jar
 
+**Important:** The path containing the JAR file must not have space in it.
+
 Note that since **Java 9**, the jar file must be launched from a JDK (as opposed to a JRE) to be able to compile file. The workaround used in Java 8 and before to set Java home no longer works.
 
 FAQ
@@ -65,9 +67,6 @@ It does not make sense to listen to keyboard and mouse events in a headless syst
 
 ## I am running a Linux machine. Will the C# module get started at application start time?
 C# module is disabled if you are on a non Windows OS. Nothing from C# module will get started.
-
-## It's 2018. Why Java Swing?
-At the time I was desperately in need of a tool to liberate myself from the repetitive tasks at work. I could have used JavaFX but I would take more time since I was not that proficient at JavaFX.
 
 ## Why can't this be a web service? It's a lot of effort downloading the JAR and run it.
 This application listens on your mouse and keyboard events as well as allowing you to simulate mouse/keyboard events. If I could do such thing from a web browser, some hackers must have got your personal information, passwords, bank account number by now.
