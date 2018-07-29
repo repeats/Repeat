@@ -168,7 +168,7 @@ function menuHaltAllTasksAction() {
 
 function menuGenerateSourceAction() {
     $.post("/internals/menu/tools/generate-source", function(data) {
-        _internalEditor.getDoc().setValue(data);
+        setCurrentSourceCode(data);
     }).fail(function(response) {
         alert('Error generating source: ' + response.responseText);
     });
@@ -190,7 +190,7 @@ function selectCompilingLanguageAction(e) {
     }
 
     $.post("/internals/menu/tools/set-compiling-language", JSON.stringify({ index: index }), function(data) {
-        _internalEditor.getDoc().setValue(data);
+        setCurrentSourceCode(data);
     }).fail(function(response) {
         alert('Error setting compiling languages with index ' + index + ':' + response.responseText);
     });

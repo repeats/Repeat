@@ -29,6 +29,4 @@ public class ActionEditSourceHandler extends AbstractSingleMethodHttpHandler {
 		backEndHolder.editSourceCode(source);
 		return HttpServerUtilities.prepareTextResponse(exchange, 200, "");
 	}
-
-
 }

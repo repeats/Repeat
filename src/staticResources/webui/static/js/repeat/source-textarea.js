@@ -9,18 +9,18 @@ function registerSourceTextArea() {
     _internalEditor = editor;
 
     var sourceCodeTextArea = $('#source-code');
-    getSourceTemplate(editor);
+    getSourceTemplate();
 
     editor.on("change", function(editor) {
-        if (editor.getValue() == "") {
-            getSourceTemplate(editor);
+        if (getCurrentSourceCode() == "") {
+            getSourceTemplate();
         }
     });
 }
 
 function getSourceTemplate(editor) {
     $.get("/internals/get/source-templates", function(data) {
-        editor.getDoc().setValue(data);
+        setCurrentSourceCode(data);
     }).fail(function(response) {
         alert('Error getting source template: ' + response.responseText);
     });
@@ -28,8 +28,16 @@ function getSourceTemplate(editor) {
 
 function fillSourceForTask(index) {
     $.get("/internals/get/source-for-task?task=" + index, function(data) {
-        _internalEditor.getDoc().setValue(data);
+        setCurrentSourceCode(data);
     }).fail(function(response) {
         alert('Error getting source code for task: ' + response.responseText);
     });
+}
+
+function getCurrentSourceCode() {
+    return _internalEditor.getValue();
+}
+
+function setCurrentSourceCode(source) {
+    _internalEditor.getDoc().setValue(source);
 }

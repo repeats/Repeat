@@ -71,7 +71,7 @@ function buttonReplayConfigSaveAction(e) {
 //////////////////////////////////////////////////////////////////////////////////
 
 function buttonCompileAction(e) {
-    var source = _internalEditor.getValue();
+    var source = getCurrentSourceCode();
 
     $.post("/internals/action/compile-task", source, function(status) {
         // Nothing to do.
@@ -105,7 +105,7 @@ function buttonRunAction(e) {
 }
 
 function buttonEditCodeAction(e) {
-    var source = $("#source-code").val();
+    var source = getCurrentSourceCode();
 
     $.post("/internals/action/edit-source", source, function(status) {
         // Nothing to do.
@@ -116,7 +116,7 @@ function buttonEditCodeAction(e) {
 
 function buttonReloadAction(e) {
     $.get("/internals/get/editted-source", function(data) {
-        $("#source-code").val(data);
+        setCurrentSourceCode(data);
     }).fail(function(response) {
         alert('Error sending request get editted source: ' + response.responseText);
     });
