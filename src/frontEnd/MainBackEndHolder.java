@@ -926,6 +926,10 @@ public class MainBackEndHolder {
 		return logHolder.getContentSince(time);
 	}
 
+	public void clearLogs() {
+		logHolder.clear();
+	}
+
 	public void addTaskGroup(TaskGroup group) {
 		taskGroups.add(group);
 	}

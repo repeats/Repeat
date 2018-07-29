@@ -165,9 +165,9 @@
                         </div>
                         <div class="row">
                             <div class="col-xs-12 form-group">
-                                <label for="main-log">Main log:</label>
+                                <label for="main-log">Main logs:</label> <button id="button-clear-log" class="btn btn-default">Clear</button>
                                 <textarea class="form-control" rows="20" id="main-log" wrap="off"></textarea>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>

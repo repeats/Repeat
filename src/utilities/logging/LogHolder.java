@@ -16,7 +16,7 @@ public class LogHolder {
 		lines = new LinkedList<>();
 	}
 
-	public synchronized void write(int b) {
+	public void write(int b) {
 		String s = String.valueOf((char) b);
 		content.append(s);
 
@@ -38,6 +38,12 @@ public class LogHolder {
 	@Override
 	public String toString() {
 		return content.toString();
+	}
+
+	public void clear() {
+		lines.clear();
+		offset = 0;
+		content.setLength(0); // Clear the content buffer.
 	}
 
 	public String getContentSince(long time) {

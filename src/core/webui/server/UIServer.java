@@ -21,6 +21,7 @@ import core.webcommon.UpAndRunningHandler;
 import core.webui.server.handlers.AboutPageHandler;
 import core.webui.server.handlers.ApiPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
+import core.webui.server.handlers.internals.ActionClearLogHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
 import core.webui.server.handlers.internals.GetRenderedTaskGroupsDropdown;
@@ -176,6 +177,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/action/change-task-group-name", new ActionChangeTaskGroupNameHandler(objectRenderer));
 		output.put("/internals/action/change-task-group-for-task", new ActionChangeTaskGroupForTaskHandler(objectRenderer));
 		output.put("/internals/action/change-replay-config", new ActionChangeReplayConfigHandler());
+		output.put("/internals/action/clear-log", new ActionClearLogHandler());
 		output.put("/internals/action/compile-task", new ActionCompileTaskHandler());
 		output.put("/internals/action/delete-task", new ActionDeleteTaskHandler(objectRenderer));
 		output.put("/internals/action/delete-task-group", new ActionDeleteTaskGroupHandler(objectRenderer));

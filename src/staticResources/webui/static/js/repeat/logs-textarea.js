@@ -1,5 +1,15 @@
 function registerLogHandler() {
+    $("#button-clear-log").click(clearLogAction);
+
     refreshLog($("#main-log"), { backOff: 500, since: 0 });
+}
+
+function clearLogAction(e) {
+    $.post("/internals/action/clear-log", function(data) {
+        $("#main-log").val("");
+    }).fail(function(response) {
+        alert('Error clearing logs: ' + response.responseText);
+    });
 }
 
 function refreshLog(textArea, state) {
