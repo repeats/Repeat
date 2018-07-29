@@ -450,17 +450,16 @@ public class MainBackEndHolder {
 	}
 
 	public void moveTaskGroupUp(int index) {
-		if (index < 0 || index >= taskGroups.size()) {
+		if (index < 1) {
 			return;
 		}
 		Collections.swap(taskGroups, index, index - 1);
 	}
 
 	public void moveTaskGroupDown(int index) {
-		if (index < 0 || index >= taskGroups.size()) {
-			return;
+		if (index >= 0 && index < taskGroups.size() - 1) {
+			Collections.swap(taskGroups, index, index + 1);
 		}
-		Collections.swap(taskGroups, index, index + 1);
 	}
 
 	/*************************************************************************************************************/

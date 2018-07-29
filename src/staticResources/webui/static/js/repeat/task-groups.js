@@ -155,6 +155,13 @@ function refreshTaskGroupsWithDataAndIndex(data, index) {
 
 function setSelectedTaskGroup(index) {
     var rows = $('#table-task-groups').find("tr").not(":first");
+    if (index < 0) {
+        index = 0;
+    }
+    if (index >= rows.length) {
+        index = rows.length - 1;
+    }
+
     rows.each(function(i) {
         if (i == index) {
             rows.removeClass('table-highlight');
