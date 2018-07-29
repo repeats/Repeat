@@ -24,6 +24,7 @@ import core.webui.server.handlers.IndexPageHandler;
 import core.webui.server.handlers.internals.ActionClearLogHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
+import core.webui.server.handlers.internals.GetPathSuggestionHandler;
 import core.webui.server.handlers.internals.GetRenderedTaskGroupsDropdown;
 import core.webui.server.handlers.internals.ipcs.ActionRunIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
@@ -201,8 +202,9 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/get/is-running-compiled-task", new GetIsRunningCompiledTaskHandler());
 		output.put("/internals/get/is-recording", new GetIsRecordingHandler());
 		output.put("/internals/get/is-replaying", new GetIsReplayingHandler());
-		output.put("/internals/get/mouse-position", new GetMousePositionHandler());
 		output.put("/internals/get/logs", new GetLogsHandler());
+		output.put("/internals/get/mouse-position", new GetMousePositionHandler());
+		output.put("/internals/get/path-suggestion", new GetPathSuggestionHandler());
 		output.put("/internals/get/source-for-task", new GetSourceForTaskHandler());
 		output.put("/internals/get/source-templates", new GetSourceTemplateHandler());
 		output.put("/internals/get/rendered-task-groups-dropdown", new GetRenderedTaskGroupsDropdown(objectRenderer));

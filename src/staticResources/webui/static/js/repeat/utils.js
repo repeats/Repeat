@@ -18,3 +18,16 @@ function utils_FocusTextAreaForModal(elementId) {
         range.select();
     }
 }
+
+function utils_SuggestPaths(elementId) {
+    var input = $("#" + elementId);
+    input.autocomplete({ source: [] });
+
+    input.keypress(function(){
+        var val = input.val();
+        $.get("/internals/get/path-suggestion?path=" + encodeURIComponent(val), function(data) {
+            var newSources = JSON.parse(data);
+            input.autocomplete("option", "source", newSources.paths);
+        });
+    });
+}

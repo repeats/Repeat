@@ -4,7 +4,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -43,7 +46,7 @@ public class Jsonizer {
 			Field field = clazz.getDeclaredField(fieldName);
 
 			int modifier = field.getModifiers();
-			if (Modifier.isStatic(modifier) || !Modifier.isPrivate(modifier)) {
+			if (Modifier.isStatic(modifier) || Modifier.isPrivate(modifier)) {
 				LOGGER.warning("Skipping field " + fieldName + " when parsing JSON. Field is either static or non-private.");
         		continue;
         	}
@@ -59,7 +62,7 @@ public class Jsonizer {
 				if (constructor.getParameterCount() == 0) {
 					constructor.setAccessible(true);
 					Object o = constructor.newInstance();
-					if (!parse(valueNode, o)) {
+					if (!internalParse(valueNode, o)) {
 						return false;
 					}
 					field.set(dest, o);
@@ -87,12 +90,27 @@ public class Jsonizer {
 
 	@SuppressWarnings("rawtypes")
 	private static JsonNode internalSsonize(Object o) throws IllegalArgumentException, IllegalAccessException {
+		Class<?> objectClass = o.getClass();
+		if (isPrimitiveOrString(objectClass)) {
+			return fromPrimitiveOrString(objectClass, o);
+		}
+
+		if (isIterableType(objectClass)) {
+    		Iterable it = (Iterable) o;
+    		List<JsonNode> nodes = new ArrayList<>();
+    		for (Iterator i = it.iterator(); i.hasNext(); ) {
+    			Object next = i.next();
+    			JsonNode node = internalSsonize(next);
+    			nodes.add(node);
+    		}
+    		return JsonNodeFactories.array(nodes);
+    	}
+
 		Map<JsonStringNode, JsonNode> data = new HashMap<>();
 
 		Class clazz = o.getClass();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
-        	Class fieldClass = field.getType();
         	if (Modifier.isStatic(field.getModifiers())) {
         		continue;
         	}
@@ -101,15 +119,10 @@ public class Jsonizer {
 
         	String jsonName = StringUtilities.toSnakeCase(field.getName());
         	JsonStringNode nameNode = JsonNodeFactories.string(jsonName);
-        	if (isPrimitiveOrString(fieldClass)) {
-        		data.put(nameNode, fromPrimitiveOrString(fieldClass, value));
-        		continue;
-        	}
-
         	if (value == null) {
         		continue;
         	}
-        	JsonNode node = jsonize(value);
+        	JsonNode node = internalSsonize(value);
         	data.put(nameNode, node);
         }
 
@@ -171,6 +184,10 @@ public class Jsonizer {
 			return JsonNodeFactories.number("" + (double)value);
 		}
 		throw new IllegalArgumentException("Unknown type " + clazz);
+	}
+
+	private static boolean isIterableType(Class<?> clazz) {
+		return Iterable.class.isAssignableFrom(clazz);
 	}
 
 	private static boolean isPrimitiveOrString(Class<?> clazz) {

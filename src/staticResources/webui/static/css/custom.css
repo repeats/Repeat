@@ -1,5 +1,5 @@
 .btn-span {
-	width: 100%;
+    width: 100%;
 }
 
 tr { cursor: default; }
@@ -40,23 +40,28 @@ tr { cursor: default; }
 .top-buffer { margin-top:20px; }
 
 .dropdown-menu .dropdown-menu {
-	position: static;
-	float: none;
-	padding: 5px 0;
-	margin: 2px 0 0;
-	list-style: none;
-	font-size: 14px;
-	background-color: #fff;
-	border: none;
-	border: none;
-	border-radius: 0;
-	-webkit-box-shadow: none;
-	box-shadow:none;
-	background-clip: padding-box;
+    position: static;
+    float: none;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    list-style: none;
+    font-size: 14px;
+    background-color: #fff;
+    border: none;
+    border: none;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow:none;
+    background-clip: padding-box;
 }
 
 /*Overriding bootstrap theme*/
 .main-panel > .content {
     padding: 10px 5px;
     min-height: calc(100% - 123px);
+}
+
+/*Overriding autocomplete for bootstrap modal*/
+.ui-front {
+    z-index: 2147483647;
 }

@@ -26,6 +26,10 @@ function registerMenuIndexPageActions() {
     $("#modal-set-compiler-path-save").click(setCompilerPathAction);
     $("#modal-configure-compiler-save").click(setCompilerConfigurationAction);
     $("#modal-debug-level-save").click(setDebugLevelAction);
+
+    utils_SuggestPaths("new-compiler-path");
+    utils_SuggestPaths("import-tasks-file");
+    utils_SuggestPaths("export-tasks-dir");
 }
 
 //////////////////////////////////////////////////////////////////////////////////

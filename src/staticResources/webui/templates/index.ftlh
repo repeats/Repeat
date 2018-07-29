@@ -11,7 +11,7 @@
     <@common_header_fragment.fragment/>
 
     <!-- Custom button CSS     -->
-    <link href="/static/css/custom-buttons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/custom-buttons.css"/>
     <!-- Source code text area CSS     -->
     <link rel="stylesheet" href="/static/css/codemirror.css">
 </head>
