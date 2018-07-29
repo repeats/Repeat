@@ -101,6 +101,13 @@ function refreshIpcsWithDataAndIndex(data, index) {
 
 function setSelectedIndex(index) {
     var rows = $("#ipcs-table").find("tr").not(":first");
+    if (index < 0) {
+        index = 0;
+    }
+    if (index >= rows.length) {
+        index = rows.length - 1;
+    }
+    
     rows.each(function(i) {
         if (index == i) {
             rows.removeClass('table-highlight');
