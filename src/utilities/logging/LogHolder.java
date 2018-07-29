@@ -3,11 +3,9 @@ package utilities.logging;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import frontEnd.MainFrame;
-
 public class LogHolder {
 
-	private static final int MAX_LINE_COUNT = MainFrame.MAX_STATUS_LINE_COUNT;
+	private static final int MAX_LINE_COUNT = 4096;
 
 	private StringBuffer content;
 	private LinkedList<LineEntry> lines;

@@ -1,30 +1,21 @@
 package frontEnd;
 
-import java.awt.EventQueue;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
 import staticResources.BootStrapResources;
-import utilities.Function;
-import utilities.logging.ExceptionUtility;
 import utilities.logging.OutStream;
-import utilities.swing.KeyChainInputPanel;
 
 public class MainFrontEnd {
 
 	private static final Logger LOGGER = Logger.getLogger(MainFrontEnd.class.getName());
-	private static MainFrame createdFrame;
+	private static MainBackEndHolder backEnd;
 
 	public static void run() {
 		/*************************************************************************************/
@@ -50,88 +41,26 @@ public class MainFrontEnd {
 		}
 
 		/*************************************************************************************/
-		/********************************Defining backend activities**************************/
-		final SwingWorker<Void, Void> backEndInitialization = new SwingWorker<Void, Void>() {
-			@Override
-			protected Void doInBackground() throws Exception {
-				if (createdFrame == null) {
-					LOGGER.severe("Main frame is not created. Exitting...");
-					System.exit(3);
-				}
-
-				createdFrame.backEnd.loadConfig(null);
-
-				try {
-					createdFrame.backEnd.keysManager.startGlobalListener();
-				} catch (NativeHookException e) {
-					e.printStackTrace();
-				}
-				createdFrame.backEnd.keysManager.setDisablingFunction(new Function<Void, Boolean>(){
-					@Override
-					public Boolean apply(Void r) {
-						return createdFrame.hotkey.isVisible() || KeyChainInputPanel.isInUse();
-					}
-				});
-
-				createdFrame.backEnd.configureMainHotkeys();
-				/*************************************************************************************/
-				createdFrame.backEnd.renderTaskGroup();
-				createdFrame.backEnd.renderTasks();
-
-				PrintStream printStream = new PrintStream(new OutStream(createdFrame.taStatus, createdFrame.backEnd.logHolder));
-				System.setOut(printStream);
-				System.setErr(printStream);
-				Logger.getLogger("").addHandler(new ConsoleHandler());
-				/*************************************************************************************/
-
-				createdFrame.backEnd.initiateBackEndActivities();
-				return null;
-			}
-		};
-
-		/*************************************************************************************/
 		/********************************Start main program***********************************/
+		backEnd = new MainBackEndHolder();
+		backEnd.loadConfig(null);
+
 		try {
-		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		        if ("Nimbus".equals(info.getName())) {
-		            UIManager.setLookAndFeel(info.getClassName());
-		            break;
-		        }
-		    }
-		} catch (Exception e) {
-		    // If Nimbus is not available, you can set the GUI to another look and feel.
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception e1) {
-				e.printStackTrace();
-				// We can still be functional. Just need to notify the user about the problem
-			}
+			backEnd.keysManager.startGlobalListener();
+		} catch (NativeHookException e) {
+			e.printStackTrace();
 		}
 
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				MainFrame frame = null;
+		backEnd.configureMainHotkeys();
+		/*************************************************************************************/
+		backEnd.renderTaskGroup();
 
-				try {
-					frame = new MainFrame();
-					LOGGER.info("Successfully intialized application");
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, ExceptionUtility.getStackTrace(e));
-					System.exit(2);
-				}
+		PrintStream printStream = new PrintStream(new OutStream(backEnd.logHolder));
+		System.setOut(printStream);
+		System.setErr(printStream);
+		Logger.getLogger("").addHandler(new ConsoleHandler());
+		/*************************************************************************************/
 
-				if (frame == null) {
-					LOGGER.info("Failed to initialize GUI.");
-					System.exit(3);
-				}
-
-				createdFrame = frame;
-				backEndInitialization.execute();
-			}
-		});
+		backEnd.initiateBackEndActivities();
 	}
-
 }

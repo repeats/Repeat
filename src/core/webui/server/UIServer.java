@@ -265,6 +265,34 @@ public class UIServer extends IPCServiceWithModifablePort {
 	}
 
 	@Override
+	public boolean setPort(int newPort) {
+		boolean isRunning = isRunning();
+
+		if (isRunning) {
+			getLogger().info("Restarting UI server to change port to " + newPort);
+			try {
+				stop();
+			} catch (IOException e) {
+				getLogger().log(Level.WARNING, "IOException when stopping UI server.", e);
+				return false;
+			}
+		}
+		this.port = newPort;
+
+		if (!isRunning) {
+			return true;
+		}
+		try {
+			start();
+			getLogger().info("UI server restarted at port " + newPort);
+			return true;
+		} catch (IOException e) {
+			getLogger().log(Level.WARNING, "IOException when starting UI server after changing port.", e);
+			return false;
+		}
+	}
+
+	@Override
 	public boolean isRunning() {
 		return mainThread != null && server != null;
 	}

@@ -1,9 +1,8 @@
 package frontEnd;
 
+import java.awt.AWTException;
 import java.awt.Desktop;
-import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.SystemTray;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,8 +18,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.SwingUtilities;
 
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
@@ -31,14 +28,12 @@ import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatServer.processors.TaskProcessorManager;
-import core.keyChain.KeyChain;
 import core.keyChain.TaskActivation;
 import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.PythonRemoteCompiler;
-import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.recorder.Recorder;
 import core.recorder.ReplayConfig;
 import core.userDefinedTask.TaskGroup;
@@ -46,21 +41,19 @@ import core.userDefinedTask.TaskInvoker;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
 import staticResources.BootStrapResources;
-import utilities.DateUtility;
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.OSIdentifier;
 import utilities.Pair;
 import utilities.StringUtilities;
 import utilities.ZipUtility;
 import utilities.logging.LogHolder;
 import utilities.swing.KeyChainInputPanel;
-import utilities.swing.SwingUtil;
 
 public class MainBackEndHolder {
 
 	private static final Logger LOGGER = Logger.getLogger(MainBackEndHolder.class.getName());
 
+	protected MinimizedFrame trayIcon;
 	protected LogHolder logHolder;
 
 	protected ScheduledThreadPoolExecutor executor;
@@ -74,7 +67,6 @@ public class MainBackEndHolder {
 
 	protected final List<TaskGroup> taskGroups;
 	private TaskGroup currentGroup;
-	private int selectedTaskIndex;
 
 	// To allow executing other tasks programmatically.
 	private final TaskInvoker taskInvoker;
@@ -87,19 +79,21 @@ public class MainBackEndHolder {
 
 	private File tempSourceFile;
 
-	protected final MainFrame main;
-
-	public MainBackEndHolder(MainFrame main) {
-		this.main = main;
+	public MainBackEndHolder() {
 		config = new Config(this);
 
+		if (!SystemTray.isSupported()) {
+			LOGGER.warning("System tray is not supported!");
+			trayIcon = null;
+		} else {
+			trayIcon = new MinimizedFrame(BootStrapResources.TRAY_IMAGE, this);
+		}
 		logHolder = new LogHolder();
 
 		executor = new ScheduledThreadPoolExecutor(10);
 		compilingLanguage = Language.JAVA;
 
 		taskGroups = new ArrayList<>();
-		selectedTaskIndex = -1;
 
 		taskInvoker = new TaskInvoker(taskGroups);
 		keysManager = new GlobalEventsManager(config);
@@ -166,7 +160,6 @@ public class MainBackEndHolder {
 						}
 					}
 				}
-				renderTasks();
 				return null;
 			}
 		});
@@ -178,48 +171,23 @@ public class MainBackEndHolder {
 		config.loadConfig(file);
 		setTaskInvoker();
 
+		if (trayIcon != null) {
+			if (config.isUseTrayIcon()) {
+				try {
+					trayIcon.add();
+				} catch (AWTException e) {
+					LOGGER.log(Level.WARNING, "Exception when adding tray icon.", e);
+				}
+			}
+		}
+
 		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
-
-		applyDebugLevel();
-		renderSettings();
 	}
 
 	/*************************************************************************************************************/
 	/************************************************IPC**********************************************************/
 	protected void initiateBackEndActivities() {
-		executor.scheduleWithFixedDelay(new Runnable(){
-			@Override
-			public void run() {
-				final Point p = Core.getInstance().mouse().getPosition();
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						main.tfMousePosition.setText(p.x + ", " + p.y);
-					}
-				});
-			}
-		}, 0, 500, TimeUnit.MILLISECONDS);
-
-		executor.scheduleWithFixedDelay(new Runnable(){
-			@Override
-			public void run() {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						long time = 0;
-						for (TaskGroup group : taskGroups) {
-							for (UserDefinedAction action : group.getTasks()) {
-								time += action.getStatistics().getTotalExecutionTime();
-							}
-						}
-						main.lSecondsSaved.setText((time/1000f) + "");
-						renderTasks();
-					}
-				});
-			}
-		}, 0, 1500, TimeUnit.MILLISECONDS);
-
 		try {
 			IPCServiceManager.initiateServices(this);
 		} catch (IOException e) {
@@ -256,8 +224,12 @@ public class MainBackEndHolder {
 		stopBackEndActivities();
 
 		if (!writeConfigFile()) {
-			JOptionPane.showMessageDialog(main, "Error saving configuration file.");
+			JOptionPane.showMessageDialog(null, "Error saving configuration file.");
 			System.exit(2);
+		}
+
+		if (trayIcon != null) {
+			trayIcon.remove();
 		}
 
 		System.exit(0);
@@ -296,15 +268,9 @@ public class MainBackEndHolder {
 			recorder.clear();
 			recorder.record();
 			isRecording = true;
-			main.bRecord.setIcon(BootStrapResources.STOP);
-
-			setEnableReplay(false);
 		} else { // Stop record
 			recorder.stopRecord();
 			isRecording = false;
-			main.bRecord.setIcon(BootStrapResources.RECORD);
-
-			setEnableReplay(true);
 		}
 	}
 
@@ -341,13 +307,6 @@ public class MainBackEndHolder {
 
 		if (isReplaying) {
 			isReplaying = false;
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					main.bReplay.setIcon(BootStrapResources.PLAY);
-					setEnableRecord(true);
-				}
-			});
 			recorder.stopReplay();
 		} else {
 			if (!applySpeedup()) {
@@ -355,14 +314,6 @@ public class MainBackEndHolder {
 			}
 
 			isReplaying = true;
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					main.bReplay.setIcon(BootStrapResources.STOP);
-					setEnableRecord(false);
-				}
-			});
-
 			recorder.replay(replayConfig.getCount(), replayConfig.getDelay(), new Function<Void, Void>() {
 				@Override
 				public Void apply(Void r) {
@@ -397,16 +348,9 @@ public class MainBackEndHolder {
 					}
 				}
 			}
-
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					main.bRun.setIcon(BootStrapResources.PLAY_COMPILED_IMAGE);
-				}
-			});
 		} else {
 			if (customFunction == null) {
-				JOptionPane.showMessageDialog(main, "No compiled action in memory");
+				JOptionPane.showMessageDialog(null, "No compiled action in memory");
 				return;
 			}
 
@@ -427,21 +371,12 @@ public class MainBackEndHolder {
 			    }
 			});
 			compiledExecutor.start();
-
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					main.bRun.setIcon(BootStrapResources.STOP_COMPILED_IMAGE);
-				}
-			});
 		}
 	}
 
 	/*************************************************************************************************************/
 	/*****************************************Task group related**************************************************/
 	protected void renderTaskGroup() {
-		main.taskGroup.renderTaskGroup();
-
 		for (TaskGroup group : taskGroups) {
 			if (!group.isEnabled()) {
 				continue;
@@ -530,13 +465,6 @@ public class MainBackEndHolder {
 	/*****************************************Task related********************************************************/
 
 	/**
-	 * @see #editSourceCode(String)
-	 */
-	protected void editSourceCode() {
-		editSourceCode(main.taSource.getText());
-	}
-
-	/**
 	 * Edit source code using the default program to open the source code file (with appropriate extension
 	 * depending on the currently selected language).
 	 *
@@ -551,18 +479,18 @@ public class MainBackEndHolder {
 
 			FileUtility.writeToFile(source, tempSourceFile, false);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(main, "Encountered error creating temporary source file.\n" + e.getMessage());
+			JOptionPane.showMessageDialog(null, "Encountered error creating temporary source file.\n" + e.getMessage());
 			return;
 		}
 
 		try {
 			Desktop.getDesktop().open(tempSourceFile);
-			int update = JOptionPane.showConfirmDialog(main, "Update source code from editted source file? (Confirm once done)", "Reload source code", JOptionPane.YES_NO_OPTION);
+			int update = JOptionPane.showConfirmDialog(null, "Update source code from editted source file? (Confirm once done)", "Reload source code", JOptionPane.YES_NO_OPTION);
 			if (update == JOptionPane.YES_OPTION) {
 				reloadSourceCode();
 			}
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(main, "Unable to open file for editting.\n" + e.getMessage());
+			JOptionPane.showMessageDialog(null, "Unable to open file for editting.\n" + e.getMessage());
 		}
 	}
 
@@ -571,24 +499,23 @@ public class MainBackEndHolder {
 	 */
 	public String reloadSourceCode() {
 		if (tempSourceFile == null || !tempSourceFile.exists()) {
-			JOptionPane.showMessageDialog(main, "Temp file not accessible.");
+			JOptionPane.showMessageDialog(null, "Temp file not accessible.");
 			return null;
 		}
 
 		StringBuffer sourceCode = FileUtility.readFromFile(tempSourceFile);
 		if (sourceCode == null) {
-			JOptionPane.showMessageDialog(main, "Unable to read from temp file.");
+			JOptionPane.showMessageDialog(null, "Unable to read from temp file.");
 			return null;
 		}
 		String source = sourceCode.toString();
-		main.taSource.setText(source);
 		return source;
 	}
 
 	private void unregisterTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
 		if (!TaskSourceManager.removeTask(task)) {
-			JOptionPane.showMessageDialog(main, "Encountered error removing source file " + task.getSourcePath());
+			JOptionPane.showMessageDialog(null, "Encountered error removing source file " + task.getSourcePath());
 		}
 	}
 
@@ -605,32 +532,19 @@ public class MainBackEndHolder {
 
 			customFunction = null;
 
-			renderTasks();
 			writeConfigFile();
 		} else {
-			JOptionPane.showMessageDialog(main, "Nothing to add. Compile first?");
+			JOptionPane.showMessageDialog(null, "Nothing to add. Compile first?");
 		}
-
-		int selectedRow = main.tTasks.getSelectedRow();
-		selectedTaskIndex = selectedRow;
-	}
-
-	protected void removeCurrentTask() {
-		int selectedRow = main.tTasks.getSelectedRow();
-		removeCurrentTask(selectedRow);
 	}
 
 	public void removeCurrentTask(int selectedRow) {
-		selectedTaskIndex = selectedRow;
-
 		if (selectedRow >= 0 && selectedRow < currentGroup.getTasks().size()) {
 			UserDefinedAction selectedTask = currentGroup.getTasks().get(selectedRow);
 			unregisterTask(selectedTask);
 
 			currentGroup.getTasks().remove(selectedRow);
-			selectedTaskIndex = - 1; // Reset selected index
 
-			renderTasks();
 			writeConfigFile();
 		} else {
 			LOGGER.info("Select a row from the table to remove.");
@@ -648,16 +562,10 @@ public class MainBackEndHolder {
 
 				iterator.remove();
 
-				renderTasks();
 				writeConfigFile();
 				return;
 			}
 		}
-	}
-
-	protected void moveTaskUp() {
-		int selected = main.tTasks.getSelectedRow();
-		moveTaskUp(selected);
 	}
 
 	public void moveTaskUp(int selected) {
@@ -665,39 +573,11 @@ public class MainBackEndHolder {
 			return;
 		}
 		Collections.swap(currentGroup.getTasks(), selected, selected - 1);
-		main.tTasks.setRowSelectionInterval(selected - 1, selected - 1);
-		renderTasks();
-	}
-
-	protected void moveTaskDown() {
-		int selected = main.tTasks.getSelectedRow();
-		moveTaskDown(selected);
 	}
 
 	public void moveTaskDown(int selected) {
 		if (selected >= 0 && selected < currentGroup.getTasks().size() - 1) {
 			Collections.swap(currentGroup.getTasks(), selected, selected + 1);
-			main.tTasks.setRowSelectionInterval(selected + 1, selected + 1);
-			renderTasks();
-		}
-	}
-
-	protected void changeTaskGroup() {
-		int selected = main.tTasks.getSelectedRow();
-		if (selected >= 0 && selected < currentGroup.getTasks().size()) {
-			int newGroupIndex = SwingUtil.DialogUtil.getSelection(null, "Select new group",
-				new Function<TaskGroup, String>() {
-					@Override
-					public String apply(TaskGroup d) {
-						return d.getName();
-					}
-				}.map(taskGroups).toArray(new String[taskGroups.size()]), -1);
-
-			if (newGroupIndex < 0) {
-				return;
-			}
-
-			changeTaskGroup(selected, newGroupIndex);
 		}
 	}
 
@@ -715,17 +595,7 @@ public class MainBackEndHolder {
 
 		UserDefinedAction toMove = currentGroup.getTasks().remove(taskIndex);
 		destination.getTasks().add(toMove);
-		renderTasks();
 		writeConfigFile();
-	}
-
-	protected void overwriteTask() {
-		int selected = main.tTasks.getSelectedRow();
-		if (selected >= 0) {
-			overwriteTask(selected);
-		} else {
-			JOptionPane.showMessageDialog(main, "Select a task to override");
-		}
 	}
 
 	public void overwriteTask(int selected) {
@@ -750,7 +620,7 @@ public class MainBackEndHolder {
 
 	protected void changeHotkeyTask(int row) {
 		final UserDefinedAction action = currentGroup.getTasks().get(row);
-		TaskActivation newActivation = KeyChainInputPanel.getInputActivation(main, action.getActivation());
+		TaskActivation newActivation = KeyChainInputPanel.getInputActivation(null, action.getActivation());
 		if (newActivation == null) {
 			return;
 		}
@@ -758,14 +628,11 @@ public class MainBackEndHolder {
 		Set<UserDefinedAction> collisions = keysManager.isActivationRegistered(newActivation);
 		collisions.remove(action);
 		if (!collisions.isEmpty()) {
-			GlobalEventsManager.showCollisionWarning(main, collisions);
+			GlobalEventsManager.showCollisionWarning(null, collisions);
 			return;
 		}
 
 		keysManager.reRegisterTask(action, newActivation);
-
-		KeyChain representative = action.getRepresentativeHotkey();
-		main.tTasks.setValueAt(representative.isEmpty() ? "None" : representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
 	}
 
 	protected void switchEnableTask(int row) {
@@ -779,7 +646,7 @@ public class MainBackEndHolder {
 		} else { // Then enable it
 			Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(action);
 			if (!collisions.isEmpty()) {
-				GlobalEventsManager.showCollisionWarning(main, collisions);
+				GlobalEventsManager.showCollisionWarning(null, collisions);
 				return;
 			}
 
@@ -788,79 +655,6 @@ public class MainBackEndHolder {
 				keysManager.registerTask(action);
 			}
 		}
-
-		main.tTasks.setValueAt(action.isEnabled(), row, MainFrame.TTASK_COLUMN_ENABLED);
-	}
-
-	protected void renderTasks() {
-		main.bTaskGroup.setText(currentGroup.getName());
-		SwingUtil.TableUtil.setRowNumber(main.tTasks, currentGroup.getTasks().size());
-		SwingUtil.TableUtil.clearTable(main.tTasks);
-
-		int row = 0;
-		for (UserDefinedAction task : currentGroup.getTasks()) {
-			main.tTasks.setValueAt(task.getName(), row, MainFrame.TTASK_COLUMN_TASK_NAME);
-
-			KeyChain representative = task.getRepresentativeHotkey();
-			if (representative != null && !representative.isEmpty()) {
-				main.tTasks.setValueAt(representative.toString(), row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
-			} else {
-				main.tTasks.setValueAt("None", row, MainFrame.TTASK_COLUMN_TASK_HOTKEY);
-			}
-
-			main.tTasks.setValueAt(task.isEnabled(), row, MainFrame.TTASK_COLUMN_ENABLED);
-			main.tTasks.setValueAt(task.getStatistics().getCount(), row, MainFrame.TTASK_COLUMN_USE_COUNT);
-			main.tTasks.setValueAt(DateUtility.calendarToDateString(task.getStatistics().getLastUse()), row, MainFrame.TTASK_COLUMN_LAST_USE);
-			row++;
-		}
-	}
-
-	protected void keyReleaseTaskTable(KeyEvent e) {
-		int row = main.tTasks.getSelectedRow();
-		int column = main.tTasks.getSelectedColumn();
-
-		if (column == MainFrame.TTASK_COLUMN_TASK_NAME && row >= 0) {
-			currentGroup.getTasks().get(row).setName(SwingUtil.TableUtil.getStringValueTable(main.tTasks, row, column));
-		} else if (column == MainFrame.TTASK_COLUMN_TASK_HOTKEY && row >= 0) {
-			if (e.getKeyCode() == Config.HALT_TASK) {
-				final UserDefinedAction action = currentGroup.getTasks().get(row);
-				keysManager.unregisterTask(action);
-				action.getActivation().getHotkeys().clear();
-				main.tTasks.setValueAt("None", row, column);
-			} else {
-				changeHotkeyTask(row);
-			}
-		} else if (column == MainFrame.TTASK_COLUMN_ENABLED && row >= 0) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				switchEnableTask(row);
-			}
-		}
-
-		loadSource(row);
-		selectedTaskIndex = row;
-	}
-
-	protected void mouseReleaseTaskTable(MouseEvent e) {
-		int row = main.tTasks.getSelectedRow();
-		int column = main.tTasks.getSelectedColumn();
-
-		if (column == MainFrame.TTASK_COLUMN_TASK_HOTKEY && row >= 0) {
-			changeHotkeyTask(row);
-		} else if (column == MainFrame.TTASK_COLUMN_ENABLED && row >= 0) {
-			switchEnableTask(row);
-		}
-
-		loadSource(row);
-		selectedTaskIndex = row;
-	}
-
-	private void loadSource(int row) {
-		String source = getSource(row);
-		if (source == null) {
-			return;
-		}
-
-		main.taSource.setText(source);
 	}
 
 	public String getSource(int row) {
@@ -877,9 +671,6 @@ public class MainBackEndHolder {
 			return null;
 		}
 
-		if (!task.getCompiler().equals(getCompiler().getName())) {
-			main.languageSelection.get(task.getCompiler()).setSelected(true);
-		}
 		return source;
 	}
 
@@ -897,17 +688,10 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/********************************************Source code related**********************************************/
 
-	protected void promptSource() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(AbstractSourceGenerator.getReferenceSource(getSelectedLanguage()));
-		main.taSource.setText(sb.toString());
-	}
-
 	public String generateSource() {
 		String source = "";
 		if (applySpeedup()) {
 			source = recorder.getGeneratedCode(getSelectedLanguage());
-			main.taSource.setText(source);
 		}
 		return source;
 	}
@@ -919,7 +703,7 @@ public class MainBackEndHolder {
 		boolean moved = FileUtility.moveDirectory(src, dst);
 		if (!moved) {
 			LOGGER.warning("Failed to move files from " + src.getAbsolutePath() + " to " + dst.getAbsolutePath());
-			JOptionPane.showMessageDialog(main, "Failed to move files.");
+			JOptionPane.showMessageDialog(null, "Failed to move files.");
 			return;
 		}
 		int existingGroupCount = taskGroups.size();
@@ -930,13 +714,13 @@ public class MainBackEndHolder {
 			currentGroup = taskGroups.get(existingGroupCount); // Take the new group with lowest index.
 			setTaskInvoker();
 		} else {
-			JOptionPane.showMessageDialog(main, "No new task group found!");
+			JOptionPane.showMessageDialog(null, "No new task group found!");
 			return;
 		}
 		if (result) {
-			JOptionPane.showMessageDialog(main, "Successfully imported tasks. Switching to a new task group...");
+			JOptionPane.showMessageDialog(null, "Successfully imported tasks. Switching to a new task group...");
 		} else {
-			JOptionPane.showMessageDialog(main, "Encountered error(s) while importing tasks. Switching to a new task group...");
+			JOptionPane.showMessageDialog(null, "Encountered error(s) while importing tasks. Switching to a new task group...");
 		}
 	}
 
@@ -960,7 +744,7 @@ public class MainBackEndHolder {
 		ZipUtility.zipDir(destination, zipFile);
 		FileUtility.deleteFile(destination);
 
-		JOptionPane.showMessageDialog(main, "Data exported to " + zipPath);
+		JOptionPane.showMessageDialog(null, "Data exported to " + zipPath);
 	}
 
 	public void cleanUnusedSource() {
@@ -1015,8 +799,6 @@ public class MainBackEndHolder {
 		compilingLanguage = language;
 
 		customFunction = null;
-		getCompiler().changeCompilationButton(main.bCompile);
-		promptSource();
 	}
 
 	protected void configureCurrentCompiler() {
@@ -1024,7 +806,7 @@ public class MainBackEndHolder {
 	}
 
 	protected void changeCompilerPath() {
-		getCompiler().promptChangePath(main);
+		getCompiler().promptChangePath(null);
 	}
 
 	protected boolean compileSource(String source) {
@@ -1051,7 +833,7 @@ public class MainBackEndHolder {
 		customFunction.setCompiler(compiler.getName());
 
 		if (!TaskSourceManager.submitTask(customFunction, source)) {
-			JOptionPane.showMessageDialog(main, "Error writing source file...");
+			JOptionPane.showMessageDialog(null, "Error writing source file...");
 			return false;
 		}
 		return true;
@@ -1069,43 +851,7 @@ public class MainBackEndHolder {
 		return result;
 	}
 
-	private final Level[] DEBUG_LEVELS = {Level.SEVERE, Level.WARNING, Level.INFO, Level.FINE};
-
-	protected void applyDebugLevel() {
-		Level debugLevel = config.getNativeHookDebugLevel();
-		final JRadioButtonMenuItem[] buttons = {main.rbmiDebugSevere, main.rbmiDebugWarning, main.rbmiDebugInfo, main.rbmiDebugFine};
-
-		for (int i = 0; i < DEBUG_LEVELS.length; i++) {
-			if (debugLevel == DEBUG_LEVELS[i]) {
-				buttons[i].setSelected(true);
-				break;
-			}
-		}
-	}
-
-	protected void changeDebugLevel() {
-		Level debugLevel = Level.WARNING;
-		final JRadioButtonMenuItem[] buttons = {main.rbmiDebugSevere, main.rbmiDebugWarning, main.rbmiDebugInfo, main.rbmiDebugFine};
-
-		for (int i = 0; i < DEBUG_LEVELS.length; i++) {
-			if (buttons[i].isSelected()) {
-				debugLevel = DEBUG_LEVELS[i];
-				break;
-			}
-		}
-
-		changeDebugLevel(debugLevel);
-	}
-
 	public void changeDebugLevel(Level level) {
-		final JRadioButtonMenuItem[] buttons = {main.rbmiDebugSevere, main.rbmiDebugWarning, main.rbmiDebugInfo, main.rbmiDebugFine};
-
-		for (int i = 0; i < DEBUG_LEVELS.length; i++) {
-			if (DEBUG_LEVELS[i] == level) {
-				buttons[i].setSelected(true);
-				break;
-			}
-		}
 		config.setNativeHookDebugLevel(level);
 
 		// Get the logger for "org.jnativehook" and set the level to appropriate level.
@@ -1113,49 +859,11 @@ public class MainBackEndHolder {
 		logger.setLevel(config.getNativeHookDebugLevel());
 	}
 
-	protected void renderSettings() {
-		if (!OSIdentifier.IS_WINDOWS) {
-			main.rbmiCompileCS.setEnabled(false);
-		}
-		main.cbmiUseTrayIcon.setSelected(config.isUseTrayIcon());
-		main.cbmiHaltByKey.setSelected(config.isEnabledHaltingKeyPressed());
-		main.cbmiExecuteOnReleased.setSelected(config.isExecuteOnKeyReleased());
-	}
-
-	protected void switchTrayIconUse() {
-		boolean trayIconEnabled = main.cbmiUseTrayIcon.isSelected();
-		config.setUseTrayIcon(trayIconEnabled);
-	}
-
 	public void haltAllTasks() {
 		keysManager.haltAllTasks();
 	}
 
-	protected void switchHaltByKey() {
-		config.setEnabledHaltingKeyPressed(main.cbmiHaltByKey.isSelected());
-	}
-
-	protected void switchExecuteOnReleased() {
-		config.setExecuteOnKeyReleased(main.cbmiExecuteOnReleased.isSelected());
-	}
-
 	/*************************************************************************************************************/
-	private void setEnableRecord(boolean state) {
-		main.bRecord.setEnabled(state);
-	}
-
-	private void setEnableReplay(boolean state) {
-		main.bReplay.setEnabled(state);
-		main.tfRepeatCount.setEnabled(state);
-		main.tfRepeatDelay.setEnabled(state);
-		main.tfSpeedup.setEnabled(state);
-
-		if (state) {
-			main.tfRepeatCount.setText("1");
-			main.tfRepeatDelay.setText("0");
-		}
-	}
-
 	/**
 	 * Apply the current speedup in the textbox.
 	 * This attempts to parse the speedup.
@@ -1165,22 +873,6 @@ public class MainBackEndHolder {
 	private boolean applySpeedup() {
 		recorder.setSpeedup(replayConfig.getSpeedup());
 		return true;
-	}
-
-	/*************************************************************************************************************/
-	/***************************************JFrame operations*****************************************************/
-	protected void focusMainFrame() {
-		if (main.taskGroup.isVisible()) {
-			main.taskGroup.setVisible(false);
-		}
-
-		if (main.hotkey.isVisible()) {
-			main.hotkey.setVisible(false);
-		}
-
-		if (main.ipcs.isVisible()) {
-			main.ipcs.setVisible(false);
-		}
 	}
 
 	/*************************************************************************************************************/
@@ -1270,7 +962,6 @@ public class MainBackEndHolder {
 
 	public void setCurrentTaskGroup(TaskGroup currentTaskGroup) {
 		if (currentTaskGroup != this.currentGroup) {
-			this.selectedTaskIndex = -1;
 			this.currentGroup = currentTaskGroup;
 			keysManager.setCurrentTaskGroup(currentTaskGroup);
 		}

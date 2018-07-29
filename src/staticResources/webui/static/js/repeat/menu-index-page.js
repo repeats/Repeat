@@ -17,7 +17,7 @@ function registerMenuIndexPageActions() {
     $("#menu-halt-task-by-escape").click(menuHaltTaskByEscapeAction);
     $("#menu-execute-on-release").click(menuExecuteOnReleaseAction);
     $("#menu-debug-level").click(menuDebugLevelAction);
-    $("menu-use-tray-icon").click(menuUseTrayIconAction);
+    $("#menu-use-tray-icon").click(menuUseTrayIconAction);
 
     $("#modal-import-tasks-import").click(importTasksAction);
     $("#modal-export-tasks-export").click(exportTasksAction);
