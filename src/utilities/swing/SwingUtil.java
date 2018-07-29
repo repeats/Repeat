@@ -1,5 +1,6 @@
 package utilities.swing;
 
+import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -26,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import utilities.Function;
@@ -478,6 +480,53 @@ public class SwingUtil {
 				selectOnlyElementOnFilter = val;
 				return this;
 			}
+		}
+
+		/**
+		 * Display a dialog to confirm an action.
+		 * @param parent parent jframe hosting this dialog
+		 * @param title title of the dialog shown
+		 * @param message confirmation message shown in the dialog
+		 * @return whether user selects confirm or cancel
+		 */
+		public static boolean getConfirmation(JFrame parent, String title, String message) {
+			final JDialog dialog = new JDialog(parent, title, ModalityType.APPLICATION_MODAL);
+			dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+			final ModifableBoolean result = new ModifableBoolean(false);
+
+			JButton bYes = new JButton("Yes");
+			JButton bNo = new JButton("No");
+			JPanel buttonPanel = new JPanel();
+			buttonPanel.add(bYes);
+			buttonPanel.add(bNo);
+
+			bYes.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					result.value = true;
+					dialog.dispose();
+				}
+			});
+			bNo.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					dialog.dispose();
+				}
+			});
+
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+			JLabel label = new JLabel(message, SwingConstants.CENTER);
+			panel.add(label);
+			label.setAlignmentX(Component.CENTER_ALIGNMENT);
+			panel.add(buttonPanel);
+			dialog.add(panel);
+			dialog.pack();
+			dialog.setLocationRelativeTo(null);
+			bYes.requestFocusInWindow();
+			dialog.setVisible(true);
+			return result.value;
 		}
 
 		/**

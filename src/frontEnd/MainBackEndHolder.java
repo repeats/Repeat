@@ -50,6 +50,7 @@ import utilities.StringUtilities;
 import utilities.ZipUtility;
 import utilities.logging.LogHolder;
 import utilities.swing.KeyChainInputPanel;
+import utilities.swing.SwingUtil.DialogUtil;
 
 public class MainBackEndHolder {
 
@@ -881,8 +882,7 @@ public class MainBackEndHolder {
 		int port = IPCServiceManager.getIPCService(IPCServiceName.WEB_UI_SERVER).getPort();
 		String url = "http://localhost:" + port;
 
-		int selected = JOptionPane.showConfirmDialog(null, "Initialization finished. UI server is at " + url + ". Go there?", "Server ready!", JOptionPane.YES_NO_OPTION);
-		if (selected == JOptionPane.OK_OPTION) {
+		if (DialogUtil.getConfirmation(null, "Server ready!", "Initialization finished. UI server is at " + url + ". Go there?")) {
 			try {
 				Desktop.getDesktop().browse(new URI(url));
 			} catch (IOException | URISyntaxException e) {
