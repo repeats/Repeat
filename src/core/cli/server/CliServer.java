@@ -1,6 +1,7 @@
 package core.cli.server;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,6 +64,7 @@ public class CliServer extends IPCServiceWithModifablePort {
 		setMainBackEndHolder(backEndHolder);
 
 		ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
+				.setLocalAddress(InetAddress.getByName("localhost"))
                 .setListenerPort(port)
                 .setServerInfo("RepeatCli")
 				.setExceptionLogger(ExceptionLogger.STD_ERR)
