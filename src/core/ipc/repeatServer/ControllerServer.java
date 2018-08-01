@@ -1,6 +1,7 @@
 package core.ipc.repeatServer;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -20,6 +21,7 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 	private static final int DEFAULT_PORT = 9999;
 	private static final int DEFAULT_TIMEOUT_MS = 10000;
 	private static final int MAX_THREAD_COUNT = 10;
+	private static final int MAX_SERVER_BACK_LOG = 50; // Default value of ServerSocket constructor.
 
 	private boolean isStopped;
 	private final ScheduledThreadPoolExecutor threadPool;
@@ -41,7 +43,7 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 			@Override
 			public void run() {
 				try {
-					listener = new ServerSocket(port);
+					listener = new ServerSocket(port, MAX_SERVER_BACK_LOG, InetAddress.getByName("localhost"));
 				} catch (IOException e) {
 					getLogger().log(Level.SEVERE, "IO Exception when starting server", e);
 					return;

@@ -2,6 +2,7 @@ package core.webui.server;
 
 import java.io.IOException;
 import java.net.BindException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
@@ -237,6 +238,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		setMainBackEndHolder(backEndHolder);
 
 		ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
+                .setLocalAddress(InetAddress.getByName("localhost"))
                 .setListenerPort(port)
                 .setServerInfo("Repeat")
 				.setExceptionLogger(ExceptionLogger.STD_ERR)

@@ -57,15 +57,20 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 
 		String path = uriWithoutParamter.substring("/static/".length());
 
+		String rootPath = new File(root).getCanonicalPath();
 		File file = new File(root, URLDecoder.decode(path, "UTF-8"));
+		if (!file.getCanonicalPath().startsWith(rootPath)) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 404, String.format("File does not exist %s.", path));
+		}
+
 		HttpResponse response = exchange.getResponse();
 		if (!file.exists()) {
-			return HttpServerUtilities.prepareTextResponse(exchange, 404, String.format("File does not exist %s.", file.getAbsolutePath()));
-        } else if (!file.canRead() || file.isDirectory()) {
-        	return HttpServerUtilities.prepareTextResponse(exchange, 403, String.format("Cannot read file %s.", file.getAbsolutePath()));
-        } else  if (!file.canRead()) {
-        	return HttpServerUtilities.prepareTextResponse(exchange, 400, String.format("Path is a directory %s.", file.getAbsolutePath()));
-        } else {
+			return HttpServerUtilities.prepareTextResponse(exchange, 404, String.format("File does not exist %s.", path));
+		} else if (!file.canRead() || file.isDirectory()) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 403, String.format("Cannot read file %s.", path));
+		} else if (!file.canRead()) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, String.format("Path is a directory %s.", path));
+		} else {
             response.setStatusCode(HttpStatus.SC_OK);
             response.addHeader("Cache-Control", "max-age=3600"); // Max age = 1 hour.
             String contentType = contentType(file.toPath());
