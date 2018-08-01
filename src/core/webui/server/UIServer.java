@@ -1,6 +1,8 @@
 package core.webui.server;
 
 import java.io.IOException;
+import java.net.BindException;
+import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -100,7 +102,10 @@ import frontEnd.MainBackEndHolder;
 import staticResources.BootStrapResources;
 
 public class UIServer extends IPCServiceWithModifablePort {
-	private static final int TERMINATION_DELAY_SECOND = 1;
+
+	private static final int MAX_RETRY = 40;
+	private static final int RETRY_DELAY_MS = 2000; // Total retry time = RETRY_DELAY_MS * MAX_RETRY.
+	private static final int TERMINATION_DELAY_SECOND = 2;
 	private static final int DEFAULT_PORT = WebUIConfig.DEFAULT_SERVER_PORT;
 
 	private Map<String, HttpHandlerWithBackend> handlers;
@@ -222,6 +227,11 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 	@Override
 	protected void start() throws IOException {
+		if (!portFree()) {
+			getLogger().warning("Failed to initialize " + getName() + ". Port " + port + " is not free.");
+			throw new IOException("Port " + port + " is not free.");
+		}
+
 		handlers = createHandlers();
 		taskActivationConstructorManager.start();
 		setMainBackEndHolder(backEndHolder);
@@ -309,5 +319,25 @@ public class UIServer extends IPCServiceWithModifablePort {
 	@Override
 	public Logger getLogger() {
 		return Logger.getLogger(UIServer.class.getName());
+	}
+
+	private boolean portFree() throws IOException {
+		for (int i = 0; i < MAX_RETRY; i++) {
+			try {
+				ServerSocket socket = new ServerSocket(port);
+				socket.close();
+				return true;
+			} catch (BindException e) {
+				getLogger().info("Bind exception on port " + port + ". "
+						+ "Retrying after " + RETRY_DELAY_MS + "ms. "
+						+ (i * RETRY_DELAY_MS) + " ms passed. "
+						+ "Max wait time is " + (MAX_RETRY * RETRY_DELAY_MS) + "ms.");
+				try {
+					Thread.sleep(RETRY_DELAY_MS);
+				} catch (InterruptedException e1) {
+				}
+			}
+		}
+		return false;
 	}
 }
