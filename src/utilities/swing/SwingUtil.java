@@ -461,7 +461,7 @@ public class SwingUtil {
 
 		public static class DialogSelectionOption {
 			// Enable selecting first element when pressing enter regardless how many items there are in the list.
-			private boolean selectFirstElementOnEnter;
+			private boolean selectFirstElementOnEnter = true;
 			// Enable auto-select the first element after filter if it is the only element in the choice list.
 			private boolean selectOnlyElementOnFilter;
 
