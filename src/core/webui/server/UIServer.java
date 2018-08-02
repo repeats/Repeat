@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.apache.http.ExceptionLogger;
 import org.apache.http.impl.nio.bootstrap.HttpServer;
 import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 
 import core.config.WebUIConfig;
 import core.ipc.IPCServiceWithModifablePort;
@@ -104,8 +105,6 @@ import staticResources.BootStrapResources;
 
 public class UIServer extends IPCServiceWithModifablePort {
 
-	private static final int MAX_RETRY = 40;
-	private static final int RETRY_DELAY_MS = 2000; // Total retry time = RETRY_DELAY_MS * MAX_RETRY.
 	private static final int TERMINATION_DELAY_SECOND = 2;
 	private static final int DEFAULT_PORT = WebUIConfig.DEFAULT_SERVER_PORT;
 
@@ -239,6 +238,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 		ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
                 .setLocalAddress(InetAddress.getByName("localhost"))
+                .setIOReactorConfig(IOReactorConfig.custom().setSoReuseAddress(true).build())
                 .setListenerPort(port)
                 .setServerInfo("Repeat")
 				.setExceptionLogger(ExceptionLogger.STD_ERR)
@@ -324,21 +324,12 @@ public class UIServer extends IPCServiceWithModifablePort {
 	}
 
 	private boolean portFree() throws IOException {
-		for (int i = 0; i < MAX_RETRY; i++) {
-			try {
-				ServerSocket socket = new ServerSocket(port);
-				socket.close();
-				return true;
-			} catch (BindException e) {
-				getLogger().info("Bind exception on port " + port + ". "
-						+ "Retrying after " + RETRY_DELAY_MS + "ms. "
-						+ (i * RETRY_DELAY_MS) + " ms passed. "
-						+ "Max wait time is " + (MAX_RETRY * RETRY_DELAY_MS) + "ms.");
-				try {
-					Thread.sleep(RETRY_DELAY_MS);
-				} catch (InterruptedException e1) {
-				}
-			}
+		try {
+			ServerSocket socket = new ServerSocket(port);
+			socket.close();
+			return true;
+		} catch (BindException e) {
+			getLogger().warning("Bind exception on port " + port + ". ");
 		}
 		return false;
 	}
