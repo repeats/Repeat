@@ -38,17 +38,7 @@ public class MinimizedFrame extends TrayIcon {
 		miInterface.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!Desktop.isDesktopSupported()) {
-					LOGGER.warning("Cannot open browser to UI since Desktop module is not supported.");
-					return;
-				}
-
-				IIPCService server = IPCServiceManager.getIPCService(IPCServiceName.WEB_UI_SERVER);
-				try {
-					Desktop.getDesktop().browse(new URI("http://localhost:" + server.getPort()));
-				} catch (IOException | URISyntaxException ex) {
-					LOGGER.log(Level.WARNING, "Failed to show UI in browser.", ex);
-				}
+				show();
 			}
 		});
 
@@ -70,8 +60,23 @@ public class MinimizedFrame extends TrayIcon {
 		addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				show();
 			}
 		});
+	}
+
+	private void show() {
+		if (!Desktop.isDesktopSupported()) {
+			LOGGER.warning("Cannot open browser to UI since Desktop module is not supported.");
+			return;
+		}
+
+		IIPCService server = IPCServiceManager.getIPCService(IPCServiceName.WEB_UI_SERVER);
+		try {
+			Desktop.getDesktop().browse(new URI("http://localhost:" + server.getPort()));
+		} catch (IOException | URISyntaxException ex) {
+			LOGGER.log(Level.WARNING, "Failed to show UI in browser.", ex);
+		}
 	}
 
 	protected void add() throws AWTException {
