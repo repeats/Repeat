@@ -38,7 +38,7 @@ public class ActionSaveTaskActivationHandler extends AbstractTaskActivationConst
 		}
 
 		TaskActivation activation = constructor.getActivation();
-		task.setActivation(activation);
+		backEndHolder.changeHotkeyTask(task, activation);
 
 		taskActivationConstructorManager.remove(params.get("id"));
 		return HttpServerUtilities.prepareHttpResponse(exchange, 200, "");

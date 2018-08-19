@@ -49,7 +49,6 @@ import utilities.Pair;
 import utilities.StringUtilities;
 import utilities.ZipUtility;
 import utilities.logging.LogHolder;
-import utilities.swing.KeyChainInputPanel;
 import utilities.swing.SwingUtil.DialogUtil;
 
 public class MainBackEndHolder {
@@ -620,9 +619,7 @@ public class MainBackEndHolder {
 		}
 	}
 
-	protected void changeHotkeyTask(int row) {
-		final UserDefinedAction action = currentGroup.getTasks().get(row);
-		TaskActivation newActivation = KeyChainInputPanel.getInputActivation(null, action.getActivation());
+	public void changeHotkeyTask(UserDefinedAction action, TaskActivation newActivation) {
 		if (newActivation == null) {
 			return;
 		}
@@ -637,9 +634,7 @@ public class MainBackEndHolder {
 		keysManager.reRegisterTask(action, newActivation);
 	}
 
-	protected void switchEnableTask(int row) {
-		final UserDefinedAction action = currentGroup.getTasks().get(row);
-
+	public void switchEnableTask(UserDefinedAction action) {
 		if (action.isEnabled()) { // Then disable it
 			action.setEnabled(false);
 			if (!action.isEnabled()) {

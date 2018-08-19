@@ -34,7 +34,7 @@ public class ToggleTaskEnabledHandler extends AbstractUIHttpHandler {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Failed to get task.");
 		}
 
-		task.setEnabled(!task.isEnabled());
+		backEndHolder.switchEnableTask(task);
 		return renderedTaskForGroup(exchange);
 	}
 }
