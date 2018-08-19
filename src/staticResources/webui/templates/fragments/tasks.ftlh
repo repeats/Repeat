@@ -8,7 +8,7 @@
             <th scope="col">Last Used</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="table-tasks-body">
         <#list tasks as task>
         <tr>
             <td>${task.name}</td>

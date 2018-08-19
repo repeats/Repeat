@@ -72,10 +72,12 @@ function refreshTasksWithData(data) {
 }
 
 function refreshTasksWithDataAndIndex(data, index) {
+    _rememberLastScrollPosition();
     var tableElement = $("#table-tasks");
     tableElement.html(data);
     registerCells();
     setSelectedTask(index);
+    _setLastToLastScrollPosition();
 }
 
 function setSelectedTask(index) {
@@ -107,4 +109,14 @@ function getSelectedTaskIndex() {
     });
 
     return index;
+}
+
+var _lastScrollPosition = 0;
+
+function _rememberLastScrollPosition() {
+    _lastScrollPosition = $("#table-tasks-body")[0].scrollTop;
+}
+
+function _setLastToLastScrollPosition() {
+    $("#table-tasks-body")[0].scrollTop = _lastScrollPosition;
 }
