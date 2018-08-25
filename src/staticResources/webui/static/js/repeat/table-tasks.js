@@ -33,6 +33,11 @@ function registerCells() {
 }
 
 function tableTaskOnClick(cell, row, col) {
+    fillSourceForTask(row);
+    if (getSelectedTaskIndex() != row) {
+        return;
+    }
+
     if (col == 0) { // Name.
         $("#modal-task-name-row").val(row);
         $("#new-task-name").val(cell.textContent);
@@ -51,8 +56,6 @@ function tableTaskOnClick(cell, row, col) {
             alert('Error toggling state: ' + response.responseText);
         });
     }
-
-    fillSourceForTask(row);
 }
 
 function newNameOnClick(e) {

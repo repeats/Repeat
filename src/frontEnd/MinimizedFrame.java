@@ -60,7 +60,9 @@ public class MinimizedFrame extends TrayIcon {
 		addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				show();
+				if (javax.swing.SwingUtilities.isLeftMouseButton(e)) {
+					show();
+				}
 			}
 		});
 	}

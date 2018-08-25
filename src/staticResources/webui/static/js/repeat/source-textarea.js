@@ -27,7 +27,7 @@ function getSourceTemplate(editor) {
 }
 
 function fillSourceForTask(index) {
-    $.get("/internals/get/source-for-task?task=" + index, function(data) {
+    $.post("/internals/set/selected-task", JSON.stringify({ "task" : index }), function(data) {
         setCurrentSourceCode(data);
     }).fail(function(response) {
         alert('Error getting source code for task: ' + response.responseText);

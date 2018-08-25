@@ -39,6 +39,10 @@ function registerTaskGroupCells() {
 }
 
 function tableTaskGroupsOnClick(cell, row, col) {
+    if (getSelectedTaskGroupIndex() != row) {
+        return;
+    }
+
     if (col == 0) { // Name.
         $('#modal-task-group-name-row').val(row);
         $('#new-task-group-name').val(cell.textContent);

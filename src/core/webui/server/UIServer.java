@@ -96,8 +96,8 @@ import core.webui.server.handlers.internals.taskmanagement.ActionMoveTaskUpHandl
 import core.webui.server.handlers.internals.taskmanagement.ActionOverwriteTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.GetRenderedTaskGroupsSelectModalHandler;
 import core.webui.server.handlers.internals.tasks.ActionSaveTaskActivationHandler;
-import core.webui.server.handlers.internals.tasks.GetSourceForTaskHandler;
 import core.webui.server.handlers.internals.tasks.ModifyTaskNameHandler;
+import core.webui.server.handlers.internals.tasks.SetSelectedTaskHandler;
 import core.webui.server.handlers.internals.tasks.ToggleTaskEnabledHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import frontEnd.MainBackEndHolder;
@@ -210,10 +210,11 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/get/logs", new GetLogsHandler());
 		output.put("/internals/get/mouse-position", new GetMousePositionHandler());
 		output.put("/internals/get/path-suggestion", new GetPathSuggestionHandler());
-		output.put("/internals/get/source-for-task", new GetSourceForTaskHandler());
 		output.put("/internals/get/source-templates", new GetSourceTemplateHandler());
 		output.put("/internals/get/rendered-task-groups-dropdown", new GetRenderedTaskGroupsDropdown(objectRenderer));
 		output.put("/internals/get/rendered-task-groups-select-modal", new GetRenderedTaskGroupsSelectModalHandler(objectRenderer));
+
+		output.put("/internals/set/selected-task", new SetSelectedTaskHandler());
 
 		output.put("/internals/modify/ipc-service-port", new ModifyIPCServicePortHandler(objectRenderer));
 		output.put("/internals/modify/task-name", new ModifyTaskNameHandler(objectRenderer));

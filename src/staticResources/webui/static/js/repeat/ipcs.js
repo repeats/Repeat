@@ -35,6 +35,10 @@ function registerIpcTableRows() {
 }
 
 function tableIpcOnClick(cell, row, col) {
+    if (getSelectedIpcServiceIndex() != row) {
+        return;
+    }
+
     if (col == 1) { // Port.
         // Hard code for now.
         if (row > 2) {
