@@ -15,6 +15,8 @@ public class TaskActivationConstructor {
 	private List<KeySequence> keySequences;
 	private List<ActivationPhrase> phrases;
 	private List<MouseGesture> mouseGestures;
+	private GlobalActivation globalActivation;
+
 	private boolean listening;
 
 	private Config config;
@@ -29,6 +31,8 @@ public class TaskActivationConstructor {
 		keySequences = new ArrayList<>(reference.getKeySequences());
 		phrases = new ArrayList<>(reference.getPhrases());
 		mouseGestures = new ArrayList<>(reference.getMouseGestures());
+		globalActivation = reference.getGlobalActivation();
+
 		this.config = config;
 	}
 
@@ -41,7 +45,13 @@ public class TaskActivationConstructor {
 	}
 
 	public TaskActivation getActivation() {
-		return TaskActivation.newBuilder().withHotKeys(keyChains).withKeySequence(keySequences).withPhrases(phrases).withMouseGestures(mouseGestures).build();
+		return TaskActivation.newBuilder()
+				.withHotKeys(keyChains)
+				.withKeySequence(keySequences)
+				.withPhrases(phrases)
+				.withMouseGestures(mouseGestures)
+				.withGlobalActivation(globalActivation)
+				.build();
 	}
 
 	public void startListening() {
@@ -111,6 +121,14 @@ public class TaskActivationConstructor {
 		mouseGestures.addAll(gestures);
 	}
 
+	public void setGlobalKeyReleased(boolean value) {
+		globalActivation = GlobalActivation.Builder.fromGlobalActivation(globalActivation).onKeyReleased(value).build();
+	}
+
+	public void setGlobalKeyPressed(boolean value) {
+		globalActivation = GlobalActivation.Builder.fromGlobalActivation(globalActivation).onKeyPressed(value).build();
+	}
+
 	public Config getConfig() {
 		return config;
 	}
@@ -120,6 +138,7 @@ public class TaskActivationConstructor {
 		private boolean disableKeySequence;
 		private boolean disablePhrase;
 		private boolean disableMouseGesture;
+		private boolean disableGlobalKeyActions;
 
 		private int maxStrokes = Integer.MAX_VALUE;
 
@@ -133,6 +152,7 @@ public class TaskActivationConstructor {
 			config.disableKeySequence = true;
 			config.disablePhrase = true;
 			config.disableMouseGesture = true;
+			config.disableGlobalKeyActions = true;
 			return config;
 		}
 
@@ -178,6 +198,15 @@ public class TaskActivationConstructor {
 
 		public Config setDisableMouseGesture(boolean disableMouseGesture) {
 			this.disableMouseGesture = disableMouseGesture;
+			return this;
+		}
+
+		public boolean isDisabledGlobalKeyAction() {
+			return disableGlobalKeyActions;
+		}
+
+		public Config setDisabledGlobalKeyAction(boolean disableGlobalKeyActions) {
+			this.disableGlobalKeyActions = disableGlobalKeyActions;
 			return this;
 		}
 	}

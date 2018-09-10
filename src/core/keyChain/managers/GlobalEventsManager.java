@@ -54,8 +54,8 @@ public final class GlobalEventsManager {
 				new KeyChainManager(config),
 				new KeySequenceManager(config),
 				new PhraseManager(config),
-				new MouseGestureManager(config));
-
+				new MouseGestureManager(config),
+				new GlobalKeyActionManager(config));
 	}
 
 	public void startGlobalListener() throws NativeHookException {

@@ -28,11 +28,14 @@ public class TaskActivation implements IJsonable {
 	private Set<KeySequence> keySequences;
 	private Set<ActivationPhrase> phrases;
 
+	private GlobalActivation globalActivation;
+
 	private TaskActivation(Builder builder) {
 		hotkeys = builder.hotkeys;
 		mouseGestures = builder.mouseGestures;
 		keySequences = builder.keySequences;
 		phrases = builder.phrases;
+		globalActivation = builder.globalActivation;
 	}
 
 	/**
@@ -159,6 +162,20 @@ public class TaskActivation implements IJsonable {
 	}
 
 	/**
+	 * @return the global activation configuration for this activation.
+	 */
+	public final GlobalActivation getGlobalActivation() {
+		return globalActivation;
+	}
+
+	/**
+	 * @param globalActivation configuration to set.
+	 */
+	public final void setGlobalActivation(GlobalActivation globalActivation) {
+		this.globalActivation = globalActivation;
+	}
+
+	/**
 	 * Copy the content of the other {@link TaskActivation} to this object.
 	 *
 	 * @param other other task activation whose content will be copied from.
@@ -168,6 +185,7 @@ public class TaskActivation implements IJsonable {
 		setMouseGestures(other.getMouseGestures());
 		setKeySequences(other.getKeySequences());
 		setPhrases(other.getPhrases());
+		setGlobalActivation(other.getGlobalActivation());
 	}
 
 	/**
@@ -183,7 +201,8 @@ public class TaskActivation implements IJsonable {
 				JsonNodeFactories.field("hotkey", JsonNodeFactories.array(JSONUtility.listToJson(getHotkeys()))),
 				JsonNodeFactories.field("key_sequence", JsonNodeFactories.array(JSONUtility.listToJson(getKeySequences()))),
 				JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array(JSONUtility.listToJson(getMouseGestures()))),
-				JsonNodeFactories.field("phrases", JsonNodeFactories.array(JSONUtility.listToJson(getPhrases()))));
+				JsonNodeFactories.field("phrases", JsonNodeFactories.array(JSONUtility.listToJson(getPhrases()))),
+				JsonNodeFactories.field("global_activation", globalActivation.jsonize()));
 	}
 
 	/**
@@ -231,11 +250,19 @@ public class TaskActivation implements IJsonable {
 				}
 			}
 
+			GlobalActivation globalActivation = node.isNode("global_activation")
+					? GlobalActivation.parseJSON(node.getNode("global_activation"))
+					: GlobalActivation.newBuilder().build();
+			if (globalActivation == null) {
+				globalActivation = GlobalActivation.newBuilder().build();
+			}
+
 			TaskActivation output = TaskActivation.newBuilder()
 										.withHotKeys(keyChains)
 										.withKeySequence(keySequences)
 										.withMouseGestures(gestures)
 										.withPhrases(phrases)
+										.withGlobalActivation(globalActivation)
 										.build();
 			return output;
 		} catch (Exception e) {
@@ -283,12 +310,14 @@ public class TaskActivation implements IJsonable {
 		private Set<MouseGesture> mouseGestures;
 		private Set<KeySequence> keySequences;
 		private Set<ActivationPhrase> phrases;
+		private GlobalActivation globalActivation;
 
 		private Builder() {
 			hotkeys = new HashSet<>();
 			mouseGestures = new HashSet<>();
 			keySequences = new HashSet<>();
 			phrases = new HashSet<>();
+			globalActivation = GlobalActivation.newBuilder().build();
 		}
 
 		public Builder addHotKeys(KeyChain... keys) {
@@ -356,6 +385,11 @@ public class TaskActivation implements IJsonable {
 		public Builder withPhrases(Collection<ActivationPhrase> phrases) {
 			this.phrases.clear();
 			this.phrases.addAll(phrases);
+			return this;
+		}
+
+		public Builder withGlobalActivation(GlobalActivation globalActivation) {
+			this.globalActivation = globalActivation;
 			return this;
 		}
 
