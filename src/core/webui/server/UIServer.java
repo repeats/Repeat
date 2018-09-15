@@ -69,6 +69,7 @@ import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationG
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationRemoveKeyChainHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationRemoveKeySequenceHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationRemovePhraseHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationSetGlobalKeyAction;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationSetMouseGesturesHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationStartListeningHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationStopListeningHandler;
@@ -177,6 +178,8 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/action/task-activation/strokes/add-as-key-chain", new ActionTaskActivationAddStrokesAsKeyChainHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/strokes/add-as-key-sequence", new ActionTaskActivationAddStrokesAsKeySequenceHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/strokes/get", new ActionTaskActivationGetStrokesHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/global-key-action/released/set", new ActionTaskActivationSetGlobalKeyAction(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/global-key-action/pressed/set", new ActionTaskActivationSetGlobalKeyAction(objectRenderer, taskActivationConstructorManager));
 
 		output.put("/internals/action/add-task", new ActionAddTaskHandler(objectRenderer));
 		output.put("/internals/action/add-task-group", new ActionAddTaskGroupHandler(objectRenderer));

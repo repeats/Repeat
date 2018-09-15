@@ -14,6 +14,7 @@ public class RenderedTaskActivation {
 	private List<String> keySequences;
 	private List<String> phrases;
 	private RenderedMouseGestureActivation mouseGestures;
+	private RenderedGlobalActivation globalActivation;
 	private Config config;
 
 	public static RenderedTaskActivation fromActivation(TaskActivationConstructor constructor) {
@@ -24,9 +25,11 @@ public class RenderedTaskActivation {
 		output.keySequences = activation.getKeySequences().stream().map(KeySequence::toString).collect(Collectors.toList());
 		output.phrases = activation.getPhrases().stream().map(ActivationPhrase::toString).collect(Collectors.toList());
 		output.mouseGestures = RenderedMouseGestureActivation.fromActivation(activation);
+		output.globalActivation = RenderedGlobalActivation.fromActivation(activation);
 
 		TaskActivationConstructor.Config config = constructor.getConfig();
 		output.config = Config.of()
+							.setDisableGlobalAction(config.isDisabledGlobalKeyAction())
 							.setDisableKeyChain(config.isDisableKeyChain())
 							.setDisableKeySequence(config.isDisableKeySequence())
 							.setDisablePhrase(config.isDisablePhrase())
@@ -35,6 +38,7 @@ public class RenderedTaskActivation {
 	}
 
 	public static class Config {
+		private boolean disableGlobalAction;
 		private boolean disableKeyChain;
 		private boolean disableKeySequence;
 		private boolean disablePhrase;
@@ -42,6 +46,15 @@ public class RenderedTaskActivation {
 
 		public static Config of() {
 			return new Config();
+		}
+
+		public boolean isDisableGlobalAction() {
+			return disableGlobalAction;
+		}
+
+		public Config setDisableGlobalAction(boolean disableGlobalAction) {
+			this.disableGlobalAction = disableGlobalAction;
+			return this;
 		}
 
 		public boolean isDisableKeyChain() {
@@ -111,6 +124,14 @@ public class RenderedTaskActivation {
 
 	public void setMouseGestures(RenderedMouseGestureActivation mouseGestures) {
 		this.mouseGestures = mouseGestures;
+	}
+
+	public RenderedGlobalActivation getGlobalActivation() {
+		return globalActivation;
+	}
+
+	public void setGlobalActivation(RenderedGlobalActivation globalActivation) {
+		this.globalActivation = globalActivation;
 	}
 
 	public Config getConfig() {

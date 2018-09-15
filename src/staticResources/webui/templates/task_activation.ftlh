@@ -1,3 +1,4 @@
+<#import "/fragments/global_key_action.ftlh" as global_key_action_fragment>
 <#import "/fragments/key_chains.ftlh" as key_chains_fragment>
 <#import "/fragments/key_sequences.ftlh" as key_sequences_fragment>
 <#import "/fragments/phrases.ftlh" as phrases_fragment>
@@ -70,6 +71,12 @@
                 <div class="row">
                     <span class="label label-warning">Moving tasks around when editting its activation may result in undefined behavior!</span>
                     <div><button id="button-save" type="button" class="btn btn-default btn-span">Save</button></div>
+                </div>
+                <div class="row top-buffer">
+                    <span class="label label-default">Global Key Action</span>
+                    <div>
+                        <@global_key_action_fragment.fragment/>
+                    </div>
                 </div>
                 <div class="row top-buffer">
                     <span class="label label-default">Start pressing keys when enabled</span>

@@ -1,5 +1,7 @@
 function registerTaskActivationActions() {
     $("#button-save").click(buttonSaveAction);
+    $("#button-on-key-pressed").click(buttonOnKeyPressedAction);
+    $("#button-on-key-released").click(buttonOnKeyReleasedAction);
     $("#button-strokes").click(buttonStrokeAction);
     $("#button-add-key-chain").click(buttonAddKeyChainAction);
     $("#button-add-key-sequence").click(buttonAddKeySequenceAction);
@@ -71,6 +73,37 @@ function buttonSaveAction(e) {
         save();
     }).fail(function(response) {
         alert('Error setting mouse gestures: ' + response.responseText);
+    });
+}
+
+function buttonOnKeyPressedAction(e) {
+    var button = $(this);
+    var isOn = button.hasClass("btn-info");
+    
+    var endpoint = '/internals/action/task-activation/global-key-action/pressed/set';
+    var data = getTaskActivationParameters();
+    data.pressed = isOn ? 'false' : 'true';
+
+    _setGlobalKeyActionConfiguration(button, endpoint, data);
+}
+
+function buttonOnKeyReleasedAction(e) {
+    var button = $(this);
+    var isOn = button.hasClass("btn-info");
+    
+    var endpoint = '/internals/action/task-activation/global-key-action/released/set';
+    var data = getTaskActivationParameters();
+    data.released = isOn ? 'false' : 'true';
+
+    _setGlobalKeyActionConfiguration(button, endpoint, data);
+}
+
+function _setGlobalKeyActionConfiguration(button, endpoint, data) {
+    $.post(endpoint, data = JSON.stringify(data), function(data) {
+        button.toggleClass("btn-default");
+        button.toggleClass("btn-info");
+    }).fail(function(response) {
+        alert('Error toggling global key task activation: ' + response.responseText);
     });
 }
 

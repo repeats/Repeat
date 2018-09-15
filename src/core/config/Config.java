@@ -72,6 +72,7 @@ public class Config implements ILoggable {
 				new Parser2_4(),
 				new Parser2_5(),
 				new Parser2_6(),
+				new Parser2_7(),
 			});
 	}
 
