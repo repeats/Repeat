@@ -1,6 +1,5 @@
 package core.cli.client.handlers;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
@@ -14,17 +13,14 @@ import core.cli.messages.TaskIdentifier;
 import core.cli.messages.TaskListMessage;
 import core.cli.messages.TaskMessage;
 import core.cli.messages.TaskRemoveMessage;
-import core.cli.server.CliRpcCodec;
 import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;
 import utilities.NumberUtility;
-import utilities.json.IJsonable;
-import utilities.json.JSONUtility;
 
-public class TaskActionHandler extends CliActionProcessor {
+public class TaskCliActionHandler extends CliActionProcessor {
 
-	private static final Logger LOGGER = Logger.getLogger(TaskActionHandler.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(TaskCliActionHandler.class.getName());
 
 	@Override
 	public void addArguments(Subparsers subparsers) {
@@ -127,21 +123,5 @@ public class TaskActionHandler extends CliActionProcessor {
 			taskMessage.setName(taskName);
 		}
 		return taskMessage;
-	}
-
-	private void sendRequest(String path, IJsonable message) {
-		byte[] data = CliRpcCodec.encode(JSONUtility.jsonToString(message.jsonize()).getBytes(CliRpcCodec.ENCODING));
-		sendRequest(path, data);
-	}
-
-	private void sendRequest(String path, byte[] data) {
-		try {
-			byte[] responseData = httpClient.sendPost(path, data);
-			String responseString = CliRpcCodec.decode(responseData);
-			LOGGER.info(responseString);
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Encountered IOException when talking to server.", e);
-			CliExitCodes.IO_EXCEPTION.exit();
-		}
 	}
 }

@@ -6,7 +6,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import core.cli.client.handlers.CliActionProcessor;
-import core.cli.client.handlers.TaskActionHandler;
+import core.cli.client.handlers.SharedVariablesCliActionHandler;
+import core.cli.client.handlers.TaskCliActionHandler;
 import core.config.CliConfig;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -23,7 +24,8 @@ public class MainCli {
 
 	public MainCli() {
 		processors = new HashMap<>();
-		processors.put("task", new TaskActionHandler());
+		processors.put("variable", new SharedVariablesCliActionHandler());
+		processors.put("task", new TaskCliActionHandler());
 	}
 
 	private ArgumentParser setupParser() {

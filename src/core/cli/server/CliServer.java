@@ -13,6 +13,8 @@ import org.apache.http.ExceptionLogger;
 import org.apache.http.impl.nio.bootstrap.HttpServer;
 import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 
+import core.cli.server.handlers.SharedVariablesGetActionHandler;
+import core.cli.server.handlers.SharedVariablesSetActionHandler;
 import core.cli.server.handlers.TaskAddActionHandler;
 import core.cli.server.handlers.TaskExecuteActionHandler;
 import core.cli.server.handlers.TaskListActionHandler;
@@ -51,6 +53,9 @@ public class CliServer extends IPCServiceWithModifablePort {
 
 	private Map<String, HttpHandlerWithBackend> createHandlers() {
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
+		output.put("/var/get", new SharedVariablesGetActionHandler());
+		output.put("/var/set", new SharedVariablesSetActionHandler());
+
 		output.put("/task/add", new TaskAddActionHandler());
 		output.put("/task/remove", new TaskRemoveActionHandler());
 		output.put("/task/execute", new TaskExecuteActionHandler());

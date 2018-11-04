@@ -46,7 +46,7 @@ public class Jsonizer {
 			Field field = clazz.getDeclaredField(fieldName);
 
 			int modifier = field.getModifiers();
-			if (Modifier.isStatic(modifier) || Modifier.isPrivate(modifier)) {
+			if (Modifier.isStatic(modifier) || !Modifier.isPrivate(modifier)) {
 				LOGGER.warning("Skipping field " + fieldName + " when parsing JSON. Field is either static or non-private.");
         		continue;
         	}
