@@ -24,6 +24,15 @@ import utilities.Function;
 public class JSONUtility {
 
 	/**
+	 * Convert JsonNode to string representation
+	 * @param node JSON node
+	 * @return string representation of the json node
+	 */
+	public static String jsonToString(JsonNode node) {
+		return jsonToString(node.getRootNode());
+	}
+
+	/**
 	 * Convert JsonRootnode to string representation
 	 * @param node JSON root node
 	 * @return string representation of the json node

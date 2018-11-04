@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,9 +36,8 @@ public class Jsonizer {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private static boolean internalParse(JsonNode node, Object dest) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException {
-		Class clazz = dest.getClass();
+		Class<?> clazz = dest.getClass();
 
 		for (Entry<JsonStringNode, JsonNode> inner : node.getFields().entrySet()) {
 			JsonStringNode nameNode = inner.getKey();
@@ -52,55 +53,96 @@ public class Jsonizer {
         	}
 
 			field.setAccessible(true);
+			System.out.println(field.getName() + ", " + field.getType());
 			if (isPrimitiveOrString(field.getType())) {
-				toPrimitiveOrString(valueNode, dest, field);
+				field.set(dest, toPrimitiveOrString(valueNode, field.getType()));
 				continue;
 			}
 
-			boolean foundConstructor = false;
-			for (Constructor constructor : field.getType().getDeclaredConstructors()) {
-				if (constructor.getParameterCount() == 0) {
-					constructor.setAccessible(true);
-					Object o = constructor.newInstance();
-					if (!internalParse(valueNode, o)) {
-						return false;
-					}
-					field.set(dest, o);
-					foundConstructor = true;
-					break;
-				}
+			if (isIterableType(field.getType())) {
+				field.set(dest, parseIterableField(valueNode, field));
+				continue;
 			}
 
-			if (!foundConstructor) {
+			Object o = getDefaultConstructor(field.getType()).newInstance();
+			if (!internalParse(valueNode, o)) {
 				return false;
 			}
+			field.set(dest, o);
 		}
 
 		return true;
 	}
 
+	private static List<Object> parseIterableField(JsonNode valueNode, Field field) throws IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchFieldException, SecurityException {
+		if (!valueNode.isArrayNode()) {
+			throw new IllegalArgumentException("Expecting node to be array but is type " + valueNode.getType() + ". " + JSONUtility.jsonToString(valueNode));
+		}
+
+		List<JsonNode> valueNodes = valueNode.getArrayNode();
+		ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+		Type[] iterableTypes = genericType.getActualTypeArguments();
+		if (iterableTypes.length != 1) {
+			throw new IllegalArgumentException("Expecting one type arguments for iterable attribute but found " + iterableTypes.length);
+		}
+		Class<?> clazz = (Class<?>) iterableTypes[0];
+		if (isPrimitiveOrString(clazz)) {
+			List<Object> output = new ArrayList<>();
+			for (JsonNode n : valueNodes) {
+				output.add(toPrimitiveOrString(n, clazz));
+			}
+
+			return output;
+		}
+
+		Constructor<?> constructor = getDefaultConstructor(clazz);
+		List<Object> output = new ArrayList<>();
+		for (JsonNode n : valueNodes) {
+			Object o = constructor.newInstance();
+			if (!internalParse(n, o)) {
+				throw new IllegalArgumentException("Unable to parse internal node.");
+			}
+			output.add(o);
+		}
+		return output;
+	}
+
+	/**
+	 * Retrieves the constructor with zero parameter and set it to be accessible.
+	 */
+	private static Constructor<?> getDefaultConstructor(Class<?> clazz) {
+		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+			if (constructor.getParameterCount() != 0) {
+				continue;
+			}
+			constructor.setAccessible(true);
+			return constructor;
+		}
+
+		throw new IllegalArgumentException("No constructor with zero parameter found for " + clazz.getName());
+	}
+
 	public static JsonNode jsonize(Object o) {
 		try {
-			return internalSsonize(o);
+			return internalJsonize(o);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			LOGGER.log(Level.WARNING,"Failed to jsonize object " + o.getClass(), e);
 			return null;
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	private static JsonNode internalSsonize(Object o) throws IllegalArgumentException, IllegalAccessException {
+	private static JsonNode internalJsonize(Object o) throws IllegalArgumentException, IllegalAccessException {
 		Class<?> objectClass = o.getClass();
 		if (isPrimitiveOrString(objectClass)) {
 			return fromPrimitiveOrString(objectClass, o);
 		}
 
 		if (isIterableType(objectClass)) {
-    		Iterable it = (Iterable) o;
+    		Iterable<?> it = (Iterable<?>) o;
     		List<JsonNode> nodes = new ArrayList<>();
-    		for (Iterator i = it.iterator(); i.hasNext(); ) {
+    		for (Iterator<?> i = it.iterator(); i.hasNext(); ) {
     			Object next = i.next();
-    			JsonNode node = internalSsonize(next);
+    			JsonNode node = internalJsonize(next);
     			nodes.add(node);
     		}
     		return JsonNodeFactories.array(nodes);
@@ -108,10 +150,11 @@ public class Jsonizer {
 
 		Map<JsonStringNode, JsonNode> data = new HashMap<>();
 
-		Class clazz = o.getClass();
+		Class<?> clazz = o.getClass();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
-        	if (Modifier.isStatic(field.getModifiers())) {
+        	int modifier = field.getModifiers();
+        	if (Modifier.isStatic(modifier) || !Modifier.isPrivate(modifier)) {
         		continue;
         	}
         	field.setAccessible(true);
@@ -122,7 +165,7 @@ public class Jsonizer {
         	if (value == null) {
         		continue;
         	}
-        	JsonNode node = internalSsonize(value);
+        	JsonNode node = internalJsonize(value);
         	data.put(nameNode, node);
         }
 
@@ -130,34 +173,32 @@ public class Jsonizer {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static void toPrimitiveOrString(JsonNode node, Object dest, Field field) throws IllegalArgumentException, IllegalAccessException {
-		Class clazz = field.getType();
-
+	private static Object toPrimitiveOrString(JsonNode node, Class clazz) throws IllegalArgumentException, IllegalAccessException {
 		if (clazz == String.class) {
-			field.set(dest, node.getStringValue());
-		} else if (clazz == Boolean.TYPE) {
-			field.set(dest, node.getBooleanValue());
-		} else if (clazz == Byte.TYPE) {
+			return node.getStringValue();
+		} else if (clazz == Boolean.TYPE || clazz == Boolean.class) {
+			return node.getBooleanValue();
+		} else if (clazz == Byte.TYPE || clazz == Byte.class) {
 			int value = Integer.parseInt(node.getNumberValue());
-			field.set(dest, (byte)value);
-		} else if (clazz == Character.TYPE) {
+			return (byte) value;
+		} else if (clazz == Character.TYPE || clazz == Character.class) {
 			String value = node.getStringValue();
-			field.set(dest, value.charAt(0));
-		} else if (clazz == Short.TYPE) {
+			return value.charAt(0);
+		} else if (clazz == Short.TYPE || clazz == Short.class) {
 			int value = Integer.parseInt(node.getNumberValue());
-			field.set(dest, (short)value);
-		} else if (clazz == Integer.TYPE) {
+			return (short) value;
+		} else if (clazz == Integer.TYPE || clazz == Integer.class) {
 			int value = Integer.parseInt(node.getNumberValue());
-			field.set(dest, value);
-		} else if (clazz == Long.TYPE) {
+			return value;
+		} else if (clazz == Long.TYPE || clazz == Long.class) {
 			int value = Integer.parseInt(node.getNumberValue());
-			field.set(dest, (long)value);
-		} else if (clazz == Float.TYPE) {
+			return (long) value;
+		} else if (clazz == Float.TYPE || clazz == Float.class) {
 			float value = Float.parseFloat(node.getNumberValue());
-			field.set(dest, value);
-		} else if (clazz == Double.TYPE) {
+			return value;
+		} else if (clazz == Double.TYPE || clazz == Double.class) {
 			double value = Double.parseDouble(node.getNumberValue());
-			field.set(dest, value);
+			return value;
 		} else {
 			throw new IllegalArgumentException("Unknown type " + clazz);
 		}
@@ -166,21 +207,21 @@ public class Jsonizer {
 	private static JsonNode fromPrimitiveOrString(Class<?> clazz, Object value) {
 		if (clazz == String.class) {
 			return JsonNodeFactories.string((String)value);
-		} else if (clazz == Boolean.TYPE) {
+		} else if (clazz == Boolean.class) {
 			return JsonNodeFactories.booleanNode((boolean) value);
-		} else if (clazz == Byte.TYPE) {
+		} else if (clazz == Byte.class) {
 			return JsonNodeFactories.number((byte)value);
-		} else if (clazz == Character.TYPE) {
+		} else if (clazz == Character.class) {
 			return JsonNodeFactories.string(Character.toString((char)value));
-		} else if (clazz == Short.TYPE) {
+		} else if (clazz == Short.class) {
 			return JsonNodeFactories.number((short)value);
-		} else if (clazz == Integer.TYPE) {
+		} else if (clazz == Integer.class) {
 			return JsonNodeFactories.number((int)value);
-		} else if (clazz == Long.TYPE) {
+		} else if (clazz == Long.class) {
 			return JsonNodeFactories.number((long)value);
-		} else if (clazz == Float.TYPE) {
+		} else if (clazz == Float.class) {
 			return JsonNodeFactories.number("" + (float)value);
-		} else if (clazz == Double.TYPE) {
+		} else if (clazz == Double.class) {
 			return JsonNodeFactories.number("" + (double)value);
 		}
 		throw new IllegalArgumentException("Unknown type " + clazz);
@@ -190,15 +231,15 @@ public class Jsonizer {
 		return Iterable.class.isAssignableFrom(clazz);
 	}
 
-	private static boolean isPrimitiveOrString(Class<?> clazz) {
+	public static boolean isPrimitiveOrString(Class<?> clazz) {
 		return clazz == String.class
-				|| clazz == Boolean.TYPE
-				|| clazz == Byte.TYPE
-				|| clazz == Character.TYPE
-				|| clazz == Short.TYPE
-				|| clazz == Integer.TYPE
-				|| clazz == Long.TYPE
-				|| clazz == Float.TYPE
-				|| clazz == Double.TYPE;
+				|| clazz == Boolean.class || clazz == Boolean.TYPE
+				|| clazz == Byte.class || clazz == Byte.TYPE
+				|| clazz == Character.class|| clazz == Character.TYPE
+				|| clazz == Short.class || clazz == Short.TYPE
+				|| clazz == Integer.class || clazz == Integer.TYPE
+				|| clazz == Long.class || clazz == Long.TYPE
+				|| clazz == Float.class || clazz == Float.TYPE
+				|| clazz == Double.class || clazz == Double.TYPE;
 	}
 }
