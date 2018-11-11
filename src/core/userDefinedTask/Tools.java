@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import core.ipc.IIPCService;
+import core.ipc.IPCServiceManager;
+import core.ipc.IPCServiceName;
 import utilities.SubprocessUttility;
 
 public class Tools {
@@ -71,6 +74,28 @@ public class Tools {
 	 */
 	public static String execute(String command, File cwd) {
 		return SubprocessUttility.execute(command, cwd);
+	}
+
+	/**
+	 * Contains utilities to access the system internals.
+	 */
+	public static class System {
+
+		private System() {}
+
+		/**
+		 * Retrieves the UI server service.
+		 */
+		public static IIPCService getUiService() {
+			return IPCServiceManager.getIPCService(IPCServiceName.WEB_UI_SERVER);
+		}
+
+		/**
+		 * Retrieves the CLI server service.
+		 */
+		public static IIPCService getCliService() {
+			return IPCServiceManager.getIPCService(IPCServiceName.CLI_SERVER);
+		}
 	}
 
 	private Tools() {}
