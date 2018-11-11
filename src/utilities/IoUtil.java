@@ -3,6 +3,7 @@ package utilities;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -25,7 +26,10 @@ public class IoUtil {
 	    ByteArrayOutputStream bout = new ByteArrayOutputStream();
 	    WritableByteChannel outChannel = Channels.newChannel(bout);
 	    while (channel.read(byteBuffer) > 0 || byteBuffer.position() > 0) {
-	        byteBuffer.flip();  // Make buffer ready for write.
+            // Casting is necessary here.
+            // Similar fix in https://jira.mongodb.org/browse/JAVA-2559
+            // https://community.blynk.cc/t/java-error-on-remote-server-startup/17957/7
+	    	((Buffer) byteBuffer).flip();  // Make buffer ready for write.
 	        outChannel.write(byteBuffer);
 	        byteBuffer.compact(); // Make buffer ready for reading.
 	    }
