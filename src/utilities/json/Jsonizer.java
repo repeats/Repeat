@@ -20,6 +20,9 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonStringNode;
 import utilities.StringUtilities;
 
+/**
+ * Automatically turns a JSON into a Java object and back using reflection.
+ */
 public class Jsonizer {
 
 	private static final Logger LOGGER = Logger.getLogger(Jsonizer.class.getName());
@@ -232,7 +235,7 @@ public class Jsonizer {
 	}
 
 	public static boolean isPrimitiveOrString(Class<?> clazz) {
-		return clazz == String.class
+		return isString(clazz)
 				|| clazz == Boolean.class || clazz == Boolean.TYPE
 				|| clazz == Byte.class || clazz == Byte.TYPE
 				|| clazz == Character.class|| clazz == Character.TYPE
@@ -241,5 +244,9 @@ public class Jsonizer {
 				|| clazz == Long.class || clazz == Long.TYPE
 				|| clazz == Float.class || clazz == Float.TYPE
 				|| clazz == Double.class || clazz == Double.TYPE;
+	}
+
+	private static boolean isString(Class<?> clazz) {
+		return clazz == String.class;
 	}
 }
