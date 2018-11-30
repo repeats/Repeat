@@ -90,6 +90,21 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 		if (absolutePath.endsWith(".js")) {
 			return "application/javascript";
 		}
+		if (absolutePath.endsWith(".css")) {
+			return "text/css";
+		}
+		if (absolutePath.endsWith(".htm") || absolutePath.endsWith(".html")) {
+			return "text/html";
+		}
+		if (absolutePath.endsWith(".jpg") || absolutePath.endsWith(".jpeg") || absolutePath.endsWith(".jpe")) {
+			return "image/jpeg";
+		}
+		if (absolutePath.endsWith(".png")) {
+			return "image/png";
+		}
+		if (absolutePath.endsWith(".gif")) {
+			return "image/gif";
+		}
 		return "text/plain";
 	}
 }
