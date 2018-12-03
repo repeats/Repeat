@@ -15,15 +15,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.jnativehook.mouse.NativeMouseEvent;
-
 import core.config.Config;
 import core.keyChain.KeyStroke;
 import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivation;
 import core.keyChain.mouseGestureRecognition.MouseGestureClassifier;
 import core.userDefinedTask.UserDefinedAction;
-import globalListener.GlobalMouseListener;
+import globalListener.AbstractGlobalMouseListener;
+import globalListener.GlobalListenerFactory;
+import globalListener.NativeMouseEvent;
 import utilities.Function;
 
 /**
@@ -37,7 +37,7 @@ public class MouseGestureManager extends KeyStrokeManager {
 
 	private final MouseGestureClassifier mouseGestureRecognizer;
 	private final Map<MouseGesture, UserDefinedAction> actionMap;
-	private final GlobalMouseListener mouseListener;
+	private final AbstractGlobalMouseListener mouseListener;
 	private final Queue<Point> coordinates;
 	private boolean enabled;
 
@@ -46,7 +46,7 @@ public class MouseGestureManager extends KeyStrokeManager {
 		mouseGestureRecognizer = new MouseGestureClassifier();
 		actionMap = new HashMap<>();
 		coordinates = new ConcurrentLinkedQueue<Point>();
-		mouseListener = new GlobalMouseListener();
+		mouseListener = GlobalListenerFactory.of().createGlobalMouseListener();
 	}
 
 	/**

@@ -11,31 +11,20 @@ import core.keyChain.KeyStroke;
 
 public class NativeHookCodeConverter {
 
-	public static int getMouseButtonCode(int nativeCode, boolean isPressed) {
-		if (isPressed) {
-			if (nativeCode == NativeMouseEvent.BUTTON1_MASK) {
-				return InputEvent.BUTTON1_DOWN_MASK;
-			} else if (nativeCode == NativeMouseEvent.BUTTON2_MASK) {
-				return InputEvent.BUTTON3_DOWN_MASK;
-			} else if (nativeCode == NativeMouseEvent.BUTTON3_MASK) {
-				return InputEvent.BUTTON2_DOWN_MASK;
-			} else {
-				return InputEvent.BUTTON1_DOWN_MASK;
-			}
+	public static int getMouseButtonCode(int nativeCode) {
+		if (nativeCode == NativeMouseEvent.BUTTON1) {
+			return InputEvent.BUTTON1_DOWN_MASK;
+		} else if (nativeCode == NativeMouseEvent.BUTTON2) {
+			return InputEvent.BUTTON3_DOWN_MASK;
+		} else if (nativeCode == NativeMouseEvent.BUTTON3) {
+			return InputEvent.BUTTON2_DOWN_MASK;
 		} else {
-			if (nativeCode == NativeMouseEvent.BUTTON1) {
-				return InputEvent.BUTTON1_DOWN_MASK;
-			} else if (nativeCode == NativeMouseEvent.BUTTON2) {
-				return InputEvent.BUTTON3_DOWN_MASK;
-			} else if (nativeCode == NativeMouseEvent.BUTTON3) {
-				return InputEvent.BUTTON2_DOWN_MASK;
-			} else {
-				return InputEvent.BUTTON1_DOWN_MASK;
-			}
+			return InputEvent.BUTTON1_DOWN_MASK;
 		}
 	}
 
 	public static KeyStroke getKeyEventCode(int nativeCode) {
+
 		int code = -1;
 		KeyStroke.Modifier modifier = KeyStroke.Modifier.KEY_MODIFIER_UNKNOWN;
 		// Lookup text values.

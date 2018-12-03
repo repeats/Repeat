@@ -63,19 +63,19 @@ public abstract class Function<D, R> {
 		};
 	}
 
-	public static Function<Void, Boolean> trueFunction() {
-		return new Function<Void, Boolean>() {
+	public static <E> Function<E, Boolean> trueFunction() {
+		return new Function<E, Boolean>() {
 			@Override
-			public Boolean apply(Void r) {
+			public Boolean apply(E e) {
 				return true;
 			}
 		};
 	}
 
-	public static Function<Void, Boolean> falseFunction() {
-		return new Function<Void, Boolean>() {
+	public static <E> Function<E, Boolean> falseFunction() {
+		return new Function<E, Boolean>() {
 			@Override
-			public Boolean apply(Void r) {
+			public Boolean apply(E e) {
 				return false;
 			}
 		};

@@ -1,6 +1,5 @@
 package core.keyChain.managers;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.jnativehook.NativeHookException;
-import org.jnativehook.keyboard.NativeKeyEvent;
 
 import core.config.Config;
 import core.controller.Core;
@@ -21,9 +19,10 @@ import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
-import globalListener.GlobalKeyListener;
+import globalListener.AbstractGlobalKeyListener;
+import globalListener.GlobalListenerFactory;
+import globalListener.NativeKeyEvent;
 import utilities.Function;
-import utilities.NativeHookCodeConverter;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
 
@@ -59,11 +58,11 @@ public final class GlobalEventsManager {
 	}
 
 	public void startGlobalListener() throws NativeHookException {
-		GlobalKeyListener keyListener = new GlobalKeyListener();
+		AbstractGlobalKeyListener keyListener = GlobalListenerFactory.of().createGlobalKeyListener();
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(r.getKeyCode()).press(true).at(LocalDateTime.now());
+				KeyStroke stroke = r.getKeyStroke();
 				if (!shouldDelegate(stroke)) {
 					return true;
 				}
@@ -76,7 +75,7 @@ public final class GlobalEventsManager {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(r.getKeyCode()).press(false).at(LocalDateTime.now());;
+				KeyStroke stroke = r.getKeyStroke();
 				if (!shouldDelegate(stroke)) {
 					return true;
 				}

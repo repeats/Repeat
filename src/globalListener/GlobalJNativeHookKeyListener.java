@@ -1,5 +1,6 @@
 package globalListener;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Handler;
@@ -10,33 +11,22 @@ import org.jnativehook.GlobalScreen;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
-import utilities.Function;
+import core.keyChain.KeyStroke;
+import utilities.NativeHookCodeConverter;
 
-public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
+/**
+ * Implementation using JNativeHook as underlying library.
+ */
+public class GlobalJNativeHookKeyListener extends AbstractGlobalKeyListener implements NativeKeyListener {
 
-	private static final Logger LOGGER = Logger.getLogger(GlobalKeyListener.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GlobalJNativeHookKeyListener.class.getName());
 	private static final long KEY_PRESS_DELAY_MS = 1000;
 
-	private Function<NativeKeyEvent, Boolean> keyPressed;
-	private Function<NativeKeyEvent, Boolean> keyReleased;
 	private Map<Integer, Long> m;
 
-	public GlobalKeyListener() {
+	protected GlobalJNativeHookKeyListener() {
+		super();
 		m = new HashMap<Integer, Long>();
-
-		keyPressed = new Function<NativeKeyEvent, Boolean>() {
-			@Override
-			public Boolean apply(NativeKeyEvent r) {
-				return true;
-			}
-		};
-
-		keyReleased = new Function<NativeKeyEvent, Boolean>() {
-			@Override
-			public Boolean apply(NativeKeyEvent r) {
-				return true;
-			}
-		};
 	}
 
 	@Override
@@ -58,7 +48,8 @@ public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 
 		if (keyPressed != null) {
 			if ((!m.containsKey(code)) || (m.get(code) - time >= KEY_PRESS_DELAY_MS)) {
-				if (!keyPressed.apply(e)) {
+				KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(code).press(true).at(LocalDateTime.now());
+				if (!keyPressed.apply(globalListener.NativeKeyEvent.of(stroke))) {
 					LOGGER.warning("Internal key listener problem. Unable to apply key pressed action");
 				}
 			}
@@ -71,7 +62,9 @@ public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 		m.remove(e.getKeyCode());
 
 		if (keyReleased != null) {
-			if (!keyReleased.apply(e)) {
+			KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(e.getKeyCode()).press(false).at(LocalDateTime.now());
+
+			if (!keyReleased.apply(globalListener.NativeKeyEvent.of(stroke))) {
 				LOGGER.warning("Internal key listener problem. Unable to apply key released action");
 			}
 		}
@@ -79,14 +72,6 @@ public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 
 	@Override
 	public final void nativeKeyTyped(NativeKeyEvent arg0) {
-	}
-
-	public void setKeyPressed(Function<NativeKeyEvent, Boolean> keyPressed) {
-		this.keyPressed = keyPressed;
-	}
-
-	public void setKeyReleased(Function<NativeKeyEvent, Boolean> keyReleased) {
-		this.keyReleased = keyReleased;
 	}
 
 	public static void main(String[] args) {
@@ -100,7 +85,7 @@ public class GlobalKeyListener implements NativeKeyListener, GlobalListener {
 			handlers[i].setLevel(Level.OFF);
 		}
 
-		GlobalKeyListener listener = new GlobalKeyListener();
+		GlobalJNativeHookKeyListener listener = new GlobalJNativeHookKeyListener();
 		if (listener.startListening()) {
 			GlobalScreen.addNativeKeyListener(listener);
 		}

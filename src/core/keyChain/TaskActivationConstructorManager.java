@@ -1,6 +1,5 @@
 package core.keyChain;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,11 +10,10 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.jnativehook.keyboard.NativeKeyEvent;
-
-import globalListener.GlobalKeyListener;
+import globalListener.AbstractGlobalKeyListener;
+import globalListener.GlobalListenerFactory;
+import globalListener.NativeKeyEvent;
 import utilities.Function;
-import utilities.NativeHookCodeConverter;
 
 public class TaskActivationConstructorManager {
 
@@ -23,7 +21,7 @@ public class TaskActivationConstructorManager {
 	private static final long CLEAN_UP_PERIOD_SECOND = 1;
 
 	private ScheduledThreadPoolExecutor executor;
-	private GlobalKeyListener keyListener;
+	private AbstractGlobalKeyListener keyListener;
 
 	private Map<String, TaskActivationConstructor> constructors;
 	private Map<String, Long> lastUsed;
@@ -32,7 +30,7 @@ public class TaskActivationConstructorManager {
 		constructors = new HashMap<>();
 		lastUsed = new HashMap<>();
 
-		keyListener = new GlobalKeyListener();
+		keyListener = GlobalListenerFactory.of().createGlobalKeyListener();
 	}
 
 	public void start() {
@@ -49,8 +47,7 @@ public class TaskActivationConstructorManager {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(r.getKeyCode()).press(false).at(LocalDateTime.now());
-				onStroke(stroke);
+				onStroke(r.getKeyStroke());
 				return true;
 			}
 		});
