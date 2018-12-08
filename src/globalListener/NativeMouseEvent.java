@@ -3,8 +3,10 @@ package globalListener;
 public class NativeMouseEvent {
 	public enum State {
 		UNKNOWN,
+		MOVED,
 		PRESSED,
-		RELEASED;
+		RELEASED,
+		SCROLLED;
 	}
 
 	// Provided x and y correspond to the values returned by

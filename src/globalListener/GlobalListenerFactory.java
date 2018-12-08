@@ -1,30 +1,31 @@
 package globalListener;
 
+import nativehooks.NativeKeyHook;
+import nativehooks.NativeMouseHook;
+
 public class GlobalListenerFactory {
 
-	private boolean useJNativeHook;
+	public static final boolean USE_JNATIVE_HOOK = false;
 
-	private GlobalListenerFactory() {
-		this.useJNativeHook = true;
-	}
+	private GlobalListenerFactory() {}
 
 	public static GlobalListenerFactory of() {
 		return new GlobalListenerFactory();
 	}
 
 	public AbstractGlobalKeyListener createGlobalKeyListener() {
-		if (useJNativeHook) {
+		if (USE_JNATIVE_HOOK) {
 			return new GlobalJNativeHookKeyListener();
 		}
 
-		throw new IllegalStateException("Not sure what to use without JNativeHook...");
+		return NativeKeyHook.of();
 	}
 
 	public AbstractGlobalMouseListener createGlobalMouseListener() {
-		if (useJNativeHook) {
+		if (USE_JNATIVE_HOOK) {
 			return new GlobalJNativeHookMouseListener();
 		}
 
-		throw new IllegalStateException("Not sure what to use without JNativeHook...");
+		return NativeMouseHook.of();
 	}
 }
