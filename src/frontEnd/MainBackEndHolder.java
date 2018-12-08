@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
 import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
 
 import core.config.Config;
 import core.controller.Core;
@@ -42,6 +41,7 @@ import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskInvoker;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
+import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
 import utilities.FileUtility;
 import utilities.Function;
@@ -215,11 +215,7 @@ public class MainBackEndHolder {
 			LOGGER.log(Level.WARNING, "Unable to stop ipcs.", e);
 		}
 
-		try {
-			GlobalScreen.unregisterNativeHook();
-		} catch (NativeHookException e) {
-			LOGGER.log(Level.WARNING, "Unable to unregister Native Hook.", e);
-		}
+		GlobalListenerHookController.of().cleanup();
 	}
 
 	public void exit() {

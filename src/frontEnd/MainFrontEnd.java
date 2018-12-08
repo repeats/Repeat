@@ -6,9 +6,9 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
+import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
 import utilities.logging.OutStream;
 
@@ -19,18 +19,7 @@ public class MainFrontEnd {
 
 	public static void run() {
 		/*************************************************************************************/
-		// Get the logger for "org.jnativehook" and set the level to WARNING to begin with.
-		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-		logger.setLevel(Level.WARNING);
-
-		if (!GlobalScreen.isNativeHookRegistered()) {
-			try {
-				GlobalScreen.registerNativeHook();
-			} catch (NativeHookException e) {
-				LOGGER.severe("Cannot register native hook!");
-				System.exit(1);
-			}
-		}
+		GlobalListenerHookController.of().initialize();
 		/*************************************************************************************/
 		/********************************Extracting resources*********************************/
 		try {
