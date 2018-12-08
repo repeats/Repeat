@@ -9,7 +9,7 @@ import org.jnativehook.mouse.NativeMouseEvent;
 
 import core.keyChain.KeyStroke;
 
-public class NativeHookCodeConverter {
+public class JNativeHookCodeConverter {
 
 	public static int getMouseButtonCode(int nativeCode) {
 		if (nativeCode == NativeMouseEvent.BUTTON1) {

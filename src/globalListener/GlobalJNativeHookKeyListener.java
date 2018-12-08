@@ -12,7 +12,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import core.keyChain.KeyStroke;
-import utilities.NativeHookCodeConverter;
+import utilities.JNativeHookCodeConverter;
 
 /**
  * Implementation using JNativeHook as underlying library.
@@ -48,7 +48,7 @@ public class GlobalJNativeHookKeyListener extends AbstractGlobalKeyListener impl
 
 		if (keyPressed != null) {
 			if ((!m.containsKey(code)) || (m.get(code) - time >= KEY_PRESS_DELAY_MS)) {
-				KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(code).press(true).at(LocalDateTime.now());
+				KeyStroke stroke = JNativeHookCodeConverter.getKeyEventCode(code).press(true).at(LocalDateTime.now());
 				if (!keyPressed.apply(globalListener.NativeKeyEvent.of(stroke))) {
 					LOGGER.warning("Internal key listener problem. Unable to apply key pressed action");
 				}
@@ -62,7 +62,7 @@ public class GlobalJNativeHookKeyListener extends AbstractGlobalKeyListener impl
 		m.remove(e.getKeyCode());
 
 		if (keyReleased != null) {
-			KeyStroke stroke = NativeHookCodeConverter.getKeyEventCode(e.getKeyCode()).press(false).at(LocalDateTime.now());
+			KeyStroke stroke = JNativeHookCodeConverter.getKeyEventCode(e.getKeyCode()).press(false).at(LocalDateTime.now());
 
 			if (!keyReleased.apply(globalListener.NativeKeyEvent.of(stroke))) {
 				LOGGER.warning("Internal key listener problem. Unable to apply key released action");

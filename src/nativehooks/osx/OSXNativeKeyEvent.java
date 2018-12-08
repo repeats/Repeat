@@ -36,20 +36,25 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 			pressed = getPressedForFlags();
 			switch (code) {
 			case 54:
-				c = KeyEvent.VK_CONTROL;
+				c = KeyEvent.VK_META;
+				m = Modifier.KEY_MODIFIER_RIGHT;
+			case 55:
+				c = KeyEvent.VK_META;
+				m = Modifier.KEY_MODIFIER_LEFT;
 				break;
 			case 56:
 				c = KeyEvent.VK_SHIFT;
 				m = Modifier.KEY_MODIFIER_LEFT;
 				break;
 			case 57:
-				c = KeyEvent.VK_META;
+				c = KeyEvent.VK_CAPS_LOCK;
 				break;
-//			case 58:
-//				c = KeyEvent.KEY_OPTION;
-//				break;
+			case 58:
+				c = KeyEvent.VK_ALT;
+				m = Modifier.KEY_MODIFIER_LEFT;
+				break;
 			case 59:
-				c = KeyEvent.VK_META;
+				c = KeyEvent.VK_CONTROL;
 				m = Modifier.KEY_MODIFIER_LEFT;
 				break;
 			case 60:
@@ -57,9 +62,12 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 				m = Modifier.KEY_MODIFIER_RIGHT;
 				break;
 			case 61:
-				c = KeyEvent.VK_META;
+				c = KeyEvent.VK_ALT;
 				m = Modifier.KEY_MODIFIER_RIGHT;
 				break;
+//			case 63:
+//				c = KeyEvent.VK_FUNCTION;
+//				break;
 			default:
 				throw new UnknownKeyEventException("Unknown flags code '" + code + "' for OSX native key event.");
 			}
@@ -246,9 +254,9 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 		case 0x39:
 			c = KeyEvent.VK_CAPS_LOCK;
 			break;
-//		case 0x3A:
-//			c = KeyEvent.VK_OPTION;
-//			break;
+		case 0x3A:
+			c = KeyEvent.VK_ALT;
+			break;
 		case 0x3B:
 			c = KeyEvent.VK_CONTROL;
 			break;
@@ -392,16 +400,6 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 			return false;
 		}
 
-		if ((code == 54 && modifier == 1048848L) || // Left Ctrl
-				(code == 57 && modifier == 65792L) || // Capslock
-				(code == 56 && modifier == 131330L) || // Left shift
-				(code == 60 && modifier == 131330L) || // Right shift
-				(code == 59 && modifier == 262401L) || // Command
-				(code == 58 && modifier == 524576L) ||  // Option
-				(code == 61 && modifier == 524608L)) { // Right command
-			return true;
-		}
-
-		throw new UnknownKeyEventException("Unknown modifier '" + modifier + "' + for flags change code '" + code + "' for OSX.");
+		return true;
 	}
 }

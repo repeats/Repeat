@@ -1,12 +1,12 @@
 package core.keyChain;
 
-import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import utilities.KeyEventCodeToString;
 import utilities.json.IJsonable;
 
 /**
@@ -133,7 +133,7 @@ public class KeyStroke implements IJsonable {
 		if (modifier == Modifier.KEY_MODIFIER_RIGHT) {
 			suffix = " (R)";
 		}
-		return KeyEvent.getKeyText(getKey()) + suffix;
+		return KeyEventCodeToString.codeToString(getKey()) + suffix;
 	}
 
 	@Override

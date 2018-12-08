@@ -390,11 +390,11 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 			m = Modifier.KEY_MODIFIER_RIGHT;
 			break;
 		case 0xA4:
-			k = KeyEvent.VK_CONTEXT_MENU;
+			k = KeyEvent.VK_ALT;
 			m = Modifier.KEY_MODIFIER_LEFT;
 			break;
 		case 0xA5:
-			k = KeyEvent.VK_CONTEXT_MENU;
+			k = KeyEvent.VK_ALT;
 			m = Modifier.KEY_MODIFIER_RIGHT;
 			break;
 		case 0xBA:

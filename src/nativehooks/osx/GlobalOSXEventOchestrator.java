@@ -101,7 +101,7 @@ public class GlobalOSXEventOchestrator extends AbstractNativeHookEventOchestrato
 		}
 
 		Matcher modifierMatch = MODIFIER_EVENT.matcher(line);
-		if (keyMatch.find()) {
+		if (modifierMatch.find()) {
 			String eventString = modifierMatch.group(1);
 			String codeString = modifierMatch.group(2);
 			String modifierString = modifierMatch.group(3);

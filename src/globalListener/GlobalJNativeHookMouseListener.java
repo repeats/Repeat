@@ -7,7 +7,7 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 
 import globalListener.NativeMouseEvent.State;
-import utilities.NativeHookCodeConverter;
+import utilities.JNativeHookCodeConverter;
 
 /**
  * Implementation using JNativeHook as underlying library.
@@ -61,7 +61,7 @@ public class GlobalJNativeHookMouseListener extends AbstractGlobalMouseListener 
 	}
 
 	private globalListener.NativeMouseEvent convertEvent(NativeMouseEvent e, State state) {
-		int button = NativeHookCodeConverter.getMouseButtonCode(e.getButton());
+		int button = JNativeHookCodeConverter.getMouseButtonCode(e.getButton());
 		return globalListener.NativeMouseEvent.of(e.getX(), e.getY(), state, button);
 	}
 
