@@ -1,7 +1,7 @@
 package nativehooks;
 
 @SuppressWarnings("serial")
-public class UnknownKeyEventException extends IllegalStateException {
+public class UnknownKeyEventException extends Exception {
 	private final String error;
 
 	public UnknownKeyEventException(String error) {

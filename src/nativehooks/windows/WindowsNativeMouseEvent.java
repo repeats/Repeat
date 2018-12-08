@@ -5,7 +5,6 @@ import java.awt.event.InputEvent;
 import globalListener.NativeMouseEvent;
 import globalListener.NativeMouseEvent.State;
 import nativehooks.NativeHookMouseEvent;
-import nativehooks.UnknownKeyEventException;
 import nativehooks.UnknownMouseEventException;
 
 class WindowsNativeMouseEvent extends NativeHookMouseEvent {
@@ -31,7 +30,7 @@ class WindowsNativeMouseEvent extends NativeHookMouseEvent {
 
 		switch (code) {
 		case 512:
-			s = State.UNKNOWN;
+			s = State.MOVED;
 			button = 0;
 			break;
 		case 513:
@@ -50,8 +49,20 @@ class WindowsNativeMouseEvent extends NativeHookMouseEvent {
 			s = State.RELEASED;
 			button = InputEvent.BUTTON3_DOWN_MASK;
 			break;
+		case 519:
+			s = State.PRESSED;
+			button = InputEvent.BUTTON2_DOWN_MASK;
+			break;
+		case 520:
+			s = State.RELEASED;
+			button = InputEvent.BUTTON2_DOWN_MASK;
+			break;
+		case 522:
+			s = State.SCROLLED;
+			button = 0;
+			break;
 		default:
-			throw new UnknownKeyEventException("Unknown code " + code + ".");
+			throw new UnknownMouseEventException("Unknown code " + code + ".");
 		}
 
 		return NativeMouseEvent.of(x, y, s, button);

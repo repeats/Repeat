@@ -45,7 +45,7 @@ class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 		return NativeKeyEvent.of(getKeyStroke(pressed));
 	}
 
-	private KeyStroke getKeyStroke(boolean pressed) {
+	private KeyStroke getKeyStroke(boolean pressed) throws UnknownKeyEventException {
 		int c = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 

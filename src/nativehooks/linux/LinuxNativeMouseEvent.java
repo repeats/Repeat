@@ -64,6 +64,7 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 			case 0x01: // REL_X
 			case 0x02: // REL_Y
 				p = MouseInfo.getPointerInfo().getLocation();
+				s = State.MOVED;
 				return NativeMouseEvent.of(p.x, p.y, s, button);
 			case 0x06: // REL_HWHEEL
 			case 0x08: // REL_WHEEL
@@ -76,6 +77,7 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 			case 0x01: // REL_X
 			case 0x02: // REL_Y
 				p = MouseInfo.getPointerInfo().getLocation();
+				s = State.MOVED;
 				return NativeMouseEvent.of(p.x, p.y, s, button);
 			default:
 				throw new UnknownMouseEventException("Unknown code '" + code + "' for type '" + type + "'.");

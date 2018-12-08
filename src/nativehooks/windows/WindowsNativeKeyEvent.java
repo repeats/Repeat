@@ -18,7 +18,7 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 		this.param = param;
 	}
 
-	protected WindowsNativeKeyEvent of(int code, int param) {
+	public static WindowsNativeKeyEvent of(int code, int param) {
 		return new WindowsNativeKeyEvent(code, param);
 	}
 
@@ -39,7 +39,7 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 		return NativeKeyEvent.of(getKeyStroke(pressed));
 	}
 
-	private KeyStroke getKeyStroke(boolean pressed) {
+	private KeyStroke getKeyStroke(boolean pressed) throws UnknownKeyEventException {
 		int k = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 

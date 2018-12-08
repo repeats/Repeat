@@ -1,7 +1,7 @@
 package nativehooks;
 
 @SuppressWarnings("serial")
-public class UnknownMouseEventException extends IllegalStateException {
+public class UnknownMouseEventException extends Exception {
 	private final String error;
 
 	public UnknownMouseEventException(String error) {
