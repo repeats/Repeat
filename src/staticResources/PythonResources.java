@@ -10,7 +10,7 @@ import core.languageHandler.Language;
 import utilities.FileUtility;
 
 
-public class PythonResources extends AbstractNativeBootstrapResource {
+public class PythonResources extends AbstractNativeLanguageBootstrapResource {
 
 	@Override
 	protected boolean correctExtension(String name) {

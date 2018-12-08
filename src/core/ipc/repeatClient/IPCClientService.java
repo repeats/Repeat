@@ -105,7 +105,7 @@ public abstract class IPCClientService extends IIPCService {
 			@Override
 			public void run() {
 				mainProcess.destroy();
-				getLogger().info("Destroyed");
+				getLogger().info("Process for IPC client service destroyed...");
 
 				try {
 					Thread.sleep(TIMEOUT_MS);

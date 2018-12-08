@@ -22,10 +22,10 @@ public class BootStrapResources {
 
 	private static final Map<Language, String> LANGUAGE_API;
 	private static final Map<Language, String> NATIVE_LANGUAGE_TEMPLATES;
-	private static final Map<Language, AbstractNativeBootstrapResource> NATIVE_BOOTSTRAP_RESOURCES;
+	private static final Map<Language, AbstractNativeLanguageBootstrapResource> NATIVE_BOOTSTRAP_RESOURCES;
 	private static final Set<AbstractBootstrapResource> BOOTSTRAP_RESOURCES;
 
-	private static final NativeHookResources nativeHookResources;
+	private static final NativeHookBootstrapResources nativeHookResources;
 	private static final WebUIResources webUIResource;
 
 	public static final Image TRAY_IMAGE;
@@ -57,7 +57,7 @@ public class BootStrapResources {
 		BOOTSTRAP_RESOURCES = new HashSet<>();
 		BOOTSTRAP_RESOURCES.addAll(NATIVE_BOOTSTRAP_RESOURCES.values());
 
-		nativeHookResources = new NativeHookResources();
+		nativeHookResources = new NativeHookBootstrapResources();
 		BOOTSTRAP_RESOURCES.add(nativeHookResources);
 
 		webUIResource = new WebUIResources();
@@ -68,7 +68,7 @@ public class BootStrapResources {
 		return webUIResource;
 	}
 
-	public static AbstractNativeBootstrapResource getBootstrapResource(Language language) {
+	public static AbstractNativeLanguageBootstrapResource getBootstrapResource(Language language) {
 		return NATIVE_BOOTSTRAP_RESOURCES.get(language);
 	}
 

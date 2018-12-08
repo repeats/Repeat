@@ -516,11 +516,15 @@ public class FileUtility {
 	}
 
 	/**
+	 * Extracts content from this JAR to the destination.
 	 *
-	 * @param destination
+	 * @param path path in this JAR to explore files.
+	 * @param destination the destination directory where files will be extracted to.
+	 * @param filteringFunction the function to filter files by. Only files with returned value true will be extracted.
+	 * @param postProcessingFunction to perform any post processing of the extracted file.
 	 * @throws IOException
 	 */
-	public static void extractFromCurrentJar(String path, File destination, Function<String, Boolean> filteringFunction) throws IOException {
+	public static void extractFromCurrentJar(String path, File destination, Function<String, Boolean> filteringFunction, Function<String, Boolean> postProcessingFunction) throws IOException {
 		final File jarFile = new File(BlankClass.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 
 		if (jarFile.isFile()) {// Run with JAR file
@@ -551,6 +555,9 @@ public class FileUtility {
 					destinationPath.getParent().toFile().mkdirs();
 				}
 		        Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+		        if (!postProcessingFunction.apply(destinationPath.toString())) {
+		        	LOGGER.warning("Failed to apply post processing function to path " + destination.toString());
+		        }
 		    }
 		    jar.close();
 		} else { // Run with IDE
@@ -582,6 +589,9 @@ public class FileUtility {
 							destinationPath.getParent().toFile().mkdirs();
 						}
 						Files.copy(app.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+						if (!postProcessingFunction.apply(destinationPath.toString())) {
+				        	LOGGER.warning("Failed to apply post processing function to path " + destination.toString());
+				        }
 					}
 				}
 			} catch (URISyntaxException ex) {

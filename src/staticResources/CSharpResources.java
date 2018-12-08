@@ -6,7 +6,7 @@ import core.languageHandler.Language;
 import utilities.FileUtility;
 
 
-public class CSharpResources extends AbstractNativeBootstrapResource {
+public class CSharpResources extends AbstractNativeLanguageBootstrapResource {
 
 	@Override
 	protected boolean correctExtension(String name) {

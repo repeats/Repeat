@@ -23,9 +23,17 @@ public abstract class AbstractBootstrapResource {
 			public Boolean apply(String name) {
 				return correctExtension(name);
 			}
+		}, new Function<String, Boolean>() {
+			@Override
+			public Boolean apply(String name) {
+				return postProcessing(name);
+			}
 		});
 	}
 
+	protected boolean postProcessing(String name) {
+		return true;
+	}
 	protected abstract boolean correctExtension(String name);
 	protected abstract String getRelativeSourcePath();
 	protected abstract File getExtractingDest();

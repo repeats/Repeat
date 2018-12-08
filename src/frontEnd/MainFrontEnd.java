@@ -19,8 +19,6 @@ public class MainFrontEnd {
 
 	public static void run() {
 		/*************************************************************************************/
-		GlobalListenerHookController.of().initialize();
-		/*************************************************************************************/
 		/********************************Extracting resources*********************************/
 		try {
 			BootStrapResources.extractResources();
@@ -28,7 +26,9 @@ public class MainFrontEnd {
 			LOGGER.log(Level.SEVERE, "Cannot extract bootstrap resources.", e);
 			System.exit(2);
 		}
-
+		/*************************************************************************************/
+		/********************************Initializing global hooks****************************/
+		GlobalListenerHookController.of().initialize();
 		/*************************************************************************************/
 		/********************************Start main program***********************************/
 		backEnd = new MainBackEndHolder();

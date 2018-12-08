@@ -5,7 +5,7 @@ import java.io.File;
 import core.languageHandler.Language;
 import utilities.FileUtility;
 
-public class ScalaResources extends AbstractNativeBootstrapResource {
+public class ScalaResources extends AbstractNativeLanguageBootstrapResource {
 
 	@Override
 	protected boolean correctExtension(String name) {

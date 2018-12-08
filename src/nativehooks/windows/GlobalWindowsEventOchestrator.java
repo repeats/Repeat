@@ -8,13 +8,14 @@ import java.util.regex.Pattern;
 
 import nativehooks.AbstractNativeHookEventOchestrator;
 import nativehooks.NativeHookGlobalEventPublisher;
+import staticResources.NativeHookBootstrapResources;
 
 public class GlobalWindowsEventOchestrator extends AbstractNativeHookEventOchestrator {
 
 	private static final Logger LOGGER = Logger.getLogger(GlobalWindowsEventOchestrator.class.getName());
 
 	private static final GlobalWindowsEventOchestrator INSTANCE = new GlobalWindowsEventOchestrator();
-	private static final File EXECUTABLE_FILE = new File("nativehooks/windows/nativecontent/RepeatHook.exe");
+	private static final File EXECUTABLE_FILE = NativeHookBootstrapResources.getNativeHookExecutable();
 
 	private static final Pattern KEY_PATTERN = Pattern.compile("^K:([0-9]+?),P:([0-9]+)$");
 	private static final Pattern MOUSE_PATTERN = Pattern.compile("^M:(-?[0-9]+?),(-?[0-9]+?),P:([0-9]+)$");

@@ -32,7 +32,7 @@ public abstract class AbstractNativeHookEventOchestrator {
 		}
 
 		String command = getCommand();
-		LOGGER.info(getName() + ": running $" + command);
+		LOGGER.info(getName() + ": running command $" + command);
 		try {
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 			processBuilder.directory(executableDir);
@@ -78,7 +78,7 @@ public abstract class AbstractNativeHookEventOchestrator {
 			@Override
 			public void run() {
 				process.destroy();
-				LOGGER.info("Destroyed");
+				LOGGER.info("Native hook process for " + getName() + " destroyed.");
 
 				try {
 					Thread.sleep(TIMEOUT_MS);
@@ -94,6 +94,8 @@ public abstract class AbstractNativeHookEventOchestrator {
 		};
 		forceDestroyThread.start();
 		forceDestroyThread.join();
+		stdoutThread.join();
+		stderrThread.join();
 		reset();
 	}
 
@@ -105,7 +107,11 @@ public abstract class AbstractNativeHookEventOchestrator {
 				continue;
 			}
 
-			processStdout(line);
+			try {
+				processStdout(line);
+			} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Exception when processing stdout for " + getName() + ". " + e.getMessage(), e);
+			}
 		}
 	}
 
@@ -117,7 +123,11 @@ public abstract class AbstractNativeHookEventOchestrator {
 				continue;
 			}
 
-			processStderr(line);
+			try {
+				processStderr(line);
+			} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Exception when processing stderr for " + getName() + ". " + e.getMessage(), e);
+			}
 		}
 	}
 

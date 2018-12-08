@@ -6,9 +6,9 @@ import java.util.logging.Logger;
 
 import core.languageHandler.Language;
 
-public abstract class AbstractNativeBootstrapResource extends AbstractBootstrapResource {
+public abstract class AbstractNativeLanguageBootstrapResource extends AbstractBootstrapResource {
 
-	private static final Logger LOGGER = Logger.getLogger(AbstractNativeBootstrapResource.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(AbstractNativeLanguageBootstrapResource.class.getName());
 
 	@Override
 	protected final void extractResources() throws IOException {
