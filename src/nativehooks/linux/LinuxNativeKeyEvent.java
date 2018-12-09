@@ -12,21 +12,27 @@ import nativehooks.UnknownKeyEventException;
 class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 
 	// See 'struct input_event' in linux/input.h.
-	// Type is always assume to be EV_KEY.
+	// Type is always assume to be EV_KEY (0x01).
+	private int type;
 	private int code;
 	private int value;
 
-	private LinuxNativeKeyEvent(int code, int value) {
+	private LinuxNativeKeyEvent(int type, int code, int value) {
+		this.type = type;
 		this.code = code;
 		this.value = value;
 	}
 
-	protected static LinuxNativeKeyEvent of(int code, int value) {
-		return new LinuxNativeKeyEvent(code, value);
+	protected static LinuxNativeKeyEvent of(int type, int code, int value) {
+		return new LinuxNativeKeyEvent(type, code, value);
 	}
 
 	@Override
 	public NativeKeyEvent convertEvent() throws UnknownKeyEventException {
+		if (type != 0x01) { // EV_KEY.
+			throw new UnknownKeyEventException("Unknown key event with type " + type + ".");
+		}
+
 		boolean pressed;
 		switch (value) {
 		case 0:

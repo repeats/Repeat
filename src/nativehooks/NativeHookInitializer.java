@@ -3,6 +3,7 @@ package nativehooks;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nativehooks.linux.GlobalLinuxEventOchestrator;
 import nativehooks.osx.GlobalOSXEventOchestrator;
 import nativehooks.windows.GlobalWindowsEventOchestrator;
 import utilities.OSIdentifier;
@@ -23,6 +24,10 @@ public class NativeHookInitializer {
 			GlobalWindowsEventOchestrator.of().start();
 			return;
 		}
+		if (OSIdentifier.IS_LINUX) {
+			GlobalLinuxEventOchestrator.of().start();
+			return;
+		}
 		if (OSIdentifier.IS_OSX) {
 			GlobalOSXEventOchestrator.of().start();
 			return;
@@ -40,7 +45,10 @@ public class NativeHookInitializer {
 			}
 			return;
 		}
-
+		if (OSIdentifier.IS_LINUX) {
+			GlobalLinuxEventOchestrator.of().stop();
+			return;
+		}
 		if (OSIdentifier.IS_OSX) {
 			try {
 				GlobalOSXEventOchestrator.of().stop();

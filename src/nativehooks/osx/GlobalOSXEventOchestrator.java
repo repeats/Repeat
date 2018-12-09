@@ -8,15 +8,15 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nativehooks.AbstractNativeHookEventOchestrator;
+import nativehooks.AbstractNativeHookEventProcessor;
 import nativehooks.NativeHookGlobalEventPublisher;
 import staticResources.NativeHookBootstrapResources;
 
-public class GlobalOSXEventOchestrator extends AbstractNativeHookEventOchestrator {
+public class GlobalOSXEventOchestrator extends AbstractNativeHookEventProcessor {
 	private static final Logger LOGGER = Logger.getLogger(GlobalOSXEventOchestrator.class.getName());
 
 	private static final GlobalOSXEventOchestrator INSTANCE = new GlobalOSXEventOchestrator();
-	private static final File EXECUTABLE_FILE = NativeHookBootstrapResources.getNativeHookExecutable();;
+	private static final File EXECUTABLE_FILE = NativeHookBootstrapResources.getNativeHookExecutable();
 
 	private static final Pattern MOUSE_EVENT = Pattern.compile("^E:([0-9]),X:([0-9]+?),Y:([0-9]+)$");
 	private static final Pattern MOUSE_SCROLL_EVENT = Pattern.compile("^E:([0-9])$");
@@ -40,8 +40,8 @@ public class GlobalOSXEventOchestrator extends AbstractNativeHookEventOchestrato
 	}
 
 	@Override
-	public String getCommand() {
-		return EXECUTABLE_FILE.getAbsolutePath();
+	public String[] getCommand() {
+		return new String[] { EXECUTABLE_FILE.getAbsolutePath() };
 	}
 
 	@Override

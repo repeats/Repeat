@@ -6,11 +6,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nativehooks.AbstractNativeHookEventOchestrator;
+import nativehooks.AbstractNativeHookEventProcessor;
 import nativehooks.NativeHookGlobalEventPublisher;
 import staticResources.NativeHookBootstrapResources;
 
-public class GlobalWindowsEventOchestrator extends AbstractNativeHookEventOchestrator {
+public class GlobalWindowsEventOchestrator extends AbstractNativeHookEventProcessor {
 
 	private static final Logger LOGGER = Logger.getLogger(GlobalWindowsEventOchestrator.class.getName());
 
@@ -37,8 +37,8 @@ public class GlobalWindowsEventOchestrator extends AbstractNativeHookEventOchest
 	}
 
 	@Override
-	public String getCommand() {
-		return EXECUTABLE_FILE.getPath();
+	public String[] getCommand() {
+		return new String[] { EXECUTABLE_FILE.getPath() };
 	}
 
 	@Override

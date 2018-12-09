@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class AbstractNativeHookEventOchestrator {
-	private static final Logger LOGGER = Logger.getLogger(AbstractNativeHookEventOchestrator.class.getName());
+import utilities.StringUtilities;
+
+public abstract class AbstractNativeHookEventProcessor {
+	private static final Logger LOGGER = Logger.getLogger(AbstractNativeHookEventProcessor.class.getName());
 	private static final long TIMEOUT_MS = 2000;
 
 	private Process process;
@@ -16,7 +18,7 @@ public abstract class AbstractNativeHookEventOchestrator {
 
 	public abstract String getName();
 	public abstract File getExecutionDir();
-	public abstract String getCommand();
+	public abstract String[] getCommand();
 	public abstract void processStdout(String line);
 	public abstract void processStderr(String line);
 
@@ -31,8 +33,8 @@ public abstract class AbstractNativeHookEventOchestrator {
 			return;
 		}
 
-		String command = getCommand();
-		LOGGER.info(getName() + ": running command $" + command);
+		String[] command = getCommand();
+		LOGGER.info(getName() + ": running command $" + StringUtilities.join(command, " "));
 		try {
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 			processBuilder.directory(executableDir);
@@ -78,7 +80,7 @@ public abstract class AbstractNativeHookEventOchestrator {
 			@Override
 			public void run() {
 				process.destroy();
-				LOGGER.info("Native hook process for " + getName() + " destroyed.");
+				LOGGER.info("Native hook process for " + AbstractNativeHookEventProcessor.this.getName() + " destroyed.");
 
 				try {
 					Thread.sleep(TIMEOUT_MS);
@@ -97,6 +99,14 @@ public abstract class AbstractNativeHookEventOchestrator {
 		stdoutThread.join();
 		stderrThread.join();
 		reset();
+	}
+
+	public final boolean isRunning() {
+		return forceDestroyThread == null &&
+				stdoutThread != null &&
+				stderrThread != null &&
+				stdoutThread.isAlive() &&
+				stderrThread.isAlive();
 	}
 
 	private void processStdout(BufferedReader reader) throws IOException {

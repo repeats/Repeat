@@ -47,7 +47,7 @@ public class NativeHookGlobalEventPublisher {
 				NativeMouseEvent mouseEvent = event.convertEvent();
 				subscriber.processMouseEvent(mouseEvent);
 			} catch (UnknownMouseEventException e) {
-				LOGGER.log(Level.INFO, "Dropping mouse event due to exception.\n" + e.getError(), e);
+				LOGGER.log(Level.FINE, "Dropping mouse event due to exception.\n" + e.getError(), e);
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class NativeHookGlobalEventPublisher {
 				NativeKeyEvent keyEvent = event.convertEvent();
 				subscriber.processKeyboardEvent(keyEvent);
 			} catch (UnknownKeyEventException e) {
-				LOGGER.log(Level.INFO, "Dropping key event due to exception.\n" + e.getError(), e);
+				LOGGER.log(Level.FINE, "Dropping key event due to exception.\n" + e.getError(), e);
 			}
 		}
 	}
