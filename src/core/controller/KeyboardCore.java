@@ -4,10 +4,13 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import core.config.Config;
 import core.userDefinedTask.Tools;
 import utilities.Function;
+import utilities.OSIdentifier;
 
 /**
  * Class to provide API to control keyboard.
@@ -16,10 +19,20 @@ import utilities.Function;
  */
 public class KeyboardCore {
 
-	private static final HashMap<Character, Function<Robot, Void>> charShiftType;
+	// In OSX we somehow need to have a delay between pressing combinations.
+	private static int OSX_KEY_FLAG_DELAY_MS = 70;
+	private static final Set<Integer> OSX_FLAG_KEYS;
+
+	private static final HashMap<Character, Function<KeyboardCore, Void>> charShiftType;
 	private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
 	static {
+		OSX_FLAG_KEYS = new HashSet<>();
+		OSX_FLAG_KEYS.add(KeyEvent.VK_CONTROL);
+		OSX_FLAG_KEYS.add(KeyEvent.VK_ALT);
+		OSX_FLAG_KEYS.add(KeyEvent.VK_META);
+		OSX_FLAG_KEYS.add(KeyEvent.VK_SHIFT);
+
 		charShiftType = new HashMap<>();
 
 		final int[] keys = new int[] { KeyEvent.VK_1, KeyEvent.VK_2,
@@ -36,13 +49,13 @@ public class KeyboardCore {
 
 		for (int i = 0; i < inputs.length; i++) {
 			final int index = i;
-			charShiftType.put(inputs[index], new Function<Robot, Void>() {
+			charShiftType.put(inputs[index], new Function<KeyboardCore, Void>() {
 				@Override
-				public Void apply(Robot r) {
-					r.keyPress(KeyEvent.VK_SHIFT);
-					r.keyPress(keys[index]);
-					r.keyRelease(KeyEvent.VK_SHIFT);
-					r.keyRelease(keys[index]);
+				public Void apply(KeyboardCore c) {
+					c.press(KeyEvent.VK_SHIFT);
+					c.press(keys[index]);
+					c.release(KeyEvent.VK_SHIFT);
+					c.release(keys[index]);
 					return null;
 				}
 			});
@@ -63,7 +76,7 @@ public class KeyboardCore {
 	 * Almost every typeable character on ANSI keyboard is supported.
 	 *
 	 * If config use clipboard is enabled, this puts the string into clipboard and uses
-	 * SHIFT + INSERT to paste the content instead of typing out.
+	 * SHIFT + INSERT/COMMAND + V to paste the content instead of typing out.
 	 * Note that this will preserve the text clipboard.
 	 *
 	 * @param string string to be typed.
@@ -74,9 +87,13 @@ public class KeyboardCore {
 
 			try {
 				Tools.setClipboard(string);
-				combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+				if (OSIdentifier.IS_OSX) {
+					combination(KeyEvent.VK_META, KeyEvent.VK_V);
+				} else {
+					combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+				}
 			} finally {
-				if (existing.isEmpty()) {
+				if (!existing.isEmpty()) {
 					Tools.setClipboard(existing);
 				}
 			}
@@ -108,7 +125,7 @@ public class KeyboardCore {
 		if (Character.isAlphabetic(c)) {
 			typeAlphabetic(c);
 		} else if (charShiftType.containsKey(c)) {
-			charShiftType.get(c).apply(controller);
+			charShiftType.get(c).apply(this);
 		} else if (!typeSpecialChar(c)) {
 			typeUnknown(c);
 		}
@@ -122,12 +139,12 @@ public class KeyboardCore {
 	private boolean typeSpecialChar(char c) {
 		switch (c) {
 		case '\t':
-			controller.keyPress(KeyEvent.VK_TAB);
-			controller.keyRelease(KeyEvent.VK_TAB);
+			press(KeyEvent.VK_TAB);
+			release(KeyEvent.VK_TAB);
 			return true;
 		case '\n':
-			controller.keyPress(KeyEvent.VK_ENTER);
-			controller.keyRelease(KeyEvent.VK_ENTER);
+			press(KeyEvent.VK_ENTER);
+			release(KeyEvent.VK_ENTER);
 			return true;
 		default:
 			return false;
@@ -140,13 +157,13 @@ public class KeyboardCore {
 	 */
 	private void typeAlphabetic(char c) {
 		if (Character.isUpperCase(c)) {
-			controller.keyPress(KeyEvent.VK_SHIFT);
+			press(KeyEvent.VK_SHIFT);
 		}
 		controller.keyPress(Character.toUpperCase(c));
 		controller.keyRelease(Character.toUpperCase(c));
 
 		if (Character.isUpperCase(c)) {
-			controller.keyRelease(KeyEvent.VK_SHIFT);
+			release(KeyEvent.VK_SHIFT);
 		}
 	}
 
@@ -249,6 +266,9 @@ public class KeyboardCore {
 	 */
 	public void press(int key) {
 		controller.keyPress(key);
+		if (OSIdentifier.IS_OSX && OSX_FLAG_KEYS.contains(key)) {
+			controller.delay(OSX_KEY_FLAG_DELAY_MS);
+		}
 	}
 
 	/**
@@ -267,6 +287,9 @@ public class KeyboardCore {
 	 */
 	public void release(int key) {
 		controller.keyRelease(key);
+		if (OSIdentifier.IS_OSX && OSX_FLAG_KEYS.contains(key)) {
+			controller.delay(OSX_KEY_FLAG_DELAY_MS);
+		}
 	}
 
 	/**

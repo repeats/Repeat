@@ -2,6 +2,9 @@ package nativehooks.osx;
 
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import core.keyChain.KeyStroke;
 import core.keyChain.KeyStroke.Modifier;
@@ -10,6 +13,11 @@ import nativehooks.NativeHookKeyEvent;
 import nativehooks.UnknownKeyEventException;
 
 public class OSXNativeKeyEvent extends NativeHookKeyEvent {
+
+	// The modifier in OSX is complicated enough that it is easier
+	// to just track the flag being enabled here.
+	private static final ReentrantLock flagLock = new ReentrantLock();
+	private static final Set<Integer> keyboardFlags = new HashSet<>();
 
 	private int event;
 	private int code;
@@ -29,11 +37,9 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 	public NativeKeyEvent convertEvent() throws UnknownKeyEventException {
 		int c = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
-		boolean pressed;
 
 		switch (event) {
 		case 0:
-			pressed = getPressedForFlags();
 			switch (code) {
 			case 54:
 				c = KeyEvent.VK_META;
@@ -48,7 +54,9 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 				break;
 			case 57:
 				c = KeyEvent.VK_CAPS_LOCK;
-				break;
+				// In OSX there's no way to detect whether Capslock is pressed or released.
+				// This event triggers only when the Capslock is turned off.
+				return NativeKeyEvent.of(KeyStroke.of(c, m, false, LocalDateTime.now()));
 			case 58:
 				c = KeyEvent.VK_ALT;
 				m = Modifier.KEY_MODIFIER_LEFT;
@@ -79,6 +87,7 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 		default:
 			throw new UnknownKeyEventException("Unknown event '" + event + "' for OSX native key event.");
 		}
+		boolean pressed = getPressedForFlags(c);
 
 		return NativeKeyEvent.of(KeyStroke.of(c, m, pressed, LocalDateTime.now()));
 	}
@@ -395,11 +404,37 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 		return NativeKeyEvent.of(KeyStroke.of(c, m, pressed, LocalDateTime.now()));
 	}
 
-	private boolean getPressedForFlags() throws UnknownKeyEventException {
+	private boolean getPressedForFlags(int keyEventCode) throws UnknownKeyEventException {
 		if (modifier == 256) {
+			clearFlags();
 			return false;
 		}
 
-		return true;
+		return toggleFlag(keyEventCode);
+	}
+
+	private static boolean toggleFlag(int keyEventCode) {
+		boolean hasFlag;
+		flagLock.lock();
+		try {
+			hasFlag = keyboardFlags.contains(keyEventCode);
+			if (hasFlag) {
+				keyboardFlags.remove(keyEventCode);
+			} else {
+				keyboardFlags.add(keyEventCode);
+			}
+		} finally {
+			flagLock.unlock();
+		}
+		return !hasFlag;
+	}
+
+	private static void clearFlags() {
+		flagLock.lock();
+		try {
+			keyboardFlags.clear();
+		} finally {
+			flagLock.unlock();
+		}
 	}
 }
