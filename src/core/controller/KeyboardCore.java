@@ -61,12 +61,25 @@ public class KeyboardCore {
 	/**
 	 * Simulate keyboard type to type out a string. This types upper case letter by using SHIFT + lower case letter.
 	 * Almost every typeable character on ANSI keyboard is supported.
+	 *
+	 * If config use clipboard is enabled, this puts the string into clipboard and uses
+	 * SHIFT + INSERT to paste the content instead of typing out.
+	 * Note that this will preserve the text clipboard.
+	 *
 	 * @param string string to be typed.
 	 */
 	public void type(String string) {
 		if (config.isUseClipboardToTypeString()) {
-			Tools.setClipboard(string);
-			combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+			String existing = Tools.getClipboard();
+
+			try {
+				Tools.setClipboard(string);
+				combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+			} finally {
+				if (existing.isEmpty()) {
+					Tools.setClipboard(existing);
+				}
+			}
 			return;
 		}
 
@@ -77,9 +90,7 @@ public class KeyboardCore {
 	}
 
 	/**
-	 * Simulate keyboard type to type out an array of string in the respective order as appeared in array.
-	 * This types upper case letter by using SHIFT + lower case letter.
-	 * Almost every typeable character on ANSI keyboard is supported.
+	 * Type out a series of strings using {@link #type(String)}.
 	 * @param strings array of strings to be typed.
 	 */
 	public void type(String...strings) {
