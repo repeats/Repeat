@@ -16,6 +16,7 @@ function registerMenuIndexPageActions() {
     $("#menu-record-mouse-click-only").click(menuRecordMouseClickOnlyAction);
     $("#menu-halt-task-by-escape").click(menuHaltTaskByEscapeAction);
     $("#menu-execute-on-release").click(menuExecuteOnReleaseAction);
+    $("#menu-use-clipboard-to-type-string").click(menuUseClipboardToTypeStringAction);
     $("#menu-debug-level").click(menuDebugLevelAction);
     $("#menu-use-tray-icon").click(menuUseTrayIconAction);
 
@@ -214,6 +215,10 @@ function menuHaltTaskByEscapeAction(e) {
 
 function menuExecuteOnReleaseAction(e) {
     menuSetBooleanSettingAction("menu-execute-on-release", "/internals/menu/settings/execute-on-release");
+}
+
+function menuUseClipboardToTypeStringAction(e) {
+    menuSetBooleanSettingAction("menu-use-clipboard-to-type-string", "/internals/menu/settings/use-clipboard-to-type-string");
 }
 
 function menuDebugLevelAction(e) {

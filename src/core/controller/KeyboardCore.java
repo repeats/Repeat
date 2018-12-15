@@ -5,6 +5,8 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
+import core.config.Config;
+import core.userDefinedTask.Tools;
 import utilities.Function;
 
 /**
@@ -48,9 +50,11 @@ public class KeyboardCore {
 	}
 
 	public static final int TYPE_DURATION_MS = 20;
+	private final Config config;
 	private final Robot controller;
 
-	protected KeyboardCore(Robot controller) {
+	protected KeyboardCore(Config config, Robot controller) {
+		this.config = config;
 		this.controller = controller;
 	}
 
@@ -60,6 +64,12 @@ public class KeyboardCore {
 	 * @param string string to be typed.
 	 */
 	public void type(String string) {
+		if (config.isUseClipboardToTypeString()) {
+			Tools.setClipboard(string);
+			combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+			return;
+		}
+
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
 			type(c);
@@ -175,7 +185,7 @@ public class KeyboardCore {
 			type(keys);
 		}
 	}
-	
+
 	/**
 	 * Type a key multiple times
 	 * @deprecated use {@link #repeat(int, int...)} instead
@@ -183,6 +193,7 @@ public class KeyboardCore {
 	 * @param count number of times to repeat the typing
 	 * @throws InterruptedException
 	 */
+	@Deprecated
 	public void typeRepeat(int key, int count) throws InterruptedException {
 		if (count <= 0) {
 			return;

@@ -2,6 +2,7 @@ package core.recorder;
 
 import java.util.HashMap;
 
+import core.config.Config;
 import core.controller.Core;
 import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.Language;
@@ -36,8 +37,8 @@ public class Recorder {
 
 	private HashMap<Language, AbstractSourceGenerator> sourceGenerators;
 
-	public Recorder(final GlobalEventsManager globalKeys) {
-		final Core controller = Core.getInstance();
+	public Recorder(Config config, final GlobalEventsManager globalKeys) {
+		final Core controller = Core.getInstance(config);
 		taskScheduler = new TaskScheduler();
 
 		speedup = NO_SPEEDUP;

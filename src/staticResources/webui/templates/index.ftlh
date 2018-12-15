@@ -85,6 +85,7 @@
                                 <li id="menu-record-mouse-click-only"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.recordMouseClickOnly> checked </#if>/>&nbsp;Record mouse click only</a></li>
                                 <li id="menu-halt-task-by-escape"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.haltTaskByEscape> checked </#if>/>&nbsp;Halt task by ESC</a></li>
                                 <li id="menu-execute-on-release"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.executeOnRelease> checked </#if>/>&nbsp;Execute on release</a></li>
+                                <li id="menu-use-clipboard-to-type-string"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.useClipboardToTypeString> checked </#if>/>&nbsp;Use clipboard to type strings</a></li>
                                 <li class="divider"></li>
                                 <li id="menu-debug-level"><a href="#">Debug level...</a></li>
                                 <li id="menu-use-tray-icon"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.useTrayIcon> checked </#if>/>&nbsp;Use tray icon</a></li>

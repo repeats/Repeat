@@ -54,6 +54,7 @@ import core.webui.server.handlers.internals.menu.MenuSetCompilerConfigActionHand
 import core.webui.server.handlers.internals.menu.MenuSetCompilerPathActionHandler;
 import core.webui.server.handlers.internals.menu.MenuSetCompilingLanguagesActionHandler;
 import core.webui.server.handlers.internals.menu.MenuSetDebugLevelActionHandler;
+import core.webui.server.handlers.internals.menu.MenuUseClipboardToTypeStringActionHandler;
 import core.webui.server.handlers.internals.menu.MenuUseTrayIconActionHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionChangeReplayConfigHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartRecordingHandler;
@@ -165,6 +166,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/menu/settings/debug-level-options", new MenuGetDebugLevelOptionsActionHandler(objectRenderer));
 		output.put("/internals/menu/settings/set-debug-level", new MenuSetDebugLevelActionHandler());
 		output.put("/internals/menu/settings/execute-on-release", new MenuExecuteOnReleaseActionHandler());
+		output.put("/internals/menu/settings/use-clipboard-to-type-string", new MenuUseClipboardToTypeStringActionHandler());
 		output.put("/internals/menu/settings/use-tray-icon", new MenuUseTrayIconActionHandler());
 
 		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));

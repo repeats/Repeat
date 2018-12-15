@@ -97,10 +97,10 @@ public class MainBackEndHolder {
 
 		taskGroups = new ArrayList<>();
 
-		taskInvoker = new TaskInvoker(taskGroups);
+		taskInvoker = new TaskInvoker(config, taskGroups);
 		keysManager = new GlobalEventsManager(config);
 		replayConfig = ReplayConfig.of();
-		recorder = new Recorder(keysManager);
+		recorder = new Recorder(config, keysManager);
 
 		switchRecord = new UserDefinedAction() {
 			@Override
@@ -185,6 +185,8 @@ public class MainBackEndHolder {
 
 		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
+
+		IPCServiceManager.setConfig(config);
 	}
 
 	/*************************************************************************************************************/
@@ -358,7 +360,7 @@ public class MainBackEndHolder {
 			    @Override
 				public void run() {
 			    	try {
-						customFunction.action(Core.getInstance());
+						customFunction.action(Core.getInstance(config));
 					} catch (InterruptedException e) { // Stopped prematurely
 						return;
 					} catch (Exception e) {

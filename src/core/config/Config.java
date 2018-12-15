@@ -28,7 +28,7 @@ public class Config implements ILoggable {
 	public static final String RELEASE_VERSION = "5.2";
 	protected static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
-	protected static final String CURRENT_CONFIG_VERSION = "2.7";
+	protected static final String CURRENT_CONFIG_VERSION = "2.8";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
@@ -51,6 +51,8 @@ public class Config implements ILoggable {
 	 * task on key pressed event.
 	 */
 	private boolean executeOnKeyReleased;
+	// Instead of typing out the string, put the content into clipboard and paste it out.
+	private boolean useClipboardToTypeString;
 	private Level nativeHookDebugLevel;
 
 	static {
@@ -73,6 +75,7 @@ public class Config implements ILoggable {
 				new Parser2_5(),
 				new Parser2_6(),
 				new Parser2_7(),
+				new Parser2_8(),
 			});
 	}
 
@@ -177,6 +180,7 @@ public class Config implements ILoggable {
 						JsonNodeFactories.field("tray_icon_enabled", JsonNodeFactories.booleanNode(useTrayIcon)),
 						JsonNodeFactories.field("enabled_halt_by_key", JsonNodeFactories.booleanNode(enabledHaltingKeyPressed)),
 						JsonNodeFactories.field("execute_on_key_released", JsonNodeFactories.booleanNode(executeOnKeyReleased)),
+						JsonNodeFactories.field("use_clipboard_to_type_string", JsonNodeFactories.booleanNode(useClipboardToTypeString)),
 						JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
 								JsonNodeFactories.field("mouse_gesture_activation", JsonNodeFactories.number(mouseGestureActivationKey)),
 								JsonNodeFactories.field("record", RECORD.jsonize()),
@@ -303,6 +307,14 @@ public class Config implements ILoggable {
 
 	public void setEnabledHaltingKeyPressed(boolean enabledHaltingKeyPressed) {
 		this.enabledHaltingKeyPressed = enabledHaltingKeyPressed;
+	}
+
+	public boolean isUseClipboardToTypeString() {
+		return useClipboardToTypeString;
+	}
+
+	public void setUseClipboardToTypeString(boolean useClipboardToTypeString) {
+		this.useClipboardToTypeString = useClipboardToTypeString;
 	}
 
 	@Override

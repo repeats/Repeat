@@ -3,6 +3,7 @@ package core.userDefinedTask;
 import java.util.List;
 import java.util.logging.Logger;
 
+import core.config.Config;
 import core.controller.Core;
 import core.keyChain.TaskActivation;
 
@@ -13,9 +14,11 @@ public class TaskInvoker {
 
 	private static final Logger LOGGER = Logger.getLogger(TaskInvoker.class.getName());
 
+	private final Config config;
 	private List<TaskGroup> taskGroup;
 
-	public TaskInvoker(List<TaskGroup> taskGroup) {
+	public TaskInvoker(Config config, List<TaskGroup> taskGroup) {
+		this.config = config;
 		this.taskGroup = taskGroup;
 	}
 
@@ -54,6 +57,6 @@ public class TaskInvoker {
 		}
 		UserDefinedAction task = group.getTasks().get(taskIndex);
 		task.setInvoker(activation);
-		task.trackedAction(Core.getInstance());
+		task.trackedAction(Core.getInstance(config));
 	}
 }

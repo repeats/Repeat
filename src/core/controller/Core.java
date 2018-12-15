@@ -7,10 +7,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import core.config.Config;
+
 public final class Core {
 
 	private static final Logger LOGGER = Logger.getLogger(Core.class.getName());
-	private static final Core SINGLETON_INSTANCE = new Core();
 
 	private final ScheduledThreadPoolExecutor executor;
 	private Robot controller;
@@ -18,7 +19,7 @@ public final class Core {
 	private final MouseCore mouse;
 	private final KeyboardCore keyboard;
 
-	private Core() {
+	private Core(Config config) {
 		try {
 			controller = new Robot();
 		} catch (AWTException e) {
@@ -28,11 +29,11 @@ public final class Core {
 
 		executor = new ScheduledThreadPoolExecutor(10);
 		mouse = new MouseCore(controller);
-		keyboard = new KeyboardCore(controller);
+		keyboard = new KeyboardCore(config, controller);
 	}
 
-	public static Core getInstance() {
-		return SINGLETON_INSTANCE;
+	public static Core getInstance(Config config) {
+		return new Core(config);
 	}
 
 	/**

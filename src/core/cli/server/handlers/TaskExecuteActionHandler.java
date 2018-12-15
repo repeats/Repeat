@@ -32,7 +32,7 @@ public class TaskExecuteActionHandler extends TaskActionHandler {
 
 		try {
 			LOGGER.info("Executing action " + task.getName());
-			task.trackedAction(Core.getInstance());
+			task.trackedAction(Core.getInstance(backEndHolder.getConfig()));
 		} catch (InterruptedException e) {
 			LOGGER.log(Level.WARNING, "Task interrupted.", e);
 		} catch (Exception e) {

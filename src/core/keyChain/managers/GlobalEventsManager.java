@@ -144,7 +144,7 @@ public final class GlobalEventsManager {
 			@Override
 			public void run() {
 				try {
-					action.trackedAction(Core.getInstance());
+					action.trackedAction(Core.getInstance(config));
 				} catch (InterruptedException e) {
 					LOGGER.info("Task ended prematurely");
 				} catch (Exception e) {

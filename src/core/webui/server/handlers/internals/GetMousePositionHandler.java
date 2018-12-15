@@ -21,7 +21,7 @@ public class GetMousePositionHandler extends AbstractSingleMethodHttpHandler {
 	@Override
 	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
-		Point p = Core.getInstance().mouse().getPosition();
+		Point p = Core.getInstance(backEndHolder.getConfig()).mouse().getPosition();
 		return HttpServerUtilities.prepareTextResponse(exchange, 200, p.x + ", " + p.y);
 	}
 }
