@@ -34,6 +34,8 @@ public class KeyEventCodeToString {
 			return "Shift";
 		case KeyEvent.VK_TAB:
 			return "Tab";
+		case KeyEvent.VK_SPACE:
+			return "Space";
 		}
 		return KeyEvent.getKeyText(code);
 	}

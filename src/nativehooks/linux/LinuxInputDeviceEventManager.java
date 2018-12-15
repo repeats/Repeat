@@ -1,6 +1,5 @@
 package nativehooks.linux;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -17,11 +16,6 @@ public class LinuxInputDeviceEventManager {
 
 	public void addNewDevice(LinuxDeviceType deviceType, String deviceFile) {
 		LOGGER.info("Adding new device file " + deviceFile + " of type " + deviceType + ".");
-
-		if (!new File(deviceFile).canRead()) {
-			throw new IllegalArgumentException("Device file " + deviceFile + " is not readable.");
-		}
-
 		if (processors.containsKey(deviceFile)) {
 			return;
 		}

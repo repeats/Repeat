@@ -15,7 +15,7 @@ class LinuxDeviceEventProcessor extends AbstractNativeHookEventProcessor {
 
 	private static final File EXECUTABLE_FILE = NativeHookBootstrapResources.getNativeHookExecutable();
 	//E.g.: 'Ts:1544327169,Tus:649369,T:1,C:46,V:1'
-	private static final Pattern EVENT_PATTERN = Pattern.compile("^Ts:([0-9]+?),Tus:([0-9]+?),T:([0-9]+?),C:([0-9]+?),V:([0-9]+)$");
+	private static final Pattern EVENT_PATTERN = Pattern.compile("^Ts:([0-9]+?),Tus:([0-9]+?),T:([0-9]+?),C:([0-9]+?),V:(-?[0-9]+)$");
 
 	private LinuxDeviceType deviceType;
 	private String deviceFile;
@@ -26,6 +26,7 @@ class LinuxDeviceEventProcessor extends AbstractNativeHookEventProcessor {
 		this.deviceFile = deviceFile;
 
 		this.lastTime = new Timestamp(0, 0);
+		setRunWithSudo();
 	}
 
 	@Override
