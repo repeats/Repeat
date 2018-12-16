@@ -7,7 +7,7 @@ function registerTableTasks() {
 function registerCells() {
     /* Get all rows from your 'table' but not the first one 
     * that includes headers. */
-    var rows = $('#table-tasks').find("tr").not(":first");
+    var rows = _getRows();
 
     /* Create 'click' event handler for rows */
     rows.click(function(e) {
@@ -30,11 +30,21 @@ function registerCells() {
             };
         }(table.rows[i].cells[j], i, j);
     }
+
+    if (rows.length > 0) {
+        var lastCellIndex = table.rows[1].cells.length - 1;
+        table.rows[1].cells[lastCellIndex].click();
+    }
 }
 
 function tableTaskOnClick(cell, row, col) {
-    fillSourceForTask(row);
-    if (getSelectedTaskIndex() != row) {
+    var isFocused = getSelectedTaskIndex() == row;
+
+    if (!isFocused || col != 1) {
+        fillSourceForTask(row);
+    }
+
+    if (!isFocused) {
         return;
     }
 
@@ -84,7 +94,7 @@ function refreshTasksWithDataAndIndex(data, index) {
 }
 
 function setSelectedTask(index) {
-    var rows = $('#table-tasks').find("tr").not(":first");
+    var rows = _getRows();
     if (index < 0) {
         index = 0;
     }
@@ -102,7 +112,7 @@ function setSelectedTask(index) {
 }
 
 function getSelectedTaskIndex() {
-    var rows = $('#table-tasks').find("tr").not(":first");
+    var rows = _getRows();
     var index = -1;
     rows.each(function(i) {
         if ($(this).hasClass("table-highlight")) {
@@ -112,6 +122,10 @@ function getSelectedTaskIndex() {
     });
 
     return index;
+}
+
+function _getRows() {
+    return $('#table-tasks').find("tr").not(":first");
 }
 
 var _lastScrollPosition = 0;
