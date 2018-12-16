@@ -7,7 +7,7 @@ import core.keyChain.KeyStroke;
 import core.keyChain.KeyStroke.Modifier;
 import globalListener.NativeKeyEvent;
 import nativehooks.NativeHookKeyEvent;
-import nativehooks.UnknownKeyEventException;
+import nativehooks.InvalidKeyEventException;
 
 class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 	private final int code;
@@ -23,7 +23,7 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 	}
 
 	@Override
-	public NativeKeyEvent convertEvent() throws UnknownKeyEventException {
+	public NativeKeyEvent convertEvent() throws InvalidKeyEventException {
 		boolean pressed = false;
 		switch (param) {
 		case 256:
@@ -33,13 +33,13 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 			pressed = false;
 			break;
 		default:
-			throw new UnknownKeyEventException("Unknown param '" + param + "'.");
+			throw new InvalidKeyEventException("Unknown param '" + param + "'.");
 		}
 
 		return NativeKeyEvent.of(getKeyStroke(pressed));
 	}
 
-	private KeyStroke getKeyStroke(boolean pressed) throws UnknownKeyEventException {
+	private KeyStroke getKeyStroke(boolean pressed) throws InvalidKeyEventException {
 		int k = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 
@@ -431,7 +431,7 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 			k = KeyEvent.VK_QUOTE;
 			break;
 		default:
-			throw new UnknownKeyEventException("Unknown code '" + code + "' with param '" + param + "'.");
+			throw new InvalidKeyEventException("Unknown code '" + code + "' with param '" + param + "'.");
 		}
 
 		return KeyStroke.of(k, m, pressed, LocalDateTime.now());

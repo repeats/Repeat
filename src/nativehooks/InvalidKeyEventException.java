@@ -1,10 +1,10 @@
 package nativehooks;
 
 @SuppressWarnings("serial")
-public class UnknownKeyEventException extends Exception {
+public class InvalidKeyEventException extends Exception {
 	private final String error;
 
-	public UnknownKeyEventException(String error) {
+	public InvalidKeyEventException(String error) {
 		this.error = error;
 	}
 

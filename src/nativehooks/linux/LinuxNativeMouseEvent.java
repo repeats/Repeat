@@ -7,7 +7,7 @@ import java.awt.event.InputEvent;
 import globalListener.NativeMouseEvent;
 import globalListener.NativeMouseEvent.State;
 import nativehooks.NativeHookMouseEvent;
-import nativehooks.UnknownMouseEventException;
+import nativehooks.InvalidMouseEventException;
 
 class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 	private final int type;
@@ -25,7 +25,7 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 	}
 
 	@Override
-	public NativeMouseEvent convertEvent() throws UnknownMouseEventException {
+	public NativeMouseEvent convertEvent() throws InvalidMouseEventException {
 		State s = State.UNKNOWN;
 		int button = 0;
 		Point p;
@@ -43,7 +43,7 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 				button = InputEvent.BUTTON2_DOWN_MASK;
 				break;
 			default:
-				throw new UnknownMouseEventException("Unknown code '" + code + "' for button click on mouse.");
+				throw new InvalidMouseEventException("Unknown code '" + code + "' for button click on mouse.");
 			}
 
 			switch (value) {
@@ -54,7 +54,7 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 				s = State.PRESSED;
 				break;
 			default:
-				throw new UnknownMouseEventException("Unknown value '" + value + "' for button click on mouse.");
+				throw new InvalidMouseEventException("Unknown value '" + value + "' for button click on mouse.");
 			}
 
 			p = MouseInfo.getPointerInfo().getLocation();
@@ -68,9 +68,9 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 				return NativeMouseEvent.of(p.x, p.y, s, button);
 			case 0x06: // REL_HWHEEL
 			case 0x08: // REL_WHEEL
-				throw new UnknownMouseEventException("Not handling scrolling events.");
+				throw new InvalidMouseEventException("Not handling scrolling events.");
 			default:
-				throw new UnknownMouseEventException("Unknown code '" + code + "' for type '" + type + "'.");
+				throw new InvalidMouseEventException("Unknown code '" + code + "' for type '" + type + "'.");
 			}
 		case 3: // EV_ABS --> mouse moved.
 			switch (code) {
@@ -80,10 +80,10 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 				s = State.MOVED;
 				return NativeMouseEvent.of(p.x, p.y, s, button);
 			default:
-				throw new UnknownMouseEventException("Unknown code '" + code + "' for type '" + type + "'.");
+				throw new InvalidMouseEventException("Unknown code '" + code + "' for type '" + type + "'.");
 			}
 		default:
-			throw new UnknownMouseEventException("Unknown type '" + type + ".");
+			throw new InvalidMouseEventException("Unknown type '" + type + ".");
 		}
 	}
 }

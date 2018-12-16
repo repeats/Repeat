@@ -1,10 +1,10 @@
 package nativehooks;
 
 @SuppressWarnings("serial")
-public class UnknownMouseEventException extends Exception {
+public class InvalidMouseEventException extends Exception {
 	private final String error;
 
-	public UnknownMouseEventException(String error) {
+	public InvalidMouseEventException(String error) {
 		this.error = error;
 	}
 

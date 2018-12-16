@@ -42,24 +42,28 @@ public class NativeHookGlobalEventPublisher {
 	}
 
 	public void publishMouseEvent(NativeHookMouseEvent event) {
+		NativeMouseEvent mouseEvent;
+		try {
+			mouseEvent = event.convertEvent();
+		} catch (InvalidMouseEventException e) {
+			LOGGER.log(Level.FINE, "Dropping mouse event due to exception.\n" + e.getError(), e);
+			return;
+		}
 		for (NativeHookMouseEventSubscriber subscriber : subscriberss) {
-			try {
-				NativeMouseEvent mouseEvent = event.convertEvent();
-				subscriber.processMouseEvent(mouseEvent);
-			} catch (UnknownMouseEventException e) {
-				LOGGER.log(Level.FINE, "Dropping mouse event due to exception.\n" + e.getError(), e);
-			}
+			subscriber.processMouseEvent(mouseEvent);
 		}
 	}
 
 	public void publishKeyEvent(NativeHookKeyEvent event) {
+		NativeKeyEvent keyEvent;
+		try {
+			keyEvent = event.convertEvent();
+		} catch (InvalidKeyEventException e) {
+			LOGGER.log(Level.FINE, "Dropping key event due to exception.\n" + e.getError(), e);
+			return;
+		}
 		for (NativeHookKeyEventSubscriber subscriber : subscribers) {
-			try {
-				NativeKeyEvent keyEvent = event.convertEvent();
-				subscriber.processKeyboardEvent(keyEvent);
-			} catch (UnknownKeyEventException e) {
-				LOGGER.log(Level.FINE, "Dropping key event due to exception.\n" + e.getError(), e);
-			}
+			subscriber.processKeyboardEvent(keyEvent);
 		}
 	}
 }

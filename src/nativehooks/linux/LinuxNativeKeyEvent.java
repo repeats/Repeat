@@ -7,7 +7,7 @@ import core.keyChain.KeyStroke;
 import core.keyChain.KeyStroke.Modifier;
 import globalListener.NativeKeyEvent;
 import nativehooks.NativeHookKeyEvent;
-import nativehooks.UnknownKeyEventException;
+import nativehooks.InvalidKeyEventException;
 
 class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 
@@ -28,9 +28,9 @@ class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 	}
 
 	@Override
-	public NativeKeyEvent convertEvent() throws UnknownKeyEventException {
+	public NativeKeyEvent convertEvent() throws InvalidKeyEventException {
 		if (type != 0x01) { // EV_KEY.
-			throw new UnknownKeyEventException("Unknown key event with type " + type + ".");
+			throw new InvalidKeyEventException("Unknown key event with type " + type + ".");
 		}
 
 		boolean pressed;
@@ -45,13 +45,13 @@ class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 			pressed = true;
 			break;
 		default:
-			throw new UnknownKeyEventException("Unknown value '" + value + "'.");
+			throw new InvalidKeyEventException("Unknown value '" + value + "'.");
 		}
 
 		return NativeKeyEvent.of(getKeyStroke(pressed));
 	}
 
-	private KeyStroke getKeyStroke(boolean pressed) throws UnknownKeyEventException {
+	private KeyStroke getKeyStroke(boolean pressed) throws InvalidKeyEventException {
 		int c = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 
@@ -445,9 +445,9 @@ class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 			c = KeyEvent.VK_F24;
 			break;
 		case 240: // This is KEY_UNKNOWN in linux/input.h.
-			throw new UnknownKeyEventException("Encountered code KEY_UNKNOWN (" + code + ").");
+			throw new InvalidKeyEventException("Encountered code KEY_UNKNOWN (" + code + ").");
 		default:
-			throw new UnknownKeyEventException("Unknown code '" + code + "'.");
+			throw new InvalidKeyEventException("Unknown code '" + code + "'.");
 		}
 
 		return KeyStroke.of(c, m, pressed, LocalDateTime.now());

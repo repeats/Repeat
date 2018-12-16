@@ -9,8 +9,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import core.keyChain.KeyStroke;
 import core.keyChain.KeyStroke.Modifier;
 import globalListener.NativeKeyEvent;
+import nativehooks.InvalidKeyEventException;
 import nativehooks.NativeHookKeyEvent;
-import nativehooks.UnknownKeyEventException;
 
 public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 
@@ -22,6 +22,7 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 	private int event;
 	private int code;
 	private long modifier;
+	private boolean processed;
 
 	private OSXNativeKeyEvent(int event, int code, long modifier) {
 		this.event = event;
@@ -34,7 +35,9 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 	}
 
 	@Override
-	public NativeKeyEvent convertEvent() throws UnknownKeyEventException {
+	public NativeKeyEvent convertEvent() throws InvalidKeyEventException {
+		checkProcessed();
+
 		int c = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 
@@ -77,7 +80,7 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 //				c = KeyEvent.VK_FUNCTION;
 //				break;
 			default:
-				throw new UnknownKeyEventException("Unknown flags code '" + code + "' for OSX native key event.");
+				throw new InvalidKeyEventException("Unknown flags code '" + code + "' for OSX native key event.");
 			}
 			break;
 		case 1:
@@ -85,14 +88,14 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 		case 2:
 			return getKeyEventForRegularKey(false);
 		default:
-			throw new UnknownKeyEventException("Unknown event '" + event + "' for OSX native key event.");
+			throw new InvalidKeyEventException("Unknown event '" + event + "' for OSX native key event.");
 		}
 		boolean pressed = getPressedForFlags(c);
 
 		return NativeKeyEvent.of(KeyStroke.of(c, m, pressed, LocalDateTime.now()));
 	}
 
-	private NativeKeyEvent getKeyEventForRegularKey(boolean pressed) throws UnknownKeyEventException {
+	private NativeKeyEvent getKeyEventForRegularKey(boolean pressed) throws InvalidKeyEventException {
 		int c = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 
@@ -398,19 +401,27 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 			c = KeyEvent.VK_UP;
 			break;
 		default:
-			throw new UnknownKeyEventException("Unknown code '" + code + "' for OSX native key event.");
+			throw new InvalidKeyEventException("Unknown code '" + code + "' for OSX native key event.");
 		}
 
 		return NativeKeyEvent.of(KeyStroke.of(c, m, pressed, LocalDateTime.now()));
 	}
 
-	private boolean getPressedForFlags(int keyEventCode) throws UnknownKeyEventException {
+	private boolean getPressedForFlags(int keyEventCode) throws InvalidKeyEventException {
 		if (modifier == 256) {
 			clearFlags();
 			return false;
 		}
 
-		return toggleFlag(keyEventCode);
+		boolean x = toggleFlag(keyEventCode);
+		return x;
+	}
+
+	private synchronized void checkProcessed() throws InvalidKeyEventException {
+		if (processed) {
+			throw new InvalidKeyEventException("An OSX native key event must not be converted twice.");
+		}
+		processed = true;
 	}
 
 	private static boolean toggleFlag(int keyEventCode) {

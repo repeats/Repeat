@@ -5,7 +5,7 @@ import java.awt.event.InputEvent;
 import globalListener.NativeMouseEvent;
 import globalListener.NativeMouseEvent.State;
 import nativehooks.NativeHookMouseEvent;
-import nativehooks.UnknownMouseEventException;
+import nativehooks.InvalidMouseEventException;
 
 class WindowsNativeMouseEvent extends NativeHookMouseEvent {
 	private final int x;
@@ -24,7 +24,7 @@ class WindowsNativeMouseEvent extends NativeHookMouseEvent {
 	}
 
 	@Override
-	public NativeMouseEvent convertEvent() throws UnknownMouseEventException {
+	public NativeMouseEvent convertEvent() throws InvalidMouseEventException {
 		State s;
 		int button;
 
@@ -62,7 +62,7 @@ class WindowsNativeMouseEvent extends NativeHookMouseEvent {
 			button = 0;
 			break;
 		default:
-			throw new UnknownMouseEventException("Unknown code " + code + ".");
+			throw new InvalidMouseEventException("Unknown code " + code + ".");
 		}
 
 		return NativeMouseEvent.of(x, y, s, button);

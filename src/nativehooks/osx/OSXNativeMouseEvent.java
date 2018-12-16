@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import globalListener.NativeMouseEvent;
 import globalListener.NativeMouseEvent.State;
 import nativehooks.NativeHookMouseEvent;
-import nativehooks.UnknownMouseEventException;
+import nativehooks.InvalidMouseEventException;
 
 public class OSXNativeMouseEvent extends NativeHookMouseEvent {
 
@@ -25,7 +25,7 @@ public class OSXNativeMouseEvent extends NativeHookMouseEvent {
 	}
 
 	@Override
-	public NativeMouseEvent convertEvent() throws UnknownMouseEventException {
+	public NativeMouseEvent convertEvent() throws InvalidMouseEventException {
 		int x = this.x;
 		int y = this.y;
 		State s = State.UNKNOWN;
@@ -58,7 +58,7 @@ public class OSXNativeMouseEvent extends NativeHookMouseEvent {
 			s = State.MOVED;
 			break;
 		default:
-			throw new UnknownMouseEventException("Unknown code '" + code + "' for OSX mouse event.");
+			throw new InvalidMouseEventException("Unknown code '" + code + "' for OSX mouse event.");
 		}
 
 		return NativeMouseEvent.of(x, y, s, button);
