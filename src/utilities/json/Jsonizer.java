@@ -56,7 +56,6 @@ public class Jsonizer {
         	}
 
 			field.setAccessible(true);
-			System.out.println(field.getName() + ", " + field.getType());
 			if (isPrimitiveOrString(field.getType())) {
 				field.set(dest, toPrimitiveOrString(valueNode, field.getType()));
 				continue;
