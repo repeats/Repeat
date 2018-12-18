@@ -97,7 +97,7 @@ public class Parser2_8 extends ConfigParser {
 	}
 
 	@Override
-	protected boolean extractData(CliConfig config, JsonRootNode root) {
+	protected boolean internalExtractData(CliConfig config, JsonRootNode root) {
 		try {
 			List<JsonNode> ipcSettings = root.getArrayNode("ipc_settings");
 			if (!IPCServiceManager.parseJSON(ipcSettings)) {

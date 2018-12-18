@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import utilities.Pair;
 import utilities.json.JSONUtility;
 
 abstract class ConfigParser {
@@ -37,6 +38,25 @@ abstract class ConfigParser {
 	protected abstract JsonRootNode internalConvertFromPreviousVersion(JsonRootNode previousVersion);
 
 	protected final boolean extractData(Config config, JsonRootNode data) {
+		if (!sanityCheck(data)) {
+			return false;
+		}
+
+		if (!Config.CURRENT_CONFIG_VERSION.equals(getVersion())) { // Then convert to latest version then parse
+			Pair<ConfigParser, JsonRootNode> latest = convertDataToLatest(data);
+			if (latest == null) {
+				return false;
+			}
+
+			ConfigParser parser = latest.getA();
+			JsonRootNode latestData = latest.getB();
+			return parser.extractData(config, latestData);
+		} else {
+			return internalExtractData(config, data);
+		}
+	}
+
+	private boolean sanityCheck(JsonRootNode data) {
 		try {
 			// Sanity check
 			if (!data.getStringValue("version").equals(getVersion())) {
@@ -49,40 +69,50 @@ abstract class ConfigParser {
 			return false;
 		}
 
-		if (!Config.CURRENT_CONFIG_VERSION.equals(getVersion())) { // Then convert to latest version then parse
-			LOGGER.info("Looking for next version " + getVersion());
-			String currentVersion = getVersion();
-			while (!currentVersion.equals(Config.CURRENT_CONFIG_VERSION)) {
-				ConfigParser nextVersion = Config.getNextConfigParser(currentVersion);
+		return true;
+	}
 
-				if (nextVersion == null) {
-					LOGGER.warning("Unable to find the next version of current version " + currentVersion);
-					return false;
-				}
+	private Pair<ConfigParser, JsonRootNode> convertDataToLatest(JsonRootNode data) {
+		if (Config.CURRENT_CONFIG_VERSION.equals(getVersion())) {
+			return Pair.of(this, data);
+		}
 
-				try {
-					data = nextVersion.convertFromPreviousVersion(data);
-				} catch (Exception e) {
-					LOGGER.log(Level.WARNING, "Unable to convert from version " + currentVersion, e);
-					data = null;
-				}
+		// Then convert to latest version then parse
+		LOGGER.info("Looking for next version " + getVersion());
+		String currentVersion = getVersion();
+		while (!currentVersion.equals(Config.CURRENT_CONFIG_VERSION)) {
+			ConfigParser nextVersion = Config.getNextConfigParser(currentVersion);
 
-				if (data == null) {
-					LOGGER.log(Level.WARNING, "Unable to convert to later version " + nextVersion.getVersion());
-					return false;
-				}
-				currentVersion = nextVersion.getVersion();
+			if (nextVersion == null) {
+				LOGGER.warning("Unable to find the next version of current version " + currentVersion);
+				return null;
 			}
 
-			ConfigParser parser = Config.getConfigParser(currentVersion);
-			return parser.extractData(config, data);
-		} else {
-			return internalExtractData(config, data);
+			try {
+				data = nextVersion.convertFromPreviousVersion(data);
+			} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Unable to convert from version " + currentVersion, e);
+				data = null;
+			}
+
+			if (data == null) {
+				LOGGER.log(Level.WARNING, "Unable to convert to later version " + nextVersion.getVersion());
+				return null;
+			}
+			currentVersion = nextVersion.getVersion();
 		}
+
+		ConfigParser parser = Config.getConfigParser(currentVersion);
+		return Pair.of(parser, data);
 	}
 
 	protected boolean internalExtractData(Config config, JsonRootNode data) {
 		throw new UnsupportedOperationException("Config version " + getVersion() + " does not support extracting data. "
+				+ "Convert to a later version.");
+	}
+
+	protected boolean internalExtractData(CliConfig config, JsonRootNode data) {
+		throw new UnsupportedOperationException("CLI config version " + getVersion() + " does not support extracting data. "
 				+ "Convert to a later version.");
 	}
 
@@ -92,7 +122,22 @@ abstract class ConfigParser {
 
 	protected abstract boolean internalImportData(Config config, JsonRootNode data);
 
-	protected boolean extractData(CliConfig config, JsonRootNode root) {
-		throw new UnsupportedOperationException("This version does not support loading CLI server port.");
+	protected boolean extractData(CliConfig config, JsonRootNode data) {
+		if (!sanityCheck(data)) {
+			return false;
+		}
+
+		if (!Config.CURRENT_CONFIG_VERSION.equals(getVersion())) { // Then convert to latest version then parse
+			Pair<ConfigParser, JsonRootNode> latest = convertDataToLatest(data);
+			if (latest == null) {
+				return false;
+			}
+
+			ConfigParser parser = latest.getA();
+			JsonRootNode latestData = latest.getB();
+			return parser.extractData(config, latestData);
+		} else {
+			return internalExtractData(config, data);
+		}
 	}
 }
