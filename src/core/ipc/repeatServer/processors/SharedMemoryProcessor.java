@@ -2,11 +2,11 @@ package core.ipc.repeatServer.processors;
 
 import java.util.List;
 
-import utilities.Function;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.ipc.repeatServer.MainMessageSender;
 import core.userDefinedTask.SharedVariables;
+import utilities.Function;
 
 /**
  * This class represents the message processor for any shared memory action.
@@ -23,6 +23,7 @@ import core.userDefinedTask.SharedVariables;
  * 1) get(string_namespace, string_varname): get value of a variable.
  * 2) set(string_namespace, string_varname, string_value): set value of a variable.
  * 3) del(string_namespace, string_varname): delete value of a variable.
+ * 4) wait(string_namespace, string_varname, int_timeout_ms): wait for a variable value to be set.
  *
  * @author HP Truong
  */
@@ -62,9 +63,23 @@ public class SharedMemoryProcessor extends AbstractMessageProcessor {
 			} else {
 				return failure(type, id, "Invalid parameter length " + params.size());
 			}
+		} else if (action.equals("wait")) {
+			if (params.size() == 3) {
+				String timeoutMsString = params.get(2);
+				long timeoutMs = 0L;
+				try {
+					timeoutMs = Long.parseLong(timeoutMsString);
+				} catch (NumberFormatException e) {
+					return failure(type, id, "Third parameter must be integer " + timeoutMsString);
+				}
+
+				return constructSuccessfulMessage(type, id, SharedVariables.waitVar(params.get(0), params.get(1), timeoutMs));
+			} else {
+				return failure(type, id, "Invalid parameter length " + params.size());
+			}
 		}
 
-		return failure(type, id, "Unsupported action " + action);
+		return failure(type, id, "Unknown action " + action);
 	}
 
 	private boolean constructSuccessfulMessage(String type, long id, String result) {
@@ -79,5 +94,4 @@ public class SharedMemoryProcessor extends AbstractMessageProcessor {
 				content.isArrayNode("parameters") &&
 				content.getStringValue("device").equals(DEVICE_NAME);
 	}
-
 }

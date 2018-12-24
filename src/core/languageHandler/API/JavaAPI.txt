@@ -69,3 +69,4 @@ VI. Shared memory API: (sharing variables between tasks)
     1) getVar(String)
     2) setVar(String, String)
     3) delVar(String)
+    4) waitVar(String, long): wait for a variable value to be set, or timeout.

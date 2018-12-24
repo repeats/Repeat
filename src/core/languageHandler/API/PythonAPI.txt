@@ -25,3 +25,4 @@ Core API
         1) get(namespace, variable)
         2) set(namespace, variable, value)
         3) del(namespace, variable)
+        4) wait(namespace, variable, timeout_ms)

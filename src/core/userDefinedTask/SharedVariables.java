@@ -1,7 +1,13 @@
 package core.userDefinedTask;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 /**
@@ -14,6 +20,9 @@ public class SharedVariables {
 
 	public static final String GLOBAL_NAMESPACE = "global";
 	private static final Map<String, Map<String, String>> variables = new HashMap<>();
+
+	private static final Lock waiterLock = new ReentrantLock(true);
+	private static final List<Semaphore> waiters = new LinkedList<>();
 
 	private final String namespace;
 
@@ -53,6 +62,15 @@ public class SharedVariables {
 	}
 
 	/**
+	 * Wait for the next call to set the value of a variable.
+	 *
+	 * @return the new value of the variable, or null if timeout.
+	 */
+	public String waitVar(String variable, long timeoutMs) {
+		return waitVar(namespace, variable, timeoutMs);
+	}
+
+	/**
 	 * Retrieve a variable value given namespace and variable name.
 	 *
 	 * @param namespace namespace where this variable belongs.
@@ -86,7 +104,19 @@ public class SharedVariables {
 		}
 
 		Map<String, String> namespaceVariables = variables.get(namespace);
-		return namespaceVariables.put(variable, value);
+		String output = namespaceVariables.put(variable, value);
+
+		waiterLock.lock();
+		try {
+			for (Semaphore waiter : waiters) {
+				waiter.release();
+			}
+			waiters.clear();
+		} finally {
+			waiterLock.unlock();
+		}
+
+		return output;
 	}
 
 	/**
@@ -113,6 +143,34 @@ public class SharedVariables {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Wait for the next call to set value of a variable with a timeout in milliseconds.
+	 * This will wait until the variable value is set, or timeout occurs.
+	 *
+	 * @return the new value of the variable, or null if timeout.
+	 */
+	public static String waitVar(String namespace, String variable, long timeoutMs) {
+		Semaphore s = new Semaphore(0);
+
+		waiterLock.lock();
+		try {
+			waiters.add(s);
+		} finally {
+			waiterLock.unlock();
+		}
+
+		try {
+			if (!s.tryAcquire(timeoutMs, TimeUnit.MILLISECONDS)) {
+				return null;
+			}
+		} catch (InterruptedException e) {
+			LOGGER.warning("Interrupted while waiting for semaphore.");
+			return null;
+		}
+
+		return getVar(namespace, variable);
 	}
 
 	/**
