@@ -35,6 +35,12 @@ Disclaimer
 1. This is not a password storage program. Source code written is not encrypted.
 2. This program executes your own code. Use the advanced compile - replay feature carefully. Test your task before adding it to the list.
 
+Requirements
+============
+On Windows, no special permission required.
+On Linux, sudo password will be required for the native hook to work. This will only launch the native hook program under sudo, which will ask for password in clear text. The program itself runs as a regular user.
+On OSX, accessibility permission is required for the native hook to work. Enable this in System Preference --> Security & Privacy --> Accessibilty --> Privacy.
+
 Installation
 ============
 Just download the [latest version](https://github.com/repeats/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
@@ -44,7 +50,7 @@ The recommended way to launch the program is through terminal:
      $cd <jar_directory>
      $java -jar Repeat.jar
 
-**Important:** The path containing the JAR file must not have space in it.
+**Important:** The path containing the JAR file **must not** have space in it.
 
 Note that since **Java 9**, the jar file must be launched from a JDK (as opposed to a JRE) to be able to compile file. The workaround used in Java 8 and before to set Java home no longer works.
 
@@ -111,22 +117,8 @@ Similar to Java, you need to identify where the python interpreter is at. First 
 You need to start Python submodule first. Go to Tool --> Native modules and click on the python IPC line, then click on the play button to start it.
 You can achieve the same thing by just restarting the application. Python module will be automatically started if you've configured python interpreter correctly.
 
-Code examples
-=============
-Type out 100! = 1 * 2 * 3 * ... * 100
--------------------------------------
-    /* Write your code beneath "Begin generated code" */
-    c.blockingWait(100); //To make sure the hotkey has been fully released
-    k.type("100! = ");
-    for (int i = 1; i <= 100; i++) {
-        k.type(i + "");
-        if (i != 100) {
-            k.type(" * ");
-        }
-    }
-
 Libraries used
 ==============
-1. jnativehook Global Hooks library at https://github.com/kwhat/jnativehook
+1. ~~jnativehook Global Hooks library at https://github.com/kwhat/jnativehook~~
 2. Argo JSON library at http://argo.sourceforge.net/
 3. Jama - A Java matrix package at http://math.nist.gov/javanumerics/jama/
