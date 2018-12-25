@@ -38,7 +38,9 @@ Disclaimer
 Requirements
 ============
 On Windows, no special permission required.
+
 On Linux, sudo password will be required for the native hook to work. This will only launch the native hook program under sudo, which will ask for password in clear text. The program itself runs as a regular user.
+
 On OSX, accessibility permission is required for the native hook to work. Enable this in System Preference --> Security & Privacy --> Accessibilty --> Privacy.
 
 Installation
