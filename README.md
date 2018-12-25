@@ -119,6 +119,6 @@ You can achieve the same thing by just restarting the application. Python module
 
 Libraries used
 ==============
-1. ~~jnativehook Global Hooks library at https://github.com/kwhat/jnativehook~~
+1. ~~jnativehook Global Hooks library at https://github.com/kwhat/jnativehook~~ (No longer using JNativeHook since [v5.2](https://github.com/repeats/Repeat/releases/tag/v5.2))
 2. Argo JSON library at http://argo.sourceforge.net/
 3. Jama - A Java matrix package at http://math.nist.gov/javanumerics/jama/
