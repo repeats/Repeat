@@ -23,9 +23,7 @@ public class GlobalOSXEventOchestrator extends AbstractNativeHookEventProcessor 
 	private static final Pattern KEY_EVENT = Pattern.compile("^E:([0-9]),C:([0-9]+)$");
 	private static final Pattern MODIFIER_EVENT = Pattern.compile("^E:([0-9]),C:([0-9]+?),M:([0-9]+)$");
 
-	private GlobalOSXEventOchestrator() {
-		setRunWithSudo();
-	}
+	private GlobalOSXEventOchestrator() {}
 
 	public static GlobalOSXEventOchestrator of() {
 		return INSTANCE;
