@@ -2,6 +2,7 @@ package core.keyChain.managers;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,12 +19,17 @@ import core.userDefinedTask.UserDefinedAction;
 public class KeyChainManager extends KeyStrokeManager {
 
 	private KeyChain currentKeyChain;
+	private final Set<KeyStroke> pressedKeys;
 	private final Map<KeyChain, UserDefinedAction> keyChainActions;
+
+	private UserDefinedAction pendingAction;
 
 	public KeyChainManager(Config config) {
 		super(config);
 		currentKeyChain = new KeyChain();
+		pressedKeys = Collections.synchronizedSet(new HashSet<>());
 		keyChainActions = new HashMap<>();
+
 	}
 
 	@Override
@@ -33,6 +39,7 @@ public class KeyChainManager extends KeyStrokeManager {
 
 	@Override
 	public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
+		pressedKeys.add(stroke);
 		currentKeyChain.addKeyStroke(stroke);
 
 		UserDefinedAction action = null;
@@ -44,13 +51,23 @@ public class KeyChainManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+	public synchronized Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+		pressedKeys.remove(stroke);
 		UserDefinedAction action = null;
 		if (getConfig().isExecuteOnKeyReleased()) {
 			action = considerTaskExecution(stroke.getKey());
 		}
 		currentKeyChain.clearKeys();
-		return Arrays.asList(action).stream().filter(a -> a != null).collect(Collectors.toSet());
+		if (action != null) {
+			pendingAction = action;
+		}
+		if (pressedKeys.isEmpty()) {
+			UserDefinedAction toExecute = pendingAction;
+			pendingAction = null;
+			return Arrays.asList(toExecute).stream().filter(a -> a != null).collect(Collectors.toSet());
+		}
+
+		return new HashSet<>();
 	}
 
 	@Override
