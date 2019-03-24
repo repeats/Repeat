@@ -6,8 +6,8 @@ import java.awt.event.InputEvent;
 
 import globalListener.NativeMouseEvent;
 import globalListener.NativeMouseEvent.State;
-import nativehooks.NativeHookMouseEvent;
 import nativehooks.InvalidMouseEventException;
+import nativehooks.NativeHookMouseEvent;
 
 class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 	private final int type;
@@ -63,9 +63,7 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 			switch (code) {
 			case 0x01: // REL_X
 			case 0x02: // REL_Y
-				p = MouseInfo.getPointerInfo().getLocation();
-				s = State.MOVED;
-				return NativeMouseEvent.of(p.x, p.y, s, button);
+				return currentMovedPosition(button);
 			case 0x06: // REL_HWHEEL
 			case 0x08: // REL_WHEEL
 				throw new InvalidMouseEventException("Not handling scrolling events.");
@@ -74,16 +72,20 @@ class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 			}
 		case 3: // EV_ABS --> mouse moved.
 			switch (code) {
-			case 0x01: // REL_X
-			case 0x02: // REL_Y
-				p = MouseInfo.getPointerInfo().getLocation();
-				s = State.MOVED;
-				return NativeMouseEvent.of(p.x, p.y, s, button);
+			case 0x00: // ABS_X
+				return currentMovedPosition(button);
+			case 0x01: // ABS_Y
+				return currentMovedPosition(button);
 			default:
 				throw new InvalidMouseEventException("Unknown code '" + code + "' for type '" + type + "'.");
 			}
 		default:
 			throw new InvalidMouseEventException("Unknown type '" + type + ".");
 		}
+	}
+
+	private NativeMouseEvent currentMovedPosition(int button) {
+		Point p = MouseInfo.getPointerInfo().getLocation();
+		return NativeMouseEvent.of(p.x, p.y, State.MOVED, button);
 	}
 }

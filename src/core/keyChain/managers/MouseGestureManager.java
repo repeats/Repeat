@@ -151,7 +151,10 @@ public class MouseGestureManager extends KeyStrokeManager {
 	/**
 	 * Start recording the gesture
 	 */
-	protected void startRecording() {
+	protected synchronized void startRecording() {
+		if (enabled) {
+			return;
+		}
 		coordinates.clear();
 		enabled = true;
 	}
@@ -159,7 +162,7 @@ public class MouseGestureManager extends KeyStrokeManager {
 	/**
 	 * Finish recording the gesture. Now decode it.
 	 */
-	protected UserDefinedAction finishRecording() {
+	protected synchronized UserDefinedAction finishRecording() {
 		enabled = false;
 		try {
 			MouseGesture gesture = processCurrentData();
