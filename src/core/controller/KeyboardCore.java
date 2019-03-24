@@ -21,6 +21,8 @@ public class KeyboardCore {
 
 	// In OSX we somehow need to have a delay between pressing combinations.
 	private static int OSX_KEY_FLAG_DELAY_MS = 70;
+	// In non OSX we need to have a delay after pressing Shift + Insert and re-setting the keyboard.
+	private static int NON_OSX_PASTE_DELAY_MS = 30;
 	private static final Set<Integer> OSX_FLAG_KEYS;
 
 	private static final HashMap<Character, Function<KeyboardCore, Void>> charShiftType;
@@ -85,17 +87,16 @@ public class KeyboardCore {
 		if (config.isUseClipboardToTypeString()) {
 			String existing = Tools.getClipboard();
 
-			try {
-				Tools.setClipboard(string);
-				if (OSIdentifier.IS_OSX) {
-					combination(KeyEvent.VK_META, KeyEvent.VK_V);
-				} else {
-					combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
-				}
-			} finally {
-				if (!existing.isEmpty()) {
-					Tools.setClipboard(existing);
-				}
+			Tools.setClipboard(string);
+			if (OSIdentifier.IS_OSX) {
+				combination(KeyEvent.VK_META, KeyEvent.VK_V);
+			} else {
+				combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+				controller.delay(NON_OSX_PASTE_DELAY_MS);
+			}
+
+			if (!existing.isEmpty()) {
+				Tools.setClipboard(existing);
 			}
 			return;
 		}
