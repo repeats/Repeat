@@ -2,29 +2,41 @@ package staticResources;
 
 import java.io.File;
 
+import globalListener.GlobalListenerFactory;
 import utilities.FileUtility;
 import utilities.OSIdentifier;
 
 public class NativeHookBootstrapResources extends AbstractBootstrapResource {
 
+	public static File getNativeHookDirectory() {
+		return new File(FileUtility.joinPath("resources", "nativehooks", getOSDir()));
+	}
+
 	public static File getNativeHookExecutable() {
-		String[] paths = new String[] { "resources", "nativehooks", getOSDir(), "" };
+		String file = "";
+
 		if (OSIdentifier.IS_WINDOWS) {
-			paths[3] = "RepeatHook.exe";
+			file = "RepeatHook.exe";
 		}
 		if (OSIdentifier.IS_LINUX) {
-			paths[3] = "RepeatHook.out";
+			file = "RepeatHook.out";
 		}
 		if (OSIdentifier.IS_OSX) {
-			paths[3] = "RepeatHook.out";
+			file = "RepeatHook.out";
 		}
-		return new File(FileUtility.joinPath(paths));
+		return new File(FileUtility.joinPath(getNativeHookDirectory().getAbsolutePath(), file));
 	}
 
 	@Override
 	protected boolean postProcessing(String name) {
-		if (OSIdentifier.IS_LINUX && name.endsWith("RepeatHook.out")) {
-			return new File(name).setExecutable(true);
+		if (OSIdentifier.IS_LINUX) {
+			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+				if (name.endsWith("RepeatHookX11Key.out") || name.endsWith("RepeatHookX11Mouse.out")) {
+					return new File(name).setExecutable(true);
+				}
+			} else if (name.endsWith("RepeatHook.out")) {
+				return new File(name).setExecutable(true);
+			}
 		}
 		if (OSIdentifier.IS_OSX && name.endsWith("RepeatHook.out")) {
 			return new File(name).setExecutable(true);
@@ -38,7 +50,11 @@ public class NativeHookBootstrapResources extends AbstractBootstrapResource {
 			return name.endsWith("RepeatHook.exe");
 		}
 		if (OSIdentifier.IS_LINUX) {
-			return name.endsWith("RepeatHook.out");
+			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+				return name.endsWith("RepeatHookX11Key.out") || name.endsWith("RepeatHookX11Mouse.out");
+			} else {
+				return name.endsWith("RepeatHook.out");
+			}
 		}
 		if (OSIdentifier.IS_OSX) {
 			return name.endsWith("RepeatHook.out");
@@ -65,7 +81,11 @@ public class NativeHookBootstrapResources extends AbstractBootstrapResource {
 		if (OSIdentifier.IS_WINDOWS) {
 			return "windows";
 		} else if (OSIdentifier.IS_LINUX) {
-			return "linux";
+			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+				return "x11";
+			} else {
+				return "linux";
+			}
 		} else if (OSIdentifier.IS_OSX) {
 			return "osx";
 		}

@@ -22,7 +22,7 @@ public class KeyboardCore {
 	// In OSX we somehow need to have a delay between pressing combinations.
 	private static int OSX_KEY_FLAG_DELAY_MS = 70;
 	// In non OSX we need to have a delay after pressing Shift + Insert and re-setting the keyboard.
-	private static int NON_OSX_PASTE_DELAY_MS = 30;
+	private static int NON_OSX_PASTE_DELAY_MS = 70;
 	private static final Set<Integer> OSX_FLAG_KEYS;
 
 	private static final HashMap<Character, Function<KeyboardCore, Void>> charShiftType;

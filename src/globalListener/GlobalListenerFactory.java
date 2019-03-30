@@ -6,6 +6,7 @@ import nativehooks.NativeMouseHook;
 public class GlobalListenerFactory {
 
 	public static final boolean USE_JNATIVE_HOOK = false;
+	public static final boolean USE_X11_ON_LINUX = true;
 
 	private GlobalListenerFactory() {}
 
