@@ -5,8 +5,7 @@ import java.util.logging.Logger;
 
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
-
-import nativehooks.NativeHookInitializer;
+import org.simplenativehooks.NativeHookInitializer;
 
 public class GlobalListenerHookController {
 

@@ -2,6 +2,8 @@ package core.recorder;
 
 import java.util.HashMap;
 
+import org.simplenativehooks.NativeKeyEvent;
+
 import core.config.Config;
 import core.controller.Core;
 import core.keyChain.managers.GlobalEventsManager;
@@ -15,7 +17,6 @@ import core.scheduler.SchedulingData;
 import globalListener.AbstractGlobalKeyListener;
 import globalListener.AbstractGlobalMouseListener;
 import globalListener.GlobalListenerFactory;
-import globalListener.NativeKeyEvent;
 import globalListener.NativeMouseEvent;
 import utilities.Function;
 

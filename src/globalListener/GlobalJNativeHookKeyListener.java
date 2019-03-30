@@ -49,7 +49,7 @@ public class GlobalJNativeHookKeyListener extends AbstractGlobalKeyListener impl
 		if (keyPressed != null) {
 			if ((!m.containsKey(code)) || (m.get(code) - time >= KEY_PRESS_DELAY_MS)) {
 				KeyStroke stroke = JNativeHookCodeConverter.getKeyEventCode(code).press(true).at(LocalDateTime.now());
-				if (!keyPressed.apply(globalListener.NativeKeyEvent.of(stroke))) {
+				if (!keyPressed.apply(org.simplenativehooks.NativeKeyEvent.of(stroke))) {
 					LOGGER.warning("Internal key listener problem. Unable to apply key pressed action");
 				}
 			}
@@ -64,7 +64,7 @@ public class GlobalJNativeHookKeyListener extends AbstractGlobalKeyListener impl
 		if (keyReleased != null) {
 			KeyStroke stroke = JNativeHookCodeConverter.getKeyEventCode(e.getKeyCode()).press(false).at(LocalDateTime.now());
 
-			if (!keyReleased.apply(globalListener.NativeKeyEvent.of(stroke))) {
+			if (!keyReleased.apply(org.simplenativehooks.NativeKeyEvent.of(stroke))) {
 				LOGGER.warning("Internal key listener problem. Unable to apply key released action");
 			}
 		}

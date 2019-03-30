@@ -1,5 +1,7 @@
 package globalListener;
 
+import org.simplenativehooks.NativeKeyEvent;
+
 import utilities.Function;
 
 public abstract class AbstractGlobalKeyListener implements GlobalListener {

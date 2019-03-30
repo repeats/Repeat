@@ -1,7 +1,7 @@
 package globalListener;
 
-import nativehooks.NativeKeyHook;
-import nativehooks.NativeMouseHook;
+import org.simplenativehooks.NativeKeyHook;
+import org.simplenativehooks.NativeMouseHook;
 
 public class GlobalListenerFactory {
 

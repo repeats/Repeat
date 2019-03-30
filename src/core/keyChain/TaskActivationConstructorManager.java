@@ -10,9 +10,10 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.simplenativehooks.NativeKeyEvent;
+
 import globalListener.AbstractGlobalKeyListener;
 import globalListener.GlobalListenerFactory;
-import globalListener.NativeKeyEvent;
 import utilities.Function;
 
 public class TaskActivationConstructorManager {
