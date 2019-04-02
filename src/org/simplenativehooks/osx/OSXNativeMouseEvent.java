@@ -6,9 +6,8 @@ import java.awt.event.KeyEvent;
 
 import org.simplenativehooks.InvalidMouseEventException;
 import org.simplenativehooks.NativeHookMouseEvent;
-
-import globalListener.NativeMouseEvent;
-import globalListener.NativeMouseEvent.State;
+import org.simplenativehooks.NativeMouseEvent;
+import org.simplenativehooks.NativeMouseEvent.State;
 
 public class OSXNativeMouseEvent extends NativeHookMouseEvent {
 

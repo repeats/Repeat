@@ -131,7 +131,7 @@ public class X11NativeKeyEvent extends NativeHookKeyEvent {
 			break;
 		case 29:
 			k = KeyEvent.VK_CONTROL;
-			m = Modifier.KEY_MODIFIER_RIGHT;
+			m = Modifier.KEY_MODIFIER_LEFT;
 			break;
 		case 30:
 			k = KeyEvent.VK_A;
@@ -171,7 +171,7 @@ public class X11NativeKeyEvent extends NativeHookKeyEvent {
 			break;
 		case 42:
 			k = KeyEvent.VK_SHIFT;
-			m = Modifier.KEY_MODIFIER_RIGHT;
+			m = Modifier.KEY_MODIFIER_LEFT;
 			break;
 		case 43:
 			k = KeyEvent.VK_BACK_SLASH;

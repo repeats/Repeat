@@ -106,10 +106,6 @@ public class KeyStroke implements IJsonable {
 		return this;
 	}
 
-	public LocalDateTime getInvokedTime() {
-		return invokedTime;
-	}
-
 	public KeyStroke press(boolean pressed) {
 		this.pressed = pressed;
 		return this;

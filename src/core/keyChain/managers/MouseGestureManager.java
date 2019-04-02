@@ -15,6 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.simplenativehooks.NativeMouseEvent;
+
 import core.config.Config;
 import core.keyChain.KeyStroke;
 import core.keyChain.MouseGesture;
@@ -23,7 +25,6 @@ import core.keyChain.mouseGestureRecognition.MouseGestureClassifier;
 import core.userDefinedTask.UserDefinedAction;
 import globalListener.AbstractGlobalMouseListener;
 import globalListener.GlobalListenerFactory;
-import globalListener.NativeMouseEvent;
 import utilities.Function;
 
 /**

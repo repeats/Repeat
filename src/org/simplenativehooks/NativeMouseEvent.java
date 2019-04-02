@@ -1,4 +1,4 @@
-package globalListener;
+package org.simplenativehooks;
 
 public class NativeMouseEvent {
 	public enum State {

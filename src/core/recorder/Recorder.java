@@ -3,6 +3,7 @@ package core.recorder;
 import java.util.HashMap;
 
 import org.simplenativehooks.NativeKeyEvent;
+import org.simplenativehooks.NativeMouseEvent;
 
 import core.config.Config;
 import core.controller.Core;
@@ -17,7 +18,6 @@ import core.scheduler.SchedulingData;
 import globalListener.AbstractGlobalKeyListener;
 import globalListener.AbstractGlobalMouseListener;
 import globalListener.GlobalListenerFactory;
-import globalListener.NativeMouseEvent;
 import utilities.Function;
 
 public class Recorder {

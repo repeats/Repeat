@@ -3,7 +3,6 @@ package org.simplenativehooks;
 import java.util.logging.Logger;
 
 import globalListener.AbstractGlobalMouseListener;
-import globalListener.NativeMouseEvent;
 
 public class NativeMouseHook extends AbstractGlobalMouseListener implements NativeHookMouseEventSubscriber {
 

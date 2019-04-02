@@ -5,9 +5,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.simplenativehooks.InvalidMouseEventException;
 import org.simplenativehooks.NativeHookMouseEvent;
-
-import globalListener.NativeMouseEvent;
-import globalListener.NativeMouseEvent.State;
+import org.simplenativehooks.NativeMouseEvent;
+import org.simplenativehooks.NativeMouseEvent.State;
 
 public class X11NativeMouseEvent extends NativeHookMouseEvent {
 

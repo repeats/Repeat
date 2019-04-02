@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import globalListener.NativeMouseEvent;
-
 public class NativeHookGlobalEventPublisher {
 
 	private static final Logger LOGGER = Logger.getLogger(NativeHookGlobalEventPublisher.class.getName());

@@ -6,9 +6,8 @@ import java.awt.event.InputEvent;
 
 import org.simplenativehooks.InvalidMouseEventException;
 import org.simplenativehooks.NativeHookMouseEvent;
-
-import globalListener.NativeMouseEvent;
-import globalListener.NativeMouseEvent.State;
+import org.simplenativehooks.NativeMouseEvent;
+import org.simplenativehooks.NativeMouseEvent.State;
 
 class LinuxNativeMouseEvent extends NativeHookMouseEvent {
 	private final int type;
