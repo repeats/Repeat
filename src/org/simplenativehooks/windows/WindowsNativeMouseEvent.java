@@ -2,10 +2,10 @@ package org.simplenativehooks.windows;
 
 import java.awt.event.InputEvent;
 
-import org.simplenativehooks.InvalidMouseEventException;
-import org.simplenativehooks.NativeHookMouseEvent;
-import org.simplenativehooks.NativeMouseEvent;
-import org.simplenativehooks.NativeMouseEvent.State;
+import org.simplenativehooks.events.InvalidMouseEventException;
+import org.simplenativehooks.events.NativeHookMouseEvent;
+import org.simplenativehooks.events.NativeMouseEvent;
+import org.simplenativehooks.events.NativeMouseEvent.State;
 
 class WindowsNativeMouseEvent extends NativeHookMouseEvent {
 	private final int x;

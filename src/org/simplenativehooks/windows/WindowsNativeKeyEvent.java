@@ -3,9 +3,9 @@ package org.simplenativehooks.windows;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 
-import org.simplenativehooks.InvalidKeyEventException;
-import org.simplenativehooks.NativeHookKeyEvent;
-import org.simplenativehooks.NativeKeyEvent;
+import org.simplenativehooks.events.InvalidKeyEventException;
+import org.simplenativehooks.events.NativeHookKeyEvent;
+import org.simplenativehooks.events.NativeKeyEvent;
 
 import core.keyChain.KeyStroke;
 import core.keyChain.KeyStroke.Modifier;

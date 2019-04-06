@@ -1,6 +1,6 @@
-package globalListener;
+package org.simplenativehooks.listeners;
 
-import org.simplenativehooks.NativeMouseEvent;
+import org.simplenativehooks.events.NativeMouseEvent;
 
 import utilities.Function;
 

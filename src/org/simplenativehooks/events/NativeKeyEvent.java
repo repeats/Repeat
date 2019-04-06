@@ -1,4 +1,4 @@
-package org.simplenativehooks;
+package org.simplenativehooks.events;
 
 import core.keyChain.KeyStroke;
 

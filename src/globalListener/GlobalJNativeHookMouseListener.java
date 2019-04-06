@@ -5,7 +5,8 @@ import java.util.logging.Logger;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
-import org.simplenativehooks.NativeMouseEvent.State;
+import org.simplenativehooks.events.NativeMouseEvent.State;
+import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
 
 import utilities.JNativeHookCodeConverter;
 
@@ -56,13 +57,13 @@ public class GlobalJNativeHookMouseListener extends AbstractGlobalMouseListener 
 		}
 	}
 
-	private org.simplenativehooks.NativeMouseEvent convertEvent(NativeMouseEvent e) {
-		return org.simplenativehooks.NativeMouseEvent.of(e.getX(), e.getY(), State.UNKNOWN, 0);
+	private org.simplenativehooks.events.NativeMouseEvent convertEvent(NativeMouseEvent e) {
+		return org.simplenativehooks.events.NativeMouseEvent.of(e.getX(), e.getY(), State.UNKNOWN, 0);
 	}
 
-	private org.simplenativehooks.NativeMouseEvent convertEvent(NativeMouseEvent e, State state) {
+	private org.simplenativehooks.events.NativeMouseEvent convertEvent(NativeMouseEvent e, State state) {
 		int button = JNativeHookCodeConverter.getMouseButtonCode(e.getButton());
-		return org.simplenativehooks.NativeMouseEvent.of(e.getX(), e.getY(), state, button);
+		return org.simplenativehooks.events.NativeMouseEvent.of(e.getX(), e.getY(), state, button);
 	}
 
 	@Override

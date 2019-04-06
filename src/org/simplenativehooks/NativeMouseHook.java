@@ -2,7 +2,8 @@ package org.simplenativehooks;
 
 import java.util.logging.Logger;
 
-import globalListener.AbstractGlobalMouseListener;
+import org.simplenativehooks.events.NativeMouseEvent;
+import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
 
 public class NativeMouseHook extends AbstractGlobalMouseListener implements NativeHookMouseEventSubscriber {
 

@@ -1,4 +1,4 @@
-package org.simplenativehooks;
+package org.simplenativehooks.events;
 
 @SuppressWarnings("serial")
 public class InvalidKeyEventException extends Exception {

@@ -3,10 +3,10 @@ package org.simplenativehooks.x11;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.simplenativehooks.InvalidMouseEventException;
-import org.simplenativehooks.NativeHookMouseEvent;
-import org.simplenativehooks.NativeMouseEvent;
-import org.simplenativehooks.NativeMouseEvent.State;
+import org.simplenativehooks.events.InvalidMouseEventException;
+import org.simplenativehooks.events.NativeHookMouseEvent;
+import org.simplenativehooks.events.NativeMouseEvent;
+import org.simplenativehooks.events.NativeMouseEvent.State;
 
 public class X11NativeMouseEvent extends NativeHookMouseEvent {
 

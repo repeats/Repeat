@@ -2,7 +2,8 @@ package org.simplenativehooks;
 
 import java.util.logging.Logger;
 
-import globalListener.AbstractGlobalKeyListener;
+import org.simplenativehooks.events.NativeKeyEvent;
+import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 
 public final class NativeKeyHook extends AbstractGlobalKeyListener implements NativeHookKeyEventSubscriber {
 

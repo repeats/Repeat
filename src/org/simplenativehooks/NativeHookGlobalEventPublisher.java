@@ -5,6 +5,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.simplenativehooks.events.InvalidKeyEventException;
+import org.simplenativehooks.events.InvalidMouseEventException;
+import org.simplenativehooks.events.NativeHookKeyEvent;
+import org.simplenativehooks.events.NativeHookMouseEvent;
+import org.simplenativehooks.events.NativeKeyEvent;
+import org.simplenativehooks.events.NativeMouseEvent;
+
 public class NativeHookGlobalEventPublisher {
 
 	private static final Logger LOGGER = Logger.getLogger(NativeHookGlobalEventPublisher.class.getName());

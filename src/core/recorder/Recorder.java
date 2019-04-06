@@ -2,8 +2,10 @@ package core.recorder;
 
 import java.util.HashMap;
 
-import org.simplenativehooks.NativeKeyEvent;
-import org.simplenativehooks.NativeMouseEvent;
+import org.simplenativehooks.events.NativeKeyEvent;
+import org.simplenativehooks.events.NativeMouseEvent;
+import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
+import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
 
 import core.config.Config;
 import core.controller.Core;
@@ -15,8 +17,6 @@ import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.languageHandler.sourceGenerator.ScalaSourceGenerator;
 import core.scheduler.SchedulingData;
-import globalListener.AbstractGlobalKeyListener;
-import globalListener.AbstractGlobalMouseListener;
 import globalListener.GlobalListenerFactory;
 import utilities.Function;
 

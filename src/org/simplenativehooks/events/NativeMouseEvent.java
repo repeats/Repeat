@@ -1,4 +1,4 @@
-package org.simplenativehooks;
+package org.simplenativehooks.events;
 
 public class NativeMouseEvent {
 	public enum State {

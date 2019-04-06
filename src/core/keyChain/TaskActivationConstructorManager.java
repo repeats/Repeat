@@ -10,9 +10,9 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.simplenativehooks.NativeKeyEvent;
+import org.simplenativehooks.events.NativeKeyEvent;
+import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 
-import globalListener.AbstractGlobalKeyListener;
 import globalListener.GlobalListenerFactory;
 import utilities.Function;
 

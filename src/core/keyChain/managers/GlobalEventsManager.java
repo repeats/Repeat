@@ -12,7 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.jnativehook.NativeHookException;
-import org.simplenativehooks.NativeKeyEvent;
+import org.simplenativehooks.events.NativeKeyEvent;
+import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 
 import core.config.Config;
 import core.controller.Core;
@@ -20,7 +21,6 @@ import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
-import globalListener.AbstractGlobalKeyListener;
 import globalListener.GlobalListenerFactory;
 import utilities.Function;
 import utilities.RandomUtil;

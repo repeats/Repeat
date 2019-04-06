@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.simplenativehooks.InvalidKeyEventException;
-import org.simplenativehooks.NativeHookKeyEvent;
-import org.simplenativehooks.NativeKeyEvent;
+import org.simplenativehooks.events.InvalidKeyEventException;
+import org.simplenativehooks.events.NativeHookKeyEvent;
+import org.simplenativehooks.events.NativeKeyEvent;
 
 import core.keyChain.KeyStroke;
 import core.keyChain.KeyStroke.Modifier;

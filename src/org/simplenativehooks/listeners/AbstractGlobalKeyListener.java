@@ -1,6 +1,6 @@
-package globalListener;
+package org.simplenativehooks.listeners;
 
-import org.simplenativehooks.NativeKeyEvent;
+import org.simplenativehooks.events.NativeKeyEvent;
 
 import utilities.Function;
 
