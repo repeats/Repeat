@@ -1,14 +1,11 @@
 package org.simplenativehooks.x11;
 
 import java.awt.event.KeyEvent;
-import java.time.LocalDateTime;
 
 import org.simplenativehooks.events.InvalidKeyEventException;
 import org.simplenativehooks.events.NativeHookKeyEvent;
 import org.simplenativehooks.events.NativeKeyEvent;
-
-import core.keyChain.KeyStroke;
-import core.keyChain.KeyStroke.Modifier;
+import org.simplenativehooks.events.NativeKeyEvent.Modifier;
 
 public class X11NativeKeyEvent extends NativeHookKeyEvent {
 
@@ -362,6 +359,6 @@ public class X11NativeKeyEvent extends NativeHookKeyEvent {
 			throw new InvalidKeyEventException("Uknown key code '" + key + "'.");
 		}
 
-		return NativeKeyEvent.of(KeyStroke.of(k, m, pressed, LocalDateTime.now()));
+		return NativeKeyEvent.of(k, m, pressed);
 	}
 }

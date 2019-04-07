@@ -2,7 +2,8 @@ package staticResources;
 
 import java.io.File;
 
-import globalListener.GlobalListenerFactory;
+import org.simplenativehooks.NativeHookInitializer;
+
 import utilities.FileUtility;
 import utilities.OSIdentifier;
 
@@ -30,7 +31,7 @@ public class NativeHookBootstrapResources extends AbstractBootstrapResource {
 	@Override
 	protected boolean postProcessing(String name) {
 		if (OSIdentifier.IS_LINUX) {
-			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+			if (NativeHookInitializer.USE_X11_ON_LINUX) {
 				if (name.endsWith("RepeatHookX11Key.out") || name.endsWith("RepeatHookX11Mouse.out")) {
 					return new File(name).setExecutable(true);
 				}
@@ -50,7 +51,7 @@ public class NativeHookBootstrapResources extends AbstractBootstrapResource {
 			return name.endsWith("RepeatHook.exe");
 		}
 		if (OSIdentifier.IS_LINUX) {
-			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+			if (NativeHookInitializer.USE_X11_ON_LINUX) {
 				return name.endsWith("RepeatHookX11Key.out") || name.endsWith("RepeatHookX11Mouse.out");
 			} else {
 				return name.endsWith("RepeatHook.out");
@@ -64,7 +65,7 @@ public class NativeHookBootstrapResources extends AbstractBootstrapResource {
 
 	@Override
 	protected String getRelativeSourcePath() {
-		return "nativehooks/" + getOSDir() + "/nativecontent";
+		return "org/simplenativehooks/" + getOSDir() + "/nativecontent";
 	}
 
 	@Override
@@ -81,7 +82,7 @@ public class NativeHookBootstrapResources extends AbstractBootstrapResource {
 		if (OSIdentifier.IS_WINDOWS) {
 			return "windows";
 		} else if (OSIdentifier.IS_LINUX) {
-			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+			if (NativeHookInitializer.USE_X11_ON_LINUX) {
 				return "x11";
 			} else {
 				return "linux";

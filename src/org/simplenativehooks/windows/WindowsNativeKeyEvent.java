@@ -1,14 +1,11 @@
 package org.simplenativehooks.windows;
 
 import java.awt.event.KeyEvent;
-import java.time.LocalDateTime;
 
 import org.simplenativehooks.events.InvalidKeyEventException;
 import org.simplenativehooks.events.NativeHookKeyEvent;
 import org.simplenativehooks.events.NativeKeyEvent;
-
-import core.keyChain.KeyStroke;
-import core.keyChain.KeyStroke.Modifier;
+import org.simplenativehooks.events.NativeKeyEvent.Modifier;
 
 class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 	private final int code;
@@ -37,10 +34,10 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 			throw new InvalidKeyEventException("Unknown param '" + param + "'.");
 		}
 
-		return NativeKeyEvent.of(getKeyStroke(pressed));
+		return getKeyEvent(pressed);
 	}
 
-	private KeyStroke getKeyStroke(boolean pressed) throws InvalidKeyEventException {
+	private NativeKeyEvent getKeyEvent(boolean pressed) throws InvalidKeyEventException {
 		int k = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 
@@ -435,6 +432,6 @@ class WindowsNativeKeyEvent extends NativeHookKeyEvent {
 			throw new InvalidKeyEventException("Unknown code '" + code + "' with param '" + param + "'.");
 		}
 
-		return KeyStroke.of(k, m, pressed, LocalDateTime.now());
+		return NativeKeyEvent.of(k, m, pressed);
 	}
 }

@@ -62,7 +62,7 @@ public final class GlobalEventsManager {
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				KeyStroke stroke = r.getKeyStroke();
+				KeyStroke stroke = KeyStroke.of(r);
 				if (!shouldDelegate(stroke)) {
 					return true;
 				}
@@ -75,7 +75,7 @@ public final class GlobalEventsManager {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				KeyStroke stroke = r.getKeyStroke();
+				KeyStroke stroke = KeyStroke.of(r);
 				if (!shouldDelegate(stroke)) {
 					return true;
 				}

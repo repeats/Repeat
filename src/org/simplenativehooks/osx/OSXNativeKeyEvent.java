@@ -1,7 +1,6 @@
 package org.simplenativehooks.osx;
 
 import java.awt.event.KeyEvent;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
@@ -9,9 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.simplenativehooks.events.InvalidKeyEventException;
 import org.simplenativehooks.events.NativeHookKeyEvent;
 import org.simplenativehooks.events.NativeKeyEvent;
-
-import core.keyChain.KeyStroke;
-import core.keyChain.KeyStroke.Modifier;
+import org.simplenativehooks.events.NativeKeyEvent.Modifier;
 
 public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 
@@ -60,7 +57,7 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 				c = KeyEvent.VK_CAPS_LOCK;
 				// In OSX there's no way to detect whether Capslock is pressed or released.
 				// This event triggers only when the Capslock is turned off.
-				return NativeKeyEvent.of(KeyStroke.of(c, m, false, LocalDateTime.now()));
+				return NativeKeyEvent.of(c, m, false);
 			case 58:
 				c = KeyEvent.VK_ALT;
 				m = Modifier.KEY_MODIFIER_LEFT;
@@ -93,7 +90,7 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 		}
 		boolean pressed = getPressedForFlags(c);
 
-		return NativeKeyEvent.of(KeyStroke.of(c, m, pressed, LocalDateTime.now()));
+		return NativeKeyEvent.of(c, m, pressed);
 	}
 
 	private NativeKeyEvent getKeyEventForRegularKey(boolean pressed) throws InvalidKeyEventException {
@@ -405,7 +402,7 @@ public class OSXNativeKeyEvent extends NativeHookKeyEvent {
 			throw new InvalidKeyEventException("Unknown code '" + code + "' for OSX native key event.");
 		}
 
-		return NativeKeyEvent.of(KeyStroke.of(c, m, pressed, LocalDateTime.now()));
+		return NativeKeyEvent.of(c, m, pressed);
 	}
 
 	private boolean getPressedForFlags(int keyEventCode) throws InvalidKeyEventException {

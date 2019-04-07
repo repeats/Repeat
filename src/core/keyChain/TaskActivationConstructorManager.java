@@ -48,7 +48,7 @@ public class TaskActivationConstructorManager {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(NativeKeyEvent r) {
-				onStroke(r.getKeyStroke());
+				onStroke(KeyStroke.of(r));
 				return true;
 			}
 		});

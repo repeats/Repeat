@@ -1,14 +1,11 @@
 package org.simplenativehooks.linux;
 
 import java.awt.event.KeyEvent;
-import java.time.LocalDateTime;
 
 import org.simplenativehooks.events.InvalidKeyEventException;
 import org.simplenativehooks.events.NativeHookKeyEvent;
 import org.simplenativehooks.events.NativeKeyEvent;
-
-import core.keyChain.KeyStroke;
-import core.keyChain.KeyStroke.Modifier;
+import org.simplenativehooks.events.NativeKeyEvent.Modifier;
 
 class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 
@@ -49,10 +46,10 @@ class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 			throw new InvalidKeyEventException("Unknown value '" + value + "'.");
 		}
 
-		return NativeKeyEvent.of(getKeyStroke(pressed));
+		return getKeyEvent(pressed);
 	}
 
-	private KeyStroke getKeyStroke(boolean pressed) throws InvalidKeyEventException {
+	private NativeKeyEvent getKeyEvent(boolean pressed) throws InvalidKeyEventException {
 		int c = KeyEvent.VK_UNDEFINED;
 		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
 
@@ -451,6 +448,6 @@ class LinuxNativeKeyEvent extends NativeHookKeyEvent {
 			throw new InvalidKeyEventException("Unknown code '" + code + "'.");
 		}
 
-		return KeyStroke.of(c, m, pressed, LocalDateTime.now());
+		return NativeKeyEvent.of(c, m, pressed);
 	}
 }

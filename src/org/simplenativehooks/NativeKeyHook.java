@@ -28,7 +28,7 @@ public final class NativeKeyHook extends AbstractGlobalKeyListener implements Na
 
 	@Override
 	public void processKeyboardEvent(NativeKeyEvent event) {
-		if (event.getKeyStroke().isPressed()) {
+		if (event.isPressed()) {
 			if (!keyPressed.apply(event)) {
 				LOGGER.warning("Failed to process key press event.");
 			}

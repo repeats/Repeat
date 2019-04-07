@@ -3,9 +3,12 @@ package core.keyChain;
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
+import org.simplenativehooks.events.NativeKeyEvent;
+
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import sun.plugin.dom.exception.InvalidStateException;
 import utilities.KeyEventCodeToString;
 import utilities.json.IJsonable;
 
@@ -43,6 +46,18 @@ public class KeyStroke implements IJsonable {
 		private boolean equivalent(Modifier other) {
 			return (this == KEY_MODIFIER_UNKNOWN) || (other == KEY_MODIFIER_UNKNOWN) || (this == other);
 		}
+
+		public org.simplenativehooks.events.NativeKeyEvent.Modifier toNativeModifier() {
+			switch (this) {
+			case KEY_MODIFIER_UNKNOWN:
+				return org.simplenativehooks.events.NativeKeyEvent.Modifier.KEY_MODIFIER_UNKNOWN;
+			case KEY_MODIFIER_LEFT:
+				return org.simplenativehooks.events.NativeKeyEvent.Modifier.KEY_MODIFIER_LEFT;
+			case KEY_MODIFIER_RIGHT:
+				return org.simplenativehooks.events.NativeKeyEvent.Modifier.KEY_MODIFIER_RIGHT;
+			}
+			throw new InvalidStateException("Unknown modifier " + this);
+		}
 	}
 
 	private int key;
@@ -57,6 +72,30 @@ public class KeyStroke implements IJsonable {
 
 	public static KeyStroke of(int key, Modifier modifier, boolean press, LocalDateTime invokedTime) {
 		return new KeyStroke(key, modifier, press, invokedTime);
+	}
+
+	public static KeyStroke of(NativeKeyEvent e) {
+		Modifier m = Modifier.KEY_MODIFIER_UNKNOWN;
+		switch (e.getModifier()) {
+		case KEY_MODIFIER_UNKNOWN:
+			m = Modifier.KEY_MODIFIER_UNKNOWN;
+			break;
+		case KEY_MODIFIER_LEFT:
+			m = Modifier.KEY_MODIFIER_LEFT;
+			break;
+		case KEY_MODIFIER_RIGHT:
+			m = Modifier.KEY_MODIFIER_RIGHT;
+			break;
+		default:
+			m = Modifier.KEY_MODIFIER_UNKNOWN;
+			break;
+		}
+
+		return of(e.getKey(), m, e.isPressed(), e.getInvokedTime());
+	}
+
+	public NativeKeyEvent toNativeKeyEvent() {
+		return NativeKeyEvent.of(key, modifier.toNativeModifier(), pressed);
 	}
 
 	private KeyStroke(int key, Modifier modifier, boolean press, LocalDateTime invokedTime) {

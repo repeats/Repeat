@@ -55,7 +55,7 @@ public class Recorder {
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
-				final int code = r.getKeyStroke().getKey();
+				final int code = r.getKey();
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable(){
 					@Override
@@ -74,7 +74,7 @@ public class Recorder {
 		keyListener.setKeyReleased(new Function<NativeKeyEvent, Boolean>() {
 			@Override
 			public Boolean apply(final NativeKeyEvent r) {
-				final int code = r.getKeyStroke().getKey();
+				final int code = r.getKey();
 				final long time = System.currentTimeMillis() - startTime;
 				taskScheduler.addTask(new SchedulingData<Runnable>(time, new Runnable() {
 					@Override

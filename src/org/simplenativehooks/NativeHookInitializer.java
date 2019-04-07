@@ -8,12 +8,13 @@ import org.simplenativehooks.osx.GlobalOSXEventOchestrator;
 import org.simplenativehooks.windows.GlobalWindowsEventOchestrator;
 import org.simplenativehooks.x11.GlobalX11EventOchestrator;
 
-import globalListener.GlobalListenerFactory;
 import utilities.OSIdentifier;
 
 public class NativeHookInitializer {
 
 	private static final Logger LOGGER = Logger.getLogger(NativeHookInitializer.class.getName());
+	public static final boolean USE_X11_ON_LINUX = true;
+
 	private static final NativeHookInitializer INSTANCE = new NativeHookInitializer();
 
 	private NativeHookInitializer() {}
@@ -28,7 +29,7 @@ public class NativeHookInitializer {
 			return;
 		}
 		if (OSIdentifier.IS_LINUX) {
-			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+			if (USE_X11_ON_LINUX) {
 				GlobalX11EventOchestrator.of().start();
 				return;
 			} else {
@@ -54,7 +55,7 @@ public class NativeHookInitializer {
 			return;
 		}
 		if (OSIdentifier.IS_LINUX) {
-			if (GlobalListenerFactory.USE_X11_ON_LINUX) {
+			if (USE_X11_ON_LINUX) {
 				GlobalX11EventOchestrator.of().stop();
 				return;
 			} else {
