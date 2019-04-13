@@ -7,11 +7,12 @@ import java.util.logging.Logger;
 import utilities.FileUtility;
 import utilities.Function;
 
-public abstract class AbstractBootstrapResource {
+public abstract class AbstractBootstrapResource implements BootstrapResourcesExtrator {
 
 	private static final Logger LOGGER = Logger.getLogger(AbstractBootstrapResource.class.getName());
 
-	protected void extractResources() throws IOException {
+	@Override
+	public void extractResources() throws IOException {
 		if (!FileUtility.createDirectory(getExtractingDest().getAbsolutePath())) {
 			LOGGER.warning("Failed to extract " + getName() + " resources");
 			return;

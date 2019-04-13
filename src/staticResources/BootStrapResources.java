@@ -23,7 +23,7 @@ public class BootStrapResources {
 	private static final Map<Language, String> LANGUAGE_API;
 	private static final Map<Language, String> NATIVE_LANGUAGE_TEMPLATES;
 	private static final Map<Language, AbstractNativeLanguageBootstrapResource> NATIVE_BOOTSTRAP_RESOURCES;
-	private static final Set<AbstractBootstrapResource> BOOTSTRAP_RESOURCES;
+	private static final Set<BootstrapResourcesExtrator> BOOTSTRAP_RESOURCES;
 
 	private static final NativeHookBootstrapResources nativeHookResources;
 	private static final WebUIResources webUIResource;
@@ -73,7 +73,7 @@ public class BootStrapResources {
 	}
 
 	public static void extractResources() throws IOException {
-		for (AbstractBootstrapResource resource : BOOTSTRAP_RESOURCES) {
+		for (BootstrapResourcesExtrator resource : BOOTSTRAP_RESOURCES) {
 			resource.extractResources();
 		}
 	}

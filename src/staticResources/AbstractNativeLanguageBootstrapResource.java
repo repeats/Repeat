@@ -11,7 +11,7 @@ public abstract class AbstractNativeLanguageBootstrapResource extends AbstractBo
 	private static final Logger LOGGER = Logger.getLogger(AbstractNativeLanguageBootstrapResource.class.getName());
 
 	@Override
-	protected final void extractResources() throws IOException {
+	public final void extractResources() throws IOException {
 		super.extractResources();
 		if (!generateKeyCode()) {
 			LOGGER.warning("Unable to generate key code");

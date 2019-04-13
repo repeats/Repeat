@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.simplenativehooks.events.NativeKeyEvent;
 import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
+import org.simplenativehooks.utilities.Function;
 
 import globalListener.GlobalListenerFactory;
-import utilities.Function;
 
 public class TaskActivationConstructorManager {
 

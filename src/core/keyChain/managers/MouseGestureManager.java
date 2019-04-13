@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.simplenativehooks.events.NativeMouseEvent;
 import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
+import org.simplenativehooks.utilities.Function;
 
 import core.config.Config;
 import core.keyChain.KeyStroke;
@@ -25,7 +26,6 @@ import core.keyChain.TaskActivation;
 import core.keyChain.mouseGestureRecognition.MouseGestureClassifier;
 import core.userDefinedTask.UserDefinedAction;
 import globalListener.GlobalListenerFactory;
-import utilities.Function;
 
 /**
  * Class to manage mouse gesture recognition and action

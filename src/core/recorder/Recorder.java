@@ -6,6 +6,7 @@ import org.simplenativehooks.events.NativeKeyEvent;
 import org.simplenativehooks.events.NativeMouseEvent;
 import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
+import org.simplenativehooks.utilities.Function;
 
 import core.config.Config;
 import core.controller.Core;
@@ -18,7 +19,6 @@ import core.languageHandler.sourceGenerator.PythonSourceGenerator;
 import core.languageHandler.sourceGenerator.ScalaSourceGenerator;
 import core.scheduler.SchedulingData;
 import globalListener.GlobalListenerFactory;
-import utilities.Function;
 
 public class Recorder {
 
@@ -203,7 +203,7 @@ public class Recorder {
 		replay(1, 0, null, 0, true);
 	}
 
-	public void replay(long count, long delay, Function<Void, Void> callBack, long callBackDelay, boolean blocking) {
+	public void replay(long count, long delay, utilities.Function<Void, Void> callBack, long callBackDelay, boolean blocking) {
 		long time = taskScheduler.runTasks(count, delay, speedup, callBack, callBackDelay);
 
 		if (blocking && time > 0) {

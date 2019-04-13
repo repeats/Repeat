@@ -8,7 +8,6 @@ import org.simplenativehooks.events.NativeKeyEvent;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
-import sun.plugin.dom.exception.InvalidStateException;
 import utilities.KeyEventCodeToString;
 import utilities.json.IJsonable;
 
@@ -56,7 +55,7 @@ public class KeyStroke implements IJsonable {
 			case KEY_MODIFIER_RIGHT:
 				return org.simplenativehooks.events.NativeKeyEvent.Modifier.KEY_MODIFIER_RIGHT;
 			}
-			throw new InvalidStateException("Unknown modifier " + this);
+			throw new IllegalArgumentException("Unknown modifier " + this);
 		}
 	}
 
