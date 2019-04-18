@@ -15,13 +15,17 @@ public class SubprocessUttility {
 	 * Execute a command in the runtime environment
 	 * @param command The command to execute
 	 * @param cwd directory in which the command should be executed. Set null or empty string to execute in the current directory
-	 * @return stdout and stderr of the command, or empty strings if there is any exception encountered.
+	 * @return stdout and stderr of the command
+	 * @throws ExecutionException if there is any exception encountered.
 	 */
-	public static String[] execute(String command, String cwd) {
+	public static String[] execute(String command, String cwd) throws ExecutionException {
 		File dir = null;
 		if (cwd != null && !cwd.isEmpty()) {
 			dir = new File(cwd);
 		}
+
+		// 0 for stdout, 1 for stderr.
+		final boolean[] fail = new boolean[2];
 
 		try {
 			StringBuffer stdout = new StringBuffer();
@@ -36,7 +40,8 @@ public class SubprocessUttility {
 					try {
 						readFromStream(bufferStdout, stdout);
 					} catch (Exception e) {
-						LOGGER.log(Level.WARNING, "Exception encountered reading stdout of command " + command, e);
+						LOGGER.log(Level.WARNING, "Exception encountered reading stdout of command $" + command, e);
+						fail[0] = true;
 					}
 				}
 			};
@@ -47,7 +52,8 @@ public class SubprocessUttility {
 					try {
 						readFromStream(bufferStderr, stderr);
 					} catch (Exception e) {
-						LOGGER.log(Level.WARNING, "Exception encountered reading stderr of command " + command, e);
+						LOGGER.log(Level.WARNING, "Exception encountered reading stderr of command $" + command, e);
+						fail[1] = true;
 					}
 				}
 			};
@@ -56,10 +62,16 @@ public class SubprocessUttility {
 			t2.join();
 
 			process.waitFor();
+
+			if (fail[0] || fail[1]) {
+				LOGGER.log(Level.WARNING, "Exception encountered when executing command $" + command);
+				throw new ExecutionException();
+			}
+
 			return new String[] {stdout.toString(), stderr.toString()};
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Exception encountered while running command " + command, e);
-			return new String[] {"", ""};
+			throw new ExecutionException();
 		}
 	}
 
@@ -81,7 +93,7 @@ public class SubprocessUttility {
 	 * @param cwd directory in which the command should be executed. Set null to execute in the current directory
 	 * @return stdout of the command, or empty string if there is any exception encountered.
 	 */
-	public static String execute(String command, File cwd) {
+	public static String execute(String command, File cwd) throws ExecutionException {
 		String path = null;
 		if (cwd != null) {
 			path = cwd.getPath();
@@ -95,8 +107,13 @@ public class SubprocessUttility {
 	 * @param command The command to execute
 	 * @return stdout of the command, or empty string if there is any exception encountered.
 	 */
-	public static String execute(String command) {
+	public static String execute(String command) throws ExecutionException {
 		return execute(command, "")[0];
+	}
+
+	public static class ExecutionException extends Exception {
+		private static final long serialVersionUID = 6688739122137565700L;
+		private ExecutionException() {}
 	}
 
 	private SubprocessUttility() {}

@@ -15,6 +15,7 @@ import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import utilities.SubprocessUttility;
+import utilities.SubprocessUttility.ExecutionException;
 
 public class Tools {
 
@@ -53,7 +54,11 @@ public class Tools {
 	 * @return stdout of the command
 	 */
 	public static String execute(String command) {
-		return SubprocessUttility.execute(command);
+		try {
+			return SubprocessUttility.execute(command);
+		} catch (ExecutionException e) {
+			return "";
+		}
 	}
 
 	/**
@@ -73,7 +78,11 @@ public class Tools {
 	 * @return stdout of the command
 	 */
 	public static String execute(String command, File cwd) {
-		return SubprocessUttility.execute(command, cwd);
+		try {
+			return SubprocessUttility.execute(command, cwd);
+		} catch (ExecutionException e) {
+			return "";
+		}
 	}
 
 	/**

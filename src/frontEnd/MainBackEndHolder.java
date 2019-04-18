@@ -1,12 +1,9 @@
 package frontEnd;
 
 import java.awt.AWTException;
-import java.awt.Desktop;
 import java.awt.SystemTray;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,13 +40,13 @@ import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.UserDefinedAction;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
+import utilities.Desktop;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.Pair;
 import utilities.StringUtilities;
 import utilities.ZipUtility;
 import utilities.logging.LogHolder;
-import utilities.swing.SwingUtil.DialogUtil;
 
 public class MainBackEndHolder {
 
@@ -482,14 +479,8 @@ public class MainBackEndHolder {
 			return;
 		}
 
-		try {
-			Desktop.getDesktop().open(tempSourceFile);
-			int update = JOptionPane.showConfirmDialog(null, "Update source code from editted source file? (Confirm once done)", "Reload source code", JOptionPane.YES_NO_OPTION);
-			if (update == JOptionPane.YES_OPTION) {
-				reloadSourceCode();
-			}
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Unable to open file for editting.\n" + e.getMessage());
+		if (!Desktop.openFile(tempSourceFile)) {
+			JOptionPane.showMessageDialog(null, "Unable to open file for editting.\n");
 		}
 	}
 
@@ -874,14 +865,13 @@ public class MainBackEndHolder {
 	protected void launchUI() {
 		int port = IPCServiceManager.getIPCService(IPCServiceName.WEB_UI_SERVER).getPort();
 		String url = "http://localhost:" + port;
+		String mainMessage = "Initialization finished. UI server is at " + url;
 
-		if (DialogUtil.getConfirmation(null, "Server ready!", "Initialization finished. UI server is at " + url + ". Go there?")) {
-			try {
-				Desktop.getDesktop().browse(new URI(url));
-			} catch (IOException | URISyntaxException e) {
-				LOGGER.log(Level.WARNING, "Unable to go to UI server.", e);
-			}
-		}
+		String logMessage = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
+						mainMessage + "\n" +
+						"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\\n";
+		LOGGER.info(logMessage);
+		JOptionPane.showMessageDialog(null, mainMessage, "Server started!", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/*************************************************************************************************************/
