@@ -871,7 +871,6 @@ public class MainBackEndHolder {
 						mainMessage + "\n" +
 						"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
 		LOGGER.info(logMessage);
-		JOptionPane.showMessageDialog(null, mainMessage, "Server started!", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/*************************************************************************************************************/
