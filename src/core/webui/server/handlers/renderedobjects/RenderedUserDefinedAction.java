@@ -1,6 +1,5 @@
 package core.webui.server.handlers.renderedobjects;
 
-import core.keyChain.KeyChain;
 import core.userDefinedTask.UserDefinedAction;
 import utilities.DateUtility;
 
@@ -14,10 +13,10 @@ public class RenderedUserDefinedAction {
 	public static RenderedUserDefinedAction fromUserDefinedAction(UserDefinedAction action) {
 		RenderedUserDefinedAction output = new RenderedUserDefinedAction();
 		output.setName(action.getName());
-		KeyChain representative = action.getRepresentativeHotkey();
+		String representative = action.getActivation().getRepresentativeString();
 		String activation = "None";
 		if (representative != null && !representative.isEmpty()) {
-			activation = representative.toString();
+			activation = representative;
 		}
 		output.setActivation(activation);
 		output.setEnabled(action.isEnabled() + "");

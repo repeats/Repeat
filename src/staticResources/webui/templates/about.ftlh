@@ -49,7 +49,8 @@
                     <div class="col-md-6 col-md-offset-3">
                         <h4 class="title">Powered by:</h4>
                          <ul>
-                            <li><a href="https://github.com/kwhat/jnativehook">jnativehook Global Hooks</a></li>
+                            <li><a href="https://github.com/repeats/SimpleNativeHooks">Simple Native Hooks</a></li>
+                            <li><strike><a href="https://github.com/kwhat/jnativehook">jnativehook Global Hooks</a></strike> (Will be removed compeletely in within next few releases.)</li>
                             <li><a href="http://argo.sourceforge.net">Argo JSON</a></li>
                             <li><a href="https://math.nist.gov/javanumerics/jama/">Jama - A Java matrix package</a></li>
                             <li><a href="https://hc.apache.org/httpcomponents-core-ga/index.html">Apache HttpComponents Core</a></li>
@@ -62,7 +63,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 col-md-offset-3">
-                        <h4 class="title"><a href="https://github.com/repeats/Repeat/blob/master/License.md">License: The MIT License (MIT)</a></h4>
+                        <h4 class="title"><a href="https://github.com/repeats/Repeat/blob/master/LICENSE">License: Apache License 2.0</a></h4>
                     </div>
                 </div>
             </div>

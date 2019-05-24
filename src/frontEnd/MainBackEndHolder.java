@@ -869,7 +869,7 @@ public class MainBackEndHolder {
 
 		String logMessage = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
 						mainMessage + "\n" +
-						"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\\n";
+						"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
 		LOGGER.info(logMessage);
 		JOptionPane.showMessageDialog(null, mainMessage, "Server started!", JOptionPane.INFORMATION_MESSAGE);
 	}

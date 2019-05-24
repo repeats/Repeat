@@ -101,6 +101,11 @@ public enum MouseGesture implements IJsonable {
     	return output;
     }
 
+    @Override
+	public String toString() {
+    	return text;
+	}
+
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(JsonNodeFactories.field("name", JsonNodeFactories.string(text)));

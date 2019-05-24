@@ -195,6 +195,27 @@ public class TaskActivation implements IJsonable {
 		return getHotkeys().isEmpty() && getMouseGestures().isEmpty() && getKeySequences().isEmpty() && getPhrases().isEmpty();
 	}
 
+	/**
+	 * Returns a representative string for this activation.
+	 * Iterating through all types of activations and select one entry at random.
+	 */
+	public String getRepresentativeString() {
+		if (!getHotkeys().isEmpty()) {
+			return "{" + getHotkeys().iterator().next().toString() + "}";
+		}
+		if (!getKeySequences().isEmpty()) {
+			return "<" + getKeySequences().iterator().next().toString() + ">";
+		}
+		if (!getPhrases().isEmpty()) {
+			return "(" + getPhrases().iterator().next().toString() + ")";
+		}
+		if (!getMouseGestures().isEmpty()) {
+			return "[" + getMouseGestures().iterator().next().toString() + "]";
+		}
+
+		return new KeyChain().toString();
+	}
+
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(

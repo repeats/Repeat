@@ -2,7 +2,7 @@
     <thead class="thead-dark">
         <tr>
             <th scope="col">Name</th>
-            <th scope="col">Activation</th>
+            <th scope="col"> <div data-toggle="tooltip" data-placement="bottom" title="'{}' for key chain&#10;'<>' for key sequences&#10;'()' for phrases&#10;'[]' for mouse gesture"> Activation (?) </div> </th>
             <th scope="col">Enabled</th>
             <th scope="col">Use Count</th>
             <th scope="col">Last Used</th>

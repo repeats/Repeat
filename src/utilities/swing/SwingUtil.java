@@ -627,7 +627,7 @@ public class SwingUtil {
 			dialog.add(panel);
 			dialog.pack();
 			dialog.setLocationRelativeTo(null);
-			searchBar.requestFocusInWindow();
+			searchBar.requestFocus();
 			dialog.setVisible(true);
 
 			DisplayPair selectedValue = (DisplayPair) list.getSelectedValue(); // We know cast is safe since we only added this type.

@@ -10,5 +10,4 @@ public class NativeHookBootstrapResources implements BootstrapResourcesExtrator 
 	public void extractResources() throws IOException {
 		BootStrapResources.extractResources();
 	}
-
 }

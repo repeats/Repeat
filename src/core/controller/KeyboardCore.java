@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import core.config.Config;
 import core.userDefinedTask.Tools;
@@ -19,10 +20,10 @@ import utilities.OSIdentifier;
  */
 public class KeyboardCore {
 
+	private static final Logger LOGGER = Logger.getLogger(KeyboardCore.class.getName());
+
 	// In OSX we somehow need to have a delay between pressing combinations.
 	private static int OSX_KEY_FLAG_DELAY_MS = 70;
-	// In non OSX we need to have a delay after pressing Shift + Insert and re-setting the keyboard.
-	private static int NON_OSX_PASTE_DELAY_MS = 70;
 	private static final Set<Integer> OSX_FLAG_KEYS;
 
 	private static final HashMap<Character, Function<KeyboardCore, Void>> charShiftType;
@@ -78,13 +79,13 @@ public class KeyboardCore {
 	 * Almost every typeable character on ANSI keyboard is supported.
 	 *
 	 * If config use clipboard is enabled, this puts the string into clipboard and uses
-	 * SHIFT + INSERT/COMMAND + V to paste the content instead of typing out.
+	 * SHIFT + INSERT to paste the content instead of typing out.
 	 * Note that this will preserve the text clipboard.
 	 *
 	 * @param string string to be typed.
 	 */
 	public void type(String string) {
-		if (config.isUseClipboardToTypeString()) {
+		if (config.isUseClipboardToTypeString() && !OSIdentifier.IS_LINUX) {
 			String existing = Tools.getClipboard();
 
 			Tools.setClipboard(string);
@@ -92,13 +93,14 @@ public class KeyboardCore {
 				combination(KeyEvent.VK_META, KeyEvent.VK_V);
 			} else {
 				combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
-				controller.delay(NON_OSX_PASTE_DELAY_MS);
 			}
 
 			if (!existing.isEmpty()) {
 				Tools.setClipboard(existing);
 			}
 			return;
+		} else if (config.isUseClipboardToTypeString() && OSIdentifier.IS_LINUX) {
+			LOGGER.info("Using clipboard to type string is not supported in Linux. Using the regular way to type strings.");
 		}
 
 		for (int i = 0; i < string.length(); i++) {

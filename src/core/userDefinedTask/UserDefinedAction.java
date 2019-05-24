@@ -1,7 +1,6 @@
 package core.userDefinedTask;
 
 import java.io.File;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,19 +87,6 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 */
 	public TaskActivation getActivation() {
 		return activation;
-	}
-
-	/**
-	 * Retrieve a random key chain from the set of key chains. If there's no keychain for the task, return an empty key chain.
-	 * @return a random key chain from the set of key chains.
-	 */
-	public final KeyChain getRepresentativeHotkey() {
-		Set<KeyChain> hotkeys = getActivation().getHotkeys();
-		if (hotkeys == null || hotkeys.isEmpty()) {
-			return new KeyChain();
-		} else {
-			return hotkeys.iterator().next();
-		}
 	}
 
 	public final String getName() {
