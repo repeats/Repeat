@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,10 +81,6 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 	}
 
 	private String contentType(Path path) throws IOException {
-		String contentType = Files.probeContentType(path);
-		if (contentType != null) {
-			return contentType;
-		}
 		String absolutePath = path.toAbsolutePath().toString();
 		if (absolutePath.endsWith(".js")) {
 			return "application/javascript";
