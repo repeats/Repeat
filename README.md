@@ -45,7 +45,7 @@ On OSX, accessibility permission is required for the native hook to work. Enable
 
 Installation
 ============
-Just download the [latest version](https://github.com/repeats/Repeat/releases/latest), put the jar in a separate directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
+Just download the [latest version](https://github.com/repeats/Repeat/releases/latest), put the jar in a **separate** directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
 
 The recommended way to launch the program is through terminal:
 
