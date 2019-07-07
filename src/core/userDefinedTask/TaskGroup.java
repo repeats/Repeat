@@ -3,6 +3,7 @@ package core.userDefinedTask;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,18 +16,24 @@ import utilities.json.IJsonable;
 
 public class TaskGroup implements IJsonable {
 
+	private String groupId;
 	private String name;
 	private boolean enabled;
 	private final List<UserDefinedAction> tasks;
 
-	public TaskGroup(String name, List<UserDefinedAction> tasks) {
+	private TaskGroup(String name, List<UserDefinedAction> tasks, String groupId) {
+		this.groupId = groupId;
 		this.name = name;
 		this.tasks = tasks;
 		this.enabled = true;
 	}
 
+	private TaskGroup(String name, String groupId) {
+		this(name, new ArrayList<UserDefinedAction>(), groupId);
+	}
+
 	public TaskGroup(String name) {
-		this(name, new ArrayList<UserDefinedAction>());
+		this(name, new ArrayList<UserDefinedAction>(), UUID.randomUUID().toString());
 	}
 
 	public List<UserDefinedAction> getTasks() {
@@ -54,6 +61,10 @@ public class TaskGroup implements IJsonable {
 			}
 		}
 		return null;
+	}
+
+	public String getGroupId() {
+		return groupId;
 	}
 
 	public String getName() {
@@ -110,6 +121,7 @@ public class TaskGroup implements IJsonable {
 		}
 
 		return JsonNodeFactories.object(
+				JsonNodeFactories.field("group_id", JsonNodeFactories.string(groupId)),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
 				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled)),
 				JsonNodeFactories.field("tasks", JsonNodeFactories.array(taskNodes))
@@ -118,7 +130,8 @@ public class TaskGroup implements IJsonable {
 
 	public static TaskGroup parseJSON(DynamicCompilerManager factory, JsonNode node) {
 		try {
-			TaskGroup output = new TaskGroup("");
+			String groupId = node.getStringValue("group_id");
+			TaskGroup output = new TaskGroup("", groupId);
 			String name = node.getStringValue("name");
 			output.name = name;
 

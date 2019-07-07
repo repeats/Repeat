@@ -1,6 +1,7 @@
 package core.userDefinedTask;
 
 import java.io.File;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	private static final Logger LOGGER = Logger.getLogger(UserDefinedAction.class.getName());
 
+	protected String actionId;
 	protected String name;
 	private TaskActivation activation;
 	protected String sourcePath;
@@ -39,6 +41,11 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	protected UsageStatistics statistics;
 
 	public UserDefinedAction() {
+		this(UUID.randomUUID().toString());
+	}
+
+	public UserDefinedAction(String actionId) {
+		this.actionId = actionId;
 		activation = TaskActivation.newBuilder().build();
 		invoker = TaskActivation.newBuilder().build();
 		invokingKeyChain = new KeyChain();
@@ -64,6 +71,13 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		action(controller);
 		time = System.currentTimeMillis() - time;
 		statistics.updateAverageExecutionTime(time);
+	}
+
+	/**
+	 * @return this action's ID.
+	 */
+	public String getActionId() {
+		return actionId;
 	}
 
 	/**
@@ -219,6 +233,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	@Override
 	public final JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
+				JsonNodeFactories.field("action_id", JsonNodeFactories.string(actionId)),
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compiler.toString())),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
@@ -230,6 +245,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	public static final UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
 		try {
+			String actionId = node.getStringValue("action_id");
+
 			String sourcePath = node.getStringValue("source_path");
 			AbstractNativeCompiler compiler = factory.getCompiler(node.getStringValue("compiler"));
 			if (compiler == null) {
@@ -269,6 +286,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 			boolean enabled = node.getBooleanValue("enabled");
 
+			output.actionId = actionId;
 			output.sourcePath = sourcePath;
 			output.compiler = compiler.getName();
 			output.name = name;

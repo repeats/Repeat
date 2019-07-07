@@ -45,15 +45,15 @@ public final class DormantUserDefinedTask extends UserDefinedAction implements I
 		Pair<DynamicCompilerOutput, UserDefinedAction> result = compiler.compile(source);
 		DynamicCompilerOutput compilerStatus = result.getA();
 		UserDefinedAction output = result.getB();
+		output.actionId = getActionId();
 
-		if (compilerStatus == DynamicCompilerOutput.COMPILATION_SUCCESS) {
-			getLogger().info("Successfully recompiled dormant task " + getName() + ".");
-			output.syncContent(this);
-			output.compiler = compiler.getName();
-			return output;
-		} else {
+		if (compilerStatus != DynamicCompilerOutput.COMPILATION_SUCCESS) {
 			getLogger().warning("Unable to recompile dormant task " + getName() + ". Error " + compilerStatus);
 			return this;
 		}
+		getLogger().info("Successfully recompiled dormant task " + getName() + ".");
+		output.syncContent(this);
+		output.compiler = compiler.getName();
+		return output;
 	}
 }
