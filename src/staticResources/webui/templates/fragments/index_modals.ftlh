@@ -102,6 +102,25 @@
             </div>
         </div>
     </div>
+    <div id="modal-task-id-button" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Task ID</h4>
+                </div>
+                <div class="modal-body">
+                    <div>Task ID:</div>
+                    <input class="form-control" type="text" id="current-task-id">
+                </div>
+                <div class="modal-footer">
+                    <div id="modal-task-name-row" style="display:none;">0</div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="modal-set-hotkeys" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->

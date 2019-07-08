@@ -50,7 +50,7 @@ function tableTaskGroupsOnClick(cell, row, col) {
         utils_FocusInputForModal("new-task-group-name");
     }
 
-    if (col == 2) { // Enabled.
+    if (col == 3) { // Enabled.
         $.post("/internals/toggle/task-group-enabled", JSON.stringify({group: row}), function(data) {
             refreshTaskGroupsWithDataAndIndex(data, row);
         }).fail(function(response) {
@@ -58,7 +58,7 @@ function tableTaskGroupsOnClick(cell, row, col) {
         });
     }
 
-    if (col == 3) { // Selected.
+    if (col == 4) { // Selected.
         $.post("/internals/action/switch-task-group", JSON.stringify({group: row, render: "groups"}), function(data) {
             refreshTaskGroupsWithDataAndIndex(data, row);
         }).fail(function(response) {

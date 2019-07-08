@@ -4,6 +4,7 @@ import core.userDefinedTask.UserDefinedAction;
 import utilities.DateUtility;
 
 public class RenderedUserDefinedAction {
+	private String id;
 	private String name;
 	private String activation;
 	private String enabled;
@@ -12,6 +13,7 @@ public class RenderedUserDefinedAction {
 
 	public static RenderedUserDefinedAction fromUserDefinedAction(UserDefinedAction action) {
 		RenderedUserDefinedAction output = new RenderedUserDefinedAction();
+		output.setId(action.getActionId());
 		output.setName(action.getName());
 		String representative = action.getActivation().getRepresentativeString();
 		String activation = "None";
@@ -28,6 +30,12 @@ public class RenderedUserDefinedAction {
 	}
 
 
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}

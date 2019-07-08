@@ -3,6 +3,7 @@ package core.webui.server.handlers.renderedobjects;
 import core.userDefinedTask.TaskGroup;
 
 public class RenderedTaskGroup {
+	private String id;
 	private String name;
 	private int taskCount;
 	private String enabled;
@@ -10,6 +11,7 @@ public class RenderedTaskGroup {
 
 	public static RenderedTaskGroup fromTaskGroup(TaskGroup group, boolean selected) {
 		RenderedTaskGroup output = new RenderedTaskGroup();
+		output.id = group.getGroupId();
 		output.name = group.getName();
 		output.taskCount = group.getTasks().size();
 		output.enabled = group.isEnabled() + "";
@@ -17,6 +19,13 @@ public class RenderedTaskGroup {
 		return output;
 	}
 
+
+	public String getId() {
+		return id;
+	}
+	public void setId(String groupId) {
+		this.id = groupId;
+	}
 	public String getName() {
 		return name;
 	}

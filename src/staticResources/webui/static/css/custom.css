@@ -33,8 +33,12 @@ tr { cursor: default; }
 
 .table-header-fixed > tbody > tr > td,
 .table-header-fixed > thead > tr > th {
-    width: 20%;
+    width: 16.66667%;
     float: left;
+}
+
+.table-cell-align-center {
+    text-align: center;
 }
 
 .top-buffer { margin-top:20px; }

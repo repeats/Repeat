@@ -1,13 +1,23 @@
 function utils_FocusInputForModal(elementId) {
-	// We need to wait for the modal to appear first.
-	setTimeout(function() {
+    // We need to wait for the modal to appear first.
+    setTimeout(function() {
         // Trick to set focus on the field.
         $("#" + elementId).focus().val($("#" + elementId).val());
     }, 500);
 }
 
+function utils_SelectInputForModal(elementId) {
+    // We need to wait for the modal to appear first.
+    setTimeout(function() {
+        // Trick to set focus on the field.
+        $("#" + elementId).focus().val($("#" + elementId).val());
+        // Then select the input.
+        $("#" + elementId).select();
+    }, 500);
+}
+
 function utils_FocusTextAreaForModal(elementId) {
-	var el = $("#" + elementId);
+    var el = $("#" + elementId);
 
     if (typeof el.selectionStart == "number") {
         el.selectionStart = el.selectionEnd = el.value.length;

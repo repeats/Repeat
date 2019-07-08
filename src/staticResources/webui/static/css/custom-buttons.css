@@ -83,3 +83,9 @@
 	background-image: url( '/static/img/buttons/change_group.gif' );
 	background-size: 100%;
 }
+
+.repeat-btn-show-action-id {
+	border: none;
+	background-image: url( '/static/img/buttons/view.png' );
+	background-size: 100%;
+}

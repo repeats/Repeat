@@ -13,6 +13,7 @@ public class TooltipsIndexPage {
 	private String up = "Move selected task up.";
 	private String down = "Move selected task down.";
 	private String changeGroup = "Change the select task's group.";
+	private String showActionId = "Show task ID.";
 
 	public String getRecord() {
 		return record;
@@ -85,5 +86,11 @@ public class TooltipsIndexPage {
 	}
 	public void setChangeGroup(String changeGroup) {
 		this.changeGroup = changeGroup;
+	}
+	public String getShowActionId() {
+		return showActionId;
+	}
+	public void setShowActionId(String copyActionId) {
+		this.showActionId = copyActionId;
 	}
 }

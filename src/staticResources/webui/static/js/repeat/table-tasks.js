@@ -2,6 +2,7 @@ function registerTableTasks() {
     registerCells();
 
     $('#modal-task-name-save').click(newNameOnClick);
+    $('button[id^=\'button-show-task-id-\']').click(showActionId);
 }
 
 function registerCells() {
@@ -55,17 +56,24 @@ function tableTaskOnClick(cell, row, col) {
         utils_FocusInputForModal("new-task-name");
     }
 
-    if (col == 1) { // Activation.
+    if (col == 2) { // Activation.
         window.location.assign("/task-activation?task=" + row);
     }
 
-    if (col == 2) { // Enable/disable.
+    if (col == 3) { // Enable/disable.
         $.post("/internals/toggle/task-enabled", JSON.stringify({task: row}), function(data) {
             refreshTasksWithDataAndIndex(data, row);
         }).fail(function(response) {
             alert('Error toggling state: ' + response.responseText);
         });
     }
+}
+
+function showActionId(e) {
+    var taskId = $(this)[0].id.slice('button-show-task-id-'.length);
+    $("#current-task-id").val(taskId);
+    $("#modal-task-id-button").modal();
+    utils_SelectInputForModal("current-task-id");
 }
 
 function newNameOnClick(e) {
