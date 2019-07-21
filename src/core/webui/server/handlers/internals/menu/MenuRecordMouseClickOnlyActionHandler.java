@@ -5,8 +5,8 @@ import java.io.IOException;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import core.recorder.Recorder;
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractBooleanConfigHttpHandler;
+import core.webui.webcommon.HttpServerUtilities;
 
 public class MenuRecordMouseClickOnlyActionHandler extends AbstractBooleanConfigHttpHandler {
 

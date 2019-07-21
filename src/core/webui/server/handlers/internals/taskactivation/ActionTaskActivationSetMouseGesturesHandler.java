@@ -14,9 +14,9 @@ import argo.jdom.JsonNode;
 import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivationConstructor;
 import core.keyChain.TaskActivationConstructorManager;
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedMouseGestureActivation;
+import core.webui.webcommon.HttpServerUtilities;
 import utilities.json.JSONUtility;
 
 public class ActionTaskActivationSetMouseGesturesHandler extends AbstractTaskActivationConstructorActionHandler {

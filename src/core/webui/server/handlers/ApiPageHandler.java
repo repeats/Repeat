@@ -8,7 +8,7 @@ import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
 import core.languageHandler.Language;
-import core.webcommon.HttpServerUtilities;
+import core.webui.webcommon.HttpServerUtilities;
 import staticResources.BootStrapResources;
 
 public class ApiPageHandler extends AbstractSingleMethodHttpHandler {

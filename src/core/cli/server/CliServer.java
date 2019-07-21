@@ -21,8 +21,8 @@ import core.cli.server.handlers.TaskListActionHandler;
 import core.cli.server.handlers.TaskRemoveActionHandler;
 import core.config.CliConfig;
 import core.ipc.IPCServiceWithModifablePort;
-import core.webcommon.HttpHandlerWithBackend;
-import core.webcommon.UpAndRunningHandler;
+import core.webui.webcommon.HttpHandlerWithBackend;
+import core.webui.webcommon.UpAndRunningHandler;
 import frontEnd.MainBackEndHolder;
 
 public class CliServer extends IPCServiceWithModifablePort {

@@ -11,8 +11,8 @@ import org.apache.http.protocol.HttpContext;
 
 import core.languageHandler.Language;
 import core.languageHandler.compiler.JavaNativeCompiler;
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.webcommon.HttpServerUtilities;
 
 public class MenuSetCompilerConfigActionHandler extends AbstractSingleMethodHttpHandler {
 

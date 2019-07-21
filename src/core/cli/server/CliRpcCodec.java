@@ -8,7 +8,7 @@ import java.util.Base64;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import argo.jdom.JsonNode;
-import core.webcommon.HttpServerUtilities;
+import core.webui.webcommon.HttpServerUtilities;
 import utilities.json.JSONUtility;
 
 public class CliRpcCodec {

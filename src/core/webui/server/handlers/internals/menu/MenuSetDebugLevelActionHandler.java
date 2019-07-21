@@ -9,9 +9,9 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.renderedobjects.RenderedDebugLevel;
+import core.webui.webcommon.HttpServerUtilities;
 import utilities.NumberUtility;
 
 public class MenuSetDebugLevelActionHandler extends AbstractSingleMethodHttpHandler {

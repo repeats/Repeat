@@ -12,10 +12,10 @@ import core.keyChain.TaskActivation;
 import core.keyChain.TaskActivationConstructor;
 import core.keyChain.TaskActivationConstructorManager;
 import core.userDefinedTask.UserDefinedAction;
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.CommonTask;
 import core.webui.server.handlers.internals.taskactivation.AbstractTaskActivationConstructorActionHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
+import core.webui.webcommon.HttpServerUtilities;
 
 public class ActionSaveTaskActivationHandler extends AbstractTaskActivationConstructorActionHandler {
 

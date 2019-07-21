@@ -1,4 +1,4 @@
-package core.webcommon;
+package core.webui.webcommon;
 
 import java.io.File;
 import java.io.IOException;

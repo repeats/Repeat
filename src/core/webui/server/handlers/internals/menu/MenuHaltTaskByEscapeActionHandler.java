@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractBooleanConfigHttpHandler;
+import core.webui.webcommon.HttpServerUtilities;
 
 public class MenuHaltTaskByEscapeActionHandler extends AbstractBooleanConfigHttpHandler {
 

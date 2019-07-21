@@ -10,10 +10,10 @@ import org.apache.http.protocol.HttpContext;
 
 import core.languageHandler.Language;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
+import core.webui.webcommon.HttpServerUtilities;
 import utilities.NumberUtility;
 
 public class MenuSetCompilingLanguagesActionHandler extends AbstractUIHttpHandler {

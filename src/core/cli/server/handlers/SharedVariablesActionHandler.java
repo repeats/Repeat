@@ -10,7 +10,7 @@ import org.apache.http.protocol.HttpContext;
 
 import argo.jdom.JsonNode;
 import core.cli.server.CliRpcCodec;
-import core.webcommon.HttpHandlerWithBackend;
+import core.webui.webcommon.HttpHandlerWithBackend;
 
 public abstract class SharedVariablesActionHandler extends HttpHandlerWithBackend {
 

@@ -9,8 +9,8 @@ import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
 import core.controller.Core;
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.webcommon.HttpServerUtilities;
 
 public class GetMousePositionHandler extends AbstractSingleMethodHttpHandler {
 

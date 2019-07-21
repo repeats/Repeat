@@ -5,8 +5,8 @@ import java.util.logging.Logger;
 
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 
-import core.webcommon.HttpServerUtilities;
 import core.webui.server.handlers.AbstractBooleanConfigHttpHandler;
+import core.webui.webcommon.HttpServerUtilities;
 import utilities.OSIdentifier;
 
 public class MenuUseClipboardToTypeStringActionHandler extends AbstractBooleanConfigHttpHandler {
