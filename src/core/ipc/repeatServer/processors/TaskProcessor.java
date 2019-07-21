@@ -49,7 +49,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 	private static final long TASK_CREATION_TIMEOUT_MS = 10000; // Compiling may take long time
 	private static final long EXECUTION_TIMEOUT_MS = 500000; // Execution may also take long time
 	private static final long TASK_REMOVAL_TIMEOUT_MS = 2000; // Removal should be fast
-	private final Map<Integer, ClientTask> tasks;
+	private final Map<String, ClientTask> tasks;
 	private final Map<Long, Reply> locks;
 
 	public TaskProcessor(MainMessageSender messageSender) {
@@ -83,7 +83,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 		return false;
 	}
 
-	public int createTask(File file) {
+	public String createTask(File file) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string("create_task")),
 				JsonNodeFactories.field("parameters",
@@ -101,15 +101,15 @@ public class TaskProcessor extends AbstractMessageProcessor {
 				return task.getId();
 			}
 		}
-		return -1;
+		return "";
 	}
 
-	public boolean runTask(int id, TaskActivation invoker) {
+	public boolean runTask(String id, TaskActivation invoker) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string("run_task")),
 				JsonNodeFactories.field("parameters",
 					JsonNodeFactories.array(
-						JsonNodeFactories.number(id),
+						JsonNodeFactories.string(id),
 						invoker.jsonize()
 					)
 				)
@@ -119,18 +119,18 @@ public class TaskProcessor extends AbstractMessageProcessor {
 		return reply != null && reply.status.equals(SUCCESS_STATUS);
 	}
 
-	public boolean removeTask(int id) {
+	public boolean removeTask(String id) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string("remove_task")),
 				JsonNodeFactories.field("parameters",
-					JsonNodeFactories.array(JsonNodeFactories.number(id))
+					JsonNodeFactories.array(JsonNodeFactories.string(id))
 				)
 			);
 
 		Reply reply = fullMessage(requestMessage, TASK_REMOVAL_TIMEOUT_MS);
 		if (reply.status.equals(SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
-			if (task != null && task.getId() == id) {
+			if (task != null && task.getId().equals(id)) {
 				this.tasks.put(task.getId(), task);
 				tasks.remove(task.getId());
 				return true;

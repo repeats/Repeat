@@ -90,7 +90,7 @@ public class TooltipsIndexPage {
 	public String getShowActionId() {
 		return showActionId;
 	}
-	public void setShowActionId(String copyActionId) {
-		this.showActionId = copyActionId;
+	public void setShowActionId(String showActionId) {
+		this.showActionId = showActionId;
 	}
 }

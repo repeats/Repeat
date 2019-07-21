@@ -17,15 +17,15 @@ import utilities.json.IJsonable;
 public class ClientTask implements IJsonable {
 	private static final Logger LOGGER = Logger.getLogger(ClientTask.class.getName());
 
-	private final int id;
+	private final String id;
 	private final String fileName;
 
-	protected ClientTask(int id, String fileName) {
+	protected ClientTask(String id, String fileName) {
 		this.id = id;
 		this.fileName = fileName;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -36,14 +36,14 @@ public class ClientTask implements IJsonable {
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
-				JsonNodeFactories.field("id", JsonNodeFactories.number(id)),
+				JsonNodeFactories.field("id", JsonNodeFactories.string(id)),
 				JsonNodeFactories.field("file_name", JsonNodeFactories.string(fileName))
 				);
 	}
 
 	public static ClientTask parseJSON(JsonNode node) {
 		try {
-			int id = Integer.parseInt(node.getNumberValue("id"));
+			String id = node.getStringValue("id");
 			String fileName = node.getStringValue("file_name");
 			return new ClientTask(id, fileName);
 		} catch (Exception e) {

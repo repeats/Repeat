@@ -62,8 +62,8 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 				}
 			}
 
-			int id = remoteTaskManager.createTask(sourceFile);
-			if (id == -1) {
+			String id = remoteTaskManager.createTask(sourceFile);
+			if (id.isEmpty()) {
 				getLogger().warning("Unable to create task from ipc client...");
 				return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_ERROR, null);
 			}
@@ -76,7 +76,7 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 
 	protected abstract boolean checkRemoteCompilerSettings();
 
-	protected Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final int id, final String source, File objectFile) {
+	protected Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final String id, final String source, File objectFile) {
 		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {

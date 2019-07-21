@@ -19,6 +19,7 @@ import core.webui.server.handlers.renderedobjects.RenderedCompilingLanguage;
 import core.webui.server.handlers.renderedobjects.RenderedIPCService;
 import core.webui.server.handlers.renderedobjects.RenderedTaskGroup;
 import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
+import core.webui.server.handlers.renderedobjects.TooltipsIndexPage;
 import core.webui.webcommon.HttpServerUtilities;
 
 public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHandler {
@@ -46,6 +47,7 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 		Map<String, Object> data = new HashMap<>();
 		TaskGroup group = backEndHolder.getCurrentTaskGroup();
 		List<RenderedUserDefinedAction> taskList = group.getTasks().stream().map(RenderedUserDefinedAction::fromUserDefinedAction).collect(Collectors.toList());
+		data.put("tooltips", new TooltipsIndexPage());
 		data.put("tasks", taskList);
 
 		return renderedPage(exchange, "fragments/tasks", data);
