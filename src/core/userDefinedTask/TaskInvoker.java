@@ -36,7 +36,7 @@ public class TaskInvoker {
 	}
 
 	/**
-	 * Execute a task. Emit a warning and no-op if there is
+	 * Execute a task. Emit a warning and no-op if there is no such task.
 	 *
 	 * @param groupIndex
 	 *            the index of the group that the task belongs to.
@@ -56,7 +56,43 @@ public class TaskInvoker {
 			return;
 		}
 		UserDefinedAction task = group.getTasks().get(taskIndex);
-		task.setInvoker(activation);
-		task.trackedAction(Core.getInstance(config));
+		execute(task, activation);
+	}
+
+	/**
+	 * Execute a task. Emit a warning and no-op if there is no such task.
+	 *
+	 * @param id
+	 *            ID of the task.
+	 * @throws InterruptedException
+	 */
+	public void execute(String id) throws InterruptedException {
+		execute(id, TaskActivation.newBuilder().build());
+	}
+
+	/**
+	 * Execute a task. Emit a warning and no-op if there is no such task.
+	 *
+	 * @param id
+	 *            ID of the task.
+	 * @param activation
+	 *            task activation to associate with the execution.
+	 * @throws InterruptedException
+	 */
+	public void execute(String id, TaskActivation activation) throws InterruptedException {
+		for (TaskGroup group : taskGroup) {
+			for (UserDefinedAction task : group.getTasks()) {
+				if (task.getActionId().equals(id)) {
+					execute(task, activation);
+					return;
+				}
+			}
+		}
+		LOGGER.warning("Cannot find task with ID " + id + ".");
+	}
+
+	private void execute(UserDefinedAction action, TaskActivation activation) throws InterruptedException {
+		action.setInvoker(activation);
+		action.trackedAction(Core.getInstance(config));
 	}
 }
