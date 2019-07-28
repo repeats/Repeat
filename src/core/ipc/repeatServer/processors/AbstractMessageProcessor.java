@@ -4,15 +4,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Logger;
 
-import utilities.ILoggable;
 import argo.jdom.JsonNode;
-import argo.jdom.JsonNodeFactories;
+import core.ipc.ApiProtocol;
 import core.ipc.repeatServer.MainMessageSender;
+import utilities.ILoggable;
 
-abstract class AbstractMessageProcessor implements ILoggable {
-
-	protected static final String SUCCESS_STATUS = "Success";
-	protected static final String FAILURE_STATUS = "Failure";
+public abstract class AbstractMessageProcessor implements ILoggable {
 
 	protected final MainMessageSender messageSender;
 
@@ -25,15 +22,17 @@ abstract class AbstractMessageProcessor implements ILoggable {
 
 	protected boolean verifyReplyContent(JsonNode content) {
 		return content.isStringValue("status") &&
-				content.isNode("message");
+				content.isNode("message") &&
+				content.isBooleanValue("is_reply_message") &&
+				content.getBooleanValue("is_reply_message");
 	}
 
 	protected boolean success(String type, long id, String message) {
-		return messageSender.sendMessage(type, id, generateReply(SUCCESS_STATUS, message));
+		return messageSender.sendMessage(type, id, ApiProtocol.successReply(message));
 	}
 
 	protected boolean success(String type, long id, JsonNode message) {
-		return messageSender.sendMessage(type, id, generateReply(SUCCESS_STATUS, message));
+		return messageSender.sendMessage(type, id, ApiProtocol.successReply( message));
 	}
 
 	protected boolean success(String type, long id) {
@@ -45,22 +44,8 @@ abstract class AbstractMessageProcessor implements ILoggable {
 		StringWriter sw = new StringWriter();
 		new Throwable("").printStackTrace(new PrintWriter(sw));
 		getLogger().info(sw.toString());
-		messageSender.sendMessage(type, id, generateReply(FAILURE_STATUS, message));
+		messageSender.sendMessage(type, id, ApiProtocol.failureReply(message));
 		return false;
-	}
-
-	protected JsonNode generateReply(String status, String message) {
-		return JsonNodeFactories.object(
-				JsonNodeFactories.field("status", JsonNodeFactories.string(status)),
-				JsonNodeFactories.field("message", JsonNodeFactories.string(message))
-				);
-	}
-
-	protected JsonNode generateReply(String status, JsonNode message) {
-		return JsonNodeFactories.object(
-				JsonNodeFactories.field("status", JsonNodeFactories.string(status)),
-				JsonNodeFactories.field("message", message)
-				);
 	}
 
 	@Override

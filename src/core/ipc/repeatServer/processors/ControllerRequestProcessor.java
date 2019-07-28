@@ -21,7 +21,7 @@ import utilities.swing.SwingUtil;
  * The central processor is responsible for extraction of message id and type
  * A received message from the lower layer (central processor) will have the following JSON contents:
  * {
- *		"device": a string from the set {"mouse", "keyboard"},
+ *		"device": a string from the set {"mouse", "keyboard", "tool"},
  *		"action" : a string specifying action,
  *		"parameters" : a list of parameters for this action
  * }

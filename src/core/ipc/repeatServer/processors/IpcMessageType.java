@@ -17,6 +17,11 @@ public enum IpcMessageType {
 		return value;
 	}
 
+	@Override
+	public String toString() {
+		return value;
+	}
+
 	protected static IpcMessageType identify(String value) {
 		for (IpcMessageType type : IpcMessageType.values()) {
 			if (type.value.equals(value)) {

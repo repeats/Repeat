@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.ipc.ApiProtocol;
 import core.ipc.repeatServer.ClientTask;
 import core.ipc.repeatServer.MainMessageSender;
 import core.keyChain.TaskActivation;
@@ -94,7 +95,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 			);
 
 		Reply reply = fullMessage(requestMessage, TASK_CREATION_TIMEOUT_MS);
-		if (reply != null && reply.status.equals(SUCCESS_STATUS)) {
+		if (reply != null && reply.status.equals(ApiProtocol.SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
 			if (task != null) {
 				this.tasks.put(task.getId(), task);
@@ -116,7 +117,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 			);
 
 		Reply reply = fullMessage(requestMessage, EXECUTION_TIMEOUT_MS);
-		return reply != null && reply.status.equals(SUCCESS_STATUS);
+		return reply != null && reply.status.equals(ApiProtocol.SUCCESS_STATUS);
 	}
 
 	public boolean removeTask(String id) {
@@ -128,7 +129,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 			);
 
 		Reply reply = fullMessage(requestMessage, TASK_REMOVAL_TIMEOUT_MS);
-		if (reply.status.equals(SUCCESS_STATUS)) {
+		if (reply.status.equals(ApiProtocol.SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
 			if (task != null && task.getId().equals(id)) {
 				this.tasks.put(task.getId(), task);

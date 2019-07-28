@@ -20,7 +20,7 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 
 	protected static final Charset ENCODING = StandardCharsets.UTF_8;
 	private static final int DEFAULT_PORT = 9999;
-	private static final int DEFAULT_TIMEOUT_MS = 10000;
+	public static final int DEFAULT_TIMEOUT_MS = 10000;
 	private static final int MAX_THREAD_COUNT = 10;
 	private static final int MAX_SERVER_BACK_LOG = 50; // Default value of ServerSocket constructor.
 

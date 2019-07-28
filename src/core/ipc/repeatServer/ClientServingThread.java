@@ -1,31 +1,21 @@
 package core.ipc.repeatServer;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.util.Base64;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import core.controller.Core;
+import core.ipc.IPCProtocol;
 import core.ipc.repeatServer.processors.ServerMainProcessor;
 import utilities.ILoggable;
 
 class ClientServingThread implements Runnable, ILoggable {
-
-	private static final long READ_LOOP_SLEEP_DURATION_MS = 500;
-	private static final int MAX_MESSAGE_RETRY = 100;
-	private static final int NULL_CHARACTER = 0x00;
-
-	protected static final int MESSAGE_DELIMITER = 0x02;
 
 	private Boolean stopped;
 	private final Socket socket;
@@ -110,7 +100,7 @@ class ClientServingThread implements Runnable, ILoggable {
 			return false;
 		}
 
-		List<String> messages = getMessages();
+		List<String> messages = IPCProtocol.getMessages(reader);
 		if (messages == null || messages.size() == 0) {
 			getLogger().warning("Messages is null or messages size is 0. " + messages);
 			return false;
@@ -127,67 +117,6 @@ class ClientServingThread implements Runnable, ILoggable {
 		}
 
 		return result;
-	}
-
-	private List<String> getMessages() throws IOException, InterruptedException {
-		/**
-		 * Create a blocking read waiting for the next communication
-		 */
-		int retryCount = 0;
-		int firstCharacter = reader.read();
-		while (firstCharacter == -1) {
-			retryCount++;
-			if (retryCount < MAX_MESSAGE_RETRY) {
-				Thread.sleep(READ_LOOP_SLEEP_DURATION_MS);
-			} else {
-				getLogger().log(Level.WARNING, "Max retry reached.");
-				return null;
-			}
-			firstCharacter = reader.read();
-		}
-
-		/**
-		 * Build the request, remembering that
-		 */
-		List<String> output = new LinkedList<>();
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-		if (firstCharacter != MESSAGE_DELIMITER) {
-			buffer.write(firstCharacter);
-		}
-
-		while (reader.ready()) {
-			int readValue = reader.read();
-			if (readValue != -1) {
-				if (readValue == MESSAGE_DELIMITER) {
-					if (buffer.size() != 0) {
-						output.add(decode(buffer.toByteArray()));
-						buffer.reset();
-					}
-				} else if (readValue != NULL_CHARACTER) {
-					buffer.write(readValue);
-				}
-			} else {
-				if (buffer.size() != 0) {
-					output.add(decode(buffer.toByteArray()));
-					buffer.reset();
-				}
-				break;
-			}
-		}
-		return output;
-	}
-
-	/**
-	 * Decode received array of bytes from client.
-	 *
-	 * @param bytes array of bytes to decode.
-	 * @return decoded message.
-	 */
-	private String decode(byte[] bytes) {
-		byte[] base64Decoded = Base64.getDecoder().decode(bytes);
-		CharBuffer result = ControllerServer.ENCODING.decode(ByteBuffer.wrap(base64Decoded));
-		return result.toString().trim();
 	}
 
 	protected void stop() {

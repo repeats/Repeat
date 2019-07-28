@@ -10,7 +10,7 @@ import core.ipc.repeatServer.MainMessageSender;
  *
  * A received message from the lower layer (central processor) will have the following JSON contents:
  * {
- * 		"device": reserved field. Must be empty string,
+ * 		"device": must be 'system',
  * 		"action": action depending on the type parsed by lower layer,
  * 		"parameters": parameters for this action
  * }
