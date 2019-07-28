@@ -90,9 +90,13 @@ public class KeyboardCore {
 
 			Tools.setClipboard(string);
 			if (OSIdentifier.IS_OSX) {
-				combination(KeyEvent.VK_META, KeyEvent.VK_V);
+				press(KeyEvent.VK_META, KeyEvent.VK_V);
+				controller.delay(100);
+				release(KeyEvent.VK_V, KeyEvent.VK_META);
 			} else {
-				combination(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+				press(KeyEvent.VK_SHIFT, KeyEvent.VK_INSERT);
+				controller.delay(100);
+				release(KeyEvent.VK_INSERT, KeyEvent.VK_SHIFT);
 			}
 
 			if (!existing.isEmpty()) {
