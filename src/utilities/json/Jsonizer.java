@@ -22,6 +22,7 @@ import utilities.StringUtilities;
 
 /**
  * Automatically turns a JSON into a Java object and back using reflection.
+ * Only consider private fields. Inherited fields are not considered.
  */
 public class Jsonizer {
 
