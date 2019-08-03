@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +22,7 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 	protected static final Charset ENCODING = StandardCharsets.UTF_8;
 	private static final int DEFAULT_PORT = 9999;
 	public static final int DEFAULT_TIMEOUT_MS = 10000;
+	private static final int DEFAULT_SHUTDOWN_TIMEOUT_MS = 10000;
 	private static final int MAX_THREAD_COUNT = 10;
 	private static final int MAX_SERVER_BACK_LOG = 50; // Default value of ServerSocket constructor.
 
@@ -102,6 +104,13 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 			} catch (IOException e) {
 				getLogger().log(Level.SEVERE, "Failed to close server socket", e);
 			}
+		}
+
+		threadPool.shutdown();
+		try {
+			threadPool.awaitTermination(DEFAULT_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			getLogger().log(Level.SEVERE, "Waiting for server thread pool to close", e);
 		}
 	}
 

@@ -190,6 +190,7 @@ public class Config implements ILoggable {
 						))
 				)),
 				JsonNodeFactories.field("ipc_settings", IPCServiceManager.jsonize()),
+				JsonNodeFactories.field("remote_repeats_clients", backEnd.getPeerServiceClientManager().jsonize()),
 				JsonNodeFactories.field("compilers", compilerFactory.jsonize()),
 				JsonNodeFactories.field("task_groups", JsonNodeFactories.array(taskNodes))
 				);

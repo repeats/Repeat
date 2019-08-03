@@ -67,7 +67,8 @@
                               <ul class="dropdown-menu">
                                 <li id="menu-halt-all-tasks"><a href="#">Halt all tasks</a></li>
                                 <li id="menu-generate-source"><a href="#">Generate source</a></li>
-                                <li><a href="/ipcs">Native Modules...</a></li>
+                                <li><a href="/ipcs">Native modules...</a></li>
+                                <li><a href="/repeats-remove-clients">Remote Repeats clients...</a></li>
                                 <li id="menu-compiling-languages"><a href="#">Compiling languages...</a></li>
                               </ul>
                         </li>

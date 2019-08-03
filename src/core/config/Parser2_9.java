@@ -12,6 +12,7 @@ import argo.jdom.JsonRootNode;
 import core.cli.server.CliServer;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
+import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClientManager;
 import core.keyChain.KeyChain;
 import core.userDefinedTask.TaskGroup;
 import utilities.json.JSONUtility;
@@ -46,6 +47,9 @@ public class Parser2_9 extends ConfigParser {
 			newGroup = JSONUtility.addChild(newGroup, "group_id", JsonNodeFactories.string(UUID.randomUUID().toString()));
 			newGroups.add(newGroup);
 		}
+		previousVersion = JSONUtility.addChild(previousVersion, "remote_repeats_clients",
+				JsonNodeFactories.object(
+						JsonNodeFactories.field(JsonNodeFactories.string("clients"), JsonNodeFactories.array()))).getRootNode();
 
 		return JSONUtility.replaceChild(previousVersion, "task_groups", JsonNodeFactories.array(newGroups)).getRootNode();
 	}
@@ -68,6 +72,10 @@ public class Parser2_9 extends ConfigParser {
 			config.setRECORD(KeyChain.parseJSON(globalHotkey.getArrayNode("record")));
 			config.setREPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay")));
 			config.setCOMPILED_REPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay_compiled")));
+
+			JsonNode peerClients = root.getNode("remote_repeats_clients");
+			RepeatsPeerServiceClientManager repeatsPeerServiceClientManager = RepeatsPeerServiceClientManager.parseJSON(peerClients);
+			config.getBackEnd().setPeerServiceClientManager(repeatsPeerServiceClientManager);
 
 			List<JsonNode> ipcSettings = root.getArrayNode("ipc_settings");
 			if (!IPCServiceManager.parseJSON(ipcSettings)) {

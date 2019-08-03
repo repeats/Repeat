@@ -102,6 +102,8 @@ public class HttpServerUtilities {
 				value = valueNode.getStringValue();
 			} else if (valueNode.isNumberValue()) {
 				value = valueNode.getNumberValue();
+			} else if (valueNode.isBooleanValue()) {
+				value = valueNode.getBooleanValue() + "";
 			} else {
 				LOGGER.warning("Value is not a string or number node.");
 				return null;

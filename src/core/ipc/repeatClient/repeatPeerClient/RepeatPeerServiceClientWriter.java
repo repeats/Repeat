@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
@@ -18,8 +17,6 @@ import utilities.json.IJsonable;
 import utilities.json.JSONUtility;
 
 public class RepeatPeerServiceClientWriter extends AbstractRepeatsClientStoppableThread {
-
-	private static final Logger LOGGER = Logger.getLogger(RepeatPeerServiceClientWriter.class.getName());
 
 	private static final long REPLY_WAIT_TIMEOUT_MS = 10000;
 	private static final long MESSAGE_WAIT_TIMEOUT_MS = (long) (ControllerServer.DEFAULT_TIMEOUT_MS * 0.8);
@@ -42,7 +39,6 @@ public class RepeatPeerServiceClientWriter extends AbstractRepeatsClientStoppabl
 			return;
 		}
 
-		LOGGER.info("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ sending message " + message);
 		IPCProtocol.sendMessage(writer, message);
 	}
 

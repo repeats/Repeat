@@ -25,6 +25,7 @@ import core.controller.Core;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
+import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClientManager;
 import core.ipc.repeatServer.processors.TaskProcessorManager;
 import core.keyChain.TaskActivation;
 import core.keyChain.managers.GlobalEventsManager;
@@ -70,6 +71,7 @@ public class MainBackEndHolder {
 	// To allow executing other tasks programmatically.
 	private final TaskInvoker taskInvoker;
 	protected final GlobalEventsManager keysManager;
+	private RepeatsPeerServiceClientManager peerServiceClientManager;
 
 	protected final Config config;
 
@@ -96,6 +98,7 @@ public class MainBackEndHolder {
 
 		taskInvoker = new TaskInvoker(config, taskGroups);
 		keysManager = new GlobalEventsManager(config);
+		peerServiceClientManager = new RepeatsPeerServiceClientManager();
 		replayConfig = ReplayConfig.of();
 		recorder = new Recorder(config, keysManager);
 
@@ -196,6 +199,12 @@ public class MainBackEndHolder {
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Exception when launching ipcs.", e);
 		}
+
+		try {
+			peerServiceClientManager.startAllClients(true);
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Exception when launching clients connecting to peer services.", e);
+		}
 	}
 
 	protected void stopBackEndActivities() {
@@ -212,6 +221,12 @@ public class MainBackEndHolder {
 			IPCServiceManager.stopServices();
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Unable to stop ipcs.", e);
+		}
+
+		try {
+			peerServiceClientManager.stopAllClients();
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Unable to stop clients to peer services.", e);
 		}
 
 		GlobalListenerHookController.of().cleanup();
@@ -603,7 +618,7 @@ public class MainBackEndHolder {
 
 		LOGGER.info("Successfully overridden task " + customFunction.getName());
 		customFunction = null;
-		if (!config.writeConfig()) {
+		if (!writeConfigFile()) {
 			LOGGER.warning("Unable to update config.");
 		}
 	}
@@ -828,7 +843,7 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/***************************************Configurations********************************************************/
 	// Write configuration file
-	protected boolean writeConfigFile() {
+	public boolean writeConfigFile() {
 		boolean result = config.writeConfig();
 		if (!result) {
 			LOGGER.warning("Unable to update config.");
@@ -901,6 +916,14 @@ public class MainBackEndHolder {
 
 	public GlobalEventsManager getKeysManager() {
 		return keysManager;
+	}
+
+	public RepeatsPeerServiceClientManager getPeerServiceClientManager() {
+		return peerServiceClientManager;
+	}
+
+	public void setPeerServiceClientManager(RepeatsPeerServiceClientManager peerServiceClientManager) {
+		this.peerServiceClientManager = peerServiceClientManager;
 	}
 
 	public String getLogsSince(long time) {

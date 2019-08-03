@@ -12,14 +12,17 @@ import org.apache.http.nio.protocol.HttpAsyncExchange;
 
 import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
+import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClient;
 import core.languageHandler.Language;
 import core.userDefinedTask.TaskGroup;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedCompilingLanguage;
 import core.webui.server.handlers.renderedobjects.RenderedIPCService;
+import core.webui.server.handlers.renderedobjects.RenderedRepeatsRemoteClient;
 import core.webui.server.handlers.renderedobjects.RenderedTaskGroup;
 import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
 import core.webui.server.handlers.renderedobjects.TooltipsIndexPage;
+import core.webui.server.handlers.renderedobjects.TooltipsRepeatsRemoteClientPage;
 import core.webui.webcommon.HttpServerUtilities;
 
 public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHandler {
@@ -41,6 +44,18 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 		data.put("ipcs", services);
 
 		return renderedPage(exchange, "fragments/ipcs", data);
+	}
+
+	protected final Void renderedRepeatsRemoteClients(HttpAsyncExchange exchange) throws IOException {
+		Map<String, Object> data = new HashMap<>();
+		List<RenderedRepeatsRemoteClient> services = new ArrayList<>();
+		for (RepeatsPeerServiceClient client : this.backEndHolder.getPeerServiceClientManager().getClients()) {
+			services.add(RenderedRepeatsRemoteClient.fromRepeatsPeerServiceClient(client));
+		}
+		data.put("clients", services);
+		data.put("tooltips", new TooltipsRepeatsRemoteClientPage());
+
+		return renderedPage(exchange, "fragments/repeats_clients", data);
 	}
 
 	protected final Void renderedTaskForGroup(HttpAsyncExchange exchange) throws IOException {

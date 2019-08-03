@@ -6,36 +6,41 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.Socket;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import argo.jdom.JsonNode;
+import argo.jdom.JsonNodeFactories;
+import argo.jdom.JsonRootNode;
 import core.ipc.IIPCService;
 import core.ipc.repeatClient.repeatPeerClient.api.RepeatsClientApi;
+import utilities.json.IJsonable;
 
-public class RepeatsPeerService extends IIPCService {
+public class RepeatsPeerServiceClient extends IIPCService implements IJsonable {
 
-	private static final Logger LOGGER = Logger.getLogger(RepeatsPeerService.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(RepeatsPeerServiceClient.class.getName());
 
+	private String id;
 	private String host;
 	private Socket socket;
-	private ScheduledThreadPoolExecutor executor;
 	private ResponseManager responseManager;
 
 	private RepeatPeerServiceClientReader reader;
 	private RepeatPeerServiceClientWriter writer;
 
-	private Future<?> readerFuture, writerFuture;
+	private Thread readerThread, writerThread;
 	private RepeatsClientApi api;
 
-	public RepeatsPeerService(String host, int port, ScheduledThreadPoolExecutor executor) {
-		super();
+	private RepeatsPeerServiceClient(String id, String host, int port) {
+		this.id = id;
 		this.port = port;
 		this.host = host;
 		this.responseManager = new ResponseManager();
-		this.executor = executor;
+	}
+
+	public RepeatsPeerServiceClient(String host, int port) {
+		this(UUID.randomUUID().toString(), host, port);
 	}
 
 	public RepeatsClientApi api() {
@@ -54,8 +59,10 @@ public class RepeatsPeerService extends IIPCService {
 
 		api = new RepeatsClientApi(writer);
 
-		readerFuture = executor.submit(reader);
-		writerFuture = executor.submit(writer);
+		readerThread = new Thread(reader);
+		writerThread = new Thread(writer);
+		readerThread.start();
+		writerThread.start();
 	}
 
 	@Override
@@ -68,9 +75,9 @@ public class RepeatsPeerService extends IIPCService {
 		writer.stop();
 
 		try {
-			readerFuture.get();
-			writerFuture.get();
-		} catch (InterruptedException | ExecutionException e) {
+			readerThread.join();
+			writerThread.join();
+		} catch (InterruptedException e) {
 			LOGGER.log(Level.WARNING, "Waiting for reader and writer to stop.", e);
 		}
 
@@ -78,18 +85,48 @@ public class RepeatsPeerService extends IIPCService {
 		socket = null;
 	}
 
+	public String getClientId() {
+		return id;
+	}
+
 	@Override
 	public boolean isRunning() {
 		return socket != null && !socket.isClosed();
 	}
 
+	public String getHost() {
+		return host;
+	}
+
 	@Override
 	public String getName() {
-		return "Repeats client " + host + ":" + port;
+		return "Repeats remote client " + host + ":" + port;
 	}
 
 	@Override
 	public Logger getLogger() {
 		return LOGGER;
+	}
+
+	@Override
+	public JsonRootNode jsonize() {
+		return JsonNodeFactories.object(
+				JsonNodeFactories.field(JsonNodeFactories.string("id"), JsonNodeFactories.string(id)),
+				JsonNodeFactories.field(JsonNodeFactories.string("host"), JsonNodeFactories.string(host)),
+				JsonNodeFactories.field(JsonNodeFactories.string("port"), JsonNodeFactories.number(port)),
+				JsonNodeFactories.field(JsonNodeFactories.string("launch_at_startup"), JsonNodeFactories.booleanNode(isLaunchAtStartup()))
+				);
+	}
+
+	public static RepeatsPeerServiceClient parseJSON(JsonNode node) {
+		String id = node.getStringValue("id");
+		String host = node.getStringValue("host");
+		String portString = node.getNumberValue("port");
+		int port = Integer.parseInt(portString);
+		boolean launchAtStartup = node.getBooleanValue("launch_at_startup");
+
+		RepeatsPeerServiceClient client = new RepeatsPeerServiceClient(id, host, port);
+		client.setLaunchAtStartup(launchAtStartup);
+		return client;
 	}
 }

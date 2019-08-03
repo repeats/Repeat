@@ -19,7 +19,6 @@ public abstract class AbstractRepeatsClientStoppableThread implements Runnable {
 	public final void run() {
 		while (!stopped) {
 			try {
-				LOGGER.info("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 				processLoop();
 			} catch (InterruptedException ie) {
 				LOGGER.log(Level.WARNING, "Interrupted exception when running process loop.", ie);
@@ -29,7 +28,6 @@ public abstract class AbstractRepeatsClientStoppableThread implements Runnable {
 				break;
 			}
 		}
-		LOGGER.info("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
 	}
 
 	protected abstract void processLoop() throws IOException, InterruptedException;

@@ -22,6 +22,12 @@ import core.keyChain.TaskActivationConstructorManager;
 import core.webui.server.handlers.AboutPageHandler;
 import core.webui.server.handlers.ApiPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
+import core.webui.server.handlers.internal.repeatsclient.AddRemoteClientHandler;
+import core.webui.server.handlers.internal.repeatsclient.DeleteRemoteClientHandler;
+import core.webui.server.handlers.internal.repeatsclient.RepeatsRemoteClientPageHandler;
+import core.webui.server.handlers.internal.repeatsclient.SetLaunchAtStartupRemoteClientHandler;
+import core.webui.server.handlers.internal.repeatsclient.StartRemoteClientHandler;
+import core.webui.server.handlers.internal.repeatsclient.StopRemoteClientHandler;
 import core.webui.server.handlers.internals.ActionClearLogHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
@@ -140,6 +146,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
 		output.put("/", new IndexPageHandler(objectRenderer));
 		output.put("/ipcs", new IPCPageHandler(objectRenderer));
+		output.put("/repeats-remove-clients", new RepeatsRemoteClientPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
 		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/api", new ApiPageHandler());
@@ -207,6 +214,12 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/action/stop-ipc-service", new ActionStopIPCServiceHandler(objectRenderer));
 		output.put("/internals/action/stop-running-compiled-task", new ActionStopRunningCompiledTaskHandler());
 		output.put("/internals/action/switch-task-group", new ActionSwitchTaskGroupHandler(objectRenderer));
+
+		output.put("/internals/repeats-remote-clients/add", new AddRemoteClientHandler(objectRenderer));
+		output.put("/internals/repeats-remote-clients/delete", new DeleteRemoteClientHandler(objectRenderer));
+		output.put("/internals/repeats-remote-clients/start", new StartRemoteClientHandler(objectRenderer));
+		output.put("/internals/repeats-remote-clients/stop", new StopRemoteClientHandler(objectRenderer));
+		output.put("/internals/repeats-remote-clients/set-launch-at-startup", new SetLaunchAtStartupRemoteClientHandler(objectRenderer));
 
 		output.put("/internals/get/editted-source", new GetEdittedSourceHandler());
 		output.put("/internals/get/is-running-compiled-task", new GetIsRunningCompiledTaskHandler());

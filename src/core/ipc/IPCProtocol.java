@@ -17,7 +17,7 @@ public class IPCProtocol {
 
 	protected static final int MESSAGE_DELIMITER = 0x02;
 	protected static final long READ_LOOP_SLEEP_DURATION_MS = 200;
-	protected static final int MAX_MESSAGE_RETRY = 10;
+	protected static final int MAX_MESSAGE_RETRY = 3;
 	protected static final int NULL_CHARACTER = 0x00;
 
 	/**
