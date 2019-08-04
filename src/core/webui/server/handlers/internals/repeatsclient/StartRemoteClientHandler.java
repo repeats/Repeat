@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internal.repeatsclient;
+package core.webui.server.handlers.internals.repeatsclient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -13,9 +13,9 @@ import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.webcommon.HttpServerUtilities;
 
-public class SetLaunchAtStartupRemoteClientHandler extends AbstractUIHttpHandler {
+public class StartRemoteClientHandler extends AbstractUIHttpHandler {
 
-	public SetLaunchAtStartupRemoteClientHandler(ObjectRenderer objectRenderer) {
+	public StartRemoteClientHandler(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
@@ -29,15 +29,8 @@ public class SetLaunchAtStartupRemoteClientHandler extends AbstractUIHttpHandler
 		if (id.isEmpty()) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "ID must not be empty.");
 		}
-		String value = params.get("value");
-		if (value.equals(true + "")) {
-			backEndHolder.getPeerServiceClientManager().setLaunchAtStartup(id, true);
-		} else if (value.equals(false + "")) {
-			backEndHolder.getPeerServiceClientManager().setLaunchAtStartup(id, false);
-		} else {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Unknown boolean value of " + value + ".");
-		}
 
+		backEndHolder.getPeerServiceClientManager().startClient(id);
 		return renderedRepeatsRemoteClients(exchange);
 	}
 

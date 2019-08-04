@@ -18,6 +18,7 @@ import core.ipc.IPCServiceManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import core.userDefinedTask.TaskGroup;
+import core.userDefinedTask.internals.ToolsConfig;
 import frontEnd.MainBackEndHolder;
 import utilities.FileUtility;
 import utilities.ILoggable;
@@ -36,6 +37,7 @@ public class Config implements ILoggable {
 	private static final List<ConfigParser> knownParsers;
 
 	private DynamicCompilerManager compilerFactory;
+	private ToolsConfig toolsConfig;
 	private final MainBackEndHolder backEnd;
 
 	public static final int HALT_TASK = KeyEvent.VK_ESCAPE; // This should be hardcoded, and must not be changed
@@ -161,6 +163,7 @@ public class Config implements ILoggable {
 	}
 
 	private void defaultExtract() {
+		toolsConfig = new ToolsConfig(Arrays.asList(ToolsConfig.LOCAL_CLIENT));
 		List<TaskGroup> taskGroups = backEnd.getTaskGroups();
 		backEnd.addTaskGroup(new TaskGroup("default"));
 		backEnd.setCurrentTaskGroup(taskGroups.get(0));
@@ -187,7 +190,8 @@ public class Config implements ILoggable {
 								JsonNodeFactories.field("record", RECORD.jsonize()),
 								JsonNodeFactories.field("replay", REPLAY.jsonize()),
 								JsonNodeFactories.field("replay_compiled", COMPILED_REPLAY.jsonize())
-						))
+						)),
+						JsonNodeFactories.field("tools_config", toolsConfig.jsonize())
 				)),
 				JsonNodeFactories.field("ipc_settings", IPCServiceManager.jsonize()),
 				JsonNodeFactories.field("remote_repeats_clients", backEnd.getPeerServiceClientManager().jsonize()),
@@ -231,6 +235,14 @@ public class Config implements ILoggable {
 
 		boolean result = parser.importData(this, root);
 		return result;
+	}
+
+	public ToolsConfig getToolsConfig() {
+		return toolsConfig;
+	}
+
+	public void setToolsConfig(ToolsConfig toolsConfig) {
+		this.toolsConfig = toolsConfig;
 	}
 
 	public int getMouseGestureActivationKey() {

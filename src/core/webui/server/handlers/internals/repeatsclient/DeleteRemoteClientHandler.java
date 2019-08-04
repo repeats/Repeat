@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internal.repeatsclient;
+package core.webui.server.handlers.internals.repeatsclient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -13,9 +13,9 @@ import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.webcommon.HttpServerUtilities;
 
-public class StartRemoteClientHandler extends AbstractUIHttpHandler {
+public class DeleteRemoteClientHandler extends AbstractUIHttpHandler {
 
-	public StartRemoteClientHandler(ObjectRenderer objectRenderer) {
+	public DeleteRemoteClientHandler(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
@@ -30,8 +30,7 @@ public class StartRemoteClientHandler extends AbstractUIHttpHandler {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "ID must not be empty.");
 		}
 
-		backEndHolder.getPeerServiceClientManager().startClient(id);
+		backEndHolder.getPeerServiceClientManager().stopAndRemoveClient(id);
 		return renderedRepeatsRemoteClients(exchange);
 	}
-
 }

@@ -49,6 +49,16 @@ public class HttpServerUtilities {
 		}
 	}
 
+	public static JsonNode parsePostParameters(HttpRequest request) {
+		byte[] content = getPostContent(request);
+		if (content == null) {
+			LOGGER.warning("Failed to get POST content.");
+			return null;
+		}
+
+		return getPostParameters(content);
+	}
+
 	public static Map<String, String> parseSimplePostParameters(HttpRequest request) {
 		byte[] content = getPostContent(request);
 		if (content == null) {
@@ -56,7 +66,7 @@ public class HttpServerUtilities {
 			return null;
 		}
 
-		return getSimpleParameters(content);
+		return getSimplePostParameters(content);
 	}
 
 	public static byte[] getPostContent(HttpRequest request) {
@@ -81,12 +91,21 @@ public class HttpServerUtilities {
 		return buffer.toByteArray();
 	}
 
-	private static Map<String, String> getSimpleParameters(byte[] content) {
+	private static JsonNode getPostParameters(byte[] content) {
 		String postContent = new String(content, StandardCharsets.UTF_8);
-		Map<String, String> output = new HashMap<>();
 		JsonNode node = JSONUtility.jsonFromString(postContent);
 		if (node == null) {
 			LOGGER.warning("Failed to parse content into JSON.");
+			return null;
+		}
+
+		return node;
+	}
+
+	private static Map<String, String> getSimplePostParameters(byte[] content) {
+		Map<String, String> output = new HashMap<>();
+		JsonNode node = getPostParameters(content);
+		if (node == null) {
 			return null;
 		}
 

@@ -22,17 +22,13 @@ import core.keyChain.TaskActivationConstructorManager;
 import core.webui.server.handlers.AboutPageHandler;
 import core.webui.server.handlers.ApiPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
-import core.webui.server.handlers.internal.repeatsclient.AddRemoteClientHandler;
-import core.webui.server.handlers.internal.repeatsclient.DeleteRemoteClientHandler;
-import core.webui.server.handlers.internal.repeatsclient.RepeatsRemoteClientPageHandler;
-import core.webui.server.handlers.internal.repeatsclient.SetLaunchAtStartupRemoteClientHandler;
-import core.webui.server.handlers.internal.repeatsclient.StartRemoteClientHandler;
-import core.webui.server.handlers.internal.repeatsclient.StopRemoteClientHandler;
 import core.webui.server.handlers.internals.ActionClearLogHandler;
 import core.webui.server.handlers.internals.GetLogsHandler;
 import core.webui.server.handlers.internals.GetMousePositionHandler;
 import core.webui.server.handlers.internals.GetPathSuggestionHandler;
 import core.webui.server.handlers.internals.GetRenderedTaskGroupsDropdown;
+import core.webui.server.handlers.internals.globalconfigs.GlobalConfigsPageHandler;
+import core.webui.server.handlers.internals.globalconfigs.SetToolsConfigClientsHandler;
 import core.webui.server.handlers.internals.ipcs.ActionRunIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.IPCPageHandler;
@@ -66,6 +62,12 @@ import core.webui.server.handlers.internals.recordsreplays.ActionStopRecordingHa
 import core.webui.server.handlers.internals.recordsreplays.ActionStopReplayHandler;
 import core.webui.server.handlers.internals.recordsreplays.GetIsRecordingHandler;
 import core.webui.server.handlers.internals.recordsreplays.GetIsReplayingHandler;
+import core.webui.server.handlers.internals.repeatsclient.AddRemoteClientHandler;
+import core.webui.server.handlers.internals.repeatsclient.DeleteRemoteClientHandler;
+import core.webui.server.handlers.internals.repeatsclient.RepeatsRemoteClientPageHandler;
+import core.webui.server.handlers.internals.repeatsclient.SetLaunchAtStartupRemoteClientHandler;
+import core.webui.server.handlers.internals.repeatsclient.StartRemoteClientHandler;
+import core.webui.server.handlers.internals.repeatsclient.StopRemoteClientHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddPhraseHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddStrokesAsKeyChainHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddStrokesAsKeySequenceHandler;
@@ -146,11 +148,14 @@ public class UIServer extends IPCServiceWithModifablePort {
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
 		output.put("/", new IndexPageHandler(objectRenderer));
 		output.put("/ipcs", new IPCPageHandler(objectRenderer));
-		output.put("/repeats-remove-clients", new RepeatsRemoteClientPageHandler(objectRenderer));
+		output.put("/repeats-remote-clients", new RepeatsRemoteClientPageHandler(objectRenderer));
+		output.put("/global-configs", new GlobalConfigsPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
 		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/api", new ApiPageHandler());
 		output.put("/about", new AboutPageHandler(objectRenderer));
+
+		output.put("/internals/global-configs/tools-config/set-clients", new SetToolsConfigClientsHandler(objectRenderer));
 
 		output.put("/internals/menu/file/save-config", new MenuSaveConfigActionHandler());
 		output.put("/internals/menu/file/import-tasks", new MenuImportTaskActionHandler());

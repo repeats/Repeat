@@ -30,13 +30,13 @@ function registerRepeatsClientTableRows() {
         table.rows[i].cells[j].onclick = function(cell, i, j) {
             return function() {
                 // Minus one so that row index starts from 0.
-                tableIpcOnClick(cell, i - 1, j);
+                tableRepeatsClientsOnClick(cell, i - 1, j);
             };
         }(table.rows[i].cells[j], i, j);
     }
 }
 
-function tableIpcOnClick(cell, row, col) {
+function tableRepeatsClientsOnClick(cell, row, col) {
     if (getSelectedIpcServiceIndex() != row) {
         return;
     }

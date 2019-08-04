@@ -68,7 +68,7 @@
                                 <li id="menu-halt-all-tasks"><a href="#">Halt all tasks</a></li>
                                 <li id="menu-generate-source"><a href="#">Generate source</a></li>
                                 <li><a href="/ipcs">Native modules...</a></li>
-                                <li><a href="/repeats-remove-clients">Remote Repeats clients...</a></li>
+                                <li><a href="/repeats-remote-clients">Remote Repeats clients...</a></li>
                                 <li id="menu-compiling-languages"><a href="#">Compiling languages...</a></li>
                               </ul>
                         </li>
@@ -83,6 +83,7 @@
                                 <li id="menu-hotkeys"><a href="#">Hotkeys...</a></li>
                                 <li id="menu-compiler-path"><a href="#">Set compiler path...</a></li>
                                 <li id="menu-configure-compiler"><a href="#">Configure compiler...</a></li>
+                                <li><a href="/global-configs">Global configs...</a></li>
                                 <li id="menu-record-mouse-click-only"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.recordMouseClickOnly> checked </#if>/>&nbsp;Record mouse click only</a></li>
                                 <li id="menu-halt-task-by-escape"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.haltTaskByEscape> checked </#if>/>&nbsp;Halt task by ESC</a></li>
                                 <li id="menu-execute-on-release"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.executeOnRelease> checked </#if>/>&nbsp;Execute on release</a></li>

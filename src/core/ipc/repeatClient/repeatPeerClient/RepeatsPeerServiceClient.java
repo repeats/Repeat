@@ -111,10 +111,10 @@ public class RepeatsPeerServiceClient extends IIPCService implements IJsonable {
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
-				JsonNodeFactories.field(JsonNodeFactories.string("id"), JsonNodeFactories.string(id)),
-				JsonNodeFactories.field(JsonNodeFactories.string("host"), JsonNodeFactories.string(host)),
-				JsonNodeFactories.field(JsonNodeFactories.string("port"), JsonNodeFactories.number(port)),
-				JsonNodeFactories.field(JsonNodeFactories.string("launch_at_startup"), JsonNodeFactories.booleanNode(isLaunchAtStartup()))
+				JsonNodeFactories.field("id", JsonNodeFactories.string(id)),
+				JsonNodeFactories.field("host", JsonNodeFactories.string(host)),
+				JsonNodeFactories.field("port", JsonNodeFactories.number(port)),
+				JsonNodeFactories.field("launch_at_startup", JsonNodeFactories.booleanNode(isLaunchAtStartup()))
 				);
 	}
 

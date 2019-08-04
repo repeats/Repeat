@@ -1,38 +1,31 @@
 package core.userDefinedTask;
 
-import java.awt.HeadlessException;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
-import utilities.SubprocessUttility;
-import utilities.SubprocessUttility.ExecutionException;
+import core.userDefinedTask.internals.ITools;
+import core.userDefinedTask.internals.LocalTools;
 
 public class Tools {
 
-	private static final Logger LOGGER = Logger.getLogger(Tools.class.getName());
+	private static ITools executor = LocalTools.of();
+
+	public static ITools local() {
+		return LocalTools.of();
+	}
+
+	public synchronized static void setExecutor(ITools executor) {
+		Tools.executor = executor;
+	}
 
 	/**
 	 * Get plain text (if possible) from system clipboard
 	 * @return the plain text in the clipboard, or empty string if encounter an error
 	 */
 	public static String getClipboard() {
-		try {
-			String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-			return data;
-		} catch (HeadlessException | UnsupportedFlavorException | IOException e) {
-			LOGGER.log(Level.WARNING, "Unable to retrieve text from clipboard", e);
-			return "";
-		}
+		return executor.getClipboard();
 	}
 
 	/**
@@ -41,11 +34,7 @@ public class Tools {
 	 * @return if action succeeds
 	 */
 	public static boolean setClipboard(String data) {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		StringSelection selection = new StringSelection(data);
-		clipboard.setContents(selection, null);
-
-		return true;
+		return executor.setClipboard(data);
 	}
 
 	/**
@@ -54,11 +43,7 @@ public class Tools {
 	 * @return stdout of the command
 	 */
 	public static String execute(String command) {
-		try {
-			return SubprocessUttility.execute(command);
-		} catch (ExecutionException e) {
-			return "";
-		}
+		return executor.execute(command);
 	}
 
 	/**
@@ -78,11 +63,7 @@ public class Tools {
 	 * @return stdout of the command
 	 */
 	public static String execute(String command, File cwd) {
-		try {
-			return SubprocessUttility.execute(command, cwd);
-		} catch (ExecutionException e) {
-			return "";
-		}
+		return executor.execute(command, cwd);
 	}
 
 	/**

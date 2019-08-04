@@ -15,6 +15,7 @@ import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClientManager;
 import core.keyChain.KeyChain;
 import core.userDefinedTask.TaskGroup;
+import core.userDefinedTask.internals.ToolsConfig;
 import utilities.json.JSONUtility;
 
 public class Parser2_9 extends ConfigParser {
@@ -33,6 +34,13 @@ public class Parser2_9 extends ConfigParser {
 
 	@Override
 	protected JsonRootNode internalConvertFromPreviousVersion(JsonRootNode previousVersion) {
+		JsonNode globalConfig = previousVersion.getNode("global_settings");
+		globalConfig = JSONUtility.addChild(globalConfig, "tools_config", JsonNodeFactories.array(JsonNodeFactories.string("local"))).getRootNode();
+		previousVersion = JSONUtility.replaceChild(previousVersion, "global_settings", globalConfig).getRootNode();
+		previousVersion = JSONUtility.addChild(previousVersion, "remote_repeats_clients",
+				JsonNodeFactories.object(
+						JsonNodeFactories.field(JsonNodeFactories.string("clients"), JsonNodeFactories.array()))).getRootNode();
+
 		List<JsonNode> groups = previousVersion.getArrayNode("task_groups");
 		List<JsonNode> newGroups = new ArrayList<>();
 		for (JsonNode group : groups) {
@@ -47,9 +55,6 @@ public class Parser2_9 extends ConfigParser {
 			newGroup = JSONUtility.addChild(newGroup, "group_id", JsonNodeFactories.string(UUID.randomUUID().toString()));
 			newGroups.add(newGroup);
 		}
-		previousVersion = JSONUtility.addChild(previousVersion, "remote_repeats_clients",
-				JsonNodeFactories.object(
-						JsonNodeFactories.field(JsonNodeFactories.string("clients"), JsonNodeFactories.array()))).getRootNode();
 
 		return JSONUtility.replaceChild(previousVersion, "task_groups", JsonNodeFactories.array(newGroups)).getRootNode();
 	}
@@ -72,6 +77,10 @@ public class Parser2_9 extends ConfigParser {
 			config.setRECORD(KeyChain.parseJSON(globalHotkey.getArrayNode("record")));
 			config.setREPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay")));
 			config.setCOMPILED_REPLAY(KeyChain.parseJSON(globalHotkey.getArrayNode("replay_compiled")));
+
+			JsonNode toolsConfigNode = globalSettings.getNode("tools_config");
+			ToolsConfig toolsConfig = ToolsConfig.parseJSON(toolsConfigNode);
+			config.setToolsConfig(toolsConfig);
 
 			JsonNode peerClients = root.getNode("remote_repeats_clients");
 			RepeatsPeerServiceClientManager repeatsPeerServiceClientManager = RepeatsPeerServiceClientManager.parseJSON(peerClients);

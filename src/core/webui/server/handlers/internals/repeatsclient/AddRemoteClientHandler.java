@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internal.repeatsclient;
+package core.webui.server.handlers.internals.repeatsclient;
 
 import java.io.IOException;
 import java.util.Map;
@@ -13,9 +13,9 @@ import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.webcommon.HttpServerUtilities;
 
-public class StopRemoteClientHandler extends AbstractUIHttpHandler {
+public class AddRemoteClientHandler extends AbstractUIHttpHandler {
 
-	public StopRemoteClientHandler(ObjectRenderer objectRenderer) {
+	public AddRemoteClientHandler(ObjectRenderer objectRenderer) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
@@ -25,12 +25,23 @@ public class StopRemoteClientHandler extends AbstractUIHttpHandler {
 		if (params == null) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Unable to get POST paramters.");
 		}
-		String id = params.get("id");
-		if (id.isEmpty()) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "ID must not be empty.");
+		String server = params.get("server");
+		int separator = server.lastIndexOf(":");
+		if (separator == -1) {
+			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Server address must be in the form of host:port.");
 		}
-
-		backEndHolder.getPeerServiceClientManager().stopClient(id);
+		String host = server.substring(0, separator);
+		String portString = server.substring(separator + 1);
+		int port = 0;
+		try {
+			port = Integer.parseInt(portString);
+		} catch (NumberFormatException e) {
+			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Port must be integer but got " + portString + ".");
+		}
+		if (port <= 0 || port > 65535) {
+			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Port must be positive integer less than 65536.");
+		}
+		backEndHolder.getPeerServiceClientManager().addAndStartClient(host, port);
 		return renderedRepeatsRemoteClients(exchange);
 	}
 

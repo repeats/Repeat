@@ -17,9 +17,11 @@ import core.languageHandler.Language;
 import core.userDefinedTask.TaskGroup;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedCompilingLanguage;
+import core.webui.server.handlers.renderedobjects.RenderedGlobalConfigs;
 import core.webui.server.handlers.renderedobjects.RenderedIPCService;
 import core.webui.server.handlers.renderedobjects.RenderedRepeatsRemoteClient;
 import core.webui.server.handlers.renderedobjects.RenderedTaskGroup;
+import core.webui.server.handlers.renderedobjects.RenderedToolsConfig;
 import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
 import core.webui.server.handlers.renderedobjects.TooltipsIndexPage;
 import core.webui.server.handlers.renderedobjects.TooltipsRepeatsRemoteClientPage;
@@ -44,6 +46,14 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 		data.put("ipcs", services);
 
 		return renderedPage(exchange, "fragments/ipcs", data);
+	}
+
+	protected final Void renderedToolsClientsConfig(HttpAsyncExchange exchange) throws IOException {
+		Map<String, Object> data = new HashMap<>();
+		RenderedToolsConfig toolsConfig = RenderedToolsConfig.of(backEndHolder.getPeerServiceClientManager(), backEndHolder.getConfig().getToolsConfig());
+		data.put("globalConfigs", RenderedGlobalConfigs.of(toolsConfig));
+
+		return renderedPage(exchange, "fragments/tools_clients", data);
 	}
 
 	protected final Void renderedRepeatsRemoteClients(HttpAsyncExchange exchange) throws IOException {

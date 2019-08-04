@@ -25,6 +25,10 @@ public class RepeatsPeerServiceClientManager implements IJsonable {
 		this.clients = new HashMap<>();
 	}
 
+	public RepeatsPeerServiceClient getClient(String id) {
+		return clients.get(id);
+	}
+
 	public Collection<RepeatsPeerServiceClient> getClients() {
 		return clients.values();
 	}
@@ -108,8 +112,7 @@ public class RepeatsPeerServiceClientManager implements IJsonable {
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
-				JsonNodeFactories.field(
-						JsonNodeFactories.string("clients"),
+				JsonNodeFactories.field("clients",
 						JsonNodeFactories.array(JSONUtility.listToJson(clients.values()))));
 	}
 

@@ -1,4 +1,4 @@
-package core.webui.server.handlers.internal.repeatsclient;
+package core.webui.server.handlers.internals.repeatsclient;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -38,7 +38,12 @@ import core.recorder.ReplayConfig;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskInvoker;
 import core.userDefinedTask.TaskSourceManager;
+import core.userDefinedTask.Tools;
 import core.userDefinedTask.UserDefinedAction;
+import core.userDefinedTask.internals.AggregateTools;
+import core.userDefinedTask.internals.ITools;
+import core.userDefinedTask.internals.RemoteRepeatsClientTools;
+import core.userDefinedTask.internals.ToolsConfig;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
 import utilities.Desktop;
@@ -873,6 +878,17 @@ public class MainBackEndHolder {
 	private boolean applySpeedup() {
 		recorder.setSpeedup(replayConfig.getSpeedup());
 		return true;
+	}
+
+	public void setToolsClients(List<String> clients) {
+		config.getToolsConfig().setClients(clients);
+		List<ITools> tools = clients.stream().map(c -> {
+			if (c.equals(ToolsConfig.LOCAL_CLIENT)) {
+				return Tools.local();
+			}
+			return new RemoteRepeatsClientTools(peerServiceClientManager, c);
+		}).collect(Collectors.toList());
+		Tools.setExecutor(AggregateTools.of(tools));
 	}
 
 	/*************************************************************************************************************/
