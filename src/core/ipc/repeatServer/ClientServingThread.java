@@ -55,7 +55,7 @@ class ClientServingThread implements Runnable, ILoggable {
 					break;
 				}
 			}
-			getLogger().info("Client serving thread on socket on remote port " + socket.getPort() + " is terminated\n");
+			getLogger().info("Client serving thread on socket on remote port " + socket.getPort() + " is terminated.");
 		} finally {
 			try {
 				reader.close();

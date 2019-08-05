@@ -51,6 +51,7 @@ public class RepeatsPeerServiceClientManager implements IJsonable {
 		for (RepeatsPeerServiceClient client : clients.values()) {
 			if (!onStartup || client.isLaunchAtStartup()) {
 				client.startRunning();
+				LOGGER.info("Started " + client.getName() + ".");
 			}
 		}
 	}

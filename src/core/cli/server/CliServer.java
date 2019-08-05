@@ -100,7 +100,7 @@ public class CliServer extends IPCServiceWithModifablePort {
 		server.shutdown(TERMINATION_DELAY_SECOND, TimeUnit.SECONDS);
 		try {
 			mainThread.join();
-			getLogger().info("CLI server terminated...");
+			getLogger().info("CLI server terminated!");
 		} catch (InterruptedException e) {
 			getLogger().log(Level.WARNING, "Interrupted when waiting for server to terminate.", e);
 		}

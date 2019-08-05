@@ -24,7 +24,7 @@ public final class IPCServiceManager {
 	private static final Logger LOGGER = Logger.getLogger(IPCServiceManager.class.getName());
 
 	public static final int IPC_SERVICE_COUNT = IPCServiceName.values().length;
-	private static final long INTER_SERVICE_BOOT_TIME_MS = 1000;
+	private static final long INTER_SERVICE_BOOT_TIME_MS = 200;
 	private static final IIPCService[] ipcServices;
 	private static final Map<Language, Integer> ipcByLanugage;
 
