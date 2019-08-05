@@ -217,13 +217,6 @@ public class MainBackEndHolder {
 
 	protected void stopBackEndActivities() {
 		executor.shutdown();
-		try {
-			LOGGER.info("Waiting for main executor to terminate...");
-			executor.awaitTermination(5, TimeUnit.SECONDS);
-			LOGGER.info("Main executor terminated.");
-		} catch (InterruptedException e) {
-			LOGGER.log(Level.WARNING, "Interrupted while awaiting backend executor termination.", e);
-		}
 
 		try {
 			IPCServiceManager.stopServices();
@@ -240,7 +233,15 @@ public class MainBackEndHolder {
 		GlobalListenerHookController.of().cleanup();
 	}
 
-	public void exit() {
+	public void scheduleExit(long delayMs) {
+		executor.schedule(new Runnable() {
+			@Override
+			public void run() {
+				exit();
+			}}, delayMs, TimeUnit.MILLISECONDS);
+	}
+
+	private void exit() {
 		stopBackEndActivities();
 
 		if (!writeConfigFile()) {
@@ -252,7 +253,16 @@ public class MainBackEndHolder {
 			trayIcon.remove();
 		}
 
-		System.exit(0);
+		try {
+			LOGGER.info("Waiting for main executor to terminate...");
+			executor.awaitTermination(5, TimeUnit.SECONDS);
+			LOGGER.info("Main executor terminated.");
+		} catch (InterruptedException e) {
+			LOGGER.log(Level.WARNING, "Interrupted while awaiting backend executor termination.", e);
+		}
+
+		// Only if really needed.
+		// System.exit(0);
 	}
 
 	/*************************************************************************************************************/
