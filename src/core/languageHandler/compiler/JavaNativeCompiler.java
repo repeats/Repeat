@@ -155,7 +155,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
                 		return output;
 	                } else {
 	                    for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-	                    	getLogger().warning("Error on line " + diagnostic.getLineNumber() +" in " + diagnostic.getSource().toUri() + "\n");
+	                    	getLogger().warning("Error on line " + diagnostic.getLineNumber() +" in " + diagnostic.getSource().toUri() + ".");
 	                    	getLogger().warning(diagnostic.getMessage(Locale.US));
 	                    }
 	                }
