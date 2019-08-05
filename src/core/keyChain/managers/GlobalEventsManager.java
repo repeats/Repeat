@@ -17,7 +17,7 @@ import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 import org.simplenativehooks.utilities.Function;
 
 import core.config.Config;
-import core.controller.Core;
+import core.controller.CoreProvider;
 import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
@@ -31,6 +31,7 @@ public final class GlobalEventsManager {
 	private static final Logger LOGGER = Logger.getLogger(GlobalEventsManager.class.getName());
 
 	private final Config config;
+	CoreProvider coreProvider;
 	/**
 	 * This function is the precondition to executing any task.
 	 * It is evaluated every time the manager considers executing any task.
@@ -43,8 +44,9 @@ public final class GlobalEventsManager {
 	@SuppressWarnings("unused")
 	private TaskGroup currentTaskGroup;
 
-	public GlobalEventsManager(Config config) {
+	public GlobalEventsManager(Config config, CoreProvider coreProvider) {
 		this.config = config;
+		this.coreProvider = coreProvider;
 
 		this.executions = new HashMap<>();
 		this.disablingFunction = Function.falseFunction();
@@ -144,7 +146,7 @@ public final class GlobalEventsManager {
 			@Override
 			public void run() {
 				try {
-					action.trackedAction(Core.getInstance(config));
+					action.trackedAction(coreProvider.get());
 				} catch (InterruptedException e) {
 					LOGGER.info("Task ended prematurely");
 				} catch (Exception e) {

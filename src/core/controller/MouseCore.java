@@ -1,266 +1,72 @@
 package core.controller;
 
 import java.awt.Color;
-import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.Robot;
-import java.awt.event.InputEvent;
 
+import core.controller.internals.AbstractMouseCoreImplementation;
 import utilities.Function;
 
-public class MouseCore {
+public class MouseCore extends AbstractMouseCoreImplementation {
 
-	public static final int CLICK_DURATION_MS = 100;
-	private final Robot controller;
+	private AbstractMouseCoreImplementation m;
 
-	protected MouseCore(Robot controller) {
-		this.controller = controller;
+	protected MouseCore(AbstractMouseCoreImplementation m) {
+		this.m = m;
 	}
 
-	/**
-	 * Get current position of the mouse
-	 * @return Point2D representing the position of the mouse on the screen
-	 */
+	@Override
 	public Point getPosition() {
-		return MouseInfo.getPointerInfo().getLocation();
+		return m.getPosition();
 	}
 
-	/**
-	 * Get color of the screen at the position
-	 * @param p point p at which the color on the screen will be retrieved
-	 * @return Color object: color of the pixel at that point
-	 */
-	public Color getColor(Point p) {
-		return controller.getPixelColor(p.x, p.y);
-	}
-
-	/**
-	 * Get color of the pixel at point (x,y)
-	 * @param x x coordinate on screen
-	 * @param y y coordinate on screen
-	 * @return Color object: color of the pixel at that opint
-	 */
+	@Override
 	public Color getColor(int x, int y) {
-		return controller.getPixelColor(x, y);
+		return m.getColor(x, y);
 	}
 
-	/**
-	 * Get color of the pixel at current mouse position
-	 * @return color of the pixel at current mouse position
-	 */
-	public Color getColor() {
-		return getColor(getPosition());
+	@Override
+	public final Color getColor() {
+		return m.getColor();
 	}
 
-	/**
-	 * Click a mouse mask with default hold delay {@value CLICK_DURATION_MS}
-	 * @param mask mouse mask. See {@link java.awt.event.InputEvent} class
-	 * @throws InterruptedException
-	 */
-	public void click(int mask) throws InterruptedException {
-		hold(mask, CLICK_DURATION_MS);
-	}
-
-	/**
-	 * Click a mouse mask with delay
-	 * @param mask mouse mask. See {@link java.awt.event.InputEvent} class
-	 * @param delay delay in milliseconds
-	 * @throws InterruptedException
-	 */
-	public void click(int mask, int delay) throws InterruptedException {
-		hold(mask, delay);
-	}
-
-	/**
-	 * Left click the mouse
-	 * @throws InterruptedException
-	 */
-	public void leftClick() throws InterruptedException {
-		click(InputEvent.BUTTON1_DOWN_MASK);
-	}
-
-	/**
-	 * Left click the mouse with
-	 * @param delay
-	 * @throws InterruptedException
-	 */
-	public void leftClick(int delay) throws InterruptedException {
-		click(InputEvent.BUTTON1_DOWN_MASK, delay);
-	}
-
-	/**
-	 * Right click mouse with default delay
-	 * @throws InterruptedException
-	 */
-	public void rightClick() throws InterruptedException {
-		click(InputEvent.BUTTON3_DOWN_MASK);
-	}
-
-	/**
-	 * Right click with certain delay
-	 * @param delay delay in milliseconds
-	 * @throws InterruptedException
-	 */
-	public void rightClick(int delay) throws InterruptedException {
-		click(InputEvent.BUTTON3_DOWN_MASK, delay);
-	}
-
-	/**
-	 * Hold mouse for certain duration
-	 * @param mask mouse mask. See {@link java.awt.event.InputEvent} class
-	 * @param duration duration in milliseconds
-	 * @throws InterruptedException
-	 */
+	@Override
 	public void hold(int mask, int duration) throws InterruptedException {
-		controller.mousePress(mask);
-
-		if (duration >= 0) {
-			Thread.sleep(duration);
-			controller.mouseRelease(mask);
-		}
+		m.hold(mask, duration);
 	}
 
-	/**
-	 * Click mouse with default delay at certain position
-	 * @param mask mouse mask. See {@link java.awt.event.InputEvent} class
-	 * @param x x position
-	 * @param y y position
-	 * @throws InterruptedException
-	 */
-	public void click(int mask, int x, int y) throws InterruptedException {
-		move(x, y);
-		click(mask);
+	@Override
+	public void hold(int mask, int x, int y, int duration) throws InterruptedException {
+		m.hold(mask, x, y, duration);
 	}
 
-	/**
-	 * Click mouse at a point
-	 * @param mask mouse mask. See {@link java.awt.event.InputEvent} class
-	 * @param p point p to click mouse
-	 * @throws InterruptedException
-	 */
-	public void click(int mask, Point p) throws InterruptedException {
-		click(mask, p.x, p.y);
-	}
-
-	/**
-	 * Left click mouse at a point
-	 * @param x x coordinate of the point
-	 * @param y y coordinate of the point
-	 * @throws InterruptedException
-	 */
-	public void leftClick(int x, int y) throws InterruptedException {
-		click(InputEvent.BUTTON1_DOWN_MASK, x, y);
-	}
-
-	/**
-	 * Left click mouse at a point with specified delay
-	 * @param x x coordinate of the point
-	 * @param y y coordinate of the point
-	 * @param delay amount of delay in ms
-	 * @throws InterruptedException
-	 */
-	public void leftClick(int x, int y, int delay) throws InterruptedException {
-		move(x, y);
-		click(InputEvent.BUTTON1_DOWN_MASK, delay);
-	}
-
-	/**
-	 * Right click mouse at a point
-	 * @param x x coordinate of the point
-	 * @param y y coordinate of the point
-	 * @throws InterruptedException
-	 */
-	public void rightClick(int x, int y) throws InterruptedException {
-		click(InputEvent.BUTTON3_DOWN_MASK, x, y);
-	}
-
-	/**
-	 * Right click mouse at a point with specified delay
-	 * @param x x coordinate of the point
-	 * @param y y coordinate of the point
-	 * @param delay amount of delay in ms
-	 * @throws InterruptedException
-	 */
-	public void rightClick(int x, int y, int delay) throws InterruptedException {
-		move(x, y);
-		click(InputEvent.BUTTON3_DOWN_MASK, delay);
-	}
-
-	/**
-	 * Press mouse mask
-	 * @param mask mouse mask. See {@link java.awt.event.InputEvent} class
-	 */
+	@Override
 	public void press(int mask) {
-		controller.mousePress(mask);
+		m.press(mask);
 	}
 
-	/**
-	 * Release mouse mask
-	 * @param mask mouse mask. See {@link java.awt.event.InputEvent} class
-	 */
+	@Override
 	public void release(int mask) {
-		controller.mouseRelease(mask);
+		m.release(mask);
 	}
 
-	/**
-	 * Release 3 primary mouse masks: 1, 2, and 3
-	 */
-	public void releaseAll() {
-		controller.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-		controller.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
-		controller.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
-	}
-
-	/**
-	 * Move mouse to a position on screen
-	 * @param newX x position
-	 * @param newY y position
-	 */
+	@Override
 	public void move(int newX, int newY) {
-		controller.mouseMove(newX, newY);
+		m.move(newX, newY);
 	}
 
-	/**
-	 * Move mouse to a position on screen
-	 * @param p Point p represents position
-	 */
-	public void move(Point p) {
-		move(p.x, p.y);
-	}
-
-	/**
-	 * Drag a mouse from a point to another point (i.e. left mask down during mouse movement)
-	 * @param sourceX x coordinate of the beginning point
-	 * @param sourceY y coordinate of the beginning point
-	 * @param destX x coordinate of the end point
-	 * @param destY y coordinate of the end point
-	 */
+	@Override
 	public void drag(int sourceX, int sourceY, int destX, int destY) {
-		move(sourceX, sourceY);
-		press(InputEvent.BUTTON1_DOWN_MASK);
-		move(destX, destY);
-		release(InputEvent.BUTTON1_DOWN_MASK);
+		m.drag(sourceX, sourceY, destX, destY);
 	}
 
-	/**
-	 * Move mouse by a certain amount
-	 * @param amountX x amount to move mouse by
-	 * @param amountY y amount to move mouse by
-	 */
+	@Override
 	public void moveBy(int amountX, int amountY) {
-		Point p = getPosition();
-		move(p.x + amountX, p.y + amountY);
+		m.moveBy(amountX, amountY);
 	}
 
-	/**
-	 * Drag a mouse from by a distance (i.e. left mask down during mouse movement)
-	 * @param sourceX x coordinate of the beginning point
-	 * @param sourceY y coordinate of the beginning point
-	 */
+	@Override
 	public void dragBy(int amountX, int amountY) {
-		press(InputEvent.BUTTON1_DOWN_MASK);
-		moveBy(amountX, amountY);
-		release(InputEvent.BUTTON1_DOWN_MASK);
+		m.dragBy(amountX, amountY);
 	}
 
 	/**

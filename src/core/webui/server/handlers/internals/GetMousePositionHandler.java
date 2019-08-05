@@ -8,7 +8,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
-import core.controller.Core;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.webcommon.HttpServerUtilities;
 
@@ -21,7 +20,7 @@ public class GetMousePositionHandler extends AbstractSingleMethodHttpHandler {
 	@Override
 	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
 			throws HttpException, IOException {
-		Point p = Core.getInstance(backEndHolder.getConfig()).mouse().getPosition();
+		Point p = backEndHolder.getCoreProvider().getLocal().mouse().getPosition();
 		return HttpServerUtilities.prepareTextResponse(exchange, 200, p.x + ", " + p.y);
 	}
 }

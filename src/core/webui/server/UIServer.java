@@ -28,6 +28,7 @@ import core.webui.server.handlers.internals.GetMousePositionHandler;
 import core.webui.server.handlers.internals.GetPathSuggestionHandler;
 import core.webui.server.handlers.internals.GetRenderedTaskGroupsDropdown;
 import core.webui.server.handlers.internals.globalconfigs.GlobalConfigsPageHandler;
+import core.webui.server.handlers.internals.globalconfigs.SetCoreConfigClientsHandler;
 import core.webui.server.handlers.internals.globalconfigs.SetToolsConfigClientsHandler;
 import core.webui.server.handlers.internals.ipcs.ActionRunIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
@@ -156,6 +157,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/about", new AboutPageHandler(objectRenderer));
 
 		output.put("/internals/global-configs/tools-config/set-clients", new SetToolsConfigClientsHandler(objectRenderer));
+		output.put("/internals/global-configs/core-config/set-clients", new SetCoreConfigClientsHandler(objectRenderer));
 
 		output.put("/internals/menu/file/save-config", new MenuSaveConfigActionHandler());
 		output.put("/internals/menu/file/import-tasks", new MenuImportTaskActionHandler());

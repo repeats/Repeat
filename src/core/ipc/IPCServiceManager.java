@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.cli.server.CliServer;
-import core.config.Config;
+import core.controller.CoreProvider;
 import core.ipc.repeatClient.CSharpIPCClientService;
 import core.ipc.repeatClient.PythonIPCClientService;
 import core.ipc.repeatClient.ScalaIPCClientService;
@@ -44,9 +44,9 @@ public final class IPCServiceManager {
 		ipcByLanugage.put(Language.SCALA, IPCServiceName.SCALA.value());
 	}
 
-	public static void setConfig(Config config) {
+	public static void setCoreProvider(CoreProvider coreProvider) {
 		ControllerServer controllerServer = (ControllerServer) ipcServices[IPCServiceName.CONTROLLER_SERVER.value()];
-		controllerServer.setConfig(config);
+		controllerServer.setCoreProvider(coreProvider);
 	}
 
 	public static IIPCService getIPCService(Language name) {

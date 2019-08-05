@@ -19,9 +19,9 @@ import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedCompilingLanguage;
 import core.webui.server.handlers.renderedobjects.RenderedGlobalConfigs;
 import core.webui.server.handlers.renderedobjects.RenderedIPCService;
+import core.webui.server.handlers.renderedobjects.RenderedRemoteRepeatsClientsConfig;
 import core.webui.server.handlers.renderedobjects.RenderedRepeatsRemoteClient;
 import core.webui.server.handlers.renderedobjects.RenderedTaskGroup;
-import core.webui.server.handlers.renderedobjects.RenderedToolsConfig;
 import core.webui.server.handlers.renderedobjects.RenderedUserDefinedAction;
 import core.webui.server.handlers.renderedobjects.TooltipsIndexPage;
 import core.webui.server.handlers.renderedobjects.TooltipsRepeatsRemoteClientPage;
@@ -48,12 +48,21 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 		return renderedPage(exchange, "fragments/ipcs", data);
 	}
 
-	protected final Void renderedToolsClientsConfig(HttpAsyncExchange exchange) throws IOException {
+	protected final Map<String, Object> getGlobalConfigRenderingData() {
 		Map<String, Object> data = new HashMap<>();
-		RenderedToolsConfig toolsConfig = RenderedToolsConfig.of(backEndHolder.getPeerServiceClientManager(), backEndHolder.getConfig().getToolsConfig());
-		data.put("globalConfigs", RenderedGlobalConfigs.of(toolsConfig));
+		RenderedRemoteRepeatsClientsConfig toolsConfig = RenderedRemoteRepeatsClientsConfig.of(backEndHolder.getPeerServiceClientManager(), backEndHolder.getConfig().getToolsConfig());
+		RenderedRemoteRepeatsClientsConfig coreConfig = RenderedRemoteRepeatsClientsConfig.of(backEndHolder.getPeerServiceClientManager(), backEndHolder.getConfig().getCoreConfig());
+		data.put("globalConfigs", RenderedGlobalConfigs.of(toolsConfig, coreConfig));
 
-		return renderedPage(exchange, "fragments/tools_clients", data);
+		return data;
+	}
+
+	protected final Void renderedToolsClientsConfig(HttpAsyncExchange exchange) throws IOException {
+		return renderedPage(exchange, "fragments/tools_clients", getGlobalConfigRenderingData());
+	}
+
+	protected final Void renderedCoreClientsConfig(HttpAsyncExchange exchange) throws IOException {
+		return renderedPage(exchange, "fragments/core_clients", getGlobalConfigRenderingData());
 	}
 
 	protected final Void renderedRepeatsRemoteClients(HttpAsyncExchange exchange) throws IOException {

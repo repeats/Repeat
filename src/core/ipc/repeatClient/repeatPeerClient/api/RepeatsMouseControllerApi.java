@@ -14,6 +14,16 @@ public class RepeatsMouseControllerApi extends AbstractRepeatsClientApi {
 		super(repeatPeerServiceClientWriter);
 	}
 
+	public void hold(int mask, int delay) {
+		DeviceCommand command = commandBuilder().action("hold").parameters(mask, delay).build();
+		waitAndGetResponseIfSuccess(IpcMessageType.ACTION, command);
+	}
+
+	public void hold(int mask, int x, int y, int delay) {
+		DeviceCommand command = commandBuilder().action("hold").parameters(mask, x, y, delay).build();
+		waitAndGetResponseIfSuccess(IpcMessageType.ACTION, command);
+	}
+
 	public void press(int... mask) {
 		DeviceCommand command = commandBuilder().action("press").parameters(mask).build();
 		waitAndGetResponseIfSuccess(IpcMessageType.ACTION, command);
@@ -36,6 +46,11 @@ public class RepeatsMouseControllerApi extends AbstractRepeatsClientApi {
 
 	public void leftClick(int x, int y) {
 		DeviceCommand command = commandBuilder().action("left_click").parameters(x, y).build();
+		waitAndGetResponseIfSuccess(IpcMessageType.ACTION, command);
+	}
+
+	public void leftClick(int x, int y, int delay) {
+		DeviceCommand command = commandBuilder().action("left_click").parameters(x, y, delay).build();
 		waitAndGetResponseIfSuccess(IpcMessageType.ACTION, command);
 	}
 
@@ -95,6 +110,16 @@ public class RepeatsMouseControllerApi extends AbstractRepeatsClientApi {
 	public Color getColor() {
 		DeviceCommand command = commandBuilder().action("get_color").build();
 		JsonNode response = waitAndGetJsonResponseIfSuccess(IpcMessageType.ACTION, command);
+		return getColorFromResponse(response);
+	}
+
+	public Color getColor(int x, int y) {
+		DeviceCommand command = commandBuilder().action("get_color").parameters(x, y).build();
+		JsonNode response = waitAndGetJsonResponseIfSuccess(IpcMessageType.ACTION, command);
+		return getColorFromResponse(response);
+	}
+
+	private Color getColorFromResponse(JsonNode response) {
 		List<JsonNode> nodes = response.getArrayNode();
 		if (nodes.size() != 3) {
 			throw new RuntimeException("Expecting response with 3 parameters. Got " + nodes.size());

@@ -2,6 +2,7 @@ package core.ipc.repeatServer.processors;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,35 +29,40 @@ import utilities.swing.SwingUtil;
  *
  *************************************************************************
  * The following actions are supported for mouse:
- * 1a) press(mask): press the mouse using the current mask
- * 1b) release(mask): release the mouse using the current mask
+ * 1) hold(mask, delay): press the mouse using the current mask for a certain period
  *
- * 2a) left_click(): left click at the current mouse position
- * 2b) left_click(int): left click with delay in ms
- * 2c) left_click(int, int): left click at a position
+ * 2a) press(mask): press the mouse using the current mask
+ * 2b) release(mask): release the mouse using the current mask
  *
- * 3a) right_click(): right click at the current mouse position
- * 3b) right_click(int): right click with delay in ms
- * 3c) right_click(int, int): right click at a position
+ * 3a) left_click(): left click at the current mouse position
+ * 3b) left_click(int delay): left click with delay in ms
+ * 3c) left_click(int x, int y): left click at a position
+ * 3d) left_click(int x, int y, int delay): left click at a position with delay
  *
- * 4) move(int, int): move mouse to a certain position
- * 5) move_by(int, int): move mouse by a certain distance (in pixel)
+ * 4a) right_click(): right click at the current mouse position
+ * 4b) right_click(int): right click with delay in ms
+ * 4c) right_click(int, int): right click at a position
  *
- * 6) drag(int, int): drag mouse from a point to another point (i.e. leftClick at the current position, then move mouse to end point, then release mouse)
- * 7) drag(int, int, int, int): drag mouse from a point to another point (i.e. leftClick at the starting point, then move mouse to end point, then release mouse)
- * 8) drag_by(int, int): drag mouse by a certain distance
+ * 5) move(int, int): move mouse to a certain position
+ * 6) move_by(int, int): move mouse by a certain distance (in pixel)
  *
- * 9) get_position(): get position of the mouse
- * 10) get_color(): get the color (RGB) of the current pixel at which the mouse is pointing
- * 11) get_color(int, int): get the color (RGB) of the pixel at the location
+ * 7) drag(int, int): drag mouse from a point to another point (i.e. leftClick at the current position, then move mouse to end point, then release mouse)
+ * 8) drag(int, int, int, int): drag mouse from a point to another point (i.e. leftClick at the starting point, then move mouse to end point, then release mouse)
+ * 9) drag_by(int, int): drag mouse by a certain distance
+ *
+ * 10) get_position(): get position of the mouse
+ * 11) get_color(): get the color (RGB) of the current pixel at which the mouse is pointing
+ * 12) get_color(int, int): get the color (RGB) of the pixel at the location
  *
  *************************************************************************
  * The following actions are supported for keyboard:
- * 1) press(key_value) : press a key on the keyboard. The int value is the same as defined in java.awt.KeyEvent class
- * 2) release(key_value) : release a key on the keyboard.
+ * 1) press(key_values...) : press a list of keys on the keyboard. The int value is the same as defined in java.awt.KeyEvent class
+ * 2) release(key_values...) : release a list of keys on the keyboard.
  * 2) type(key_values...) : type a series of keys sequentially.
  * 3) type_string(strings...) : type a series of strings sequentially.
- * 4) combination(key_values...) : perform a key combination
+ * 4) type_characters(int... characters) : type a series of characters sequentially.
+ * 5) combination(key_values...) : perform a key combination
+ * 6) is_locked(key_value) : check if a key is on (in locked state). E.g. against VK_CAPSLOCK.
  *
  *************************************************************************
  * The following actions are supported for common tool:
@@ -113,7 +119,16 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			return false;
 		}
 
-		if (action.equals("press")) {
+		if (action.equals("hold")) {
+			if (params.size() == 2) {
+				core.mouse().hold(params.get(0), params.get(1));
+			} else if (params.size() == 4) {
+				core.mouse().hold(params.get(0), params.get(1), params.get(2), params.get(3));
+			} else {
+				return failure(type, id, "Unable to press mouse with " + params.size() + " parameters.");
+			}
+			return success(type, id);
+		} else if (action.equals("press")) {
 			if (params.size() == 1) {
 				core.mouse().press(params.get(0));
 			} else {
@@ -134,6 +149,8 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 				core.mouse().leftClick(params.get(0));
 			} else if (params.size() == 2) {
 				core.mouse().leftClick(params.get(0), params.get(1));
+			} else if (params.size() == 3) {
+				core.mouse().leftClick(params.get(0), params.get(1), params.get(2));
 			} else {
 				return failure(type, id, "Unable to left click with " + params.size() + " parameters.");
 			}
@@ -207,8 +224,12 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 				return false;
 			}
 
-			if (params.size() == 1) {
-				core.keyBoard().press(params.get(0));
+			if (params.size() >= 1) {
+				final int[] keys = new int[params.size()];
+				for (int i = 0; i < keys.length; i++) {
+					keys[i] = params.get(i);
+				}
+				core.keyBoard().press(keys);
 			} else {
 				return failure(type, id, "Unable to press key with " + params.size() + " parameters.");
 			}
@@ -219,8 +240,12 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 				return false;
 			}
 
-			if (params.size() == 1) {
-				core.keyBoard().release(params.get(0));
+			if (params.size() >= 1) {
+				final int[] keys = new int[params.size()];
+				for (int i = 0; i < keys.length; i++) {
+					keys[i] = params.get(i);
+				}
+				core.keyBoard().release(keys);
 			} else {
 				return failure(type, id, "Unable to release key with " + params.size() + " parameters.");
 			}
@@ -242,6 +267,23 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 
 			core.keyBoard().type(strings);
 			return success(type, id);
+		} else if (action.equals("type_characters")) {
+			final List<Integer> params = toIntegerParams(parsedParams);
+			if (params == null) {
+				return false;
+			}
+
+			if (params.size() >= 1) {
+				final char[] chars = new char[params.size()];
+				for (int i = 0; i < chars.length; i++) {
+					int v = params.get(i);
+					chars[i] = (char) v;
+				}
+				core.keyBoard().type(chars);
+			} else {
+				return failure(type, id, "Unable to release key with " + params.size() + " parameters.");
+			}
+			return success(type, id);
 		} else if (action.equals("combination")) {
 			final List<Integer> params = toIntegerParams(parsedParams);
 			if (params == null) {
@@ -251,6 +293,19 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 
 			core.keyBoard().combination(strings);
 			return success(type, id);
+		} else if (action.equals("is_locked")) {
+			final List<Integer> params = toIntegerParams(parsedParams);
+			if (params == null) {
+				return false;
+			}
+
+			boolean result = false;
+			if (params.size() == 1) {
+				result = core.keyBoard().isLocked(params.get(0));
+			} else {
+				return failure(type, id, "Unable to check key is locked with " + params.size() + " parameters.");
+			}
+			return success(type, id, JsonNodeFactories.booleanNode(result));
 		}
 
 		return unsupportedAction(type, id, action);
@@ -266,7 +321,7 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			}
 
 			String data = params.get(0);
-			Tools.setClipboard(data);
+			Tools.local().setClipboard(data);
 			return success(type, id);
 		} else if (action.equals("execute")) {
 			List<String> params = toStringParams(parsedParams);
@@ -275,9 +330,9 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			}
 
 			if (params.size() == 1) {
-				return success(type, id, Tools.execute(params.get(0)));
+				return success(type, id, Tools.local().execute(params.get(0)));
 			} else if (params.size() == 2) {
-				return success(type, id, Tools.execute(params.get(0), params.get(1)));
+				return success(type, id, Tools.local().execute(params.get(0), new File(params.get(1))));
 			} else {
 				return failure(type, id, "Unexpected number of parameter for execution");
 			}

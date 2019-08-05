@@ -10,6 +10,7 @@ import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.cli.server.CliServer;
+import core.controller.CoreConfig;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClientManager;
@@ -36,6 +37,7 @@ public class Parser2_9 extends ConfigParser {
 	protected JsonRootNode internalConvertFromPreviousVersion(JsonRootNode previousVersion) {
 		JsonNode globalConfig = previousVersion.getNode("global_settings");
 		globalConfig = JSONUtility.addChild(globalConfig, "tools_config", JsonNodeFactories.array(JsonNodeFactories.string("local"))).getRootNode();
+		globalConfig = JSONUtility.addChild(globalConfig, "core_config", JsonNodeFactories.array(JsonNodeFactories.string("local"))).getRootNode();
 		previousVersion = JSONUtility.replaceChild(previousVersion, "global_settings", globalConfig).getRootNode();
 		previousVersion = JSONUtility.addChild(previousVersion, "remote_repeats_clients",
 				JsonNodeFactories.object(
@@ -82,9 +84,13 @@ public class Parser2_9 extends ConfigParser {
 			ToolsConfig toolsConfig = ToolsConfig.parseJSON(toolsConfigNode);
 			config.setToolsConfig(toolsConfig);
 
+			JsonNode coreConfigNode = globalSettings.getNode("core_config");
+			CoreConfig coreConfig = CoreConfig.parseJSON(coreConfigNode);
+			config.setCoreConfig(coreConfig);
+
 			JsonNode peerClients = root.getNode("remote_repeats_clients");
 			RepeatsPeerServiceClientManager repeatsPeerServiceClientManager = RepeatsPeerServiceClientManager.parseJSON(peerClients);
-			config.getBackEnd().setPeerServiceClientManager(repeatsPeerServiceClientManager);
+			config.getBackEnd().getPeerServiceClientManager().updateClients(repeatsPeerServiceClientManager.getClients());
 
 			List<JsonNode> ipcSettings = root.getArrayNode("ipc_settings");
 			if (!IPCServiceManager.parseJSON(ipcSettings)) {

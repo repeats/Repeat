@@ -9,7 +9,6 @@ import org.apache.http.nio.protocol.HttpAsyncExchange;
 import argo.jdom.JsonNode;
 import core.cli.messages.TaskExecuteMessage;
 import core.cli.server.CliRpcCodec;
-import core.controller.Core;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
 
@@ -32,7 +31,7 @@ public class TaskExecuteActionHandler extends TaskActionHandler {
 
 		try {
 			LOGGER.info("Executing action " + task.getName());
-			task.trackedAction(Core.getInstance(backEndHolder.getConfig()));
+			task.trackedAction(backEndHolder.getCoreProvider().get());
 		} catch (InterruptedException e) {
 			LOGGER.log(Level.WARNING, "Task interrupted.", e);
 		} catch (Exception e) {

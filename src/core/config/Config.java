@@ -14,6 +14,7 @@ import com.sun.glass.events.KeyEvent;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.controller.CoreConfig;
 import core.ipc.IPCServiceManager;
 import core.keyChain.KeyChain;
 import core.languageHandler.compiler.DynamicCompilerManager;
@@ -38,6 +39,7 @@ public class Config implements ILoggable {
 
 	private DynamicCompilerManager compilerFactory;
 	private ToolsConfig toolsConfig;
+	private CoreConfig coreConfig;
 	private final MainBackEndHolder backEnd;
 
 	public static final int HALT_TASK = KeyEvent.VK_ESCAPE; // This should be hardcoded, and must not be changed
@@ -191,7 +193,8 @@ public class Config implements ILoggable {
 								JsonNodeFactories.field("replay", REPLAY.jsonize()),
 								JsonNodeFactories.field("replay_compiled", COMPILED_REPLAY.jsonize())
 						)),
-						JsonNodeFactories.field("tools_config", toolsConfig.jsonize())
+						JsonNodeFactories.field("tools_config", toolsConfig.jsonize()),
+						JsonNodeFactories.field("core_config", coreConfig.jsonize())
 				)),
 				JsonNodeFactories.field("ipc_settings", IPCServiceManager.jsonize()),
 				JsonNodeFactories.field("remote_repeats_clients", backEnd.getPeerServiceClientManager().jsonize()),
@@ -243,6 +246,14 @@ public class Config implements ILoggable {
 
 	public void setToolsConfig(ToolsConfig toolsConfig) {
 		this.toolsConfig = toolsConfig;
+	}
+
+	public CoreConfig getCoreConfig() {
+		return coreConfig;
+	}
+
+	public void setCoreConfig(CoreConfig coreConfig) {
+		this.coreConfig = coreConfig;
 	}
 
 	public int getMouseGestureActivationKey() {

@@ -1,4 +1,5 @@
 <#import "/fragments/tools_clients.ftlh" as tools_clients_fragment>
+<#import "/fragments/core_clients.ftlh" as core_clients_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
 <#import "/fragments/footer.ftlh" as footer_fragment>
 <#import "/fragments/common_js.ftlh" as common_js_fragment>
@@ -52,7 +53,16 @@
                     </table>
                 </div>
                 <div class="row">
-                    <div><button id="button-save" type="button" class="btn btn-default btn-span">Save</button></div>
+                    <div><button id="button-save-tools-config" type="button" class="btn btn-default btn-span">Save Tools Config</button></div>
+                </div>
+                <div class="row">
+                    <span class="label label-default">Mouse + Keyboard execution clients</span>
+                    <table id="core-clients-table" class="table">
+                        <@core_clients_fragment.fragment/>
+                    </table>
+                </div>
+                <div class="row">
+                    <div><button id="button-save-core-config" type="button" class="btn btn-default btn-span">Save Mouse + Keyboard Config</button></div>
                 </div>
             </div>
         </div>

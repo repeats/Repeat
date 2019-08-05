@@ -8,8 +8,8 @@ import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
 import org.simplenativehooks.utilities.Function;
 
-import core.config.Config;
 import core.controller.Core;
+import core.controller.CoreProvider;
 import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.Language;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
@@ -38,8 +38,8 @@ public class Recorder {
 
 	private HashMap<Language, AbstractSourceGenerator> sourceGenerators;
 
-	public Recorder(Config config, final GlobalEventsManager globalKeys) {
-		final Core controller = Core.getInstance(config);
+	public Recorder(CoreProvider coreProvider, final GlobalEventsManager globalKeys) {
+		final Core controller = coreProvider.getLocal();
 		taskScheduler = new TaskScheduler();
 
 		speedup = NO_SPEEDUP;

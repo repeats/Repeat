@@ -2,24 +2,27 @@ package core.controller;
 
 import java.awt.AWTException;
 import java.awt.Robot;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import core.config.Config;
+import core.controller.internals.LocalKeyboardCore;
+import core.controller.internals.LocalMouseCore;
 
 public final class Core {
 
 	private static final Logger LOGGER = Logger.getLogger(Core.class.getName());
 
-	private final ScheduledThreadPoolExecutor executor;
-	private Robot controller;
-
 	private final MouseCore mouse;
 	private final KeyboardCore keyboard;
 
-	private Core(Config config) {
+	private Core(MouseCore mouse, KeyboardCore keyboard) {
+		this.mouse = mouse;
+		this.keyboard = keyboard;
+	}
+
+	protected static Core local(Config config) {
+		Robot controller = null;
 		try {
 			controller = new Robot();
 		} catch (AWTException e) {
@@ -27,24 +30,11 @@ public final class Core {
 			System.exit(1);
 		}
 
-		executor = new ScheduledThreadPoolExecutor(10);
-		mouse = new MouseCore(controller);
-		keyboard = new KeyboardCore(config, controller);
+		return new Core(new MouseCore(new LocalMouseCore(controller)), new KeyboardCore(new LocalKeyboardCore(config, controller)));
 	}
 
-	public static Core getInstance(Config config) {
-		return new Core(config);
-	}
-
-	/**
-	 * Unsafe method since not interruptible. Use at own risk
-	 * @param duration duration for controller to wait
-	 * @param callBack action to perform after wait duration
-	 * @deprecated unsafe and difficult use of callback
-	 */
-	@Deprecated
-	protected void wait(int duration, Runnable callBack) {
-		executor.schedule(callBack, duration, TimeUnit.MILLISECONDS);
+	public static Core getInstance(MouseCore mouse, KeyboardCore keyboard) {
+		return new Core(mouse, keyboard);
 	}
 
 	/**

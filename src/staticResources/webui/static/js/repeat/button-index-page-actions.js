@@ -135,7 +135,7 @@ function buttonAddAction(e) {
 }
 
 function buttonOverwriteAction(e) {
-    var index = getSelectedTaskIndex();
+    var index = utils_GetTableSelectedRowIndex("table-tasks");
     if (index == -1) {
         return;
     }
@@ -148,7 +148,7 @@ function buttonOverwriteAction(e) {
 }
 
 function buttonDeleteAction(e) {
-    var index = getSelectedTaskIndex();
+    var index = utils_GetTableSelectedRowIndex("table-tasks");
     if (index == -1) {
         return;
     }
@@ -161,7 +161,7 @@ function buttonDeleteAction(e) {
 }
 
 function buttonMoveUpAction(e) {
-    var index = getSelectedTaskIndex();
+    var index = utils_GetTableSelectedRowIndex("table-tasks");
     if (index == -1) {
         return;
     }
@@ -174,7 +174,7 @@ function buttonMoveUpAction(e) {
 }
 
 function buttonMoveDownAction(e) {
-    var index = getSelectedTaskIndex();
+    var index = utils_GetTableSelectedRowIndex("table-tasks");
     if (index == -1) {
         return;
     }
@@ -188,7 +188,7 @@ function buttonMoveDownAction(e) {
 
 function buttonChangeGroupAction(e) {
     console.log("buttonChangeGroupAction");
-    var index = getSelectedTaskIndex();
+    var index = utils_GetTableSelectedRowIndex("table-tasks");
     if (index == -1) {
         return;
     }

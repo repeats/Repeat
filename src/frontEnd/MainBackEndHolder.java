@@ -20,8 +20,10 @@ import javax.swing.JOptionPane;
 
 import org.jnativehook.GlobalScreen;
 
+import core.config.AbstractRemoteRepeatsClientsConfig;
 import core.config.Config;
 import core.controller.Core;
+import core.controller.CoreProvider;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
 import core.ipc.repeatClient.PythonIPCClientService;
@@ -43,7 +45,6 @@ import core.userDefinedTask.UserDefinedAction;
 import core.userDefinedTask.internals.AggregateTools;
 import core.userDefinedTask.internals.ITools;
 import core.userDefinedTask.internals.RemoteRepeatsClientTools;
-import core.userDefinedTask.internals.ToolsConfig;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
 import utilities.Desktop;
@@ -79,6 +80,7 @@ public class MainBackEndHolder {
 	private RepeatsPeerServiceClientManager peerServiceClientManager;
 
 	protected final Config config;
+	private final CoreProvider coreProvider;
 
 	protected final UserDefinedAction switchRecord, switchReplay, switchReplayCompiled;
 	private boolean isRecording, isReplaying, isRunningCompiledTask;
@@ -101,11 +103,12 @@ public class MainBackEndHolder {
 
 		taskGroups = new ArrayList<>();
 
-		taskInvoker = new TaskInvoker(config, taskGroups);
-		keysManager = new GlobalEventsManager(config);
 		peerServiceClientManager = new RepeatsPeerServiceClientManager();
+		coreProvider = new CoreProvider(config, peerServiceClientManager);
+		taskInvoker = new TaskInvoker(coreProvider, taskGroups);
+		keysManager = new GlobalEventsManager(config, coreProvider);
 		replayConfig = ReplayConfig.of();
-		recorder = new Recorder(config, keysManager);
+		recorder = new Recorder(coreProvider, keysManager);
 
 		switchRecord = new UserDefinedAction() {
 			@Override
@@ -191,7 +194,7 @@ public class MainBackEndHolder {
 		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
 
-		IPCServiceManager.setConfig(config);
+		IPCServiceManager.setCoreProvider(coreProvider);
 	}
 
 	/*************************************************************************************************************/
@@ -377,7 +380,7 @@ public class MainBackEndHolder {
 			    @Override
 				public void run() {
 			    	try {
-						customFunction.action(Core.getInstance(config));
+						customFunction.action(coreProvider.get());
 					} catch (InterruptedException e) { // Stopped prematurely
 						return;
 					} catch (Exception e) {
@@ -883,12 +886,16 @@ public class MainBackEndHolder {
 	public void setToolsClients(List<String> clients) {
 		config.getToolsConfig().setClients(clients);
 		List<ITools> tools = clients.stream().map(c -> {
-			if (c.equals(ToolsConfig.LOCAL_CLIENT)) {
+			if (c.equals(AbstractRemoteRepeatsClientsConfig.LOCAL_CLIENT)) {
 				return Tools.local();
 			}
 			return new RemoteRepeatsClientTools(peerServiceClientManager, c);
 		}).collect(Collectors.toList());
 		Tools.setExecutor(AggregateTools.of(tools));
+	}
+
+	public void setCoreClients(List<String> clients) {
+		config.getCoreConfig().setClients(clients);
 	}
 
 	/*************************************************************************************************************/
@@ -914,6 +921,10 @@ public class MainBackEndHolder {
 		return config;
 	}
 
+	public CoreProvider getCoreProvider() {
+		return coreProvider;
+	}
+
 	public synchronized boolean isRecording() {
 		return isRecording;
 	}
@@ -936,10 +947,6 @@ public class MainBackEndHolder {
 
 	public RepeatsPeerServiceClientManager getPeerServiceClientManager() {
 		return peerServiceClientManager;
-	}
-
-	public void setPeerServiceClientManager(RepeatsPeerServiceClientManager peerServiceClientManager) {
-		this.peerServiceClientManager = peerServiceClientManager;
 	}
 
 	public String getLogsSince(long time) {

@@ -6,32 +6,13 @@ function registerTableTasks() {
 }
 
 function registerCells() {
+    utils_TableHighlight("table-tasks");
+    utils_TableOnclick("table-tasks", tableTaskOnClick);
+
     /* Get all rows from your 'table' but not the first one 
     * that includes headers. */
-    var rows = _getRows();
-
-    /* Create 'click' event handler for rows */
-    rows.click(function(e) {
-        /* Get current row */
-        var row = $(this);
-
-        /* Otherwise just highlight one row and clean others */
-        rows.removeClass('table-highlight');
-        row.addClass('table-highlight');
-    });
-
     var table = document.getElementById("table-tasks");
-    // Start from row = 1 since row = 0 is the headings.
-    for (var i = 1; i < table.rows.length; i++) {
-        for (var j = 0; j < table.rows[i].cells.length; j++)
-        table.rows[i].cells[j].onclick = function(cell, i, j) {
-            return function() {
-                // Minus one so that row index starts from 0.
-                tableTaskOnClick(cell, i - 1, j);
-            };
-        }(table.rows[i].cells[j], i, j);
-    }
-
+    var rows = $('#table-tasks').find("tr").not(":first");
     if (rows.length > 0) {
         var lastCellIndex = table.rows[1].cells.length - 1;
         table.rows[1].cells[lastCellIndex].click();
@@ -39,7 +20,7 @@ function registerCells() {
 }
 
 function tableTaskOnClick(cell, row, col) {
-    var isFocused = getSelectedTaskIndex() == row;
+    var isFocused = utils_GetTableSelectedRowIndex("table-tasks") == row;
 
     if (!isFocused || col != 1) {
         fillSourceForTask(row);
@@ -88,7 +69,7 @@ function newNameOnClick(e) {
 }
 
 function refreshTasksWithData(data) {
-    var index = getSelectedTaskIndex();
+    var index = utils_GetTableSelectedRowIndex("table-tasks");
     refreshTasksWithDataAndIndex(data, index);
 }
 
@@ -97,43 +78,8 @@ function refreshTasksWithDataAndIndex(data, index) {
     var tableElement = $("#table-tasks");
     tableElement.html(data);
     registerCells();
-    setSelectedTask(index);
+    utils_SetTableSelectedIndex("table-tasks", index);
     _setLastToLastScrollPosition();
-}
-
-function setSelectedTask(index) {
-    var rows = _getRows();
-    if (index < 0) {
-        index = 0;
-    }
-    if (index >= rows.length) {
-        index = rows.length - 1;
-    }
-
-    rows.each(function(i) {
-        if (i == index) {
-            rows.removeClass('table-highlight');
-            $(this).addClass('table-highlight');
-            return false;
-        }
-    });
-}
-
-function getSelectedTaskIndex() {
-    var rows = _getRows();
-    var index = -1;
-    rows.each(function(i) {
-        if ($(this).hasClass("table-highlight")) {
-            index = i;
-            return false;
-        }
-    });
-
-    return index;
-}
-
-function _getRows() {
-    return $('#table-tasks').find("tr").not(":first");
 }
 
 var _lastScrollPosition = 0;

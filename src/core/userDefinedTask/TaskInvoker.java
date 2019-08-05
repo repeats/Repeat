@@ -3,8 +3,7 @@ package core.userDefinedTask;
 import java.util.List;
 import java.util.logging.Logger;
 
-import core.config.Config;
-import core.controller.Core;
+import core.controller.CoreProvider;
 import core.keyChain.TaskActivation;
 
 /**
@@ -14,11 +13,11 @@ public class TaskInvoker {
 
 	private static final Logger LOGGER = Logger.getLogger(TaskInvoker.class.getName());
 
-	private final Config config;
+	private final CoreProvider coreProvider;
 	private List<TaskGroup> taskGroup;
 
-	public TaskInvoker(Config config, List<TaskGroup> taskGroup) {
-		this.config = config;
+	public TaskInvoker(CoreProvider coreProvider, List<TaskGroup> taskGroup) {
+		this.coreProvider = coreProvider;
 		this.taskGroup = taskGroup;
 	}
 
@@ -93,6 +92,6 @@ public class TaskInvoker {
 
 	private void execute(UserDefinedAction action, TaskActivation activation) throws InterruptedException {
 		action.setInvoker(activation);
-		action.trackedAction(Core.getInstance(config));
+		action.trackedAction(coreProvider.get());
 	}
 }

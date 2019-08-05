@@ -25,6 +25,13 @@ public class RepeatsPeerServiceClientManager implements IJsonable {
 		this.clients = new HashMap<>();
 	}
 
+	public void updateClients(Collection<RepeatsPeerServiceClient> clients) {
+		this.clients.clear();
+		for (RepeatsPeerServiceClient client : clients) {
+			this.clients.put(client.getClientId(), client);
+		}
+	}
+
 	public RepeatsPeerServiceClient getClient(String id) {
 		return clients.get(id);
 	}
