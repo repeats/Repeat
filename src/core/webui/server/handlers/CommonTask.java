@@ -20,7 +20,7 @@ public class CommonTask {
 	public static IIPCService getIPCService(Map<String, String> params) {
 		String indexString = params.get("ipc");
 		if (indexString == null || !NumberUtility.isNonNegativeInteger(indexString)) {
-			LOGGER.warning("IPC index must be non-negative integer.");
+			LOGGER.warning("IPC index must be non-negative integer. Got " + indexString + ".");
 			return null;
 		}
 
@@ -41,14 +41,14 @@ public class CommonTask {
 		}
 
 		if (!NumberUtility.isNonNegativeInteger(taskValue)) {
-			LOGGER.warning("Task indices must be non-negative integers.");
+			LOGGER.warning("Task indices must be non-negative integers. Got " + taskValue + ".");
 			return -1;
 		}
 
 		int taskIndex = Integer.parseInt(taskValue);
 		List<UserDefinedAction> tasks = group.getTasks();
 		if (taskIndex >= tasks.size()) {
-			LOGGER.warning("No such task with index.");
+			LOGGER.warning("No such task with index " + taskIndex + ".");
 			return -1;
 		}
 
@@ -80,13 +80,13 @@ public class CommonTask {
 	public static int getTaskGroupIndexFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		String groupValue = params.get("group");
 		if (!NumberUtility.isNonNegativeInteger(groupValue)) {
-			LOGGER.warning("Group index must be non-negative integers.");
+			LOGGER.warning("Group index must be non-negative integers. Got " + groupValue + ".");
 			return -1;
 		}
 
 		int groupIndex = Integer.parseInt(groupValue);
 		if (groupIndex >= backEndHolder.getTaskGroups().size()) {
-			LOGGER.warning("Group index out of bound.");
+			LOGGER.warning("Group index out of bound: " + groupIndex);
 			return -1;
 		}
 		return groupIndex;

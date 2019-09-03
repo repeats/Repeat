@@ -43,6 +43,13 @@ public class Parser2_9 extends ConfigParser {
 				JsonNodeFactories.object(
 						JsonNodeFactories.field(JsonNodeFactories.string("clients"), JsonNodeFactories.array()))).getRootNode();
 
+		JsonNode compilers = previousVersion.getNode("compilers");
+		compilers = JsonNodeFactories.object(
+				JsonNodeFactories.field("local_compilers", compilers),
+				JsonNodeFactories.field("remote_repeats_compilers", JsonNodeFactories.array(JsonNodeFactories.string("local")))
+				);
+		previousVersion = JSONUtility.replaceChild(previousVersion, "compilers", compilers).getRootNode();
+
 		List<JsonNode> groups = previousVersion.getArrayNode("task_groups");
 		List<JsonNode> newGroups = new ArrayList<>();
 		for (JsonNode group : groups) {
@@ -97,7 +104,7 @@ public class Parser2_9 extends ConfigParser {
 				LOGGER.log(Level.WARNING, "IPC Service Manager failed to parse JSON metadata");
 			}
 
-			if (!config.getCompilerFactory().parseJSON(root.getArrayNode("compilers"))) {
+			if (!config.getCompilerFactory().parseJSON(root.getNode("compilers"))) {
 				LOGGER.log(Level.WARNING, "Dynamic Compiler Manager failed to parse JSON metadata");
 			}
 

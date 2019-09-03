@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import core.controller.CoreProvider;
 import core.ipc.IPCServiceWithModifablePort;
+import frontEnd.MainBackEndHolder;
 
 public class ControllerServer extends IPCServiceWithModifablePort {
 
@@ -25,7 +25,7 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 	private static final int MAX_THREAD_COUNT = 10;
 	private static final int MAX_SERVER_BACK_LOG = 50; // Default value of ServerSocket constructor.
 
-	private CoreProvider coreProvider;
+	private MainBackEndHolder backEnd;
 	private boolean isStopped;
 	private final ScheduledThreadPoolExecutor threadPool;
 	private final LinkedList<ClientServingThread> clientServingThreads;
@@ -33,7 +33,6 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 	private Thread mainThread;
 
 	public ControllerServer() {
-		coreProvider = new CoreProvider(null, null);
 		threadPool = new ScheduledThreadPoolExecutor(MAX_THREAD_COUNT);
 		clientServingThreads = new LinkedList<>();
 		this.setPort(DEFAULT_PORT);
@@ -71,7 +70,7 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 		                	continue;
 		                }
 
-		                ClientServingThread newClient = new ClientServingThread(coreProvider.getLocal(), socket);
+		                ClientServingThread newClient = new ClientServingThread(backEnd, socket);
 		                clientServingThreads.add(newClient);
 		                threadPool.submit(newClient);
 		            }
@@ -113,8 +112,8 @@ public class ControllerServer extends IPCServiceWithModifablePort {
 		}
 	}
 
-	public void setCoreProvider(CoreProvider coreProvider) {
-		this.coreProvider = coreProvider;
+	public void setBackEnd(MainBackEndHolder backEnd) {
+		this.backEnd = backEnd;
 	}
 
 	private synchronized boolean isStopped() {

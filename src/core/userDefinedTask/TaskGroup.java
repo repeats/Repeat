@@ -2,6 +2,7 @@ package core.userDefinedTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -15,6 +16,8 @@ import core.languageHandler.compiler.DynamicCompilerManager;
 import utilities.json.IJsonable;
 
 public class TaskGroup implements IJsonable {
+
+	public static final String REMOTE_TASK_GROUP_ID = "remote-tasks";
 
 	private String groupId;
 	private String name;
@@ -36,6 +39,10 @@ public class TaskGroup implements IJsonable {
 		this(name, new ArrayList<UserDefinedAction>(), UUID.randomUUID().toString());
 	}
 
+	public static TaskGroup remoteTaskGroup() {
+		return new TaskGroup("remote-tasks", REMOTE_TASK_GROUP_ID);
+	}
+
 	public List<UserDefinedAction> getTasks() {
 		return tasks;
 	}
@@ -54,11 +61,19 @@ public class TaskGroup implements IJsonable {
 	/**
 	 * Get first task with given name, or null if no such task exists.
 	 */
-	public UserDefinedAction getTask(String name) {
+	public UserDefinedAction getTaskByName(String name) {
 		for (UserDefinedAction task : tasks) {
 			if (task.getName().equals(name)) {
 				return task;
 			}
+		}
+		return null;
+	}
+
+	public UserDefinedAction getTask(String id) {
+		Optional<UserDefinedAction> task = tasks.stream().filter(t -> t.getActionId().equals(id)).findFirst();
+		if (task.isPresent()) {
+			return task.get();
 		}
 		return null;
 	}

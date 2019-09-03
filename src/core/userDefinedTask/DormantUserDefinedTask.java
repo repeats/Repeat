@@ -3,6 +3,7 @@ package core.userDefinedTask;
 import java.util.logging.Level;
 
 import core.controller.Core;
+import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import utilities.ILoggable;
@@ -12,8 +13,9 @@ public final class DormantUserDefinedTask extends UserDefinedAction implements I
 
 	private final String source;
 
-	public DormantUserDefinedTask(String source) {
+	public DormantUserDefinedTask(String source, Language compiler) {
 		this.source = source;
+		this.compiler = compiler;
 	}
 
 	@Override
@@ -41,8 +43,8 @@ public final class DormantUserDefinedTask extends UserDefinedAction implements I
 	}
 
 	@Override
-	public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
-		Pair<DynamicCompilerOutput, UserDefinedAction> result = compiler.compile(source);
+	public UserDefinedAction recompileNative(AbstractNativeCompiler compiler) {
+		Pair<DynamicCompilerOutput, UserDefinedAction> result = compiler.compile(source, getCompiler());
 		DynamicCompilerOutput compilerStatus = result.getA();
 		UserDefinedAction output = result.getB();
 		output.actionId = getActionId();
@@ -53,7 +55,7 @@ public final class DormantUserDefinedTask extends UserDefinedAction implements I
 		}
 		getLogger().info("Successfully recompiled dormant task " + getName() + ".");
 		output.syncContent(this);
-		output.compiler = compiler.getName();
+		output.compiler = getCompiler();
 		return output;
 	}
 }

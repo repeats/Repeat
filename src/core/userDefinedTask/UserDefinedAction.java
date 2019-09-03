@@ -17,6 +17,7 @@ import core.keyChain.TaskActivation;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
+import core.languageHandler.compiler.RemoteRepeatsCompiler;
 import utilities.FileUtility;
 import utilities.ILoggable;
 import utilities.json.IJsonable;
@@ -44,7 +45,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		this(UUID.randomUUID().toString());
 	}
 
-	public UserDefinedAction(String actionId) {
+	protected UserDefinedAction(String actionId) {
 		this.actionId = actionId;
 		activation = TaskActivation.newBuilder().build();
 		invoker = TaskActivation.newBuilder().build();
@@ -76,7 +77,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	/**
 	 * @return this action's ID.
 	 */
-	public String getActionId() {
+	public final String getActionId() {
 		return actionId;
 	}
 
@@ -99,7 +100,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	/**
 	 * @return the activation entity associated with this action.
 	 */
-	public TaskActivation getActivation() {
+	public final TaskActivation getActivation() {
 		return activation;
 	}
 
@@ -140,7 +141,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		this.enabled = enabled;
 	}
 
-	public void setActivation(TaskActivation activation) {
+	public final void setActivation(TaskActivation activation) {
 		this.activation = activation;
 	}
 
@@ -161,10 +162,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	/**
 	 * This method is called to dynamically allow the current task to determine which activation triggered it.
 	 * This activation would contain only the activation element that triggered the event.
-	 *
-	 * @param invoker
 	 */
-	public final void setInvoker(TaskActivation invoker) {
+	public void setInvoker(TaskActivation invoker) {
 		this.invoker = invoker;
 
 		// For legacy purpose.
@@ -211,14 +210,12 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 
 	/***********************************************************************/
-	public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
-		if (!clean) {
-			return this;
-		} else {
-			// TODO recompile the current task
-			getLogger().warning("Not supported");
-			return null;
-		}
+	public UserDefinedAction recompileNative(AbstractNativeCompiler compiler) {
+		return this;
+	}
+
+	public UserDefinedAction recompileRemote(RemoteRepeatsCompiler compiler) {
+		return this;
 	}
 
 	public final void syncContent(UserDefinedAction other) {
@@ -231,7 +228,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	/***********************************************************************/
 	@Override
-	public final JsonRootNode jsonize() {
+	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("action_id", JsonNodeFactories.string(actionId)),
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
@@ -243,12 +240,20 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				);
 	}
 
-	public static final UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
+	public static UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
+		if (node.isNode("composite_action")) {
+			return CompositeUserDefinedAction.parseJSON(factory, node);
+		}
+
+		return parsePureJSON(factory, node);
+	}
+
+	protected static UserDefinedAction parsePureJSON(DynamicCompilerManager factory, JsonNode node) {
 		try {
 			String actionId = node.getStringValue("action_id");
 
 			String sourcePath = node.getStringValue("source_path");
-			AbstractNativeCompiler compiler = factory.getCompiler(node.getStringValue("compiler"));
+			AbstractNativeCompiler compiler = factory.getNativeCompiler(node.getStringValue("compiler"));
 			if (compiler == null) {
 				JOptionPane.showMessageDialog(null, "Unknown compiler " + node.getStringValue("compiler"));
 				return null;

@@ -25,6 +25,10 @@ public class ClientTask implements IJsonable {
 		this.fileName = fileName;
 	}
 
+	public static ClientTask of(String id, String fileName) {
+		return new ClientTask(id, fileName);
+	}
+
 	public String getId() {
 		return id;
 	}

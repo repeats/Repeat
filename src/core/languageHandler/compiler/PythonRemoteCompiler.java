@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -99,8 +98,6 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 	/*******************************************************************/
 	/************************Swing components***************************/
 	/*******************************************************************/
-
-	@Override
 	public void promptChangePath(JFrame parent) {
 		JFileChooser chooser = new JFileChooser(getPath());
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -114,16 +111,5 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 			setPath(selectedFile);
 			((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(selectedFile);
 		}
-	}
-
-	@Override
-	public void changeCompilationButton(JButton bCompile) {
-		File interpreter = getPath();
-		getLogger().info("Using python interpreter at " + interpreter.getAbsolutePath());
-	}
-
-	@Override
-	public void configure() {
-		// Nothing to do at the moment
 	}
 }

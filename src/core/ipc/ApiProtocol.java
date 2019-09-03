@@ -29,6 +29,13 @@ public class ApiProtocol {
 		return generateReply(FAILURE_STATUS, message);
 	}
 
+	public static boolean isReplyMessage(JsonNode message) {
+		return message.isStringValue("status") &&
+				message.isNode("message") &&
+				message.isBooleanValue("is_reply_message") &&
+				message.getBooleanValue("is_reply_message");
+	}
+
 	private static JsonNode generateReply(String status, String message) {
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("status", JsonNodeFactories.string(status)),

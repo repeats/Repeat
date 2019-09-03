@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClientManager;
 import core.languageHandler.Language;
 import utilities.FileUtility;
 import utilities.json.IJsonable;
@@ -19,6 +20,7 @@ public class DynamicCompilerManager implements IJsonable {
 
 	private static final Logger LOGGER = Logger.getLogger(DynamicCompilerManager.class.getName());
 	private final Map<Language, AbstractNativeCompiler> compilers;
+	private RemoteRepeatsCompilerConfig remoteRepeatsCompilerConfig;
 
 	public DynamicCompilerManager() {
 		compilers = new HashMap<>();
@@ -26,22 +28,28 @@ public class DynamicCompilerManager implements IJsonable {
 		compilers.put(Language.PYTHON, new PythonRemoteCompiler(new File("core")));
 		compilers.put(Language.CSHARP, new CSharpRemoteCompiler(new File("core")));
 		compilers.put(Language.SCALA, new ScalaRemoteCompiler(new File("core")));
+
+		remoteRepeatsCompilerConfig = new RemoteRepeatsCompilerConfig(new ArrayList<>());
 	}
 
-	public AbstractNativeCompiler getCompiler(Language name) {
+	public AbstractNativeCompiler getNativeCompiler(Language name) {
 		return compilers.get(name);
 	}
 
-	public AbstractNativeCompiler getCompiler(String name) {
-		return getCompiler(Language.identify(name));
+	public AbstractNativeCompiler getNativeCompiler(String name) {
+		return getNativeCompiler(Language.identify(name));
 	}
 
 	public boolean hasCompiler(Language name) {
 		return compilers.containsKey(name);
 	}
 
-	public AbstractNativeCompiler removeCompiler(Language name) {
-		return compilers.remove(name);
+	public RemoteRepeatsCompiler getRemoteRepeatsCompiler(RepeatsPeerServiceClientManager peerServiceClientManager) {
+		return new RemoteRepeatsCompiler(remoteRepeatsCompilerConfig, peerServiceClientManager);
+	}
+
+	public RemoteRepeatsCompilerConfig getRemoteRepeatsCompilerConfig() {
+		return remoteRepeatsCompilerConfig;
 	}
 
 	@Override
@@ -55,16 +63,23 @@ public class DynamicCompilerManager implements IJsonable {
 					));
 		}
 
-		return JsonNodeFactories.array(compilerList);
+		return JsonNodeFactories.object(
+				JsonNodeFactories.field("local_compilers", JsonNodeFactories.array(compilerList)),
+				JsonNodeFactories.field("remote_repeats_compilers", remoteRepeatsCompilerConfig.jsonize()));
 	}
 
-	public boolean parseJSON(List<JsonNode> compilerSettings) {
-		for (JsonNode compilerNode : compilerSettings) {
+	public boolean parseJSON(JsonNode compilerSettings) {
+		JsonNode remoteRepeatsCompilers = compilerSettings.getNode("remote_repeats_compilers");
+		RemoteRepeatsCompilerConfig remoteCompilers = RemoteRepeatsCompilerConfig.parseJSON(remoteRepeatsCompilers);
+		remoteRepeatsCompilerConfig.setClients(remoteCompilers.getClients());
+
+		List<JsonNode> localCompilers = compilerSettings.getArrayNode("local_compilers");
+		for (JsonNode compilerNode : localCompilers) {
 			String name = compilerNode.getStringValue("name");
 			String path = compilerNode.getStringValue("path");
 			JsonNode compilerSpecificArgs = compilerNode.getNode("compiler_specific_args");
 
-			AbstractNativeCompiler compiler = getCompiler(name);
+			AbstractNativeCompiler compiler = getNativeCompiler(name);
 			if (compiler != null) {
 				compiler.setPath(new File(path));
 				if (!compiler.parseCompilerSpecificArgs(compilerSpecificArgs)) {

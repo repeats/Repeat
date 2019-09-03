@@ -11,6 +11,7 @@ import java.util.List;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.controller.Core;
+import core.controller.CoreProvider;
 import core.ipc.repeatServer.MainMessageSender;
 import core.userDefinedTask.Tools;
 import utilities.IterableUtility;
@@ -88,11 +89,11 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	private static final String DEVICE_KEYBOARD = "keyboard";
 	private static final String DEVICE_TOOL = "tool";
 
-	private final Core core;
+	private final CoreProvider coreProvider;
 
-	protected ControllerRequestProcessor(MainMessageSender messageSender, Core core) {
+	protected ControllerRequestProcessor(MainMessageSender messageSender, CoreProvider coreProvider) {
 		super(messageSender);
-		this.core = core;
+		this.coreProvider = coreProvider;
 	}
 
 	@Override
@@ -114,6 +115,8 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	}
 
 	private boolean mouseAction(String type, long id, final String action, final List<Object> parsedParams) throws InterruptedException {
+		Core core = getCore();
+
 		final List<Integer> params = toIntegerParams(parsedParams);
 		if (params == null) {
 			return false;
@@ -218,6 +221,8 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	}
 
 	private boolean keyboardAction(String type, long id, final String action, final List<Object> parsedParams) throws InterruptedException {
+		Core core = getCore();
+
 		if (action.equals("press")) {
 			final List<Integer> params = toIntegerParams(parsedParams);
 			if (params == null) {
@@ -368,6 +373,10 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 
 	private boolean unsupportedAction(String type, long id, final String action) {
 		return failure(type, id, "Unsupported action " + action);
+	}
+
+	private Core getCore() {
+		return coreProvider.getLocal();
 	}
 
 	private List<String> toStringParams(List<Object> params) {

@@ -4,16 +4,8 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
-import core.ipc.IPCServiceManager;
-import core.ipc.IPCServiceName;
-import core.ipc.repeatClient.ScalaIPCClientService;
 import core.languageHandler.Language;
 
 public class ScalaRemoteCompiler extends AbstractRemoteNativeCompiler {
@@ -80,48 +72,5 @@ public class ScalaRemoteCompiler extends AbstractRemoteNativeCompiler {
 	@Override
 	public Logger getLogger() {
 		return Logger.getLogger(getClass().getName());
-	}
-
-	@Override
-	public void promptChangePath(JFrame parent) {
-		ScalaIPCClientService ipcService = ((ScalaIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.SCALA));
-
-		JFileChooser chooser = new JFileChooser(getPath());
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-		// First select the JRE to launch scala subsystem
-		if (chooser.showDialog(parent, "Set JRE") == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = chooser.getSelectedFile();
-			if (!selectedFile.canExecute()) {
-				JOptionPane.showMessageDialog(parent,
-						"Chosen file " + selectedFile.getName() + " is not executable", "Invalid choice", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			setPath(selectedFile);
-			ipcService.setExecutingProgram(selectedFile);
-		}
-
-		// Next select the scala jar directories containing the jar dependencies for the subsystem
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		if (chooser.showDialog(parent, "Set scala jar library directory") == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = chooser.getSelectedFile();
-			if (!selectedFile.isDirectory()) {
-				JOptionPane.showMessageDialog(parent,
-						"Chosen path " + selectedFile.getName() + " is not a directory", "Invalid choice", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-
-			ipcService.setScalaLibraryDirectory(selectedFile);
-		}
-	}
-
-	@Override
-	public void changeCompilationButton(JButton bCompile) {
-		// Nothing to do at the moment.
-	}
-
-	@Override
-	public void configure() {
-		// Nothing to do at the moment
 	}
 }

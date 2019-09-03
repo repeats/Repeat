@@ -48,7 +48,7 @@ public class TaskAddActionHandler extends TaskActionHandler {
 			return CliRpcCodec.prepareResponse(exchange, 500, "Unable to read source file.");
 		}
 
-		if (!backEndHolder.compileSource(source, message.getTaskIdentifier().getTask().getName())) {
+		if (!backEndHolder.compileSourceAndSetCurrent(source, message.getTaskIdentifier().getTask().getName())) {
 			return CliRpcCodec.prepareResponse(exchange, 500, "Unable to compile source file.");
 		}
 

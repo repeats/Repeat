@@ -1,6 +1,8 @@
 package core.ipc.repeatServer.processors;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -12,6 +14,7 @@ import core.ipc.ApiProtocol;
 import core.ipc.repeatServer.ClientTask;
 import core.ipc.repeatServer.MainMessageSender;
 import core.keyChain.TaskActivation;
+import frontEnd.MainBackEndHolder;
 
 /**
  * This class represents the message processor for all task action.
@@ -50,43 +53,59 @@ public class TaskProcessor extends AbstractMessageProcessor {
 	private static final long TASK_CREATION_TIMEOUT_MS = 10000; // Compiling may take long time
 	private static final long EXECUTION_TIMEOUT_MS = 500000; // Execution may also take long time
 	private static final long TASK_REMOVAL_TIMEOUT_MS = 2000; // Removal should be fast
-	private final Map<String, ClientTask> tasks;
+
+	public static final String CREATE_TASK_ACTION = "create_task";
+	public static final String RUN_TASK_ACTION = "run_task";
+	public static final String REMOVE_TASK_ACTION = "remove_task";
+
+	public static final Charset SOURCE_ENCODING = StandardCharsets.UTF_8;
+
+	private ServerTaskRequestProcessor taskRequestProcessor;
+	private final Map<String, ClientTask> remoteTasks;
 	private final Map<Long, Reply> locks;
 
-	public TaskProcessor(MainMessageSender messageSender) {
+	public TaskProcessor(MainBackEndHolder backEnd, MainMessageSender messageSender) {
 		super(messageSender);
-		this.tasks = new HashMap<>();
+		this.taskRequestProcessor = new ServerTaskRequestProcessor(backEnd, messageSender);
+		this.remoteTasks = new HashMap<>();
 		locks = new HashMap<>();
 	}
 
 	@Override
-	public boolean process(String type, long id, JsonNode content) {
-		if (locks.containsKey(id)) {
-			if (!verifyReplyContent(content)) {
-				getLogger().warning("Invalid reply." + content + ". Drop message!");
-				return false;
-			}
-
-			String status = content.getStringValue("status");
-			JsonNode message = content.getNode("message");
-			Reply output = locks.get(id);
-			output.status = status;
-			output.message = message;
-
-			synchronized (output) {
-				output.timeout = false;
-				output.notify();
-			}
-			return true;
+	public boolean process(String type, long id, JsonNode content) throws InterruptedException {
+		if (ApiProtocol.isReplyMessage(content)) {
+			return processReply(type, id, content);
 		}
 
-		getLogger().warning("Unknown id " + id + ". Drop message!");
-		return false;
+		return taskRequestProcessor.process(type, id, content);
+	}
+
+	private boolean processReply(String type, long id, JsonNode content) {
+		if (!locks.containsKey(id)) {
+			getLogger().warning("Unknown id " + id + ". Drop message!");
+			return false;
+		}
+		if (!verifyReplyContent(content)) {
+			getLogger().warning("Invalid reply." + content + ". Drop message!");
+			return false;
+		}
+
+		String status = content.getStringValue("status");
+		JsonNode message = content.getNode("message");
+		Reply output = locks.get(id);
+		output.status = status;
+		output.message = message;
+
+		synchronized (output) {
+			output.timeout = false;
+			output.notify();
+		}
+		return true;
 	}
 
 	public String createTask(File file) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
-				JsonNodeFactories.field("task_action", JsonNodeFactories.string("create_task")),
+				JsonNodeFactories.field("task_action", JsonNodeFactories.string(CREATE_TASK_ACTION)),
 				JsonNodeFactories.field("parameters",
 					JsonNodeFactories.array(
 						JsonNodeFactories.string(file.getAbsolutePath())
@@ -98,7 +117,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 		if (reply != null && reply.status.equals(ApiProtocol.SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
 			if (task != null) {
-				this.tasks.put(task.getId(), task);
+				remoteTasks.put(task.getId(), task);
 				return task.getId();
 			}
 		}
@@ -107,7 +126,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 
 	public boolean runTask(String id, TaskActivation invoker) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
-				JsonNodeFactories.field("task_action", JsonNodeFactories.string("run_task")),
+				JsonNodeFactories.field("task_action", JsonNodeFactories.string(RUN_TASK_ACTION)),
 				JsonNodeFactories.field("parameters",
 					JsonNodeFactories.array(
 						JsonNodeFactories.string(id),
@@ -122,7 +141,7 @@ public class TaskProcessor extends AbstractMessageProcessor {
 
 	public boolean removeTask(String id) {
 		JsonRootNode requestMessage = JsonNodeFactories.object(
-				JsonNodeFactories.field("task_action", JsonNodeFactories.string("remove_task")),
+				JsonNodeFactories.field("task_action", JsonNodeFactories.string(REMOVE_TASK_ACTION)),
 				JsonNodeFactories.field("parameters",
 					JsonNodeFactories.array(JsonNodeFactories.string(id))
 				)
@@ -132,8 +151,8 @@ public class TaskProcessor extends AbstractMessageProcessor {
 		if (reply.status.equals(ApiProtocol.SUCCESS_STATUS)) {
 			ClientTask task = ClientTask.parseJSON(reply.message);
 			if (task != null && task.getId().equals(id)) {
-				this.tasks.put(task.getId(), task);
-				tasks.remove(task.getId());
+				this.remoteTasks.put(task.getId(), task);
+				remoteTasks.remove(task.getId());
 				return true;
 			}
 		}

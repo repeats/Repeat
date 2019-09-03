@@ -29,7 +29,7 @@ public class ActionCompileTaskHandler extends AbstractSingleMethodHttpHandler {
 		}
 
 		String source = new String(data, StandardCharsets.UTF_8);
-		boolean result = backEndHolder.compileSource(source, null);
+		boolean result = backEndHolder.compileSourceAndSetCurrent(source, null);
 		if (!result) {
 			LOGGER.warning("Unable to compile source code.");
 		}

@@ -35,8 +35,10 @@ import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.PythonRemoteCompiler;
+import core.languageHandler.compiler.RemoteRepeatsCompiler;
 import core.recorder.Recorder;
 import core.recorder.ReplayConfig;
+import core.userDefinedTask.CompositeUserDefinedAction;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.TaskInvoker;
 import core.userDefinedTask.TaskSourceManager;
@@ -134,42 +136,7 @@ public class MainBackEndHolder {
 		TaskProcessorManager.setProcessorIdentifyCallback(new Function<Language, Void>(){
 			@Override
 			public Void apply(Language language) {
-				for (TaskGroup group : taskGroups) {
-					List<UserDefinedAction> tasks = group.getTasks();
-					for (int i = 0; i < tasks.size(); i++) {
-						UserDefinedAction task = tasks.get(i);
-						if (task.getCompiler() != language) {
-							continue;
-						}
-
-						AbstractNativeCompiler compiler = config.getCompilerFactory().getCompiler(task.getCompiler());
-						UserDefinedAction recompiled = task.recompile(compiler, false);
-						if (recompiled == null) {
-							continue;
-						}
-
-						tasks.set(i, recompiled);
-
-						if (recompiled.isEnabled()) {
-							Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(recompiled);
-							boolean conflict = false;
-							if (!collisions.isEmpty()) {
-								if (collisions.size() != 1) {
-									conflict = true;
-								} else {
-									conflict = !collisions.iterator().next().equals(task);
-								}
-							}
-
-							if (!conflict) {
-								keysManager.registerTask(recompiled);
-							} else {
-								List<String> collisionNames = collisions.stream().map(t -> t.getName()).collect(Collectors.toList());
-								LOGGER.warning("Unable to register task " + recompiled.getName() + ". Collisions are " + collisionNames);
-							}
-						}
-					}
-				}
+				recompiledNativeTasks(language);
 				return null;
 			}
 		});
@@ -191,10 +158,10 @@ public class MainBackEndHolder {
 			}
 		}
 
-		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getCompiler(Language.PYTHON)).getPath();
+		File pythonExecutable = ((PythonRemoteCompiler) (config.getCompilerFactory()).getNativeCompiler(Language.PYTHON)).getPath();
 		((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
 
-		IPCServiceManager.setCoreProvider(coreProvider);
+		IPCServiceManager.setBackEnd(this);
 	}
 
 	/*************************************************************************************************************/
@@ -213,6 +180,8 @@ public class MainBackEndHolder {
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Exception when launching clients connecting to peer services.", e);
 		}
+
+		recompileRemoteTasks();
 	}
 
 	protected void stopBackEndActivities() {
@@ -255,7 +224,7 @@ public class MainBackEndHolder {
 
 		try {
 			LOGGER.info("Waiting for main executor to terminate...");
-			executor.awaitTermination(5, TimeUnit.SECONDS);
+			executor.awaitTermination(3, TimeUnit.SECONDS);
 			LOGGER.info("Main executor terminated.");
 		} catch (InterruptedException e) {
 			LOGGER.log(Level.WARNING, "Interrupted while awaiting backend executor termination.", e);
@@ -493,6 +462,67 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/*****************************************Task related********************************************************/
 
+	private void recompiledNativeTasks(Language language) {
+		for (TaskGroup group : taskGroups) {
+			List<UserDefinedAction> tasks = group.getTasks();
+			for (int i = 0; i < tasks.size(); i++) {
+				UserDefinedAction task = tasks.get(i);
+				if (task.getCompiler() != language) {
+					continue;
+				}
+
+				AbstractNativeCompiler compiler = config.getCompilerFactory().getNativeCompiler(task.getCompiler());
+				UserDefinedAction recompiled = task.recompileNative(compiler);
+				if (recompiled == null) {
+					continue;
+				}
+
+				tasks.set(i, recompiled);
+
+				if (recompiled.isEnabled()) {
+					reRegisterTask(task, recompiled);
+				}
+			}
+		}
+	}
+
+	private void recompileRemoteTasks() {
+		for (TaskGroup group : taskGroups) {
+			List<UserDefinedAction> tasks = group.getTasks();
+			for (int i = 0; i < tasks.size(); i++) {
+				UserDefinedAction task = tasks.get(i);
+				RemoteRepeatsCompiler compiler = config.getCompilerFactory().getRemoteRepeatsCompiler(peerServiceClientManager);
+				UserDefinedAction recompiled = task.recompileRemote(compiler);
+				if (recompiled == null) {
+					continue;
+				}
+
+				tasks.set(i, recompiled);
+
+				if (!recompiled.isEnabled()) {
+					continue;
+				}
+				reRegisterTask(task, recompiled);
+			}
+		}
+	}
+
+	private void reRegisterTask(UserDefinedAction original, UserDefinedAction action) {
+		Set<UserDefinedAction> collisions = keysManager.isTaskRegistered(action);
+		boolean conflict = false;
+		if (!collisions.isEmpty()) {
+			conflict = collisions.size() != 1 || !collisions.iterator().next().equals(original);
+		}
+
+		if (!conflict) {
+			keysManager.registerTask(action);
+		} else {
+			List<String> collisionNames = collisions.stream().map(t -> t.getName()).collect(Collectors.toList());
+			LOGGER.warning("Unable to register task " + action.getName() + ". Collisions are " + collisionNames);
+		}
+	}
+
+
 	/**
 	 * Edit source code using the default program to open the source code file (with appropriate extension
 	 * depending on the currently selected language).
@@ -548,17 +578,61 @@ public class MainBackEndHolder {
 
 	public void addCurrentTask(TaskGroup group) {
 		if (customFunction != null) {
-			if (customFunction.getName() == null || customFunction.getName().isEmpty()) {
-				customFunction.setName("New task");
-			}
-			currentGroup.getTasks().add(customFunction);
-
+			addTask(customFunction, group);
 			customFunction = null;
-
-			writeConfigFile();
 		} else {
 			JOptionPane.showMessageDialog(null, "Nothing to add. Compile first?");
 		}
+	}
+
+	public void addTask(UserDefinedAction task, TaskGroup group) {
+		if (task.getName() == null || task.getName().isEmpty()) {
+			task.setName("New task");
+		}
+		group.getTasks().add(task);
+
+		writeConfigFile();
+	}
+
+	/**
+	 * Add task to a special remote task group.
+	 * If this group does not exist yet, create it.
+	 */
+	public void addRemoteCompiledTask(UserDefinedAction task) {
+		for (TaskGroup group : taskGroups) {
+			if (group.getGroupId().equals(TaskGroup.REMOTE_TASK_GROUP_ID)) {
+				addTask(task, group);
+				return;
+			}
+		}
+
+		TaskGroup remoteGroup = TaskGroup.remoteTaskGroup();
+		taskGroups.add(remoteGroup);
+		addTask(task, remoteGroup);
+	}
+
+	public UserDefinedAction getTask(String id) {
+		for (TaskGroup group : taskGroups) {
+			UserDefinedAction task = group.getTask(id);
+			if (task != null) {
+				return task;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get first task with given name in the task group.
+	 * Returning null if no task with given name exists.
+	 */
+	public UserDefinedAction getTaskByName(String name) {
+		for (TaskGroup group : taskGroups) {
+			UserDefinedAction task = group.getTaskByName(name);
+			if (task != null) {
+				return task;
+			}
+		}
+		return null;
 	}
 
 	public void removeCurrentTask(int selectedRow) {
@@ -572,6 +646,15 @@ public class MainBackEndHolder {
 		} else {
 			LOGGER.info("Select a row from the table to remove.");
 		}
+	}
+
+	public void removeTask(String id) {
+		UserDefinedAction toRemove = getTask(id);
+		if (toRemove == null) {
+			return;
+		}
+
+		removeTask(toRemove);
 	}
 
 	public void removeTask(UserDefinedAction toRemove) {
@@ -811,7 +894,7 @@ public class MainBackEndHolder {
 	}
 
 	public AbstractNativeCompiler getCompiler() {
-		return config.getCompilerFactory().getCompiler(getSelectedLanguage());
+		return config.getCompilerFactory().getNativeCompiler(getSelectedLanguage());
 	}
 
 	public void setCompilingLanguage(Language language) {
@@ -820,22 +903,31 @@ public class MainBackEndHolder {
 		customFunction = null;
 	}
 
-	protected void configureCurrentCompiler() {
-		getCompiler().configure();
+	public boolean compileSourceAndSetCurrent(String source, String taskName) {
+		AbstractNativeCompiler compiler = getCompiler();
+		UserDefinedAction createdInstance = compileSourceNatively(compiler, source, taskName);
+		if (createdInstance == null) {
+			return false;
+		}
+
+		if (config.getCompilerFactory().getRemoteRepeatsCompilerConfig().hasOnlyLocal()) {
+			customFunction = createdInstance;
+			return true;
+		}
+
+		RemoteRepeatsCompiler remoteRepeatsCompiler = config.getCompilerFactory().getRemoteRepeatsCompiler(peerServiceClientManager);
+		Pair<DynamicCompilerOutput, UserDefinedAction> remoteCompilationOutput = remoteRepeatsCompiler.compile(source, getSelectedLanguage());
+		if (remoteCompilationOutput.getA() != DynamicCompilerOutput.COMPILATION_SUCCESS) {
+			return false;
+		}
+
+		customFunction = CompositeUserDefinedAction.of(createdInstance, config.getCompilerFactory().getRemoteRepeatsCompilerConfig(), remoteCompilationOutput.getB());
+		return true;
 	}
 
-	protected void changeCompilerPath() {
-		getCompiler().promptChangePath(null);
-	}
-
-	protected boolean compileSource(String source) {
-		return compileSource(source, null);
-	}
-
-	public boolean compileSource(String source, String taskName) {
+	public UserDefinedAction compileSourceNatively(AbstractNativeCompiler compiler, String source, String taskName) {
 		source = source.replaceAll("\t", "    "); // Use spaces instead of tabs
 
-		AbstractNativeCompiler compiler = getCompiler();
 		Pair<DynamicCompilerOutput, UserDefinedAction> compilationResult = compiler.compile(source);
 		DynamicCompilerOutput compilerStatus = compilationResult.getA();
 		UserDefinedAction createdInstance = compilationResult.getB();
@@ -844,18 +936,17 @@ public class MainBackEndHolder {
 		}
 
 		if (compilerStatus != DynamicCompilerOutput.COMPILATION_SUCCESS) {
-			return false;
+			return null;
 		}
 
-		customFunction = createdInstance;
-		customFunction.setTaskInvoker(taskInvoker);
-		customFunction.setCompiler(compiler.getName());
+		createdInstance.setTaskInvoker(taskInvoker);
+		createdInstance.setCompiler(compiler.getName());
 
-		if (!TaskSourceManager.submitTask(customFunction, source)) {
-			JOptionPane.showMessageDialog(null, "Error writing source file...");
-			return false;
+		if (!TaskSourceManager.submitTask(createdInstance, source)) {
+			LOGGER.warning("Error writing source file.");
+			return null;
 		}
-		return true;
+		return createdInstance;
 	}
 
 	/*************************************************************************************************************/
@@ -1023,19 +1114,5 @@ public class MainBackEndHolder {
 			this.currentGroup = currentTaskGroup;
 			keysManager.setCurrentTaskGroup(currentTaskGroup);
 		}
-	}
-
-	/**
-	 * Get first task with given name in the task group.
-	 * Returning null if no task with given name exists.
-	 */
-	public UserDefinedAction getTask(String name) {
-		for (TaskGroup group : taskGroups) {
-			UserDefinedAction task = group.getTask(name);
-			if (task != null) {
-				return task;
-			}
-		}
-		return null;
 	}
 }

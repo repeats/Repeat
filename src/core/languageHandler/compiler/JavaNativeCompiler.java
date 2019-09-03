@@ -17,14 +17,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -43,7 +35,6 @@ import utilities.Pair;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
 import utilities.json.JSONUtility;
-import utilities.swing.SwingUtil;
 
 public class JavaNativeCompiler extends AbstractNativeCompiler {
 
@@ -116,7 +107,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	            try {
 	                if (!FileUtility.writeToFile(sourceCode, compiling, false)) {
 	                	getLogger().warning("Cannot write source code to file.");
-	                	return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(sourceCode));
+	                	return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(sourceCode, Language.JAVA));
 	                }
 
 	                /** Compilation Requirements *********************************************************************************************/
@@ -125,7 +116,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 					if (compiler == null) {
 						getLogger().warning("No java compiler found. Set class path points to JDK in setting?\nNote that for Java 9 an above. Setting class path no longer "
 								+ "works. You will need to launch this program using a JDK instead of a JRE.");
-						return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode));
+						return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode, Language.JAVA));
 					}
 	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
 
@@ -370,60 +361,5 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 		protected void addURL(URL url) {
 			super.addURL(url);
 		}
-	}
-
-	/*******************************************************************/
-	/************************Swing components***************************/
-	/*******************************************************************/
-
-	@Override
-	public void promptChangePath(JFrame parent) {
-		JFileChooser chooser = new JFileChooser(getPath());
-
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		if (chooser.showDialog(parent, "Set Java home") == JFileChooser.APPROVE_OPTION) {
-			setPath(chooser.getSelectedFile());
-		}
-	}
-
-	@Override
-	public void changeCompilationButton(JButton bCompile) {
-		// Nothing to do at the moment.
-	}
-
-	@Override
-	public void configure() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.add(new JLabel("It is advisable to restart the program if you remove a path from the class path list."));
-		panel.add(new JLabel("Class paths (1 path per row)"));
-		panel.add(new JLabel("E.g. D:\\path\\to\\dir\\the_jar.jar"));
-
-		JTextArea texts = new JTextArea(StringUtilities.join(classPaths, "\n"));
-		JScrollPane scrollPane = new JScrollPane(texts);
-		texts.setRows(10);
-		texts.setColumns(80);
-		panel.add(scrollPane);
-
-		if (!SwingUtil.DialogUtil.genericInput("Configure Java compiler", panel)) {
-			return;
-		}
-
-		String[] paths = texts.getText().split("\n");
-		ArrayList<String> validPaths = new ArrayList<>();
-		for (String path : paths) {
-			if (path.trim().isEmpty()) {
-				continue;
-			}
-
-			if (Files.isReadable(Paths.get(path))) {
-				validPaths.add(path);
-			} else {
-				getLogger().log(Level.WARNING, "The path " + path + " is not readable.");
-				return;
-			}
-		}
-
-		setClassPath(validPaths);
 	}
 }

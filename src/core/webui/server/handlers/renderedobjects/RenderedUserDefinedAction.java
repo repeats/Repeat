@@ -4,6 +4,7 @@ import core.userDefinedTask.UserDefinedAction;
 import utilities.DateUtility;
 
 public class RenderedUserDefinedAction {
+
 	private String id;
 	private String name;
 	private String activation;

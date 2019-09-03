@@ -49,12 +49,12 @@ public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 		if (group != null) {
 			task = group.getTask(taskIdentifier.getTask().getIndex());
 			if (task == null) {
-				task = group.getTask(taskIdentifier.getTask().getName());
+				task = group.getTaskByName(taskIdentifier.getTask().getName());
 			}
 			return task;
 		}
 
-		return backEndHolder.getTask(taskIdentifier.getTask().getName());
+		return backEndHolder.getTaskByName(taskIdentifier.getTask().getName());
 	}
 
 	protected TaskGroup getGroup(TaskIdentifier taskIdentifier) {

@@ -8,6 +8,7 @@ import core.ipc.ApiProtocol;
 import core.ipc.repeatClient.repeatPeerClient.RepeatPeerServiceClientWriter;
 import core.ipc.repeatClient.repeatPeerClient.ResponseManager.Reply;
 import core.ipc.repeatServer.processors.IpcMessageType;
+import utilities.json.IJsonable;
 
 abstract class AbstractRepeatsClientApi {
 
@@ -23,16 +24,16 @@ abstract class AbstractRepeatsClientApi {
 		return repeatPeerServiceClientWriter;
 	}
 
-	protected final String waitAndGetResponseIfSuccess(IpcMessageType type, DeviceCommand deviceCommand) {
-		JsonNode node = waitAndGetJsonResponseIfSuccess(type, deviceCommand);
+	protected final String waitAndGetResponseIfSuccess(IpcMessageType type, IJsonable message) {
+		JsonNode node = waitAndGetJsonResponseIfSuccess(type, message);
 		if (node == null) {
 			return "";
 		}
 		return node.getStringValue();
 	}
 
-	protected final JsonNode waitAndGetJsonResponseIfSuccess(IpcMessageType type, DeviceCommand deviceCommand) {
-		long id = getRepeatPeerServiceClientWriter().enqueueMessage(IpcMessageType.ACTION, deviceCommand);
+	protected final JsonNode waitAndGetJsonResponseIfSuccess(IpcMessageType type, IJsonable message) {
+		long id = getRepeatPeerServiceClientWriter().enqueueMessage(type, message);
 		Reply reply;
 		try {
 			reply = getRepeatPeerServiceClientWriter().waitForReply(id);

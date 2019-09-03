@@ -9,7 +9,7 @@ import core.ipc.ApiProtocol;
 import core.ipc.repeatServer.MainMessageSender;
 import utilities.ILoggable;
 
-public abstract class AbstractMessageProcessor implements ILoggable {
+abstract class AbstractMessageProcessor implements ILoggable {
 
 	protected final MainMessageSender messageSender;
 

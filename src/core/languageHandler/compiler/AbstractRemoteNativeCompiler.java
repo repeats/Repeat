@@ -39,7 +39,7 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 		TaskProcessor remoteManager = TaskProcessorManager.getProcessor(getName());
 		if (remoteManager == null) {
 			getLogger().warning("Does not have a remote compiler to work with " + getName());
-			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(source));
+			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(source, getName()));
 		}
 
 		remoteTaskManager = remoteManager;
@@ -47,7 +47,7 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 		try {
 			if (!checkRemoteCompilerSettings()) {
 				getLogger().warning("Remote compiler check failed! Compilation ended prematurely.");
-				return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISCONFIGURED, new DormantUserDefinedTask(source));
+				return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISCONFIGURED, new DormantUserDefinedTask(source, getName()));
 			}
 
 			if (!sourceFile.getName().endsWith(getExtension())) {
@@ -58,7 +58,7 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 			if (!FileUtility.fileExists(sourceFile)) {
 				if (!FileUtility.writeToFile(source, sourceFile, false)) {
 					getLogger().warning("Cannot write source code to file " + sourceFile.getAbsolutePath());
-					return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(source));
+					return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(source, getName()));
 				}
 			}
 
@@ -76,7 +76,7 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 
 	protected abstract boolean checkRemoteCompilerSettings();
 
-	protected Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final String id, final String source, File objectFile) {
+	protected final Pair<DynamicCompilerOutput, UserDefinedAction> loadAction(final String id, final String source, File objectFile) {
 		UserDefinedAction output = new UserDefinedAction() {
 			@Override
 			public void action(Core controller) {
@@ -87,7 +87,7 @@ public abstract class AbstractRemoteNativeCompiler extends AbstractNativeCompile
 			}
 
 			@Override
-			public UserDefinedAction recompile(AbstractNativeCompiler compiler, boolean clean) {
+			public UserDefinedAction recompileNative(AbstractNativeCompiler compiler) {
 				Pair<DynamicCompilerOutput, UserDefinedAction> recompiled = compile(source);
 				if (recompiled.getA() != DynamicCompilerOutput.COMPILATION_SUCCESS) {
 					getLogger().warning("Unable to recompile task id = " + id + ". Error is " + recompiled.getA());

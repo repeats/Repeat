@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;
-import core.controller.Core;
 import core.ipc.repeatServer.MainMessageSender;
+import frontEnd.MainBackEndHolder;
 import utilities.ILoggable;
 import utilities.json.JSONUtility;
 
@@ -42,11 +42,11 @@ public class ServerMainProcessor implements ILoggable {
 	private final SystemRequestProcessor systemProcessor;
 	private final SharedMemoryProcessor sharedMemoryProcessor;
 
-	public ServerMainProcessor(Core core, MainMessageSender messageSender) {
+	public ServerMainProcessor(MainBackEndHolder backEnd, MainMessageSender messageSender) {
 		messageProcesssors = new HashMap<>();
 
-		actionProcessor = new ControllerRequestProcessor(messageSender, core);
-		taskProcessor = new TaskProcessor(messageSender);
+		actionProcessor = new ControllerRequestProcessor(messageSender, backEnd.getCoreProvider());
+		taskProcessor = new TaskProcessor(backEnd, messageSender);
 		systemProcessor = new SystemRequestProcessor(messageSender, this);
 		sharedMemoryProcessor = new SharedMemoryProcessor(messageSender);
 

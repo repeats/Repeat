@@ -52,7 +52,8 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 		Map<String, Object> data = new HashMap<>();
 		RenderedRemoteRepeatsClientsConfig toolsConfig = RenderedRemoteRepeatsClientsConfig.of(backEndHolder.getPeerServiceClientManager(), backEndHolder.getConfig().getToolsConfig());
 		RenderedRemoteRepeatsClientsConfig coreConfig = RenderedRemoteRepeatsClientsConfig.of(backEndHolder.getPeerServiceClientManager(), backEndHolder.getConfig().getCoreConfig());
-		data.put("globalConfigs", RenderedGlobalConfigs.of(toolsConfig, coreConfig));
+		RenderedRemoteRepeatsClientsConfig remoteRepeatsCompilerConfig = RenderedRemoteRepeatsClientsConfig.of(backEndHolder.getPeerServiceClientManager(), backEndHolder.getConfig().getCompilerFactory().getRemoteRepeatsCompilerConfig());
+		data.put("globalConfigs", RenderedGlobalConfigs.of(toolsConfig, coreConfig, remoteRepeatsCompilerConfig));
 
 		return data;
 	}
@@ -63,6 +64,10 @@ public abstract class AbstractUIHttpHandler extends AbstractSingleMethodHttpHand
 
 	protected final Void renderedCoreClientsConfig(HttpAsyncExchange exchange) throws IOException {
 		return renderedPage(exchange, "fragments/core_clients", getGlobalConfigRenderingData());
+	}
+
+	protected final Void renderedRemoteRepeatsCompilerClientsConfig(HttpAsyncExchange exchange) throws IOException {
+		return renderedPage(exchange, "fragments/remote_repeats_compiler_clients", getGlobalConfigRenderingData());
 	}
 
 	protected final Void renderedRepeatsRemoteClients(HttpAsyncExchange exchange) throws IOException {

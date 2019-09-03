@@ -8,4 +8,5 @@ public enum DynamicCompilerOutput {
 	COMPILER_MISCONFIGURED,
 	COMPILATION_ERROR,
 	CONSTRUCTOR_ERROR, // Missing nullary constructor.
+	LANGUAGE_NOT_SUPPORTED,
 }

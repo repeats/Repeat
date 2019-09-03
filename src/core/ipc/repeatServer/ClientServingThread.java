@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import core.controller.Core;
 import core.ipc.IPCProtocol;
 import core.ipc.repeatServer.processors.ServerMainProcessor;
+import frontEnd.MainBackEndHolder;
 import utilities.ILoggable;
 
 class ClientServingThread implements Runnable, ILoggable {
@@ -25,11 +25,11 @@ class ClientServingThread implements Runnable, ILoggable {
 	private final ServerMainProcessor requestProcessor;
 	private final MainMessageSender messageSender;
 
-	protected ClientServingThread(Core core, Socket socket) {
+	protected ClientServingThread(MainBackEndHolder backEnd, Socket socket) {
 		this.socket = socket;
 
 		messageSender = new MainMessageSender();
-		requestProcessor = new ServerMainProcessor(core, messageSender);
+		requestProcessor = new ServerMainProcessor(backEnd, messageSender);
 
 		stopped = false;
 	}

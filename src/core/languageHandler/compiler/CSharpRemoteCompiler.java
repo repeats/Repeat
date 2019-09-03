@@ -4,10 +4,6 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import core.languageHandler.Language;
@@ -79,24 +75,5 @@ public class CSharpRemoteCompiler extends AbstractRemoteNativeCompiler {
 	@Override
 	protected boolean checkRemoteCompilerSettings() {
 		return true;
-	}
-
-	/*******************************************************************/
-	/************************Swing components***************************/
-	/*******************************************************************/
-
-	@Override
-	public void promptChangePath(JFrame parent) {
-		JOptionPane.showMessageDialog(parent, "Operation not supported", "C# path", JOptionPane.INFORMATION_MESSAGE);
-	}
-
-	@Override
-	public void changeCompilationButton(JButton bCompile) {
-		// Nothing to do at the moment.
-	}
-
-	@Override
-	public void configure() {
-		// Nothing to do at the moment
 	}
 }

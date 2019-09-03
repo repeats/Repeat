@@ -1,5 +1,6 @@
 <#import "/fragments/tools_clients.ftlh" as tools_clients_fragment>
 <#import "/fragments/core_clients.ftlh" as core_clients_fragment>
+<#import "/fragments/remote_repeats_compiler_clients.ftlh" as remote_repeats_compiler_clients_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
 <#import "/fragments/footer.ftlh" as footer_fragment>
 <#import "/fragments/common_js.ftlh" as common_js_fragment>
@@ -55,6 +56,7 @@
                 <div class="row">
                     <div><button id="button-save-tools-config" type="button" class="btn btn-default btn-span">Save Tools Config</button></div>
                 </div>
+
                 <div class="row">
                     <span class="label label-default">Mouse + Keyboard execution clients</span>
                     <table id="core-clients-table" class="table">
@@ -64,9 +66,18 @@
                 <div class="row">
                     <div><button id="button-save-core-config" type="button" class="btn btn-default btn-span">Save Mouse + Keyboard Config</button></div>
                 </div>
+
+                <div class="row">
+                    <span class="label label-default">Repeats remote compiler clients</span>
+                    <table id="repeats-remote-compiler-clients-table" class="table">
+                        <@remote_repeats_compiler_clients_fragment.fragment/>
+                    </table>
+                </div>
+                <div class="row">
+                    <div><button id="button-save-remote-repeats-compilers-config" type="button" class="btn btn-default btn-span">Save Repeats Remote Compiler Config</button></div>
+                </div>
             </div>
         </div>
-
 
         <@footer_fragment.fragment/>
     </div>

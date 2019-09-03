@@ -5,7 +5,7 @@ import java.util.List;
 import utilities.json.AutoJsonable;
 
 @SuppressWarnings("unused")
-public abstract class DeviceCommand extends AutoJsonable {
+abstract class DeviceCommand extends AutoJsonable {
 
 	public static class IntDeviceCommand extends DeviceCommand {
 		private String device;
@@ -19,7 +19,7 @@ public abstract class DeviceCommand extends AutoJsonable {
 		}
 	}
 
-	public static class StringDeviceCommand extends DeviceCommand {
+	static class StringDeviceCommand extends DeviceCommand {
 		private String device;
 		private String action;
 		private List<String> parameters;

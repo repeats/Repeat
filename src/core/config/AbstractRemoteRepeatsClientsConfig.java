@@ -2,7 +2,9 @@ package core.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import utilities.json.IJsonable;
@@ -18,6 +20,10 @@ public class AbstractRemoteRepeatsClientsConfig implements IJsonable {
 		this.enabledClients = new ArrayList<>(remoteClientIds);
 	}
 
+	public final boolean hasOnlyLocal() {
+		return enabledClients.isEmpty() || (enabledClients.size() == 1 && enabledClients.get(0).equals(LOCAL_CLIENT));
+	}
+
 	public final List<String> getClients() {
 		return enabledClients;
 	}
@@ -30,5 +36,9 @@ public class AbstractRemoteRepeatsClientsConfig implements IJsonable {
 	@Override
 	public final JsonRootNode jsonize() {
 		return JsonNodeFactories.array(JSONUtility.listToJson(enabledClients));
+	}
+
+	public static List<String> parseClientList(JsonNode node) {
+		return node.getArrayNode().stream().map(n -> n.getStringValue()).collect(Collectors.toList());
 	}
 }
