@@ -42,6 +42,9 @@ public class Jsonizer {
 
 	private static boolean internalParse(JsonNode node, Object dest) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException {
 		Class<?> clazz = dest.getClass();
+		if (isMapType(clazz)) {
+			throw new IllegalArgumentException("Cannot parse the following JSON node as map since type information is not available.\n" + JSONUtility.jsonToString(node));
+		}
 
 		for (Entry<JsonStringNode, JsonNode> inner : node.getFields().entrySet()) {
 			JsonStringNode nameNode = inner.getKey();
@@ -151,6 +154,10 @@ public class Jsonizer {
     		return JsonNodeFactories.array(nodes);
     	}
 
+		if (isMapType(objectClass)) {
+			throw new IllegalArgumentException("Cannot convert map to JSON since type will not be available to parse back.");
+		}
+
 		Map<JsonStringNode, JsonNode> data = new HashMap<>();
 
 		Class<?> clazz = o.getClass();
@@ -232,6 +239,10 @@ public class Jsonizer {
 
 	private static boolean isIterableType(Class<?> clazz) {
 		return Iterable.class.isAssignableFrom(clazz);
+	}
+
+	private static boolean isMapType(Class<?> clazz) {
+		return Map.class.isAssignableFrom(clazz);
 	}
 
 	public static boolean isPrimitiveOrString(Class<?> clazz) {

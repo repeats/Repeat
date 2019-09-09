@@ -106,6 +106,37 @@ public class JSONUtility {
 	}
 
 	/**
+	 * Construct a JSON object from a string to string map.
+	 *
+	 * @param map a string to string map.
+	 * @return the corresponding JSON object.
+	 */
+	public static JsonNode stringMapToJson(Map<String, String> map) {
+		List<JsonField> fields = new ArrayList<>();
+		for (Entry<String, String> entry : map.entrySet()) {
+			fields.add(JsonNodeFactories.field(entry.getKey(), JsonNodeFactories.string(entry.getValue())));
+		}
+
+		return JsonNodeFactories.object(fields);
+	}
+
+	/**
+	 * Construct a string to string map from a JSON node.
+	 * The node must be a JSON object.
+	 *
+	 * @param node JSON node object to construct the map.
+	 * @return the corresponding string to string map.
+	 */
+	public static Map<String, String> jsonToStringMap(JsonNode node) {
+		Map<String, String> result = new HashMap<>();
+		for (Entry<JsonStringNode, JsonNode> entry : node.getObjectNode().entrySet()) {
+			result.put(entry.getKey().getStringValue(), entry.getValue().getStringValue());
+		}
+
+		return result;
+	}
+
+	/**
 	 * Attempt to parse JSON from a list, then add all results to an output collection. This does not add
 	 * nodes that cannot be parsed (returning null)
 	 * @param nodes input list of json nodes

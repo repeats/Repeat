@@ -6,7 +6,7 @@ public class DynamicCompilationResult {
 	private DynamicCompilerOutput output;
 	private UserDefinedAction action;
 
-	private DynamicCompilationResult(DynamicCompilerOutput output, UserDefinedAction action) {
+	protected DynamicCompilationResult(DynamicCompilerOutput output, UserDefinedAction action) {
 		this.output = output;
 		this.action = action;
 	}
@@ -15,11 +15,11 @@ public class DynamicCompilationResult {
 		return new DynamicCompilationResult(output, action);
 	}
 
-	public DynamicCompilerOutput output() {
+	public final DynamicCompilerOutput output() {
 		return output;
 	}
 
-	public UserDefinedAction action() {
+	public final UserDefinedAction action() {
 		return action;
 	}
 }

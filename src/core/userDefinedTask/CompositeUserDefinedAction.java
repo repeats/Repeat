@@ -3,6 +3,7 @@ package core.userDefinedTask;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,30 +12,32 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.controller.Core;
 import core.keyChain.TaskActivation;
-import core.languageHandler.compiler.DynamicCompilationResult;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.RemoteRepeatsCompiler;
 import core.languageHandler.compiler.RemoteRepeatsCompilerConfig;
+import core.languageHandler.compiler.RemoteRepeatsDyanmicCompilationResult;
 import utilities.json.JSONUtility;
 
 public class CompositeUserDefinedAction extends UserDefinedAction {
 
 	private static final Logger LOGGER = Logger.getLogger(CompositeUserDefinedAction.class.getName());
 
-	private UserDefinedAction localAction;
-	private RemoteRepeatsCompilerConfig clients;
+	private final UserDefinedAction localAction;
+	private final RemoteRepeatsCompilerConfig clients;
+	private final Map<String, String> clientIdToActionId;
 	private UserDefinedAction remoteRepeatsAction;
 
-	private CompositeUserDefinedAction(UserDefinedAction localAction, RemoteRepeatsCompilerConfig clients, UserDefinedAction remoteRepeatsAction) {
+	private CompositeUserDefinedAction(UserDefinedAction localAction, RemoteRepeatsCompilerConfig clients, Map<String, String> clientIdToActionId, UserDefinedAction remoteRepeatsAction) {
 		syncContent(localAction);
 		this.localAction = localAction;
 		this.clients = clients.clone();
+		this.clientIdToActionId = clientIdToActionId;
 		this.remoteRepeatsAction = remoteRepeatsAction;
 	}
 
-	public static CompositeUserDefinedAction of(UserDefinedAction localAction, RemoteRepeatsCompilerConfig clients, UserDefinedAction remoteRepeatsAction) {
-		return new CompositeUserDefinedAction(localAction, clients, remoteRepeatsAction);
+	public static CompositeUserDefinedAction of(UserDefinedAction localAction, RemoteRepeatsCompilerConfig clients, Map<String, String> clientIdToActionId, UserDefinedAction remoteRepeatsAction) {
+		return new CompositeUserDefinedAction(localAction, clients, clientIdToActionId, remoteRepeatsAction);
 	}
 
 	@Override
@@ -91,8 +94,15 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 	@Override
 	public JsonRootNode jsonize() {
 		JsonRootNode node = super.jsonize();
+		JsonNode actionIds = JsonNodeFactories.object();
+		if (clientIdToActionId != null) {
+			actionIds = JSONUtility.stringMapToJson(clientIdToActionId);
+		}
+
 		return JSONUtility.addChild(node, "composite_action",
-				JsonNodeFactories.object(JsonNodeFactories.field("compiler_config", clients.jsonize()))).getRootNode();
+				JsonNodeFactories.object(
+						JsonNodeFactories.field("compilation_info", actionIds),
+						JsonNodeFactories.field("compiler_config", clients.jsonize()))).getRootNode();
 	}
 
 	public static CompositeUserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
@@ -100,8 +110,9 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 			LOGGER.warning("Missing required 'composite_action' node when parsing composite user defined action.");
 			return null;
 		}
+		JsonNode compositeActionData = node.getNode("composite_action");
 
-		RemoteRepeatsCompilerConfig clients = RemoteRepeatsCompilerConfig.parseJSON(node.getNode("composite_action").getNode("compiler_config"));
+		RemoteRepeatsCompilerConfig clients = RemoteRepeatsCompilerConfig.parseJSON(compositeActionData.getNode("compiler_config"));
 		if (clients == null) {
 			LOGGER.warning("Failed to parse remote clients config from JSON.");
 			return null;
@@ -113,12 +124,15 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 			return null;
 		}
 
+		JsonNode compilationInfo = compositeActionData.getNode("compilation_info");
+		Map<String, String> clientIdToActionId = JSONUtility.jsonToStringMap(compilationInfo);
 		UserDefinedAction remote = new UserDefinedAction() {
 			@Override
 			public UserDefinedAction recompileRemote(RemoteRepeatsCompiler compiler) {
 				compiler = compiler.cloneWithConfig(clients);
+				compiler.setRemoteCompilationInfo(clientIdToActionId);
 
-				DynamicCompilationResult result = compiler.compile(local.getSource(), local.getCompiler());
+				RemoteRepeatsDyanmicCompilationResult result = compiler.compile(local.getSource(), local.getCompiler());
 				DynamicCompilerOutput compilerStatus = result.output();
 				UserDefinedAction output = result.action();
 				output.actionId = getActionId();
@@ -130,6 +144,11 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 				getLogger().info("Successfully recompiled Repeats remote task " + getName() + ".");
 				output.syncContent(local);
 				output.compiler = getCompiler();
+
+				if (result.clientIdToActionId() != null) {
+					clientIdToActionId.clear();
+					clientIdToActionId.putAll(result.clientIdToActionId());
+				}
 				return output;
 			}
 
@@ -139,6 +158,6 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 			}
 		};
 
-		return of(local, clients, remote);
+		return of(local, clients, clientIdToActionId, remote);
 	}
 }

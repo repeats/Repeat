@@ -1,7 +1,9 @@
 package core.languageHandler.compiler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -12,6 +14,7 @@ import argo.jdom.JsonNodeFactories;
 import core.config.AbstractRemoteRepeatsClientsConfig;
 import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClient;
 import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClientManager;
+import core.ipc.repeatClient.repeatPeerClient.api.RepeatsActionsApi.RepeatsRemoteCompilationHints;
 import core.languageHandler.Language;
 import core.userDefinedTask.AggregateUserDefinedAction;
 import core.userDefinedTask.UserDefinedAction;
@@ -22,6 +25,8 @@ public class RemoteRepeatsCompiler extends AbstractCompiler {
 
 	private RemoteRepeatsCompilerConfig config;
 	private RepeatsPeerServiceClientManager clients;
+	// Used when compiling as a hint.
+	private Map<String, String> clientIdToActionId;
 
 	public RemoteRepeatsCompiler(RemoteRepeatsCompilerConfig config, RepeatsPeerServiceClientManager clients) {
 		this.config = config;
@@ -32,11 +37,18 @@ public class RemoteRepeatsCompiler extends AbstractCompiler {
 		return new RemoteRepeatsCompiler(config, clients);
 	}
 
+	public void setRemoteCompilationInfo(Map<String, String> clientIdToActionId) {
+		this.clientIdToActionId = clientIdToActionId;
+	}
+
 	@Override
-	public DynamicCompilationResult compile(String source, Language language) {
+	public RemoteRepeatsDyanmicCompilationResult compile(String source, Language language) {
 		List<Thread> executions = new ArrayList<>();
 		Lock mutex = new ReentrantLock(true);
 		List<UserDefinedAction> actions = new ArrayList<>();
+
+		Map<String, String> compilationHint = clientIdToActionId != null ? clientIdToActionId : new HashMap<>();
+		Map<String, String> compilationInfo = new HashMap<>();
 
 		for (String clientId : config.getClients()) {
 			if (clientId.equals(AbstractRemoteRepeatsClientsConfig.LOCAL_CLIENT)) {
@@ -52,7 +64,8 @@ public class RemoteRepeatsCompiler extends AbstractCompiler {
 						return;
 					}
 
-					UserDefinedAction action = client.api().actions().createTask(source, language);
+					String previousId = compilationHint.getOrDefault(client.getClientId(), "");
+					UserDefinedAction action = client.api().actions().createTask(source, language, RepeatsRemoteCompilationHints.of(previousId));
 					if (action == null) {
 						LOGGER.warning("Failed to compile remote Repeats action.");
 						return;
@@ -61,6 +74,7 @@ public class RemoteRepeatsCompiler extends AbstractCompiler {
 					mutex.lock();
 					try {
 						actions.add(action);
+						compilationInfo.put(clientId, action.getActionId());
 					} finally {
 						mutex.unlock();
 					}
@@ -79,10 +93,10 @@ public class RemoteRepeatsCompiler extends AbstractCompiler {
 			}
 		}
 		if (actions.size() != executions.size()) {
-			return DynamicCompilationResult.of(DynamicCompilerOutput.COMPILATION_ERROR, null);
+			return RemoteRepeatsDyanmicCompilationResult.of(DynamicCompilerOutput.COMPILATION_ERROR, null, null);
 		}
 
-		return DynamicCompilationResult.of(DynamicCompilerOutput.COMPILATION_SUCCESS, AggregateUserDefinedAction.of(actions));
+		return RemoteRepeatsDyanmicCompilationResult.of(DynamicCompilerOutput.COMPILATION_SUCCESS, AggregateUserDefinedAction.of(actions), compilationInfo);
 	}
 
 	@Override

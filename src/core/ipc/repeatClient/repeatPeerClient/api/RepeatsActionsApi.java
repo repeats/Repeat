@@ -24,11 +24,12 @@ public class RepeatsActionsApi extends AbstractRepeatsClientApi {
 		super(repeatPeerServiceClientWriter);
 	}
 
-	public UserDefinedAction createTask(String source, Language language) {
+	public UserDefinedAction createTask(String source, Language language, RepeatsRemoteCompilationHints hints) {
 		String encodedSource = Base64.getEncoder().encodeToString(source.getBytes(TaskProcessor.SOURCE_ENCODING));
 		IJsonable message = message(TaskProcessor.CREATE_TASK_ACTION, JsonNodeFactories.object(
 				JsonNodeFactories.field("language", JsonNodeFactories.string(language.toString())),
-				JsonNodeFactories.field("source", JsonNodeFactories.string(encodedSource))
+				JsonNodeFactories.field("source", JsonNodeFactories.string(encodedSource)),
+				JsonNodeFactories.field("previously_compiled_id", JsonNodeFactories.string(hints.previouslyCompiledActionId))
 				));
 
 		JsonNode response = waitAndGetJsonResponseIfSuccess(IpcMessageType.TASK, message);
@@ -63,6 +64,19 @@ public class RepeatsActionsApi extends AbstractRepeatsClientApi {
 		return ImmediateJsonable.of(JsonNodeFactories.object(
 				JsonNodeFactories.field("task_action", JsonNodeFactories.string(action)),
 				JsonNodeFactories.field("parameters", node)));
+	}
+
+	public static class RepeatsRemoteCompilationHints {
+
+		private String previouslyCompiledActionId;
+
+		public static RepeatsRemoteCompilationHints of(String previouslyCompiledActionId) {
+			return new RepeatsRemoteCompilationHints(previouslyCompiledActionId);
+		}
+
+		private RepeatsRemoteCompilationHints(String previouslyCompiledActionId) {
+			this.previouslyCompiledActionId = previouslyCompiledActionId == null ? "" : previouslyCompiledActionId;
+		}
 	}
 
 	private class RepeatsRemoteUserDefinedAction extends UserDefinedAction {

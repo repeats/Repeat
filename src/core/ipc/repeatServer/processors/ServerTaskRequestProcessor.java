@@ -54,6 +54,7 @@ class ServerTaskRequestProcessor extends AbstractMessageProcessor {
 	private boolean createServerTask(String type, long id, JsonNode parameters) {
 		String source = "";
 		Language language = Language.JAVA;
+		String previousId = "";
 
 		if (parameters.isArrayNode()) {
 			List<JsonNode> nodes = parameters.getArrayNode();
@@ -86,6 +87,10 @@ class ServerTaskRequestProcessor extends AbstractMessageProcessor {
 				return failure(type, id, "Unknown language " + languageValue + ".");
 			}
 
+			if (parameters.isStringValue("previously_compiled_id")) {
+				previousId = parameters.getStringValue("previously_compiled_id");
+			}
+
 			String encodedSource = parameters.getStringValue("source");
 			byte[] base64Decoded = Base64.getDecoder().decode(encodedSource.getBytes());
 			CharBuffer result = TaskProcessor.SOURCE_ENCODING.decode(ByteBuffer.wrap(base64Decoded));
@@ -96,6 +101,15 @@ class ServerTaskRequestProcessor extends AbstractMessageProcessor {
 
 		if (source.isEmpty()) {
 			return failure(type, id, "Source is empty or cannot extract source.");
+		}
+
+		UserDefinedAction existingAction = null;
+		if (!previousId.isEmpty()) {
+			existingAction = backEnd.getTask(previousId);
+		}
+		if (existingAction != null) {
+			ClientTask response = ClientTask.of(existingAction.getActionId(), existingAction.getSourcePath());
+			return success(type, id, response.jsonize());
 		}
 		UserDefinedAction newTask = createTask(source, language);
 		if (newTask == null) {

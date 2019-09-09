@@ -37,6 +37,7 @@ import core.languageHandler.compiler.DynamicCompilationResult;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.PythonRemoteCompiler;
 import core.languageHandler.compiler.RemoteRepeatsCompiler;
+import core.languageHandler.compiler.RemoteRepeatsDyanmicCompilationResult;
 import core.recorder.Recorder;
 import core.recorder.ReplayConfig;
 import core.userDefinedTask.CompositeUserDefinedAction;
@@ -916,12 +917,16 @@ public class MainBackEndHolder {
 		}
 
 		RemoteRepeatsCompiler remoteRepeatsCompiler = config.getCompilerFactory().getRemoteRepeatsCompiler(peerServiceClientManager);
-		DynamicCompilationResult remoteCompilationResult = remoteRepeatsCompiler.compile(source, getSelectedLanguage());
+		RemoteRepeatsDyanmicCompilationResult remoteCompilationResult = remoteRepeatsCompiler.compile(source, getSelectedLanguage());
 		if (remoteCompilationResult.output() != DynamicCompilerOutput.COMPILATION_SUCCESS) {
 			return false;
 		}
 
-		customFunction = CompositeUserDefinedAction.of(createdInstance, config.getCompilerFactory().getRemoteRepeatsCompilerConfig(), remoteCompilationResult.action());
+		customFunction = CompositeUserDefinedAction.of(
+				createdInstance,
+				config.getCompilerFactory().getRemoteRepeatsCompilerConfig(),
+				remoteCompilationResult.clientIdToActionId(),
+				remoteCompilationResult.action());
 		return true;
 	}
 
