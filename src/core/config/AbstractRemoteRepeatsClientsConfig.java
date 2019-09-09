@@ -20,6 +20,10 @@ public class AbstractRemoteRepeatsClientsConfig implements IJsonable {
 		this.enabledClients = new ArrayList<>(remoteClientIds);
 	}
 
+	public final boolean hasLocal() {
+		return enabledClients.contains(LOCAL_CLIENT);
+	}
+
 	public final boolean hasOnlyLocal() {
 		return enabledClients.isEmpty() || (enabledClients.size() == 1 && enabledClients.get(0).equals(LOCAL_CLIENT));
 	}

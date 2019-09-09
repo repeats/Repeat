@@ -31,7 +31,6 @@ import core.userDefinedTask.DormantUserDefinedTask;
 import core.userDefinedTask.UserDefinedAction;
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.Pair;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
 import utilities.json.JSONUtility;
@@ -57,7 +56,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	}
 
 	@Override
-	public Pair<DynamicCompilerOutput, UserDefinedAction> compile(String sourceCode, File classFile) {
+	public DynamicCompilationResult compile(String sourceCode, File classFile) {
 		className = FileUtility.removeExtension(classFile).getName();
 
 		if (!classFile.getParentFile().getAbsolutePath().equals(new File(FileUtility.joinPath(packageTree)).getAbsolutePath())) {
@@ -71,7 +70,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 		}
 
 		try {
-			Pair<DynamicCompilerOutput, UserDefinedAction> output = loadClass(className);
+			DynamicCompilationResult output = loadClass(className);
 			getLogger().info("Skipped compilation and loaded object file.");
 			className = null;
 			return output;
@@ -83,7 +82,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	}
 
 	@Override
-	public Pair<DynamicCompilerOutput, UserDefinedAction> compile(String sourceCode) {
+	public DynamicCompilationResult compile(String sourceCode) {
 		String originalPath = System.getProperty("java.home");
 		// This no longer works in JDK 9 (but why?).
 		// We are forced to run the program in JDK in order to be
@@ -92,7 +91,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 
 		if (!sourceCode.contains("class " + defaultClassName)) {
 			getLogger().warning("Cannot find class " + defaultClassName + " in source code.");
-			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_MISSING_PREFORMAT_ELEMENTS, null);
+			return DynamicCompilationResult.of(DynamicCompilerOutput.SOURCE_MISSING_PREFORMAT_ELEMENTS, null);
 		}
 
 		String newClassName = className;
@@ -107,7 +106,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	            try {
 	                if (!FileUtility.writeToFile(sourceCode, compiling, false)) {
 	                	getLogger().warning("Cannot write source code to file.");
-	                	return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(sourceCode, Language.JAVA));
+	                	return DynamicCompilationResult.of(DynamicCompilerOutput.SOURCE_NOT_ACCESSIBLE, new DormantUserDefinedTask(sourceCode, Language.JAVA));
 	                }
 
 	                /** Compilation Requirements *********************************************************************************************/
@@ -116,7 +115,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 					if (compiler == null) {
 						getLogger().warning("No java compiler found. Set class path points to JDK in setting?\nNote that for Java 9 an above. Setting class path no longer "
 								+ "works. You will need to launch this program using a JDK instead of a JRE.");
-						return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode, Language.JAVA));
+						return DynamicCompilationResult.of(DynamicCompilerOutput.COMPILER_MISSING, new DormantUserDefinedTask(sourceCode, Language.JAVA));
 					}
 	                StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, Locale.US, StandardCharsets.UTF_8);
 
@@ -141,7 +140,7 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	                    compilationUnit);
 	                /********************************************************************************************* Compilation Requirements **/
 	                if (task.call()) {
-	                	Pair<DynamicCompilerOutput, UserDefinedAction> output = loadClass(newClassName);
+	                	DynamicCompilationResult output = loadClass(newClassName);
 	                	getLogger().info("Successfully compiled class " + defaultClassName);
                 		return output;
 	                } else {
@@ -156,14 +155,14 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 	            }
 	        }
 	        getLogger().warning("Cannot compile class " + defaultClassName);
-	        return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_ERROR, null);
+	        return DynamicCompilationResult.of(DynamicCompilerOutput.COMPILATION_ERROR, null);
 		} finally {
 			className = null;
 			System.setProperty("java.home", originalPath);
 		}
 	}
 
-	private Pair<DynamicCompilerOutput, UserDefinedAction> loadClass(String loadClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+	private DynamicCompilationResult loadClass(String loadClassName) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
 		classLoader.addURL(new File("./").toURI().toURL());
 		Class<?> loadedClass = classLoader.loadClass(StringUtilities.join(packageTree, ".") + "." + loadClassName);
         Object object = null;
@@ -171,13 +170,13 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 			object = loadedClass.getDeclaredConstructor().newInstance();
 		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			getLogger().log(Level.WARNING, "Unable to create a new instance...", e);
-			return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.CONSTRUCTOR_ERROR, null);
+			return DynamicCompilationResult.of(DynamicCompilerOutput.CONSTRUCTOR_ERROR, null);
 		}
 
 		getLogger().log(Level.FINE, "Successfully loaded class " + loadClassName);
 		UserDefinedAction output = (UserDefinedAction) object;
 		output.setSourcePath(getSourceFile(loadClassName).getAbsolutePath());
-		return new Pair<DynamicCompilerOutput, UserDefinedAction>(DynamicCompilerOutput.COMPILATION_SUCCESS, output);
+		return DynamicCompilationResult.of(DynamicCompilerOutput.COMPILATION_SUCCESS, output);
 	}
 
 	/**

@@ -275,7 +275,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 			File objectFile = new File(FileUtility.joinPath("core", FileUtility.removeExtension(sourceFile).getName()));
 			objectFile = FileUtility.addExtension(objectFile, compiler.getObjectExtension());
-			UserDefinedAction output = compiler.compile(source, objectFile).getB();
+			UserDefinedAction output = compiler.compile(source, objectFile).action();
 			if (output == null) {
 				JOptionPane.showMessageDialog(null, "Compilation failed for task " + name + " with source at path " + sourcePath);
 				return null;

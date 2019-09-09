@@ -15,7 +15,6 @@ import core.ipc.repeatClient.repeatPeerClient.RepeatsPeerServiceClientManager;
 import core.languageHandler.Language;
 import core.userDefinedTask.AggregateUserDefinedAction;
 import core.userDefinedTask.UserDefinedAction;
-import utilities.Pair;
 
 public class RemoteRepeatsCompiler extends AbstractCompiler {
 
@@ -34,7 +33,7 @@ public class RemoteRepeatsCompiler extends AbstractCompiler {
 	}
 
 	@Override
-	public Pair<DynamicCompilerOutput, UserDefinedAction> compile(String source, Language language) {
+	public DynamicCompilationResult compile(String source, Language language) {
 		List<Thread> executions = new ArrayList<>();
 		Lock mutex = new ReentrantLock(true);
 		List<UserDefinedAction> actions = new ArrayList<>();
@@ -80,10 +79,10 @@ public class RemoteRepeatsCompiler extends AbstractCompiler {
 			}
 		}
 		if (actions.size() != executions.size()) {
-			return Pair.of(DynamicCompilerOutput.COMPILATION_ERROR, null);
+			return DynamicCompilationResult.of(DynamicCompilerOutput.COMPILATION_ERROR, null);
 		}
 
-		return Pair.of(DynamicCompilerOutput.COMPILATION_SUCCESS, AggregateUserDefinedAction.of(actions));
+		return DynamicCompilationResult.of(DynamicCompilerOutput.COMPILATION_SUCCESS, AggregateUserDefinedAction.of(actions));
 	}
 
 	@Override

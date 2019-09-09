@@ -5,9 +5,9 @@ import java.util.logging.Level;
 import core.controller.Core;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
+import core.languageHandler.compiler.DynamicCompilationResult;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import utilities.ILoggable;
-import utilities.Pair;
 
 public final class DormantUserDefinedTask extends UserDefinedAction implements ILoggable {
 
@@ -44,9 +44,9 @@ public final class DormantUserDefinedTask extends UserDefinedAction implements I
 
 	@Override
 	public UserDefinedAction recompileNative(AbstractNativeCompiler compiler) {
-		Pair<DynamicCompilerOutput, UserDefinedAction> result = compiler.compile(source, getCompiler());
-		DynamicCompilerOutput compilerStatus = result.getA();
-		UserDefinedAction output = result.getB();
+		DynamicCompilationResult result = compiler.compile(source, getCompiler());
+		DynamicCompilerOutput compilerStatus = result.output();
+		UserDefinedAction output = result.action();
 		output.actionId = getActionId();
 
 		if (compilerStatus != DynamicCompilerOutput.COMPILATION_SUCCESS) {

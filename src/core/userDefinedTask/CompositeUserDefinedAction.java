@@ -11,11 +11,11 @@ import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
 import core.controller.Core;
 import core.keyChain.TaskActivation;
+import core.languageHandler.compiler.DynamicCompilationResult;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.RemoteRepeatsCompiler;
 import core.languageHandler.compiler.RemoteRepeatsCompilerConfig;
-import utilities.Pair;
 import utilities.json.JSONUtility;
 
 public class CompositeUserDefinedAction extends UserDefinedAction {
@@ -118,9 +118,9 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 			public UserDefinedAction recompileRemote(RemoteRepeatsCompiler compiler) {
 				compiler = compiler.cloneWithConfig(clients);
 
-				Pair<DynamicCompilerOutput, UserDefinedAction> result = compiler.compile(local.getSource(), local.getCompiler());
-				DynamicCompilerOutput compilerStatus = result.getA();
-				UserDefinedAction output = result.getB();
+				DynamicCompilationResult result = compiler.compile(local.getSource(), local.getCompiler());
+				DynamicCompilerOutput compilerStatus = result.output();
+				UserDefinedAction output = result.action();
 				output.actionId = getActionId();
 
 				if (compilerStatus != DynamicCompilerOutput.COMPILATION_SUCCESS) {

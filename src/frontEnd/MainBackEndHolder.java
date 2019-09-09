@@ -33,6 +33,7 @@ import core.keyChain.TaskActivation;
 import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
+import core.languageHandler.compiler.DynamicCompilationResult;
 import core.languageHandler.compiler.DynamicCompilerOutput;
 import core.languageHandler.compiler.PythonRemoteCompiler;
 import core.languageHandler.compiler.RemoteRepeatsCompiler;
@@ -52,7 +53,6 @@ import staticResources.BootStrapResources;
 import utilities.Desktop;
 import utilities.FileUtility;
 import utilities.Function;
-import utilities.Pair;
 import utilities.StringUtilities;
 import utilities.ZipUtility;
 import utilities.logging.LogHolder;
@@ -916,21 +916,21 @@ public class MainBackEndHolder {
 		}
 
 		RemoteRepeatsCompiler remoteRepeatsCompiler = config.getCompilerFactory().getRemoteRepeatsCompiler(peerServiceClientManager);
-		Pair<DynamicCompilerOutput, UserDefinedAction> remoteCompilationOutput = remoteRepeatsCompiler.compile(source, getSelectedLanguage());
-		if (remoteCompilationOutput.getA() != DynamicCompilerOutput.COMPILATION_SUCCESS) {
+		DynamicCompilationResult remoteCompilationResult = remoteRepeatsCompiler.compile(source, getSelectedLanguage());
+		if (remoteCompilationResult.output() != DynamicCompilerOutput.COMPILATION_SUCCESS) {
 			return false;
 		}
 
-		customFunction = CompositeUserDefinedAction.of(createdInstance, config.getCompilerFactory().getRemoteRepeatsCompilerConfig(), remoteCompilationOutput.getB());
+		customFunction = CompositeUserDefinedAction.of(createdInstance, config.getCompilerFactory().getRemoteRepeatsCompilerConfig(), remoteCompilationResult.action());
 		return true;
 	}
 
 	public UserDefinedAction compileSourceNatively(AbstractNativeCompiler compiler, String source, String taskName) {
 		source = source.replaceAll("\t", "    "); // Use spaces instead of tabs
 
-		Pair<DynamicCompilerOutput, UserDefinedAction> compilationResult = compiler.compile(source);
-		DynamicCompilerOutput compilerStatus = compilationResult.getA();
-		UserDefinedAction createdInstance = compilationResult.getB();
+		DynamicCompilationResult compilationResult = compiler.compile(source);
+		DynamicCompilerOutput compilerStatus = compilationResult.output();
+		UserDefinedAction createdInstance = compilationResult.action();
 		if (taskName != null && !taskName.isEmpty()) {
 			createdInstance.setName(taskName);
 		}
