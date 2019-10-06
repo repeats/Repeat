@@ -1,7 +1,6 @@
 package core.userDefinedTask;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -42,7 +41,13 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 
 	@Override
 	public final void action(Core controller) throws InterruptedException {
-		List<UserDefinedAction> actions = Arrays.asList(localAction, remoteRepeatsAction);
+		List<UserDefinedAction> actions = new ArrayList<>(2);
+		if (clients.hasLocal()) {
+			actions.add(localAction);
+		}
+		actions.add(remoteRepeatsAction);
+
+
 		List<Thread> executions = new ArrayList<>(actions.size());
 		for (final UserDefinedAction action : actions) {
 			executions.add(new Thread() {
