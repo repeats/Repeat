@@ -1,17 +1,23 @@
 package utilities.swing;
 
+import java.awt.AWTException;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Robot;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -29,6 +35,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
+
+import org.simplenativehooks.utilities.OSIdentifier;
 
 import utilities.Function;
 import utilities.FuzzySearch;
@@ -628,11 +636,70 @@ public class SwingUtil {
 			dialog.pack();
 			dialog.setLocationRelativeTo(null);
 			searchBar.requestFocus();
-			dialog.setVisible(true);
+			if (OSIdentifier.IS_OSX) {
+				getFocus(dialog);
+			} else {
+				dialog.setVisible(true);
+			}
 
 			DisplayPair selectedValue = (DisplayPair) list.getSelectedValue(); // We know cast is safe since we only added this type.
+
+			if (OSIdentifier.IS_OSX) {
+				// Refocus the current windows since the focus was lost to Java program.
+				try {
+					Robot robot = new Robot();
+					robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+					robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+					Thread.sleep(30);
+				} catch (AWTException | InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			return selectedValue == null ? -1 : selectedValue.index;
 		}
+
+		private static final void getFocus(Window w) {
+			Semaphore s = new Semaphore(0);
+			if (!w.isVisible()) {
+				new Thread() {
+					@Override
+					public void run() {
+						s.release();
+						w.setVisible(true); // This call is blocking so it needs to be in a separate thread.
+						s.release();
+					}
+				}.start();
+			} else {
+				s.release(2);
+			}
+
+			try {
+				s.acquire();
+				Thread.sleep(50);
+			} catch (InterruptedException e) {}
+			w.toFront();
+			w.setAlwaysOnTop(true);
+			try {
+				Thread.sleep(50);
+				final Point original = MouseInfo.getPointerInfo().getLocation();
+
+				Robot robot = new Robot();
+				robot.mouseMove(w.getX(), w.getY() + 5);
+				robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+				robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+
+				robot.mouseMove(original.x, original.y);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				w.setAlwaysOnTop(false);
+			}
+			try {
+				s.acquire();
+				Thread.sleep(100);
+			} catch (InterruptedException e) {}
+		}
+
 
 		/**
 		 * Show a generic input dialog of customizable content.
