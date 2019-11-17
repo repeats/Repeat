@@ -187,7 +187,6 @@ function buttonMoveDownAction(e) {
 }
 
 function buttonChangeGroupAction(e) {
-    console.log("buttonChangeGroupAction");
     var index = utils_GetTableSelectedRowIndex("table-tasks");
     if (index == -1) {
         return;
@@ -207,7 +206,6 @@ function buttonMoveGroupAction(e) {
 
     var groups = $("#modal-move-to-task-group-body").find(".form-check-input");
     groups.each(function(i) {
-        console.log(i);
         if ($(this).is(':checked')) {
             groupIndex = i;
             return false;
@@ -217,8 +215,10 @@ function buttonMoveGroupAction(e) {
     if (groupIndex == -1) {
         return;
     }
+    var groups = $("#task-groups-dropdown").find("li");
+    var groupId = groups.eq(groupIndex)[0].id;
 
-    $.post("/internals/action/change-task-group-for-task", JSON.stringify({task: taskIndex, group: groupIndex}), function(data) {
+    $.post("/internals/action/change-task-group-for-task", JSON.stringify({task: taskIndex, group: groupId}), function(data) {
         refreshTasksWithData(data);
     }).fail(function(response) {
         alert('Error sending request to move task to new group: ' + response.responseText);

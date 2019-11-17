@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -427,7 +428,9 @@ public class MainBackEndHolder {
 		taskGroups.add(new TaskGroup(name));
 	}
 
-	public void removeTaskGroup(int index) {
+	public void removeTaskGroup(String id) {
+		int index = getTaskGroupIndex(id);
+
 		if (index < 0 || index >= taskGroups.size()) {
 			return;
 		}
@@ -447,14 +450,17 @@ public class MainBackEndHolder {
 		renderTaskGroup();
 	}
 
-	public void moveTaskGroupUp(int index) {
+	public void moveTaskGroupUp(String id) {
+		int index = getTaskGroupIndex(id);
 		if (index < 1) {
 			return;
 		}
 		Collections.swap(taskGroups, index, index - 1);
 	}
 
-	public void moveTaskGroupDown(int index) {
+	public void moveTaskGroupDown(String id) {
+		int index = getTaskGroupIndex(id);
+
 		if (index >= 0 && index < taskGroups.size() - 1) {
 			Collections.swap(taskGroups, index, index + 1);
 		}
@@ -688,7 +694,13 @@ public class MainBackEndHolder {
 		}
 	}
 
-	public void changeTaskGroup(int taskIndex, int newGroupIndex) {
+	public void changeTaskGroup(int taskIndex, String newGroupId) {
+		int newGroupIndex = getTaskGroupIndex(newGroupId);
+		if (newGroupIndex == -1) {
+			LOGGER.warning("Cannot change task group to group with ID " + newGroupId + " since it does not exist.");
+			return;
+		}
+
 		TaskGroup destination = taskGroups.get(newGroupIndex);
 		if (destination == currentGroup) {
 			LOGGER.warning("Cannot move to the same group.");
@@ -1081,11 +1093,34 @@ public class MainBackEndHolder {
 		return taskGroups.get(index);
 	}
 
+	private int getTaskGroupIndex(String id) {
+		for (ListIterator<TaskGroup> iterator = taskGroups.listIterator(); iterator.hasNext();) {
+			int index = iterator.nextIndex();
+			TaskGroup group = iterator.next();
+			if (group.getGroupId().equals(id)) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Get the task group with the given id, or null if no such group exists.
+	 */
+	public TaskGroup getTaskGroup(String id) {
+		for (TaskGroup group : taskGroups) {
+			if (group.getGroupId().equals(id)) {
+				return group;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Get the first task group with the given name, or null if no such group
 	 * exists.
 	 */
-	public TaskGroup getTaskGroup(String name) {
+	public TaskGroup getTaskGroupFromName(String name) {
 		for (TaskGroup group : taskGroups) {
 			if (group.getName().equals(name)) {
 				return group;
@@ -1101,13 +1136,7 @@ public class MainBackEndHolder {
 
 	public int getCurentTaskGroupIndex() {
 		TaskGroup current = getCurrentTaskGroup();
-		for (int i = 0; i < taskGroups.size(); i++) {
-			TaskGroup group = taskGroups.get(i);
-			if (group == current) {
-				return i;
-			}
-		}
-		return -1;
+		return getTaskGroupIndex(current.getGroupId());
 	}
 
 	public TaskGroup getCurrentTaskGroup() {

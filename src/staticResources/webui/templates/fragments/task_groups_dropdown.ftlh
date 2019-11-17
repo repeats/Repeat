@@ -6,7 +6,7 @@
     </button>
     <ul id="task-groups-dropdown" class="dropdown-menu">
         <#list taskGroup.groups as group>
-        <li><a href="#">${group.name}</a></li>
+        <li id="${group.id}"><a href="#">${group.name}</a></li>
         </#list>
     </ul>
 </#macro>

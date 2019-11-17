@@ -27,12 +27,12 @@ public class ActionMoveTaskGroupDownHandler extends AbstractUIHttpHandler {
 		if (params == null) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Failed to parse POST data.");
 		}
-		int index = CommonTask.getTaskGroupIndexFromRequest(backEndHolder, params);
-		if (index == -1) {
+		String id = CommonTask.getTaskGroupIdFromRequest(backEndHolder, params);
+		if (id == null || id.isEmpty()) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Cannot find task group from request data.");
 		}
 
-		backEndHolder.moveTaskGroupDown(index);
+		backEndHolder.moveTaskGroupDown(id);
 		return renderedTaskGroups(exchange);
 	}
 }

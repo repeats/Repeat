@@ -1,7 +1,6 @@
 package core.webui.server.handlers.internals.taskgroups;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpException;
@@ -12,9 +11,9 @@ import org.apache.http.protocol.HttpContext;
 import core.userDefinedTask.TaskGroup;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
+import core.webui.server.handlers.CommonTask;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.webcommon.HttpServerUtilities;
-import utilities.NumberUtility;
 
 public class ActionSwitchTaskGroupHandler extends AbstractUIHttpHandler {
 
@@ -38,18 +37,12 @@ public class ActionSwitchTaskGroupHandler extends AbstractUIHttpHandler {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Render parameter only takes `tasks` or `groups`.");
 		}
 
-		String groupIndex = params.get("group");
-		if (groupIndex == null || !NumberUtility.isNonNegativeInteger(groupIndex)) {
-			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Group index must be provided as non-negative integer.");
+		TaskGroup newCurrent = CommonTask.getTaskGroupFromRequest(backEndHolder, params, false);
+		if (newCurrent == null) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Cannot get task group from request.");
 		}
 
-		int index = Integer.parseInt(groupIndex);
-		List<TaskGroup> groups = backEndHolder.getTaskGroups();
-		if (index >= groups.size()) {
-			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Group index out of bound.");
-		}
-
-		backEndHolder.setCurrentTaskGroup(groups.get(index));
+		backEndHolder.setCurrentTaskGroup(newCurrent);
 
 		if (rendering.equals("tasks")) {
 			return renderedTaskForGroup(exchange);

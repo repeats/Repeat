@@ -47,16 +47,12 @@ public class TaskActivationPageHandler extends AbstractUIHttpHandler {
 		}
 
 		int taskIndex = -1;
-		int taskGroupIndex = -1;
+		String taskGroupId = "";
 		boolean isHotkey = isHotkey(taskString);
 		if (!isHotkey) {
-			TaskGroup group = backEndHolder.getCurrentTaskGroup();
-			taskGroupIndex = CommonTask.getTaskGroupIndexFromRequest(backEndHolder, params);
-			if (taskGroupIndex != -1) {
-				group = backEndHolder.getTaskGroup(taskGroupIndex);
-			} else {
-				taskGroupIndex = backEndHolder.getCurentTaskGroupIndex();
-			}
+			TaskGroup group = CommonTask.getTaskGroupFromRequest(backEndHolder, params, true);
+			taskGroupId = group.getGroupId();
+
 			taskIndex = CommonTask.getTaskIndexFromRequest(backEndHolder, params, group);
 			if (taskIndex == -1) {
 				return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Cannot get task index.");
@@ -74,7 +70,7 @@ public class TaskActivationPageHandler extends AbstractUIHttpHandler {
 				return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Failed to get task.");
 			}
 			id = taskActivationConstructorManager.addNew(task.getActivation());
-			redirectData.put("group", taskGroupIndex + "");
+			redirectData.put("group", taskGroupId);
 			redirectData.put("task", taskIndex + "");
 			redirectData.put("id", id);
 			return HttpServerUtilities.redirect(exchange, "/task-activation", redirectData);
@@ -87,7 +83,7 @@ public class TaskActivationPageHandler extends AbstractUIHttpHandler {
 		constructor.clearStrokes();
 
 		Map<String, Object> data = new HashMap<>();
-		data.put("groupIndex", taskGroupIndex);
+		data.put("groupIndex", taskGroupId);
 		data.put("taskIndex", taskString);
 		data.put("activation", RenderedTaskActivation.fromActivation(constructor));
 		data.put("taskActivationConstructorId", id);

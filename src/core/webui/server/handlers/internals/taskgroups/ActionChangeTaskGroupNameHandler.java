@@ -8,6 +8,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
+import core.userDefinedTask.TaskGroup;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
@@ -27,9 +28,9 @@ public class ActionChangeTaskGroupNameHandler extends AbstractUIHttpHandler {
 		if (params == null) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Unable to get parameters.");
 		}
-		int index = CommonTask.getTaskGroupIndexFromRequest(backEndHolder, params);
-		if (index == -1) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Unable to get task group index.");
+		TaskGroup group = CommonTask.getTaskGroupFromRequest(backEndHolder, params, false);
+		if (group == null) {
+			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Unable to get task group.");
 		}
 
 		String name = params.get("name");
@@ -37,7 +38,7 @@ public class ActionChangeTaskGroupNameHandler extends AbstractUIHttpHandler {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Group name must be provided.");
 		}
 
-		backEndHolder.getTaskGroups().get(index).setName(name);
+		group.setName(name);
 		return renderedTaskGroups(exchange);
 	}
 }

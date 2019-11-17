@@ -77,19 +77,29 @@ public class CommonTask {
 		return tasks.get(taskIndex);
 	}
 
-	public static int getTaskGroupIndexFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
+//	public static int getTaskGroupIndexFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
+//		String groupValue = params.get("group");
+//		if (!NumberUtility.isNonNegativeInteger(groupValue)) {
+//			LOGGER.warning("Group index must be non-negative integers. Got " + groupValue + ".");
+//			return -1;
+//		}
+//
+//		int groupIndex = Integer.parseInt(groupValue);
+//		if (groupIndex >= backEndHolder.getTaskGroups().size()) {
+//			LOGGER.warning("Group index out of bound: " + groupIndex);
+//			return -1;
+//		}
+//		return groupIndex;
+//	}
+
+	public static String getTaskGroupIdFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		String groupValue = params.get("group");
-		if (!NumberUtility.isNonNegativeInteger(groupValue)) {
-			LOGGER.warning("Group index must be non-negative integers. Got " + groupValue + ".");
-			return -1;
+		if (groupValue.isEmpty()) {
+			LOGGER.warning("Group ID must not be empty.");
+			return null;
 		}
 
-		int groupIndex = Integer.parseInt(groupValue);
-		if (groupIndex >= backEndHolder.getTaskGroups().size()) {
-			LOGGER.warning("Group index out of bound: " + groupIndex);
-			return -1;
-		}
-		return groupIndex;
+		return groupValue;
 	}
 
 	public static TaskGroup getTaskGroupFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params, boolean useCurrentIfNotProvided) {
@@ -101,17 +111,11 @@ public class CommonTask {
 			return null;
 		}
 
-		int groupIndex = getTaskGroupIndexFromRequest(backEndHolder, params);
-		if (groupIndex == -1) {
+		String id = getTaskGroupIdFromRequest(backEndHolder, params);
+		if (id == null) {
+			LOGGER.warning("No such group with ID " + id + ".");
 			return null;
 		}
-
-		List<TaskGroup> groups = backEndHolder.getTaskGroups();
-		if (groupIndex >= groups.size()) {
-			LOGGER.warning("No such group with index.");
-			return null;
-		}
-
-		return groups.get(groupIndex);
+		return backEndHolder.getTaskGroup(id);
 	}
 }

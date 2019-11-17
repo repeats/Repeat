@@ -51,7 +51,7 @@ function tableTaskGroupsOnClick(cell, row, col) {
     }
 
     if (col == 3) { // Enabled.
-        $.post("/internals/toggle/task-group-enabled", JSON.stringify({group: row}), function(data) {
+        $.post("/internals/toggle/task-group-enabled", JSON.stringify({group: getTaskGroupId(row)}), function(data) {
             refreshTaskGroupsWithDataAndIndex(data, row);
         }).fail(function(response) {
             alert('Error toggling task group enabled: ' + response.responseText);
@@ -59,7 +59,7 @@ function tableTaskGroupsOnClick(cell, row, col) {
     }
 
     if (col == 4) { // Selected.
-        $.post("/internals/action/switch-task-group", JSON.stringify({group: row, render: "groups"}), function(data) {
+        $.post("/internals/action/switch-task-group", JSON.stringify({group: getTaskGroupId(row), render: "groups"}), function(data) {
             refreshTaskGroupsWithDataAndIndex(data, row);
         }).fail(function(response) {
             alert('Error toggling task group enabled: ' + response.responseText);
@@ -71,7 +71,7 @@ function buttonSaveTaskGroupNameAction(e) {
     var row = getSelectedTaskGroupIndex();
     var name = $("#new-task-group-name").val();
 
-    $.post("/internals/action/change-task-group-name", JSON.stringify({group: row, name: name}), function(data) {
+    $.post("/internals/action/change-task-group-name", JSON.stringify({group: getTaskGroupId(row), name: name}), function(data) {
         refreshTaskGroupsWithDataAndIndex(data, row);
     }).fail(function(response) {
         alert('Error changing task group name: ' + response.responseText);
@@ -101,7 +101,7 @@ function buttonDeleteTaskGroupAction(e) {
         return;
     }
 
-    $.post("/internals/action/delete-task-group", JSON.stringify({group: row}), function(data) {
+    $.post("/internals/action/delete-task-group", JSON.stringify({group: getTaskGroupId(row)}), function(data) {
         refreshTaskGroupsWithDataAndIndex(data, row);
     }).fail(function(response) {
         alert('Error deleting task group: ' + response.responseText);
@@ -114,7 +114,7 @@ function buttonMoveTaskGroupUpAction(e) {
         return;
     }
 
-    $.post("/internals/action/move-task-group-up", JSON.stringify({group: row}), function(data) {
+    $.post("/internals/action/move-task-group-up", JSON.stringify({group: getTaskGroupId(row)}), function(data) {
         refreshTaskGroupsWithDataAndIndex(data, row - 1);
     }).fail(function(response) {
         alert('Error moving task group up: ' + response.responseText);
@@ -127,7 +127,7 @@ function buttonMoveTaskGroupDownAction(e) {
         return;
     }
 
-    $.post("/internals/action/move-task-group-down", JSON.stringify({group: row}), function(data) {
+    $.post("/internals/action/move-task-group-down", JSON.stringify({group: getTaskGroupId(row)}), function(data) {
         refreshTaskGroupsWithDataAndIndex(data, row + 1);
     }).fail(function(response) {
         alert('Error moving task group down: ' + response.responseText);
@@ -138,7 +138,7 @@ function newNameOnClick(e) {
     var row = $('#modal-task-group-name-row').val();
     var newName = $('#new-task-group-name').val();
 
-    $.post("/internals/modify/task-name", JSON.stringify({group: row, name: newName}), function(data) {
+    $.post("/internals/modify/task-name", JSON.stringify({group: getTaskGroupId(row), name: newName}), function(data) {
         refreshTaskGroupsWithDataAndIndex(data, row);
     }).fail(function(response) {
         alert('Error changing task group name: ' + response.responseText);
@@ -173,6 +173,13 @@ function setSelectedTaskGroup(index) {
             return false;
         }
     });
+}
+
+function getTaskGroupId(row) {
+    var  rows = $('#table-task-groups').find("tr").not(":first");
+    var row = rows.eq(row);
+    var idCol = row.find("td").eq(1); // Second column is ID.
+    return idCol[0].innerHTML;
 }
 
 function getSelectedTaskGroupIndex() {

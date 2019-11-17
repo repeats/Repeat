@@ -1,13 +1,13 @@
 function registerTaskGroupsDropdownEvents() {
-	var groups = $("#task-groups-dropdown").find("li");
-	groups.click(function() {
-		var index = $(this).index();
-		selectTaskGroupFromDropdown(index);
-	});
+    var groups = $("#task-groups-dropdown").find("li");
+    groups.click(function() {
+        var groupId = $(this)[0].id;
+        selectTaskGroupFromDropdown(groupId);
+    });
 }
 
-function selectTaskGroupFromDropdown(index) {
-	$.post("/internals/action/switch-task-group", JSON.stringify({group: index, render: "tasks"}), function(data) {
+function selectTaskGroupFromDropdown(groupId) {
+    $.post("/internals/action/switch-task-group", JSON.stringify({group: groupId, render: "tasks"}), function(data) {
         refreshTaskGroupDropDown();
         refreshTasksWithData(data);
     }).fail(function(response) {
@@ -16,7 +16,7 @@ function selectTaskGroupFromDropdown(index) {
 }
 
 function refreshTaskGroupDropDown() {
-	$.get("/internals/get/rendered-task-groups-dropdown", function(data) {
+    $.get("/internals/get/rendered-task-groups-dropdown", function(data) {
         $("#task-groups-dropdown-container").html(data);
         registerTaskGroupsDropdownEvents();
     }).fail(function(response) {

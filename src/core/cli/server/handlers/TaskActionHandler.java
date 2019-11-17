@@ -72,7 +72,7 @@ public abstract class TaskActionHandler extends HttpHandlerWithBackend {
 		if (taskGroup != null) {
 			group = backEndHolder.getTaskGroup(index);
 			if (group == null) {
-				group = backEndHolder.getTaskGroup(name);
+				group = backEndHolder.getTaskGroupFromName(name);
 			}
 		}
 		return group;
