@@ -4,7 +4,6 @@ import argo.jdom.JsonNode;
 import utilities.json.AutoJsonable;
 import utilities.json.Jsonizer;
 
-@SuppressWarnings("unused")
 public class SharedVariablesSetMessage extends AutoJsonable {
 
 	private String namespace;

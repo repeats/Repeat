@@ -65,8 +65,8 @@
 
         <div class="content">
             <div class="container-fluid">
-                <div id="task-activation-task-group-index" style="display:none;">${groupIndex}</div>
-                <div id="task-activation-task-index" style="display:none;">${taskIndex}</div>
+                <div id="task-activation-task-group" style="display:none;">${groupIndex}</div>
+                <div id="task-activation-task" style="display:none;">${taskIndex}</div>
                 <div id="task-activation-constructor-id" style="display:none;">${taskActivationConstructorId}</div>
                 <div class="row">
                     <span class="label label-warning">Moving tasks around when editting its activation may result in undefined behavior!</span>

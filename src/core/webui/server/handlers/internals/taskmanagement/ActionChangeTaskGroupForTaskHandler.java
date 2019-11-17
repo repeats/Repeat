@@ -31,12 +31,12 @@ public class ActionChangeTaskGroupForTaskHandler extends AbstractUIHttpHandler {
 		if (groupId == null || groupId.isEmpty()) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Unable to get group ID.");
 		}
-		int taskIndex = CommonTask.getTaskIndexFromRequest(backEndHolder, params, backEndHolder.getCurrentTaskGroup());
-		if (taskIndex == -1) {
-			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Unable to get task index.");
+		String taskId = CommonTask.getTaskIdFromRequest(backEndHolder, params);
+		if (taskId == null || taskId.isEmpty()) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Unable to get task ID.");
 		}
 
-		backEndHolder.changeTaskGroup(taskIndex, groupId);
+		backEndHolder.changeTaskGroup(taskId, groupId);
 		return renderedTaskForGroup(exchange);
 	}
 }

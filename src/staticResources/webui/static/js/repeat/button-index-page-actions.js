@@ -140,7 +140,7 @@ function buttonOverwriteAction(e) {
         return;
     }
 
-    $.post("/internals/action/overwrite-task", JSON.stringify({task: index}), function(data) {
+    $.post("/internals/action/overwrite-task", JSON.stringify({task: getIdForTaskIndex(index)}), function(data) {
         refreshTasksWithDataAndIndex(data, index);
     }).fail(function(response) {
         alert('Error sending request to overwrite task: ' + response.responseText);
@@ -153,7 +153,7 @@ function buttonDeleteAction(e) {
         return;
     }
 
-    $.post("/internals/action/delete-task", JSON.stringify({task: index}), function(data) {
+    $.post("/internals/action/delete-task", JSON.stringify({task: getIdForTaskIndex(index)}), function(data) {
         refreshTasksWithDataAndIndex(data, index);
     }).fail(function(response) {
         alert('Error sending request to delete task: ' + response.responseText);
@@ -166,7 +166,7 @@ function buttonMoveUpAction(e) {
         return;
     }
 
-    $.post("/internals/action/move-task-up", JSON.stringify({task: index}), function(data) {
+    $.post("/internals/action/move-task-up", JSON.stringify({task: getIdForTaskIndex(index)}), function(data) {
         refreshTasksWithDataAndIndex(data, index - 1);
     }).fail(function(response) {
         alert('Error sending request to move task up: ' + response.responseText);
@@ -179,7 +179,7 @@ function buttonMoveDownAction(e) {
         return;
     }
 
-    $.post("/internals/action/move-task-down", JSON.stringify({task: index}), function(data) {
+    $.post("/internals/action/move-task-down", JSON.stringify({task: getIdForTaskIndex(index)}), function(data) {
         refreshTasksWithDataAndIndex(data, index + 1);
     }).fail(function(response) {
         alert('Error sending request to move task down: ' + response.responseText);
@@ -192,7 +192,7 @@ function buttonChangeGroupAction(e) {
         return;
     }
     $('#modal-move-to-task-group-row').val(index);
-    $.get("/internals/get/rendered-task-groups-select-modal", JSON.stringify({task: index}), function(data) {
+    $.get("/internals/get/rendered-task-groups-select-modal", JSON.stringify({task: getIdForTaskIndex(index)}), function(data) {
         $("#modal-move-to-task-group-body").html(data);
         $("#modal-move-to-task-group").modal();
     }).fail(function(response) {
@@ -218,7 +218,7 @@ function buttonMoveGroupAction(e) {
     var groups = $("#task-groups-dropdown").find("li");
     var groupId = groups.eq(groupIndex)[0].id;
 
-    $.post("/internals/action/change-task-group-for-task", JSON.stringify({task: taskIndex, group: groupId}), function(data) {
+    $.post("/internals/action/change-task-group-for-task", JSON.stringify({task: getIdForTaskIndex(taskIndex), group: groupId}), function(data) {
         refreshTasksWithData(data);
     }).fail(function(response) {
         alert('Error sending request to move task to new group: ' + response.responseText);

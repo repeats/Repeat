@@ -1,6 +1,5 @@
 package core.webui.server.handlers;
 
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,26 +32,14 @@ public class CommonTask {
 		return IPCServiceManager.getIPCService(index);
 	}
 
-	public static int getTaskIndexFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params, TaskGroup group) {
+	public static String getTaskIdFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		String taskValue = params.get("task");
-		if (taskValue == null) {
-			LOGGER.warning("Missing task.");
-			return -1;
+		if (taskValue == null || taskValue.isEmpty()) {
+			LOGGER.warning("Missing task ID.");
+			return "";
 		}
 
-		if (!NumberUtility.isNonNegativeInteger(taskValue)) {
-			LOGGER.warning("Task indices must be non-negative integers. Got " + taskValue + ".");
-			return -1;
-		}
-
-		int taskIndex = Integer.parseInt(taskValue);
-		List<UserDefinedAction> tasks = group.getTasks();
-		if (taskIndex >= tasks.size()) {
-			LOGGER.warning("No such task with index " + taskIndex + ".");
-			return -1;
-		}
-
-		return taskIndex;
+		return taskValue;
 	}
 
 	public static UserDefinedAction getTaskFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
@@ -62,24 +49,24 @@ public class CommonTask {
 			return null;
 		}
 
-		int taskIndex = getTaskIndexFromRequest(backEndHolder, params, group);
-		if (taskIndex == -1) {
-			LOGGER.warning("Cannot find task index.");
+		String taskId = getTaskIdFromRequest(backEndHolder, params);
+		if (taskId == null || taskId.isEmpty()) {
+			LOGGER.warning("Cannot find task ID.");
 			return null;
 		}
 
-		List<UserDefinedAction> tasks = group.getTasks();
-		if (taskIndex >= tasks.size()) {
-			LOGGER.warning("No such task with index.");
+		UserDefinedAction task = group.getTask(taskId);
+		if (task == null) {
+			LOGGER.warning("No such task with ID " + taskId + ".");
 			return null;
 		}
 
-		return tasks.get(taskIndex);
+		return task;
 	}
 
 	public static String getTaskGroupIdFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		String groupValue = params.get("group");
-		if (groupValue.isEmpty()) {
+		if (groupValue == null || groupValue.isEmpty()) {
 			LOGGER.warning("Group ID must not be empty.");
 			return null;
 		}

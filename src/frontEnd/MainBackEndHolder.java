@@ -642,17 +642,24 @@ public class MainBackEndHolder {
 		return null;
 	}
 
-	public void removeCurrentTask(int selectedRow) {
-		if (selectedRow >= 0 && selectedRow < currentGroup.getTasks().size()) {
-			UserDefinedAction selectedTask = currentGroup.getTasks().get(selectedRow);
-			unregisterTask(selectedTask);
-
-			currentGroup.getTasks().remove(selectedRow);
-
-			writeConfigFile();
-		} else {
-			LOGGER.info("Select a row from the table to remove.");
+	public void removeCurrentTask(String id) {
+		boolean found = false;
+		for (ListIterator<UserDefinedAction> iterator = currentGroup.getTasks().listIterator(); iterator.hasNext();) {
+			UserDefinedAction action = iterator.next();
+			if (!action.getActionId().equals(id)) {
+				continue;
+			}
+			found = true;
+			unregisterTask(action);
+			iterator.remove();
+			break;
 		}
+		if (!found) {
+			LOGGER.info("Select a row from the table to remove.");
+			return;
+		}
+
+		writeConfigFile();
 	}
 
 	public void removeTask(String id) {
@@ -681,20 +688,33 @@ public class MainBackEndHolder {
 		}
 	}
 
-	public void moveTaskUp(int selected) {
+	public void moveTaskUp(String taskId) {
+		int selected = getTaskIndex(taskId, currentGroup);
 		if (selected < 1) {
 			return;
 		}
 		Collections.swap(currentGroup.getTasks(), selected, selected - 1);
 	}
 
-	public void moveTaskDown(int selected) {
+	public void moveTaskDown(String taskId) {
+		int selected = getTaskIndex(taskId, currentGroup);
 		if (selected >= 0 && selected < currentGroup.getTasks().size() - 1) {
 			Collections.swap(currentGroup.getTasks(), selected, selected + 1);
 		}
 	}
 
-	public void changeTaskGroup(int taskIndex, String newGroupId) {
+	private int getTaskIndex(String taskId, TaskGroup group) {
+		for (ListIterator<UserDefinedAction> iterator = group.getTasks().listIterator(); iterator.hasNext();) {
+			int index = iterator.nextIndex();
+			UserDefinedAction action = iterator.next();
+			if (action.getActionId().equals(taskId)) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	public void changeTaskGroup(String taskId, String newGroupId) {
 		int newGroupIndex = getTaskGroupIndex(newGroupId);
 		if (newGroupIndex == -1) {
 			LOGGER.warning("Cannot change task group to group with ID " + newGroupId + " since it does not exist.");
@@ -712,28 +732,45 @@ public class MainBackEndHolder {
 			return;
 		}
 
-		UserDefinedAction toMove = currentGroup.getTasks().remove(taskIndex);
+		UserDefinedAction toMove = null;
+		for (Iterator<UserDefinedAction> iterator = currentGroup.getTasks().iterator(); iterator.hasNext();) {
+			toMove = iterator.next();
+			if (toMove.getActionId().equals(taskId)) {
+				iterator.remove();
+				break;
+			}
+		}
+		if (toMove == null) {
+			return;
+		}
+
 		destination.getTasks().add(toMove);
 		writeConfigFile();
 	}
 
-	public void overwriteTask(int selected) {
+	public void overwriteTask(String taskId) {
 		if (customFunction == null) {
 			LOGGER.info("Nothing to override. Compile first?");
 			return;
 		}
 
-		UserDefinedAction toRemove = currentGroup.getTasks().get(selected);
-		customFunction.override(toRemove);
+		for (ListIterator<UserDefinedAction> iterator = currentGroup.getTasks().listIterator(); iterator.hasNext();) {
+			UserDefinedAction action = iterator.next();
+			if (!action.getActionId().equals(taskId)) {
+				continue;
+			}
+			customFunction.override(action);
 
-		unregisterTask(toRemove);
-		keysManager.registerTask(customFunction);
-		currentGroup.getTasks().set(selected, customFunction);
+			unregisterTask(action);
+			keysManager.registerTask(customFunction);
+			iterator.set(customFunction);
 
-		LOGGER.info("Successfully overridden task " + customFunction.getName());
-		customFunction = null;
-		if (!writeConfigFile()) {
-			LOGGER.warning("Unable to update config.");
+			LOGGER.info("Successfully overridden task " + customFunction.getName());
+			customFunction = null;
+			if (!writeConfigFile()) {
+				LOGGER.warning("Unable to update config.");
+			}
+			break;
 		}
 	}
 

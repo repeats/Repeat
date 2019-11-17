@@ -38,11 +38,11 @@ function tableTaskOnClick(cell, row, col) {
     }
 
     if (col == 2) { // Activation.
-        window.location.assign("/task-activation?task=" + row);
+        window.location.assign("/task-activation?task=" + getIdForTaskIndex(row));
     }
 
     if (col == 3) { // Enable/disable.
-        $.post("/internals/toggle/task-enabled", JSON.stringify({task: row}), function(data) {
+        $.post("/internals/toggle/task-enabled", JSON.stringify({task: getIdForTaskIndex(row)}), function(data) {
             refreshTasksWithDataAndIndex(data, row);
         }).fail(function(response) {
             alert('Error toggling state: ' + response.responseText);
@@ -61,7 +61,7 @@ function newNameOnClick(e) {
     var row = $('#modal-task-name-row').val();
     var newName = $('#new-task-name').val();
 
-    $.post("/internals/modify/task-name", JSON.stringify({task: row, name: newName}), function(data) {
+    $.post("/internals/modify/task-name", JSON.stringify({task: getIdForTaskIndex(row), name: newName}), function(data) {
         refreshTasksWithDataAndIndex(data, row);
     }).fail(function(response) {
         alert('Error changing name: ' + response.responseText);
@@ -80,6 +80,10 @@ function refreshTasksWithDataAndIndex(data, index) {
     registerCells();
     utils_SetTableSelectedIndex("table-tasks", index);
     _setLastToLastScrollPosition();
+}
+
+function getIdForTaskIndex(index) {
+    return $('button[id^=\'button-show-task-id-\']').eq(index)[0].id.substring('button-show-task-id-'.length);
 }
 
 var _lastScrollPosition = 0;

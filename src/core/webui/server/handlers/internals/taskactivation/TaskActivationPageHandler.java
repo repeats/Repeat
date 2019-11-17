@@ -46,15 +46,15 @@ public class TaskActivationPageHandler extends AbstractUIHttpHandler {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Task must be provided.");
 		}
 
-		int taskIndex = -1;
+		String taskId = "";
 		String taskGroupId = "";
 		boolean isHotkey = isHotkey(taskString);
 		if (!isHotkey) {
 			TaskGroup group = CommonTask.getTaskGroupFromRequest(backEndHolder, params, true);
 			taskGroupId = group.getGroupId();
 
-			taskIndex = CommonTask.getTaskIndexFromRequest(backEndHolder, params, group);
-			if (taskIndex == -1) {
+			taskId = CommonTask.getTaskIdFromRequest(backEndHolder, params);
+			if (taskId == null || taskId.isEmpty()) {
 				return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Cannot get task index.");
 			}
 		}
@@ -71,7 +71,7 @@ public class TaskActivationPageHandler extends AbstractUIHttpHandler {
 			}
 			id = taskActivationConstructorManager.addNew(task.getActivation());
 			redirectData.put("group", taskGroupId);
-			redirectData.put("task", taskIndex + "");
+			redirectData.put("task", taskId);
 			redirectData.put("id", id);
 			return HttpServerUtilities.redirect(exchange, "/task-activation", redirectData);
 		}
