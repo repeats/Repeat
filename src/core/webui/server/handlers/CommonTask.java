@@ -77,21 +77,6 @@ public class CommonTask {
 		return tasks.get(taskIndex);
 	}
 
-//	public static int getTaskGroupIndexFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
-//		String groupValue = params.get("group");
-//		if (!NumberUtility.isNonNegativeInteger(groupValue)) {
-//			LOGGER.warning("Group index must be non-negative integers. Got " + groupValue + ".");
-//			return -1;
-//		}
-//
-//		int groupIndex = Integer.parseInt(groupValue);
-//		if (groupIndex >= backEndHolder.getTaskGroups().size()) {
-//			LOGGER.warning("Group index out of bound: " + groupIndex);
-//			return -1;
-//		}
-//		return groupIndex;
-//	}
-
 	public static String getTaskGroupIdFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		String groupValue = params.get("group");
 		if (groupValue.isEmpty()) {
