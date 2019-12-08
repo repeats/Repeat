@@ -70,6 +70,20 @@ public class RemoteRepeatsClientTools implements ITools {
 	}
 
 	@Override
+	public String execute(String command, String cwd) {
+		RepeatsPeerServiceClient client = getClient();
+		if (client == null) {
+			return "";
+		}
+
+		if (!client.isRunning()) {
+			LOGGER.info("Client " + client.getName() + " is not running.");
+			return "";
+		}
+		return client.api().tool().execute(command, cwd);
+	}
+
+	@Override
 	public String execute(String command, File cwd) {
 		RepeatsPeerServiceClient client = getClient();
 		if (client == null) {

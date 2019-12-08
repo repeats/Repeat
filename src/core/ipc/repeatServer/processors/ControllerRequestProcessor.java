@@ -89,10 +89,12 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	private static final String DEVICE_KEYBOARD = "keyboard";
 	private static final String DEVICE_TOOL = "tool";
 
+	private final ServerMainProcessor holder;
 	private final CoreProvider coreProvider;
 
-	protected ControllerRequestProcessor(MainMessageSender messageSender, CoreProvider coreProvider) {
+	protected ControllerRequestProcessor(MainMessageSender messageSender, CoreProvider coreProvider, ServerMainProcessor holder) {
 		super(messageSender);
+		this.holder = holder;
 		this.coreProvider = coreProvider;
 	}
 
@@ -376,6 +378,10 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	}
 
 	private Core getCore() {
+		if (holder.isLocalClientProcessor()) {
+			return coreProvider.get();
+		}
+
 		return coreProvider.getLocal();
 	}
 

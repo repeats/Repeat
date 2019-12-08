@@ -77,7 +77,8 @@ public class SystemRequestProcessor extends AbstractMessageProcessor {
 				}
 
 				name = nameNode.getStringValue();
-				TaskProcessorManager.identifyProcessor(name, port, holder.getTaskProcessor());
+				boolean identified = TaskProcessorManager.identifyProcessor(name, port, holder.getTaskProcessor());
+				holder.setLocalClientProcessor(identified);
 				return success(type, id);
 			}
 		}

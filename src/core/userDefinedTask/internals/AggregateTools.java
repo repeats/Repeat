@@ -57,7 +57,7 @@ public class AggregateTools implements ITools {
 	 * Note that the command is executed on all tools.
 	 */
 	@Override
-	public String execute(String command, File cwd) {
+	public String execute(String command, String cwd) {
 		String output = "";
 		for (ITools tool : tools) {
 			String result = tool.execute(command, cwd);
@@ -68,4 +68,19 @@ public class AggregateTools implements ITools {
 		return output;
 	}
 
+	/**
+	 * Returns the first non-empty output.
+	 * Note that the command is executed on all tools.
+	 */
+	@Override
+	public String execute(String command, File cwd) {
+		String output = "";
+		for (ITools tool : tools) {
+			String result = tool.execute(command, cwd);
+			if (output.isEmpty()) {
+				output = result;
+			}
+		}
+		return output;
+	}
 }

@@ -41,11 +41,13 @@ public class ServerMainProcessor implements ILoggable {
 	private final TaskProcessor taskProcessor;
 	private final SystemRequestProcessor systemProcessor;
 	private final SharedMemoryProcessor sharedMemoryProcessor;
+	// Whether this processor is procesing requests from local client.
+	private boolean localClientProcessor;
 
 	public ServerMainProcessor(MainBackEndHolder backEnd, MainMessageSender messageSender) {
 		messageProcesssors = new HashMap<>();
 
-		actionProcessor = new ControllerRequestProcessor(messageSender, backEnd.getCoreProvider());
+		actionProcessor = new ControllerRequestProcessor(messageSender, backEnd.getCoreProvider(), this);
 		taskProcessor = new TaskProcessor(backEnd, messageSender);
 		systemProcessor = new SystemRequestProcessor(messageSender, this);
 		sharedMemoryProcessor = new SharedMemoryProcessor(messageSender);
@@ -89,6 +91,14 @@ public class ServerMainProcessor implements ILoggable {
 				message.isNumberValue("id") &&
 				message.isObjectNode("content") &&
 				messageProcesssors.containsKey(IpcMessageType.identify(message.getStringValue("type")));
+	}
+
+	protected void setLocalClientProcessor(boolean localClientProcessor) {
+		this.localClientProcessor = localClientProcessor;
+	}
+
+	protected boolean isLocalClientProcessor() {
+		return localClientProcessor;
 	}
 
 	@Override

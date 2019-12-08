@@ -56,6 +56,11 @@ public class LocalTools implements ITools {
 	}
 
 	@Override
+	public String execute(String command, String cwd) {
+		return execute(command, new File(cwd));
+	}
+
+	@Override
 	public String execute(String command, File cwd) {
 		try {
 			return SubprocessUttility.execute(command, cwd);

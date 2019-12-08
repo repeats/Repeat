@@ -28,6 +28,11 @@ public class NoopTools implements ITools {
 	}
 
 	@Override
+	public String execute(String command, String cwd) {
+		return "";
+	}
+
+	@Override
 	public String execute(String command, File cwd) {
 		return "";
 	}

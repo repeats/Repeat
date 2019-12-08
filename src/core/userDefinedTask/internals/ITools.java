@@ -6,5 +6,6 @@ public interface ITools {
 	public String getClipboard();
 	public boolean setClipboard(String data);
 	public String execute(String command);
+	public String execute(String command, String cwd);
 	public String execute(String command, File cwd);
 }
