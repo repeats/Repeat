@@ -5,19 +5,14 @@ import java.io.File;
 import core.ipc.IIPCService;
 import core.ipc.IPCServiceManager;
 import core.ipc.IPCServiceName;
+import core.userDefinedTask.internals.DefaultTools;
 import core.userDefinedTask.internals.ITools;
 import core.userDefinedTask.internals.LocalTools;
 
 public class Tools {
 
-	private static ITools executor = LocalTools.of();
-
 	public static ITools local() {
 		return LocalTools.of();
-	}
-
-	public synchronized static void setExecutor(ITools executor) {
-		Tools.executor = executor;
 	}
 
 	/**
@@ -25,7 +20,7 @@ public class Tools {
 	 * @return the plain text in the clipboard, or empty string if encounter an error
 	 */
 	public static String getClipboard() {
-		return executor.getClipboard();
+		return DefaultTools.get().getClipboard();
 	}
 
 	/**
@@ -34,7 +29,7 @@ public class Tools {
 	 * @return if action succeeds
 	 */
 	public static boolean setClipboard(String data) {
-		return executor.setClipboard(data);
+		return DefaultTools.get().setClipboard(data);
 	}
 
 	/**
@@ -43,7 +38,7 @@ public class Tools {
 	 * @return stdout of the command
 	 */
 	public static String execute(String command) {
-		return executor.execute(command);
+		return DefaultTools.get().execute(command);
 	}
 
 	/**
@@ -63,7 +58,7 @@ public class Tools {
 	 * @return stdout of the command
 	 */
 	public static String execute(String command, File cwd) {
-		return executor.execute(command, cwd);
+		return DefaultTools.get().execute(command, cwd);
 	}
 
 	/**

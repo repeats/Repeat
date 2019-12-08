@@ -48,6 +48,7 @@ import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.Tools;
 import core.userDefinedTask.UserDefinedAction;
 import core.userDefinedTask.internals.AggregateTools;
+import core.userDefinedTask.internals.DefaultTools;
 import core.userDefinedTask.internals.ITools;
 import core.userDefinedTask.internals.RemoteRepeatsClientTools;
 import globalListener.GlobalListenerHookController;
@@ -1046,7 +1047,7 @@ public class MainBackEndHolder {
 			}
 			return new RemoteRepeatsClientTools(peerServiceClientManager, c);
 		}).collect(Collectors.toList());
-		Tools.setExecutor(AggregateTools.of(tools));
+		DefaultTools.setExecutor(AggregateTools.of(tools));
 	}
 
 	public void setCoreClients(List<String> clients) {

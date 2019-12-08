@@ -14,6 +14,8 @@ import core.controller.Core;
 import core.controller.CoreProvider;
 import core.ipc.repeatServer.MainMessageSender;
 import core.userDefinedTask.Tools;
+import core.userDefinedTask.internals.DefaultTools;
+import core.userDefinedTask.internals.ITools;
 import utilities.IterableUtility;
 import utilities.swing.SwingUtil;
 
@@ -319,8 +321,10 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 	}
 
 	private boolean toolAction(String type, long id, final String action, final List<Object> parsedParams) throws InterruptedException {
+		ITools tools = getTools();
+
 		if (action.equals("get_clipboard")) {
-			return success(type, id, Tools.getClipboard());
+			return success(type, id, tools.getClipboard());
 		} else if (action.equals("set_clipboard")) {
 			List<String> params = toStringParams(parsedParams);
 			if (params == null) {
@@ -328,7 +332,7 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			}
 
 			String data = params.get(0);
-			Tools.local().setClipboard(data);
+			tools.setClipboard(data);
 			return success(type, id);
 		} else if (action.equals("execute")) {
 			List<String> params = toStringParams(parsedParams);
@@ -337,9 +341,9 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 			}
 
 			if (params.size() == 1) {
-				return success(type, id, Tools.local().execute(params.get(0)));
+				return success(type, id, tools.execute(params.get(0)));
 			} else if (params.size() == 2) {
-				return success(type, id, Tools.local().execute(params.get(0), new File(params.get(1))));
+				return success(type, id, tools.execute(params.get(0), new File(params.get(1))));
 			} else {
 				return failure(type, id, "Unexpected number of parameter for execution");
 			}
@@ -383,6 +387,14 @@ class ControllerRequestProcessor extends AbstractMessageProcessor {
 		}
 
 		return coreProvider.getLocal();
+	}
+
+	private ITools getTools() {
+		if (holder.isLocalClientProcessor()) {
+			return DefaultTools.get();
+		}
+
+		return Tools.local();
 	}
 
 	private List<String> toStringParams(List<Object> params) {
