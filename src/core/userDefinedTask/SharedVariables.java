@@ -22,7 +22,7 @@ public class SharedVariables {
 	private static final Map<String, Map<String, String>> variables = new HashMap<>();
 
 	private static final Lock waiterLock = new ReentrantLock(true);
-	private static final List<Semaphore> waiters = new LinkedList<>();
+	private static final Map<SharedVariableIdentifier, List<Semaphore>> waiters = new HashMap<>();
 
 	private final String namespace;
 
@@ -106,12 +106,16 @@ public class SharedVariables {
 		Map<String, String> namespaceVariables = variables.get(namespace);
 		String output = namespaceVariables.put(variable, value);
 
+		SharedVariableIdentifier identifier = SharedVariableIdentifier.of(namespace, variable);
 		waiterLock.lock();
 		try {
-			for (Semaphore waiter : waiters) {
-				waiter.release();
+			if (waiters.containsKey(identifier)) {
+				List<Semaphore> locks = waiters.get(identifier);
+				for (Semaphore waiter : locks) {
+					waiter.release();
+				}
+				locks.clear();
 			}
-			waiters.clear();
 		} finally {
 			waiterLock.unlock();
 		}
@@ -154,9 +158,14 @@ public class SharedVariables {
 	public static String waitVar(String namespace, String variable, long timeoutMs) {
 		Semaphore s = new Semaphore(0);
 
+		SharedVariableIdentifier identifier = SharedVariableIdentifier.of(namespace, variable);
 		waiterLock.lock();
 		try {
-			waiters.add(s);
+			if (!waiters.containsKey(identifier)) {
+				waiters.put(identifier, new LinkedList<>());
+			}
+
+			waiters.get(identifier).add(s);
 		} finally {
 			waiterLock.unlock();
 		}
@@ -187,5 +196,57 @@ public class SharedVariables {
 		}
 
 		return false;
+	}
+
+	private static class SharedVariableIdentifier {
+		private String namespace;
+		private String name;
+
+		private SharedVariableIdentifier(String namespace, String name) {
+			this.namespace = namespace;
+			this.name = name;
+		}
+
+		private static SharedVariableIdentifier of(String namespace, String name) {
+			return new SharedVariableIdentifier(namespace, name);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + ((namespace == null) ? 0 : namespace.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			SharedVariableIdentifier other = (SharedVariableIdentifier) obj;
+			if (name == null) {
+				if (other.name != null) {
+					return false;
+				}
+			} else if (!name.equals(other.name)) {
+				return false;
+			}
+			if (namespace == null) {
+				if (other.namespace != null) {
+					return false;
+				}
+			} else if (!namespace.equals(other.namespace)) {
+				return false;
+			}
+			return true;
+		}
 	}
 }
