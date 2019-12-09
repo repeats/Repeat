@@ -1,14 +1,14 @@
 package core.userDefinedTask;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
+
+import core.userDefinedTask.internals.SharedVariablesEvent;
+import core.userDefinedTask.internals.SharedVariablesPubSubManager;
+import core.userDefinedTask.internals.SharedVariablesSubscriber;
 
 /**
  * Shared variables used to pass values between tasks. This only supports string values since the tasks can be
@@ -20,9 +20,6 @@ public class SharedVariables {
 
 	public static final String GLOBAL_NAMESPACE = "global";
 	private static final Map<String, Map<String, String>> variables = new HashMap<>();
-
-	private static final Lock waiterLock = new ReentrantLock(true);
-	private static final Map<SharedVariableIdentifier, List<Semaphore>> waiters = new HashMap<>();
 
 	private final String namespace;
 
@@ -106,20 +103,7 @@ public class SharedVariables {
 		Map<String, String> namespaceVariables = variables.get(namespace);
 		String output = namespaceVariables.put(variable, value);
 
-		SharedVariableIdentifier identifier = SharedVariableIdentifier.of(namespace, variable);
-		waiterLock.lock();
-		try {
-			if (waiters.containsKey(identifier)) {
-				List<Semaphore> locks = waiters.get(identifier);
-				for (Semaphore waiter : locks) {
-					waiter.release();
-				}
-				locks.clear();
-			}
-		} finally {
-			waiterLock.unlock();
-		}
-
+		SharedVariablesPubSubManager.get().notifyEvent(SharedVariablesEvent.of(namespace, variable));
 		return output;
 	}
 
@@ -157,19 +141,7 @@ public class SharedVariables {
 	 */
 	public static String waitVar(String namespace, String variable, long timeoutMs) {
 		Semaphore s = new Semaphore(0);
-
-		SharedVariableIdentifier identifier = SharedVariableIdentifier.of(namespace, variable);
-		waiterLock.lock();
-		try {
-			if (!waiters.containsKey(identifier)) {
-				waiters.put(identifier, new LinkedList<>());
-			}
-
-			waiters.get(identifier).add(s);
-		} finally {
-			waiterLock.unlock();
-		}
-
+		SharedVariablesPubSubManager.get().addSubscriber(SharedVariablesSubscriber.forVar(namespace, variable, e -> s.release()));
 		try {
 			if (!s.tryAcquire(timeoutMs, TimeUnit.MILLISECONDS)) {
 				return null;
@@ -196,57 +168,5 @@ public class SharedVariables {
 		}
 
 		return false;
-	}
-
-	private static class SharedVariableIdentifier {
-		private String namespace;
-		private String name;
-
-		private SharedVariableIdentifier(String namespace, String name) {
-			this.namespace = namespace;
-			this.name = name;
-		}
-
-		private static SharedVariableIdentifier of(String namespace, String name) {
-			return new SharedVariableIdentifier(namespace, name);
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((name == null) ? 0 : name.hashCode());
-			result = prime * result + ((namespace == null) ? 0 : namespace.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			SharedVariableIdentifier other = (SharedVariableIdentifier) obj;
-			if (name == null) {
-				if (other.name != null) {
-					return false;
-				}
-			} else if (!name.equals(other.name)) {
-				return false;
-			}
-			if (namespace == null) {
-				if (other.namespace != null) {
-					return false;
-				}
-			} else if (!namespace.equals(other.namespace)) {
-				return false;
-			}
-			return true;
-		}
 	}
 }

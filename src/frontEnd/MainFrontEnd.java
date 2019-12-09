@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import org.jnativehook.NativeHookException;
 
+import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
 import utilities.logging.OutStream;
@@ -29,6 +30,7 @@ public class MainFrontEnd {
 		/*************************************************************************************/
 		/********************************Initializing global hooks****************************/
 		GlobalListenerHookController.of().initialize();
+		SharedVariablesPubSubManager.get().start();
 		/*************************************************************************************/
 		/********************************Start main program***********************************/
 		backEnd = new MainBackEndHolder();

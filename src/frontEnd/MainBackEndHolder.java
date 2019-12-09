@@ -51,6 +51,7 @@ import core.userDefinedTask.internals.AggregateTools;
 import core.userDefinedTask.internals.DefaultTools;
 import core.userDefinedTask.internals.ITools;
 import core.userDefinedTask.internals.RemoteRepeatsClientTools;
+import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
 import utilities.Desktop;
@@ -203,6 +204,7 @@ public class MainBackEndHolder {
 		}
 
 		GlobalListenerHookController.of().cleanup();
+		SharedVariablesPubSubManager.get().stop();
 	}
 
 	public void scheduleExit(long delayMs) {
