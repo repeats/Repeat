@@ -2,6 +2,7 @@
 <#import "/fragments/key_chains.ftlh" as key_chains_fragment>
 <#import "/fragments/key_sequences.ftlh" as key_sequences_fragment>
 <#import "/fragments/phrases.ftlh" as phrases_fragment>
+<#import "/fragments/shared_variables.ftlh" as shared_variables>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
 <#import "/fragments/footer.ftlh" as footer_fragment>
 <#import "/fragments/common_js.ftlh" as common_js_fragment>
@@ -31,6 +32,32 @@
                 </div>
                 <div class="modal-footer">
                     <button id="modal-phrase-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-shared-variables" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Enter a variable.</h4>
+                    <h5> Use 'all' on namespace for all variables. Use 'all' on name for all variables in a namespace. </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <label class="form-check-label" for="new-variable-namespace">Namespace:</label>
+                        <input class="form-check-input" name="new-variable-namespace" type="text" id="new-variable-namespace">
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label" for="new-variable-name">Name:</label>
+                        <input class="form-check-input" name="new-variable-name" type="text" id="new-variable-name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-shared-variables-save" type="button" class="btn btn-primary" data-dismiss="modal">Add</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -96,12 +123,22 @@
                         </table>
                     </div>
                 </div>
-                <div class="row">
-                    <span class="label label-default">Phrases</span>
-                    <button id="button-add-phrase" type="button" class="btn btn-default btn-span" <#if activation.config.disablePhrase> disabled </#if>>Add phrase</button>
-                    <table id="table-phrases" class="table">
-                        <@phrases_fragment.fragment/>
-                    </table>
+
+                <div class="row top-buffer">
+                    <div class="col-xs-6">
+                        <span class="label label-default">Phrases</span>
+                        <button id="button-add-phrase" type="button" class="btn btn-default btn-span" <#if activation.config.disablePhrase> disabled </#if>>Add phrase</button>
+                        <table id="table-phrases" class="table">
+                            <@phrases_fragment.fragment/>
+                        </table>
+                    </div>
+                    <div class="col-xs-6">
+                        <span class="label label-default">Shared variables</span>
+                        <button id="button-add-shared-variables" type="button" class="btn btn-default btn-span" <#if activation.config.disableSharedVariable> disabled </#if>>Add shared variable</button>
+                        <table id="table-shared-variables" class="table">
+                            <@shared_variables.fragment/>
+                        </table>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="form-group">

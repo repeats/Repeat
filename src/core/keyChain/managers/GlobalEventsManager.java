@@ -23,6 +23,9 @@ import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
+import core.userDefinedTask.internals.SharedVariablesPubSubManager;
+import core.userDefinedTask.internals.SharedVariablesSubscriber;
+import core.userDefinedTask.internals.SharedVariablesSubscription;
 import globalListener.GlobalListenerFactory;
 import utilities.RandomUtil;
 import utilities.StringUtilities;
@@ -57,6 +60,7 @@ public final class GlobalEventsManager {
 				new KeySequenceManager(config),
 				new PhraseManager(config),
 				new MouseGestureManager(config),
+				new SharedVariablesManager(config),
 				new GlobalKeyActionManager(config));
 	}
 
@@ -87,6 +91,11 @@ public final class GlobalEventsManager {
 				return startExecutingActions(actions);
 			}
 		});
+
+		SharedVariablesPubSubManager.get().addSubscriber(SharedVariablesSubscriber.of(SharedVariablesSubscription.forAll(), e -> {
+			Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(e));
+			startExecutingActions(actions);
+		}));
 
 		taskActivationManager.startListening();
 		keyListener.startListening();

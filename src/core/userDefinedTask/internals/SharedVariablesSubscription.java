@@ -7,6 +7,8 @@ import utilities.json.IJsonable;
 
 public class SharedVariablesSubscription implements IJsonable {
 
+	private static final SharedVariablesSubscription ALL = new SharedVariablesSubscription(null, null, true, true);
+
 	private boolean all;
 	private boolean allForNamespace;
 	private String namespace;
@@ -20,7 +22,7 @@ public class SharedVariablesSubscription implements IJsonable {
 	}
 
 	public static SharedVariablesSubscription forAll() {
-		return new SharedVariablesSubscription(null, null, true, true);
+		return ALL;
 	}
 
 	public static SharedVariablesSubscription forNamespace(String namespace) {

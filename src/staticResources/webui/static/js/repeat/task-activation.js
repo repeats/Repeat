@@ -6,11 +6,14 @@ function registerTaskActivationActions() {
     $("#button-add-key-chain").click(buttonAddKeyChainAction);
     $("#button-add-key-sequence").click(buttonAddKeySequenceAction);
     $("#button-add-phrase").click(buttonAddPhraseAction);
+    $("#button-add-shared-variables").click(buttonAddSharedVariables);
 
     $("#modal-phrase-save").click(buttonModalAddPhraseAction);
+    $("#modal-shared-variables-save").click(buttonModalAddSharedVariablesAction);
     registerRemoveKeyChainAction();
     registerRemoveKeySequenceAction();
     registerRemovePhraseAction();
+    registerRemoveSharedVariableAction();
 }
 
 function registerRemoveKeyChainAction() {
@@ -23,6 +26,10 @@ function registerRemoveKeySequenceAction() {
 
 function registerRemovePhraseAction() {
     registerRemoveActivationAction("table-phrases", "/internals/action/task-activation/phrase/remove");
+}
+
+function registerRemoveSharedVariableAction() {
+    registerRemoveActivationAction("table-shared-variables", "/internals/action/task-activation/shared-variables/remove");
 }
 
 function registerRemoveActivationAction(tableId, endpoint) {
@@ -188,6 +195,32 @@ function buttonModalAddPhraseAction(e) {
         registerRemovePhraseAction();
     }).fail(function(response) {
         alert('Error adding phrase: ' + response.responseText);
+    });
+}
+
+function buttonAddSharedVariables(e) {
+    $("#new-variable-namespace").val("");
+    $("#new-variable-name").val("");
+    $("#modal-shared-variables").modal();
+}
+
+function buttonModalAddSharedVariablesAction(e) {
+    var namespace = $("#new-variable-namespace").val();
+    var name = $("#new-variable-name").val();
+
+    var postData = getTaskActivationParameters();
+    postData.variables = JSON.stringify({
+        vars: [{
+            namespace: namespace,
+            name: name,
+        }],
+    });
+
+    $.post("/internals/action/task-activation/shared-variables/add", JSON.stringify(postData), function(data) {
+        $("#table-shared-variables").html(data);
+        registerRemoveSharedVariableAction();
+    }).fail(function(response) {
+        alert('Error adding shared variables: ' + response.responseText);
     });
 }
 

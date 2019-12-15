@@ -14,16 +14,16 @@ import core.userDefinedTask.UserDefinedAction;
 
 public class AggregateActivationEventManager extends ActivationEventManager {
 
-	private List<KeyStrokeManager> managers;
+	private List<ActivationEventManager> managers;
 
-	public AggregateActivationEventManager(Config config, KeyStrokeManager... managers) {
+	public AggregateActivationEventManager(Config config, ActivationEventManager... managers) {
 		super(config);
 		this.managers = Arrays.asList(managers);
 	}
 
 	@Override
 	public void startListening() {
-		managers.forEach(KeyStrokeManager::startListening);
+		managers.forEach(ActivationEventManager::startListening);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class AggregateActivationEventManager extends ActivationEventManager {
 
 	@Override
 	public void clear() {
-		managers.forEach(KeyStrokeManager::clear);
+		managers.forEach(ActivationEventManager::clear);
 	}
 
 	@Override

@@ -46,6 +46,10 @@ public class ActionTaskActivationAddSharedVariables extends AbstractTaskActivati
 		for (SharedVariableClientRequest request : variableList.getVars()) {
 			String namespace = request.getNamespace();
 			String name = request.getName();
+			if (namespace.isEmpty() || name.isEmpty()) {
+				return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Namespace and name must not be empty.");
+			}
+
 			SharedVariablesActivation sharedVariablesActivation;
 			if (namespace.equals(ALL)) {
 				sharedVariablesActivation = SharedVariablesActivation.of(SharedVariablesSubscription.forAll());
