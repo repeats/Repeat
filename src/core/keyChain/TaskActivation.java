@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.userDefinedTask.internals.SharedVariablesSubscription;
 import utilities.json.IJsonable;
 import utilities.json.JSONUtility;
 
@@ -245,6 +246,17 @@ public class TaskActivation implements IJsonable {
 		}
 		if (!getMouseGestures().isEmpty()) {
 			return "[" + getMouseGestures().iterator().next().toString() + "]";
+		}
+		if (!getVariables().isEmpty()) {
+			SharedVariablesSubscription var = getVariables().iterator().next().getVariable();
+			if (var.isAll()) {
+				return "-(all)-";
+			}
+			if (var.isAllForNamespace()) {
+				return "-(" + var.getNamespace() + ") - (all)-";
+			}
+
+			return "-(" + var.getNamespace() + ") - (" + var.getName() + ")-";
 		}
 
 		return new KeyChain().toString();
