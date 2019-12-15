@@ -8,15 +8,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import core.config.Config;
-import core.keyChain.KeyStroke;
+import core.keyChain.ActivationEvent;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
-public class AggregateKeyStrokeManager extends KeyStrokeManager {
+public class AggregateActivationEventManager extends ActivationEventManager {
 
 	private List<KeyStrokeManager> managers;
 
-	public AggregateKeyStrokeManager(Config config, KeyStrokeManager... managers) {
+	public AggregateActivationEventManager(Config config, KeyStrokeManager... managers) {
 		super(config);
 		this.managers = Arrays.asList(managers);
 	}
@@ -27,13 +27,8 @@ public class AggregateKeyStrokeManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
-		return managers.stream().map(m -> m.onKeyStrokePressed(stroke)).flatMap(Collection::stream).collect(Collectors.toSet());
-	}
-
-	@Override
-	public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
-		return managers.stream().map(m -> m.onKeyStrokeReleased(stroke)).flatMap(Collection::stream).collect(Collectors.toSet());
+	public Set<UserDefinedAction> onActivationEvent(ActivationEvent event) {
+		return managers.stream().map(m -> m.onActivationEvent(event)).flatMap(Collection::stream).collect(Collectors.toSet());
 	}
 
 	@Override

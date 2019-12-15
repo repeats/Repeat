@@ -14,6 +14,7 @@ public class RenderedTaskActivation {
 	private List<String> keySequences;
 	private List<String> phrases;
 	private RenderedMouseGestureActivation mouseGestures;
+	private RenderedSharedVariablesActivation sharedVariables;
 	private RenderedGlobalActivation globalActivation;
 	private Config config;
 
@@ -25,6 +26,7 @@ public class RenderedTaskActivation {
 		output.keySequences = activation.getKeySequences().stream().map(KeySequence::toString).collect(Collectors.toList());
 		output.phrases = activation.getPhrases().stream().map(ActivationPhrase::toString).collect(Collectors.toList());
 		output.mouseGestures = RenderedMouseGestureActivation.fromActivation(activation);
+		output.sharedVariables = RenderedSharedVariablesActivation.fromActivation(activation);
 		output.globalActivation = RenderedGlobalActivation.fromActivation(activation);
 
 		TaskActivationConstructor.Config config = constructor.getConfig();
@@ -33,7 +35,8 @@ public class RenderedTaskActivation {
 							.setDisableKeyChain(config.isDisableKeyChain())
 							.setDisableKeySequence(config.isDisableKeySequence())
 							.setDisablePhrase(config.isDisablePhrase())
-							.setDisableMouseGesture(config.isDisableMouseGesture());
+							.setDisableMouseGesture(config.isDisableMouseGesture())
+							.setDisableSharedVariable(config.isDisableVariablesActivation());
 		return output;
 	}
 
@@ -43,6 +46,7 @@ public class RenderedTaskActivation {
 		private boolean disableKeySequence;
 		private boolean disablePhrase;
 		private boolean disableMouseGesture;
+		private boolean disableSharedVariable;
 
 		public static Config of() {
 			return new Config();
@@ -92,6 +96,15 @@ public class RenderedTaskActivation {
 			this.disableMouseGesture = disableMouseGesture;
 			return this;
 		}
+
+		public boolean isDisableSharedVariable() {
+			return disableSharedVariable;
+		}
+
+		public Config setDisableSharedVariable(boolean disableSharedVariable) {
+			this.disableSharedVariable = disableSharedVariable;
+			return this;
+		}
 	}
 
 	public List<String> getKeyChains() {
@@ -124,6 +137,14 @@ public class RenderedTaskActivation {
 
 	public void setMouseGestures(RenderedMouseGestureActivation mouseGestures) {
 		this.mouseGestures = mouseGestures;
+	}
+
+	public RenderedSharedVariablesActivation getSharedVariables() {
+		return sharedVariables;
+	}
+
+	public void setSharedVariables(RenderedSharedVariablesActivation sharedVariables) {
+		this.sharedVariables = sharedVariables;
 	}
 
 	public RenderedGlobalActivation getGlobalActivation() {

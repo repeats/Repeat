@@ -53,13 +53,13 @@ public class KeyChainInputPanel extends JPanel {
 	private final JList<MouseGesture> mouseGestureList;
 
 	public static void main(String[] args) {
-		TaskActivation ac = TaskActivation.newBuilder().build();
+		TaskActivation.Builder ac = TaskActivation.newBuilder();
 		HashSet<MouseGesture> gs = new HashSet<MouseGesture>();
 		gs.add(MouseGesture.ALPHA);
 		gs.add(MouseGesture.HORIZONTAL);
-		ac.setMouseGestures(gs);
+		ac.withMouseGestures(gs);
 
-		TaskActivation x = getInputKeyChains(null, 1, ac);
+		TaskActivation x = getInputKeyChains(null, 1, ac.build());
 		if (x != null) {
 			for (MouseGesture g : x.getMouseGestures()) {
 				System.out.println(g);

@@ -18,6 +18,7 @@ import org.simplenativehooks.utilities.Function;
 
 import core.config.Config;
 import core.controller.CoreProvider;
+import core.keyChain.ActivationEvent;
 import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
@@ -39,7 +40,7 @@ public final class GlobalEventsManager {
 	 */
 	private Function<Void, Boolean> disablingFunction;
 	private final Map<String, Thread> executions;
-	private final KeyStrokeManager taskActivationManager;
+	private final ActivationEventManager taskActivationManager;
 
 	@SuppressWarnings("unused")
 	private TaskGroup currentTaskGroup;
@@ -51,7 +52,7 @@ public final class GlobalEventsManager {
 		this.executions = new HashMap<>();
 		this.disablingFunction = Function.falseFunction();
 
-		this.taskActivationManager = new AggregateKeyStrokeManager(config,
+		this.taskActivationManager = new AggregateActivationEventManager(config,
 				new KeyChainManager(config),
 				new KeySequenceManager(config),
 				new PhraseManager(config),
@@ -69,7 +70,7 @@ public final class GlobalEventsManager {
 					return true;
 				}
 
-				Set<UserDefinedAction> actions = taskActivationManager.onKeyStrokePressed(stroke);
+				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
 				return startExecutingActions(actions);
 			}
 		});
@@ -82,7 +83,7 @@ public final class GlobalEventsManager {
 					return true;
 				}
 
-				Set<UserDefinedAction> actions = taskActivationManager.onKeyStrokeReleased(stroke);
+				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
 				return startExecutingActions(actions);
 			}
 		});

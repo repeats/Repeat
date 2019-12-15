@@ -15,6 +15,7 @@ public class TaskActivationConstructor {
 	private List<KeySequence> keySequences;
 	private List<ActivationPhrase> phrases;
 	private List<MouseGesture> mouseGestures;
+	private List<SharedVariablesActivation> variables;
 	private GlobalActivation globalActivation;
 
 	private boolean listening;
@@ -31,6 +32,7 @@ public class TaskActivationConstructor {
 		keySequences = new ArrayList<>(reference.getKeySequences());
 		phrases = new ArrayList<>(reference.getPhrases());
 		mouseGestures = new ArrayList<>(reference.getMouseGestures());
+		variables = new ArrayList<>(reference.getVariables());
 		globalActivation = reference.getGlobalActivation();
 
 		this.config = config;
@@ -50,6 +52,7 @@ public class TaskActivationConstructor {
 				.withKeySequence(keySequences)
 				.withPhrases(phrases)
 				.withMouseGestures(mouseGestures)
+				.withVariables(variables)
 				.withGlobalActivation(globalActivation)
 				.build();
 	}
@@ -121,6 +124,14 @@ public class TaskActivationConstructor {
 		mouseGestures.addAll(gestures);
 	}
 
+	public void addSharedVariables(Collection<SharedVariablesActivation> sharedVariablesActivations) {
+		variables.addAll(sharedVariablesActivations);
+	}
+
+	public void removeSharedVariable(int index) {
+		variables.remove(index);
+	}
+
 	public void setGlobalKeyReleased(boolean value) {
 		globalActivation = GlobalActivation.Builder.fromGlobalActivation(globalActivation).onKeyReleased(value).build();
 	}
@@ -138,6 +149,7 @@ public class TaskActivationConstructor {
 		private boolean disableKeySequence;
 		private boolean disablePhrase;
 		private boolean disableMouseGesture;
+		private boolean disableVariablesActivation;
 		private boolean disableGlobalKeyActions;
 
 		private int maxStrokes = Integer.MAX_VALUE;
@@ -152,6 +164,7 @@ public class TaskActivationConstructor {
 			config.disableKeySequence = true;
 			config.disablePhrase = true;
 			config.disableMouseGesture = true;
+			config.disableVariablesActivation = true;
 			config.disableGlobalKeyActions = true;
 			return config;
 		}
@@ -198,6 +211,15 @@ public class TaskActivationConstructor {
 
 		public Config setDisableMouseGesture(boolean disableMouseGesture) {
 			this.disableMouseGesture = disableMouseGesture;
+			return this;
+		}
+
+		public boolean isDisableVariablesActivation() {
+			return disableVariablesActivation;
+		}
+
+		public Config setDisableVariablesActivation(boolean disableVariablesActivation) {
+			this.disableVariablesActivation = disableVariablesActivation;
 			return this;
 		}
 

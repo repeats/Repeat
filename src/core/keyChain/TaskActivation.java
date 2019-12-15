@@ -27,6 +27,7 @@ public class TaskActivation implements IJsonable {
 	private Set<MouseGesture> mouseGestures;
 	private Set<KeySequence> keySequences;
 	private Set<ActivationPhrase> phrases;
+	private Set<SharedVariablesActivation> variables;
 
 	private GlobalActivation globalActivation;
 
@@ -35,13 +36,14 @@ public class TaskActivation implements IJsonable {
 		mouseGestures = builder.mouseGestures;
 		keySequences = builder.keySequences;
 		phrases = builder.phrases;
+		variables = builder.variables;
 		globalActivation = builder.globalActivation;
 	}
 
 	/**
 	 * @param hotkeys the hotkey set to set
 	 */
-	public final void setHotKeys(Set<KeyChain> hotkeys) {
+	private final void setHotKeys(Set<KeyChain> hotkeys) {
 		this.hotkeys = new HashSet<>();
 		this.hotkeys.addAll(hotkeys);
 	}
@@ -71,7 +73,7 @@ public class TaskActivation implements IJsonable {
 	/**
 	 * @param mouseGestures set of mouse gestures to set.
 	 */
-	public final void setMouseGestures(Set<MouseGesture> mouseGestures) {
+	private final void setMouseGestures(Set<MouseGesture> mouseGestures) {
 		this.mouseGestures = new HashSet<>();
 		this.mouseGestures.addAll(mouseGestures);
 	}
@@ -102,7 +104,7 @@ public class TaskActivation implements IJsonable {
 	/**
 	 * @param keySequences set of key sequences to set.
 	 */
-	public final void setKeySequences(Set<KeySequence> keySequences) {
+	private final void setKeySequences(Set<KeySequence> keySequences) {
 		this.keySequences = new HashSet<>();
 		this.keySequences.addAll(keySequences);
 	}
@@ -133,7 +135,7 @@ public class TaskActivation implements IJsonable {
 	/**
 	 * @param phrases set of key phrases to set.
 	 */
-	public void setPhrases(Set<ActivationPhrase> phrases) {
+	private void setPhrases(Set<ActivationPhrase> phrases) {
 		this.phrases.clear();
 		this.phrases.addAll(phrases);
 	}
@@ -162,6 +164,37 @@ public class TaskActivation implements IJsonable {
 	}
 
 	/**
+	 * @param phrases set of key phrases to set.
+	 */
+	private void setVariables(Set<SharedVariablesActivation> variables) {
+		this.variables.clear();
+		this.variables.addAll(variables);
+	}
+
+	/**
+	 * @return set of variables associated with this activation entity.
+	 */
+	public final Set<SharedVariablesActivation> getVariables() {
+		if (variables == null) {
+			return new HashSet<>();
+		}
+
+		return variables;
+	}
+
+	/**
+	 * @return an arbitrary variable from the set of variables, or null if the set is empty.
+	 */
+	public final SharedVariablesActivation getFirstVariable() {
+		Set<SharedVariablesActivation> variables = getVariables();
+		if (variables.isEmpty()) {
+			return null;
+		} else {
+			return variables.iterator().next();
+		}
+	}
+
+	/**
 	 * @return the global activation configuration for this activation.
 	 */
 	public final GlobalActivation getGlobalActivation() {
@@ -171,7 +204,7 @@ public class TaskActivation implements IJsonable {
 	/**
 	 * @param globalActivation configuration to set.
 	 */
-	public final void setGlobalActivation(GlobalActivation globalActivation) {
+	private final void setGlobalActivation(GlobalActivation globalActivation) {
 		this.globalActivation = globalActivation;
 	}
 
@@ -185,6 +218,7 @@ public class TaskActivation implements IJsonable {
 		setMouseGestures(other.getMouseGestures());
 		setKeySequences(other.getKeySequences());
 		setPhrases(other.getPhrases());
+		setVariables(other.getVariables());
 		setGlobalActivation(other.getGlobalActivation());
 	}
 
@@ -223,6 +257,7 @@ public class TaskActivation implements IJsonable {
 				JsonNodeFactories.field("key_sequence", JsonNodeFactories.array(JSONUtility.listToJson(getKeySequences()))),
 				JsonNodeFactories.field("mouse_gesture", JsonNodeFactories.array(JSONUtility.listToJson(getMouseGestures()))),
 				JsonNodeFactories.field("phrases", JsonNodeFactories.array(JSONUtility.listToJson(getPhrases()))),
+				JsonNodeFactories.field("variables", JsonNodeFactories.array(JSONUtility.listToJson(getVariables()))),
 				JsonNodeFactories.field("global_activation", globalActivation.jsonize()));
 	}
 
@@ -237,7 +272,8 @@ public class TaskActivation implements IJsonable {
 			List<JsonNode> hotkeysNode = node.getArrayNode("hotkey");
 			List<JsonNode> keySequenceNodes = node.isArrayNode("key_sequence") ? node.getArrayNode("key_sequence") : new ArrayList<>();
 			List<JsonNode> mouseGestureNode = node.getArrayNode("mouse_gesture");
-			List<JsonNode> phrasesNode = node.isArrayNode("phrases") ? node.getArrayNode("phrases") : new ArrayList<>();
+			List<JsonNode> phrasesNodes = node.isArrayNode("phrases") ? node.getArrayNode("phrases") : new ArrayList<>();
+			List<JsonNode> variablesNodes = node.getArrayNode("variables");
 
 			Set<KeyChain> keyChains = new HashSet<>();
 			for (JsonNode hotkeyNode : hotkeysNode) {
@@ -262,12 +298,22 @@ public class TaskActivation implements IJsonable {
 			Set<MouseGesture> gestures = MouseGesture.parseJSON(mouseGestureNode);
 
 			Set<ActivationPhrase> phrases = new HashSet<>();
-			for (JsonNode phraseNode : phrasesNode) {
+			for (JsonNode phraseNode : phrasesNodes) {
 				ActivationPhrase phrase = ActivationPhrase.parseJSON(phraseNode);
 				if (phrase == null) {
 					LOGGER.log(Level.WARNING, "Cannot parse phrase " + phraseNode);
 				} else {
 					phrases.add(phrase);
+				}
+			}
+
+			Set<SharedVariablesActivation> variables = new HashSet<>();
+			for (JsonNode variableNode : variablesNodes) {
+				SharedVariablesActivation variable = SharedVariablesActivation.parseJSON(variableNode);
+				if (variable == null) {
+					LOGGER.log(Level.WARNING, "Cannot parse variable node " + variableNode);
+				} else {
+					variables.add(variable);
 				}
 			}
 
@@ -283,6 +329,7 @@ public class TaskActivation implements IJsonable {
 										.withKeySequence(keySequences)
 										.withMouseGestures(gestures)
 										.withPhrases(phrases)
+										.withVariables(variables)
 										.withGlobalActivation(globalActivation)
 										.build();
 			return output;
@@ -297,32 +344,6 @@ public class TaskActivation implements IJsonable {
 	}
 
 	/**
-	 * Convenient constructor to build a one key chain one hot key activation.
-	 *
-	 * @param keys
-	 *            list of keys in the key chain.
-	 * @return the built task activation.
-	 */
-	public static TaskActivation combination(int... keys) {
-		List<Integer> ks = new ArrayList<>(keys.length);
-		for (int key : keys) {
-			ks.add(key);
-		}
-		return newBuilder().addHotKeys(new KeyChain(ks)).build();
-	}
-
-	/**
-	 * Convenient constructor to build a one mouse gesture activation.
-	 *
-	 * @param gesture
-	 *            mouse gesture.
-	 * @return the built task activation.
-	 */
-	public static TaskActivation gesture(MouseGesture gesture) {
-		return newBuilder().addMouseGesture(gesture).build();
-	}
-
-	/**
 	 * Builder for enclosing class.
 	 */
 	public static class Builder {
@@ -331,6 +352,7 @@ public class TaskActivation implements IJsonable {
 		private Set<MouseGesture> mouseGestures;
 		private Set<KeySequence> keySequences;
 		private Set<ActivationPhrase> phrases;
+		private Set<SharedVariablesActivation> variables;
 		private GlobalActivation globalActivation;
 
 		private Builder() {
@@ -338,6 +360,7 @@ public class TaskActivation implements IJsonable {
 			mouseGestures = new HashSet<>();
 			keySequences = new HashSet<>();
 			phrases = new HashSet<>();
+			variables = new HashSet<>();
 			globalActivation = GlobalActivation.newBuilder().build();
 		}
 
@@ -406,6 +429,23 @@ public class TaskActivation implements IJsonable {
 		public Builder withPhrases(Collection<ActivationPhrase> phrases) {
 			this.phrases.clear();
 			this.phrases.addAll(phrases);
+			return this;
+		}
+
+		public Builder addVariables(SharedVariablesActivation... variables) {
+			this.variables.addAll(Arrays.asList(variables));
+			return this;
+		}
+
+		public Builder withVariable(SharedVariablesActivation variable) {
+			this.variables.clear();
+			this.variables.add(variable);
+			return this;
+		}
+
+		public Builder withVariables(Collection<SharedVariablesActivation> variables) {
+			this.variables.clear();
+			this.variables.addAll(variables);
 			return this;
 		}
 

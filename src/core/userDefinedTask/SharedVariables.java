@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import core.userDefinedTask.internals.SharedVariablesEvent;
 import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import core.userDefinedTask.internals.SharedVariablesSubscriber;
+import core.userDefinedTask.internals.SharedVariablesSubscription;
 
 /**
  * Shared variables used to pass values between tasks. This only supports string values since the tasks can be
@@ -141,7 +142,7 @@ public class SharedVariables {
 	 */
 	public static String waitVar(String namespace, String variable, long timeoutMs) {
 		Semaphore s = new Semaphore(0);
-		SharedVariablesPubSubManager.get().addSubscriber(SharedVariablesSubscriber.forVar(namespace, variable, e -> s.release()));
+		SharedVariablesPubSubManager.get().addSubscriber(SharedVariablesSubscriber.of(SharedVariablesSubscription.forVar(namespace, variable), e -> s.release()));
 		try {
 			if (!s.tryAcquire(timeoutMs, TimeUnit.MILLISECONDS)) {
 				return null;
