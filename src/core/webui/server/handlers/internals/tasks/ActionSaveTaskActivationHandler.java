@@ -53,14 +53,17 @@ public class ActionSaveTaskActivationHandler extends AbstractTaskActivationConst
 
 		if (taskString.equals("record")) {
 			backEndHolder.getConfig().setRECORD(hotKey);
+			backEndHolder.reconfigureSwitchRecord();
 			return emptySuccessResponse(exchange);
 		}
 		if (taskString.equals("replay")) {
 			backEndHolder.getConfig().setREPLAY(hotKey);
+			backEndHolder.reconfigureSwitchReplay();
 			return emptySuccessResponse(exchange);
 		}
 		if (taskString.equals("runCompiled")) {
 			backEndHolder.getConfig().setCOMPILED_REPLAY(hotKey);
+			backEndHolder.reconfigureSwitchCompiledReplay();
 			return emptySuccessResponse(exchange);
 		}
 		if (taskString.equals("mouseGestureActivation")) {

@@ -242,8 +242,20 @@ public class MainBackEndHolder {
 	/*************************************************************************************************************/
 	/****************************************Main hotkeys*********************************************************/
 	protected void configureMainHotkeys() {
+		reconfigureSwitchRecord();
+		reconfigureSwitchReplay();
+		reconfigureSwitchCompiledReplay();
+	}
+
+	public void reconfigureSwitchRecord() {
 		keysManager.reRegisterTask(switchRecord, TaskActivation.newBuilder().withHotKey(config.getRECORD()).build());
+	}
+
+	public void reconfigureSwitchReplay() {
 		keysManager.reRegisterTask(switchReplay, TaskActivation.newBuilder().withHotKey(config.getREPLAY()).build());
+	}
+
+	public void reconfigureSwitchCompiledReplay() {
 		keysManager.reRegisterTask(switchReplayCompiled, TaskActivation.newBuilder().withHotKey(config.getCOMPILED_REPLAY()).build());
 	}
 
