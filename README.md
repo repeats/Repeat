@@ -128,6 +128,11 @@ You can achieve the same thing by just restarting the application. Python module
 
 Libraries used
 ==============
-1. ~~jnativehook Global Hooks library at https://github.com/kwhat/jnativehook~~ (No longer using JNativeHook since [v5.2](https://github.com/repeats/Repeat/releases/tag/v5.2))
-2. Argo JSON library at http://argo.sourceforge.net/
-3. Jama - A Java matrix package at http://math.nist.gov/javanumerics/jama/
+1. [Simple Native Hooks](https://github.com/repeats/SimpleNativeHooks)
+2. [Argo JSON](http://argo.sourceforge.net)
+3. [Jama - A Java matrix package](https://math.nist.gov/javanumerics/jama/)
+4. [Apache HttpComponents Core](https://hc.apache.org/httpcomponents-core-ga/index.html)
+5. [Apache HttpClient](https://hc.apache.org/httpcomponents-client-ga/index.html)
+6. [FreeMarker Java Template Engine](https://freemarker.apache.org/)
+7. [Light Bootstrap Dashboard](https://creative-tim.com/product/light-bootstrap-dashboard)
+8. [CodeMirror: a versatile text editor in Javascript](http://codemirror.net/)

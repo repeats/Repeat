@@ -50,7 +50,6 @@
                         <h4 class="title">Powered by:</h4>
                          <ul>
                             <li><a href="https://github.com/repeats/SimpleNativeHooks">Simple Native Hooks</a></li>
-                            <li><strike><a href="https://github.com/kwhat/jnativehook">jnativehook Global Hooks</a></strike> (Will be removed compeletely in within next few releases.)</li>
                             <li><a href="http://argo.sourceforge.net">Argo JSON</a></li>
                             <li><a href="https://math.nist.gov/javanumerics/jama/">Jama - A Java matrix package</a></li>
                             <li><a href="https://hc.apache.org/httpcomponents-core-ga/index.html">Apache HttpComponents Core</a></li>
