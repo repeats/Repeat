@@ -10,7 +10,7 @@ Demo
 Note that the following gifs are at 1x speedup.
 ![Word expansion demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_key_expansion.gif)
 
-![Recording & playback]((https://raw.githubusercontent.com/repeats/Repeat/master/demo_record_replay.gif))
+![Recording & playback](https://raw.githubusercontent.com/repeats/Repeat/master/demo_record_replay.gif)
 
 [Task creation - All caps](https://youtu.be/wICRVQNVNSM)
 
