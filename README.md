@@ -7,7 +7,10 @@ Tired of clicking the same spot on your screen again and again? Got bored of typ
 Demo
 ====
 
-[Recording & playback](https://youtu.be/yXdzyj-XW30)
+Note that the following gifs are at 1x speedup.
+![Word expansion demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_key_expansion.gif)
+
+![Recording & playback]((https://raw.githubusercontent.com/repeats/Repeat/master/demo_record_replay.gif))
 
 [Task creation - All caps](https://youtu.be/wICRVQNVNSM)
 
@@ -25,7 +28,7 @@ Features
 =======
 1. Record and replay computer activities.
 2. Store recorded tasks and replay them later.
-3. Write your own task **in your favorite text editor** so you have more control over the computer.
+3. Write your own task **in your favorite text editor** using Python or Java so you have more control over the computer.
 4. Assign multiple arbitrary hotkey combinations to activate a stored task.
 5. Assign multiple mouse gestures to activate a stored task.
 6. Manage your Repeat tasks (either recorded or written).
