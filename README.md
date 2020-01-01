@@ -34,7 +34,8 @@ Features
 3. Write your own task **in your favorite text editor** using Python or Java so you have more control over the computer.
 4. Assign multiple arbitrary hotkey combinations to activate a stored task.
 5. Assign multiple mouse gestures to activate a stored task.
-6. Manage your Repeat tasks (either recorded or written).
+6. Compile and run tasks on a group of remote machines.
+7. Manage your Repeat tasks (either recorded or written).
 
 Disclaimer
 ==========
