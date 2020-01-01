@@ -14,12 +14,14 @@ Note that the following gifs are at 1x speedup.
 
 ![Mouse gesture activation](https://raw.githubusercontent.com/repeats/Repeat/master/demo_gesture.gif)
 
+![Multi clipboard](https://raw.githubusercontent.com/repeats/Repeat/master/demo_multi_clipboard.gif)
+
 
 [Task creation - All caps](https://youtu.be/wICRVQNVNSM)
 
 [Task creation - Fixing a typo](https://youtu.be/oCCyYbj198U)
 
-[Clipboard with history](https://youtu.be/dqNckwIPjCE)
+[Task creation - Clipboard with history](https://youtu.be/dqNckwIPjCE)
 
 [Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
 
