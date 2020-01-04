@@ -2,7 +2,7 @@
 Repeat
 ======
 
-Tired of clicking the same spot on your screen again and again? Got bored of typing the same phrase over and over again during your day? Repeat yourself with some intelligence.
+Full-fledged mouse/keyboard record/replay and automation macro creation using modern programming languages, and more advanced automation features.
 
 Demo
 ====
