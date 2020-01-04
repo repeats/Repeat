@@ -50,6 +50,8 @@ Requirements
 
 JDK 8.0 or above. Both Oracle JDK and OpenJDK are OK.
 
+If you wish to write/run tasks in Python, then Python3 is required.
+
 On Windows, no special permission required.
 
 On Linux, X11 window system. This would not work on Wayland window system.
