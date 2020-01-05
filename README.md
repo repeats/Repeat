@@ -2,7 +2,7 @@
 Repeat
 ======
 
-Full-fledged mouse/keyboard record/replay and automation macro creation using modern programming languages, and more advanced automation features. Available across three major OSes: Windows, OSX, and Linux.
+Full-fledged mouse/keyboard record/replay and sophisticated automation macros/hotkeys creation using modern programming languages, and more advanced automation features. Available across three major OSes: Windows, OSX, and Linux.
 
 [![SourceForge](https://sourceforge.net/sflogo.php?type=11&group_id=3172773)](https://sourceforge.net/projects/repeat1/)
 ========================================================================================================================
