@@ -2,7 +2,10 @@
 Repeat
 ======
 
-Tired of clicking the same spot on your screen again and again? Got bored of typing the same phrase over and over again during your day? Repeat yourself with some intelligence.
+Full-fledged mouse/keyboard record/replay and sophisticated automation macros/hotkeys creation using modern programming languages, and more advanced automation features. Available across three major OSes: Windows, OSX, and Linux.
+
+[![SourceForge](https://sourceforge.net/sflogo.php?type=11&group_id=3172773)](https://sourceforge.net/projects/repeat1/)
+========================================================================================================================
 
 Demo
 ====
@@ -44,9 +47,14 @@ Disclaimer
 
 Requirements
 ============
+
+JDK 8.0 or above. Both Oracle JDK and OpenJDK are OK.
+
+If you wish to write/run tasks in Python, then Python3 is required.
+
 On Windows, no special permission required.
 
-On Linux, sudo password will be required for the native hook to work. This will only launch the native hook program under sudo, which will ask for password in clear text. The program itself runs as a regular user.
+On Linux, X11 window system. This would not work on Wayland window system.
 
 On OSX, accessibility permission is required for the native hook to work. Enable this in System Preference --> Security & Privacy --> Accessibilty --> Privacy.
 
@@ -66,8 +74,8 @@ Note that since **Java 9**, the jar file must be launched from a JDK (as opposed
 FAQ
 ===
 
-## What is the difference between this and [AutoHotkey](https://autohotkey.com/)?
-1. This runs on any platform that supports Java and is non [headless](https://en.wikipedia.org/wiki/Headless_software). AutoHotkey is written for Windows only. Repeat works on Linux, Windows, and OSX.
+## What is the difference between this and [AutoHotkey](https://autohotkey.com/) or [AutoKey](https://github.com/autokey/autokey)?
+1. This runs on any platform that supports Java and is non [headless](https://en.wikipedia.org/wiki/Headless_software). AutoHotkey is written for Windows only, and AutoKey is only for Linux. Repeat works on Linux, Windows, and OSX. **The written macro can be re-used cross platforms.**
 2. The only limit to your hotkey power is your knowledge of the language you write your tasks in (e.g. Java, Python or C#). You don't have to learn a new meta language provided by AutoHotkey. This allows you to leverage your expertise in the language chosen and/or the immense support from the internet.
 
 ## Why is this only available in non headless system?
