@@ -87,52 +87,10 @@ C# module is disabled if you are on a non Windows OS. Nothing from C# module wil
 ## Why can't this be a web service? It's a lot of effort downloading the JAR and run it.
 This application listens on your mouse and keyboard events as well as allowing you to simulate mouse/keyboard events. If I could do such thing from a web browser, some hackers must have got your personal information, passwords, bank account number by now.
 
-## Why is there no support for JavaScript?
-It's coming. I will get it done when I have time.
+Getting started and advanced features
+=====================================
 
-Common usage questions
-===============
-
-## How do I change the global hotkeys (e.g. run task, start recording, stop recording)?
-You can change global hotkeys: In menu Settings --> Hotkey
-
-## How do I start recording?
-Record: Press record (default hotkey F9) to start recording and stop at any time by pressing the same button again (or press default recording button F9)
-
-## How do I replay what I just recorded?
-Replay: Press replay (default hotkey F11) to start replaying and stop at any time by pressing the same button again (or press default replay button F11)
-
-## How do I compile my code?
-Compile your code and play it: the buttons are right under the record and replay section. (F12 for play/stop compiled code)
-
-## What do the buttons on the right hand side mean?
-Manage your tasks: using the buttons on the right hand side of the windows to Add, Override, Remove or Reorganize (move up/down, change group) your tasks.
-
-## How do I assign a hotkey for my task?
-Change hotkey for your task: just left click on the hotkey column of your task's row in the table and input the new hotkey
-
-## My task is shown as enabled. How do I disable it?
-Enabling/disabling task: click on the column in the table that shows enabled/disabled.
-
-## I accidentally activated an infinite loop in my program with a hotkey. How do I stop the program?
-By default, pressing escape will interrupt the running tasks. However, you can disable this feature in Setting --> Halt tasks by escape.
-
-## There's a button with text "default". What is it?
-It's the button to manage task group.
-
-## How do I manage my task groups?
-Manage task group: click on the button next to Task group on the top right corner at any time to manage the task group.
-
-## My Java program won't compile even if I use the default template. What's wrong?
-Change Java class path: Settings --> Set compiler path. Choose the directory where your JDK is installed (not JRE). For example, mine is at C:\Program Files\Java\jdk1.8.0_25
-More explanation: Usually the jar will get started by JRE. Obviously you can't compile anything with JRE.
-
-## My python code won't load even if I use default template. What's wrong?
-Similar to Java, you need to identify where the python interpreter is at. First switch to Python using Tool --> Compiling Language --> Python. Then configure python interpreter path using Settings --> Set compiler path. For example in my Linux machine my python interpreter is at /usr/bin/python
-
-## Are you serious? I still can't load my python code even after I've configured my python interpreter.
-You need to start Python submodule first. Go to Tool --> Native modules and click on the python IPC line, then click on the play button to start it.
-You can achieve the same thing by just restarting the application. Python module will be automatically started if you've configured python interpreter correctly.
+Check out the [wiki page](https://github.com/repeats/Repeat/wiki).
 
 Libraries used
 ==============
