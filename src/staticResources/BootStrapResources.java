@@ -31,21 +31,21 @@ public class BootStrapResources {
 	public static final Image TRAY_IMAGE;
 
 	static {
-		TRAY_IMAGE = getImage("/staticResources/Repeat.jpg");
+		TRAY_IMAGE = getImage("/staticContent/Repeat.jpg");
 
 		/*********************************************************************************/
 		LANGUAGE_API = new HashMap<>();
-		LANGUAGE_API.put(Language.JAVA, getFile("/core/languageHandler/API/JavaAPI.txt"));
-		LANGUAGE_API.put(Language.PYTHON, getFile("/core/languageHandler/API/PythonAPI.txt"));
-		LANGUAGE_API.put(Language.CSHARP, getFile("/core/languageHandler/API/CSharpAPI.txt"));
-		LANGUAGE_API.put(Language.SCALA, getFile("/core/languageHandler/API/ScalaAPI.txt"));
+		LANGUAGE_API.put(Language.JAVA, getFile("/staticContent/core/languageHandler/API/JavaAPI.txt"));
+		LANGUAGE_API.put(Language.PYTHON, getFile("/staticContent/core/languageHandler/API/PythonAPI.txt"));
+		LANGUAGE_API.put(Language.CSHARP, getFile("/staticContent/core/languageHandler/API/CSharpAPI.txt"));
+		LANGUAGE_API.put(Language.SCALA, getFile("/staticContent/core/languageHandler/API/ScalaAPI.txt"));
 
 		/*********************************************************************************/
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.JAVA, getFile("/natives/java/TemplateRepeat"));
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON, getFile("/natives/python/template_repeat.py"));
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/natives/csharp/source/TemplateRepeat.cs"));
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.SCALA, getFile("/natives/scala/TemplateRepeat.scala"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.JAVA, getFile("/staticContent/natives/java/TemplateRepeat"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON, getFile("/staticContent/natives/python/template_repeat.py"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/staticContent/natives/csharp/source/TemplateRepeat.cs"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.SCALA, getFile("/staticContent/natives/scala/TemplateRepeat.scala"));
 
 		/*********************************************************************************/
 		NATIVE_BOOTSTRAP_RESOURCES = new HashMap<>();

@@ -12,9 +12,9 @@ public class MouseGestureModelResources {
 
 	private static final Logger LOGGER = Logger.getLogger(MouseGestureModelResources.class.getName());
 
-	private static final String INTERCEPTS_FILE = "/mouseGestureModel/intercepts";
-	private static final String COEFFICIENTS_FILE = "/mouseGestureModel/coefficients";
-	private static final String LABELS_FILE = "/mouseGestureModel/labels";
+	private static final String INTERCEPTS_FILE = "/staticContent/mouseGestureModel/intercepts";
+	private static final String COEFFICIENTS_FILE = "/staticContent/mouseGestureModel/coefficients";
+	private static final String LABELS_FILE = "/staticContent/mouseGestureModel/labels";
 
 	/**
 	 * Load the intercepts from file. Each line is an intercept in IEEE 754 single precision form.
