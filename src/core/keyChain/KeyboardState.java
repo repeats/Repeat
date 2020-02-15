@@ -1,6 +1,6 @@
 package core.keyChain;
 
-import com.sun.glass.events.KeyEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * The state of lock keys on the keyboard (numslock, capslock, scrolllock).

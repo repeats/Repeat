@@ -1,11 +1,10 @@
 package core.config;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.glass.events.KeyEvent;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
