@@ -9,6 +9,11 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
+import core.ipc.IPCServiceManager;
+import core.ipc.IPCServiceName;
+import core.ipc.repeatClient.PythonIPCClientService;
+import core.languageHandler.Language;
+import core.languageHandler.compiler.PythonRemoteCompiler;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.webcommon.HttpServerUtilities;
 
@@ -36,6 +41,12 @@ public class MenuSetCompilerPathActionHandler extends AbstractSingleMethodHttpHa
 
 		if (!backEndHolder.getCompiler().setPath(new File(path))) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Cannot set path '" + path + "' for current compiler.");
+		}
+
+		Language language = backEndHolder.getSelectedLanguage();
+		if (language == Language.PYTHON) {
+			File pythonExecutable = ((PythonRemoteCompiler) (backEndHolder.getConfig().getCompilerFactory()).getNativeCompiler(Language.PYTHON)).getPath();
+			((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(pythonExecutable);
 		}
 
 		return HttpServerUtilities.prepareHttpResponse(exchange, 200, "");
