@@ -5,15 +5,8 @@ import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
-import core.ipc.IPCServiceManager;
-import core.ipc.IPCServiceName;
-import core.ipc.repeatClient.PythonIPCClientService;
 import core.languageHandler.Language;
 import utilities.FileUtility;
 
@@ -93,23 +86,5 @@ public class PythonRemoteCompiler extends AbstractRemoteNativeCompiler {
 		}
 
 		return true;
-	}
-
-	/*******************************************************************/
-	/************************Swing components***************************/
-	/*******************************************************************/
-	public void promptChangePath(JFrame parent) {
-		JFileChooser chooser = new JFileChooser(getPath());
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(parent, "Set Python interpreter") == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = chooser.getSelectedFile();
-			if (!selectedFile.canExecute()) {
-				JOptionPane.showMessageDialog(parent,
-						"Chosen file " + selectedFile.getName() + " is not executable", "Invalid choice", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			setPath(selectedFile);
-			((PythonIPCClientService)IPCServiceManager.getIPCService(IPCServiceName.PYTHON)).setExecutingProgram(selectedFile);
-		}
 	}
 }
