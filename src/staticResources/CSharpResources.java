@@ -25,7 +25,7 @@ public class CSharpResources extends AbstractNativeLanguageBootstrapResource {
 
 	@Override
 	protected String getRelativeSourcePath() {
-		return "natives/csharp/bin";
+		return "staticContent/natives/csharp/bin";
 	}
 
 	@Override

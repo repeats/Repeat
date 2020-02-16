@@ -14,7 +14,7 @@ public class ScalaResources extends AbstractNativeLanguageBootstrapResource {
 
 	@Override
 	protected String getRelativeSourcePath() {
-		return "natives/scala";
+		return "staticContent/natives/scala";
 	}
 
 	@Override

@@ -78,7 +78,7 @@ public class PythonResources extends AbstractNativeLanguageBootstrapResource {
 
 	@Override
 	protected String getRelativeSourcePath() {
-		return "natives/python";
+		return "staticContent/natives/python";
 	}
 
 	@Override
