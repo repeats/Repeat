@@ -12,6 +12,7 @@ import core.keyChain.KeyStroke;
 import core.keyChain.MouseGesture;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskInvoker;
+import core.userDefinedTask.internals.SharedVariablesSubscription;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.Point;
@@ -24,14 +25,12 @@ import utilities.swing.SwingUtil.DialogUtil;
 public class CustomAction extends UserDefinedAction {
     public void action(final Core c) throws InterruptedException {
         SharedVariables v = new SharedVariables(getNamespace());
-        KeyboardCore k = c.keyBoard();
-        MouseCore m = c.mouse();
-        TaskInvoker ti = this.taskInvoker; // To execute other tasks dynamically.
-        TaskActivation activation = this.invoker;
-        KeyChain invokingKeyChain = activation.getFirstHotkey();
-        KeySequence invokingKeySequence = activation.getFirstKeySequence();
+        KeyboardCore k = c.keyBoard(); MouseCore m = c.mouse();
+        TaskActivation activation = this.invoker; KeyChain invokingKeyChain = activation.getFirstHotkey(); KeySequence invokingKeySequence = activation.getFirstKeySequence(); SharedVariablesSubscription invokingVariable = activation.getFirstVariable() == null ? null : activation.getFirstVariable().getVariable();
         List<KeyStroke> kc = invokingKeyChain == null ? new ArrayList<KeyStroke>() : invokingKeyChain.getKeyStrokes();
         List<KeyStroke> ks = invokingKeySequence == null ? new ArrayList<KeyStroke>() : invokingKeySequence.getKeyStrokes();
+        String vns =  invokingVariable == null ? "" : invokingVariable.getNamespace();
+        String vn =  invokingVariable == null ? "" : invokingVariable.getName();
         MouseGesture mg = activation.getFirstMouseGesture();
         ActivationPhrase p = activation.getFirsPhrase();
         /*Begin generated code*/

@@ -14,6 +14,7 @@ import core.keyChain.SharedVariablesActivation;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 import core.userDefinedTask.internals.SharedVariablesEvent;
+import core.userDefinedTask.internals.SharedVariablesSubscription;
 
 public class SharedVariablesManager extends ActivationEventManager {
 
@@ -45,6 +46,7 @@ public class SharedVariablesManager extends ActivationEventManager {
 		for (UserDefinedAction action : registeredActions) {
 			for (SharedVariablesActivation variableActivation : action.getActivation().getVariables()) {
 				if (variableActivation.getVariable().includes(variable)) {
+					action.setInvoker(TaskActivation.newBuilder().withVariable(SharedVariablesActivation.of(SharedVariablesSubscription.forVar(variable.getNamespace(),  variable.getName()))).build());
 					output.add(action);
 				}
 			}

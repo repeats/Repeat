@@ -15,6 +15,8 @@ def action(controller, invoker):
 
     hk = [] if len(invoker['hotkey']) == 0 else invoker['hotkey'][0]
     ks = [] if len(invoker['key_sequence']) == 0 else invoker['key_sequence'][0]
+    var = (invoker['variables'][0]['variable']['namespace'], invoker['variables'][0]['variable']['name']) if len(invoker['variables']) > 0 else ('', '')
     mg = None if len(invoker['mouse_gesture']) == 0 else invoker['mouse_gesture'][0]['name']
     phrase = None if len(invoker['phrases']) == 0 else invoker['phrases'][0]
     # Begin generated code
+
