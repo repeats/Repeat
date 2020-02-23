@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 import org.jnativehook.NativeHookException;
 import org.simplenativehooks.events.NativeKeyEvent;
@@ -238,11 +237,10 @@ public final class GlobalEventsManager {
 				return '\'' + d.getName() + '\'';
 			}}.map(collisions), ", ");
 
-		JOptionPane.showMessageDialog(parent,
+		LOGGER.warning(
 				"Newly registered keychains "
 				+ "will collide with previously registered task(s) " + taskNames + "\n"
-				+ "You cannot assign this key chain unless you remove the conflicting key chain...",
-				"Key chain collision!", JOptionPane.WARNING_MESSAGE);
+				+ "You cannot assign this key chain unless you remove the conflicting key chain...");
 	}
 
 	/**
