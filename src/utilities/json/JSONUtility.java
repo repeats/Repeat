@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import argo.format.JsonFormatter;
 import argo.format.PrettyJsonFormatter;
@@ -83,12 +84,7 @@ public class JSONUtility {
 	 * @return list of JSON objects converted from the input list. Underlying implementation is currently using LinkedList
 	 */
 	public static List<JsonNode> listToJson(Collection<? extends IJsonable> collection) {
-		List<JsonNode> jsonList = new LinkedList<>();
-		for (IJsonable item : collection) {
-			jsonList.add(item.jsonize());
-		}
-
-		return jsonList;
+		return collection.stream().map(IJsonable::jsonize).collect(Collectors.toList());
 	}
 
 	/**
