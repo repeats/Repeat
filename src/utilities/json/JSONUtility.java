@@ -108,12 +108,7 @@ public class JSONUtility {
 	 * @return the corresponding JSON object.
 	 */
 	public static JsonNode stringMapToJson(Map<String, String> map) {
-		List<JsonField> fields = new ArrayList<>();
-		for (Entry<String, String> entry : map.entrySet()) {
-			fields.add(JsonNodeFactories.field(entry.getKey(), JsonNodeFactories.string(entry.getValue())));
-		}
-
-		return JsonNodeFactories.object(fields);
+		return JsonNodeFactories.object(map.entrySet().stream().map(x -> JsonNodeFactories.field(x.getKey(), JsonNodeFactories.string(x.getValue()))).collect(Collectors.toList()));
 	}
 
 	/**
