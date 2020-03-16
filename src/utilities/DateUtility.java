@@ -12,6 +12,12 @@ public class DateUtility {
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy H:m:s");
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
+	public static Calendar calendarFromMillis(long millisSinceEpoch) {
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(millisSinceEpoch);
+		return c;
+	}
+
 	public static String calendarToTimeString(Calendar calendar) {
 		if (calendar == null) {
 			return null;

@@ -201,7 +201,7 @@ public class Jsonizer {
 			int value = Integer.parseInt(node.getNumberValue());
 			return value;
 		} else if (clazz == Long.TYPE || clazz == Long.class) {
-			int value = Integer.parseInt(node.getNumberValue());
+			long value = Long.parseLong(node.getNumberValue());
 			return (long) value;
 		} else if (clazz == Float.TYPE || clazz == Float.class) {
 			float value = Float.parseFloat(node.getNumberValue());

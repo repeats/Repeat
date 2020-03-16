@@ -83,8 +83,7 @@ public class TaskActivationPageHandler extends AbstractUIHttpHandler {
 		constructor.clearStrokes();
 
 		Map<String, Object> data = new HashMap<>();
-		data.put("groupIndex", taskGroupId);
-		data.put("taskIndex", taskString);
+		data.put("taskId", taskString);
 		data.put("activation", RenderedTaskActivation.fromActivation(constructor));
 		data.put("taskActivationConstructorId", id);
 

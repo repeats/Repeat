@@ -102,7 +102,7 @@
                               </a>
                               <ul class="dropdown-menu">
                                 <li><a href="/api">API</a></li>
-                                <li><a href="/about">About</a></li>
+                                <li><a href="/about>"About</a></li>
                               </ul>
                         </li>
                         <li class="separator hidden-lg"></li>
@@ -161,9 +161,9 @@
                     <div class="col-xs-6">
                         <div class="row">
                             <div class="col-xs-12 header-fixed">
-                                <table id="table-tasks" class="table table-header-fixed" >
+                                <div id="table-tasks-container">
                                     <@task_fragment.fragment/>
-                                </table>
+                                </div>
                             </div>
                         </div>
                         <div class="row">

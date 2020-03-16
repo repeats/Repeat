@@ -236,7 +236,6 @@ function resetPollingKeys() {
 function getTaskActivationParameters() {
     return {
         id: $("#task-activation-constructor-id").html(),
-        group: $("#task-activation-task-group").html(),
         task: $("#task-activation-task").html(),
     };
 }

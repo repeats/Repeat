@@ -2,7 +2,6 @@ function registerTableTasks() {
     registerCells();
 
     $('#modal-task-name-save').click(newNameOnClick);
-    $('button[id^=\'button-show-task-id-\']').click(showActionId);
 }
 
 function registerCells() {
@@ -35,26 +34,17 @@ function tableTaskOnClick(cell, row, col) {
         $("#new-task-name").val(cell.textContent);
         $("#modal-task-name").modal();
         utils_FocusInputForModal("new-task-name");
+    } 
+    if (col == 1) { // Activation.
+        window.location.assign("/task-details?id=" + getIdForTaskIndex(row));
     }
-
-    if (col == 2) { // Activation.
-        window.location.assign("/task-activation?task=" + getIdForTaskIndex(row));
-    }
-
-    if (col == 3) { // Enable/disable.
+    if (col == 2) { // Enable/disable.
         $.post("/internals/toggle/task-enabled", JSON.stringify({task: getIdForTaskIndex(row)}), function(data) {
             refreshTasksWithDataAndIndex(data, row);
         }).fail(function(response) {
             alert('Error toggling state: ' + response.responseText);
         });
     }
-}
-
-function showActionId(e) {
-    var taskId = $(this)[0].id.slice('button-show-task-id-'.length);
-    $("#current-task-id").val(taskId);
-    $("#modal-task-id-button").modal();
-    utils_SelectInputForModal("current-task-id");
 }
 
 function newNameOnClick(e) {
@@ -75,7 +65,7 @@ function refreshTasksWithData(data) {
 
 function refreshTasksWithDataAndIndex(data, index) {
     _rememberLastScrollPosition();
-    var tableElement = $("#table-tasks");
+    var tableElement = $("#table-tasks-container");
     tableElement.html(data);
     registerCells();
     utils_SetTableSelectedIndex("table-tasks", index);
@@ -83,7 +73,7 @@ function refreshTasksWithDataAndIndex(data, index) {
 }
 
 function getIdForTaskIndex(index) {
-    return $('button[id^=\'button-show-task-id-\']').eq(index)[0].id.substring('button-show-task-id-'.length);
+    return $('div[id^=\'div-task-id-\']').eq(index)[0].id.substring('div-task-id-'.length);
 }
 
 var _lastScrollPosition = 0;

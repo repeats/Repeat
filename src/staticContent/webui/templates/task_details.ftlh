@@ -1,5 +1,6 @@
 <#import "/fragments/activations_modals.ftlh" as activations_modals_fragment>
 <#import "/fragments/activations.ftlh" as activations_fragment>
+<#import "/fragments/task_statistics.ftlh" as task_statistics_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
 <#import "/fragments/footer.ftlh" as footer_fragment>
 <#import "/fragments/common_js.ftlh" as common_js_fragment>
@@ -8,6 +9,7 @@
 <html lang="en">
 <head>
     <@common_header_fragment.fragment/>
+    <script src="/static/js/Chart.bundle.min.js"></script>
 </head>
 <body>
 
@@ -32,7 +34,7 @@
                     <ul class="nav navbar-nav navbar-left">
                         <li>
                             <a href="">
-                               <p>Task Activation</p>
+                               <p>Task Details</p>
                             </a>
                         </li>
                         <li class="separator hidden-lg"></li>
@@ -43,9 +45,21 @@
 
         <div class="content">
             <div class="container-fluid">
-                <div id="task-activation-task" style="display:none;">${taskId}</div>
+                <h1> Overview </h1>
+                <div class="row col-xs-12">
+                    <p><b>Task ID:</b> ${task.id}</p>
+                    <p><b>Task Name:</b> ${task.name}</p>
+                    <p><b>Enabled:</b> ${task.isEnabled}</p>
+                </div>
+
+                <div id="task-activation-task" style="display:none;">${task.id}</div>
                 <div id="task-activation-constructor-id" style="display:none;">${taskActivationConstructorId}</div>
+
+                <h1> Activation </h1>
                 <@activations_fragment.fragment/>
+
+                <h1> Statistics </h1>
+                <@task_statistics_fragment.fragment/>
             </div>
         </div>
 

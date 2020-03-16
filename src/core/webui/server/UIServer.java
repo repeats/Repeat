@@ -109,6 +109,7 @@ import core.webui.server.handlers.internals.taskmanagement.GetRenderedTaskGroups
 import core.webui.server.handlers.internals.tasks.ActionSaveTaskActivationHandler;
 import core.webui.server.handlers.internals.tasks.ModifyTaskNameHandler;
 import core.webui.server.handlers.internals.tasks.SetSelectedTaskHandler;
+import core.webui.server.handlers.internals.tasks.TaskDetailsPageHandler;
 import core.webui.server.handlers.internals.tasks.ToggleTaskEnabledHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.webcommon.HttpHandlerWithBackend;
@@ -156,6 +157,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/global-configs", new GlobalConfigsPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
 		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/task-details", new TaskDetailsPageHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/api", new ApiPageHandler());
 		output.put("/about", new AboutPageHandler(objectRenderer));
 

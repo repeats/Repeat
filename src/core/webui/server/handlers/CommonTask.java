@@ -43,19 +43,13 @@ public class CommonTask {
 	}
 
 	public static UserDefinedAction getTaskFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
-		TaskGroup group = getTaskGroupFromRequest(backEndHolder, params, true);
-		if (group == null) {
-			LOGGER.warning("Cannot get group.");
-			return null;
-		}
-
 		String taskId = getTaskIdFromRequest(backEndHolder, params);
 		if (taskId == null || taskId.isEmpty()) {
 			LOGGER.warning("Cannot find task ID.");
 			return null;
 		}
 
-		UserDefinedAction task = group.getTask(taskId);
+		UserDefinedAction task = backEndHolder.getTask(taskId);
 		if (task == null) {
 			LOGGER.warning("No such task with ID " + taskId + ".");
 			return null;

@@ -28,9 +28,8 @@ public class RenderedTaskActivation {
 		output.mouseGestures = RenderedMouseGestureActivation.fromActivation(activation);
 		output.sharedVariables = RenderedSharedVariablesActivation.fromActivation(activation);
 		output.globalActivation = RenderedGlobalActivation.fromActivation(activation);
-
 		TaskActivationConstructor.Config config = constructor.getConfig();
-		output.config = Config.of()
+		output.config = Config.of(true)
 							.setDisableGlobalAction(config.isDisabledGlobalKeyAction())
 							.setDisableKeyChain(config.isDisableKeyChain())
 							.setDisableKeySequence(config.isDisableKeySequence())
@@ -41,6 +40,7 @@ public class RenderedTaskActivation {
 	}
 
 	public static class Config {
+		private boolean modifiable;
 		private boolean disableGlobalAction;
 		private boolean disableKeyChain;
 		private boolean disableKeySequence;
@@ -48,8 +48,18 @@ public class RenderedTaskActivation {
 		private boolean disableMouseGesture;
 		private boolean disableSharedVariable;
 
-		public static Config of() {
-			return new Config();
+		public static Config of(boolean modifiable) {
+			Config result = new Config();
+			result.modifiable = modifiable;
+			return result;
+		}
+
+		public boolean isModifiable() {
+			return modifiable;
+		}
+
+		public void setModifiable(boolean modifiable) {
+			this.modifiable = modifiable;
 		}
 
 		public boolean isDisableGlobalAction() {
@@ -110,55 +120,42 @@ public class RenderedTaskActivation {
 	public List<String> getKeyChains() {
 		return keyChains;
 	}
-
 	public void setKeyChains(List<String> keyChains) {
 		this.keyChains = keyChains;
 	}
-
 	public List<String> getKeySequences() {
 		return keySequences;
 	}
-
 	public void setKeySequences(List<String> keySequences) {
 		this.keySequences = keySequences;
 	}
-
 	public List<String> getPhrases() {
 		return phrases;
 	}
-
 	public void setPhrases(List<String> phrases) {
 		this.phrases = phrases;
 	}
-
 	public RenderedMouseGestureActivation getMouseGestures() {
 		return mouseGestures;
 	}
-
 	public void setMouseGestures(RenderedMouseGestureActivation mouseGestures) {
 		this.mouseGestures = mouseGestures;
 	}
-
 	public RenderedSharedVariablesActivation getSharedVariables() {
 		return sharedVariables;
 	}
-
 	public void setSharedVariables(RenderedSharedVariablesActivation sharedVariables) {
 		this.sharedVariables = sharedVariables;
 	}
-
 	public RenderedGlobalActivation getGlobalActivation() {
 		return globalActivation;
 	}
-
 	public void setGlobalActivation(RenderedGlobalActivation globalActivation) {
 		this.globalActivation = globalActivation;
 	}
-
 	public Config getConfig() {
 		return config;
 	}
-
 	public void setConfig(Config config) {
 		this.config = config;
 	}
