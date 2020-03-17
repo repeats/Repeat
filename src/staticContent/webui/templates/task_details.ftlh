@@ -55,10 +55,7 @@
                 <div id="task-activation-task" style="display:none;">${task.id}</div>
                 <div id="task-activation-constructor-id" style="display:none;">${taskActivationConstructorId}</div>
 
-                <h1> Activation </h1>
                 <@activations_fragment.fragment/>
-
-                <h1> Statistics </h1>
                 <@task_statistics_fragment.fragment/>
             </div>
         </div>

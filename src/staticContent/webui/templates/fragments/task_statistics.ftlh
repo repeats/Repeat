@@ -1,4 +1,6 @@
 <#macro fragment>
+<#if task.hasStatistics == "true">
+    <h1> Statistics </h1>
     <div class="row col-xs-12">
         <p><b>Created:</b> ${task.statistics.created}</p>
         <p><b>Last used:</b> ${task.statistics.lastUsed}</p>
@@ -15,6 +17,7 @@
     <script>
         var myChart = _drawPastRun();
     </script>
+</#if>
 </#macro>
 
 <@fragment/>

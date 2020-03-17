@@ -8,9 +8,21 @@ public class RenderedDetailedUserDefinedAction {
 	private String name;
 	private String isEnabled;
 	private RenderedTaskActivation activation;
+	private String hasStatistics;
 	private RenderedUserDefinedActionStatistics statistics;
 
 	private RenderedDetailedUserDefinedAction() {}
+
+	public static RenderedDetailedUserDefinedAction fromHotkey(String id, String name, TaskActivationConstructor activationConstructor) {
+		RenderedDetailedUserDefinedAction result = new RenderedDetailedUserDefinedAction();
+		result.id = id;
+		result.name = name;
+		result.isEnabled = true + "";
+		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
+		result.hasStatistics = false + "";
+		result.statistics = null;
+		return result;
+	}
 
 	public static RenderedDetailedUserDefinedAction fromUserDefinedAction(UserDefinedAction action, TaskActivationConstructor activationConstructor) {
 		RenderedDetailedUserDefinedAction result = new RenderedDetailedUserDefinedAction();
@@ -18,6 +30,7 @@ public class RenderedDetailedUserDefinedAction {
 		result.name = action.getName();
 		result.isEnabled = action.isEnabled() + "";
 		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
+		result.hasStatistics = true + "";
 		result.statistics = RenderedUserDefinedActionStatistics.fromUserDefinedActionStatistics(action.getStatistics());
 		return result;
 	}
@@ -39,6 +52,12 @@ public class RenderedDetailedUserDefinedAction {
 	}
 	public void setActivation(RenderedTaskActivation activation) {
 		this.activation = activation;
+	}
+	public String getHasStatistics() {
+		return hasStatistics;
+	}
+	public void setHasStatistics(String hasStatistics) {
+		this.hasStatistics = hasStatistics;
 	}
 	public RenderedUserDefinedActionStatistics getStatistics() {
 		return statistics;

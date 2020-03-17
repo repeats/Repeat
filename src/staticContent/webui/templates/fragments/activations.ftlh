@@ -5,6 +5,7 @@
 <#import "/fragments/shared_variables.ftlh" as shared_variables>
 
 <#macro fragment>
+    <h1> Activation </h1>
     <div class="row">
         <span class="label label-warning">Moving tasks around when editting its activation may result in undefined behavior!</span>
         <div><button id="button-save" type="button" class="btn btn-default btn-span">Save Activation</button></div>

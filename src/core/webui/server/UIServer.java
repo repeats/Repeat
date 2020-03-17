@@ -83,7 +83,6 @@ import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationS
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationSetMouseGesturesHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationStartListeningHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationStopListeningHandler;
-import core.webui.server.handlers.internals.taskactivation.TaskActivationPageHandler;
 import core.webui.server.handlers.internals.taskcreation.ActionCompileTaskHandler;
 import core.webui.server.handlers.internals.taskcreation.ActionEditSourceHandler;
 import core.webui.server.handlers.internals.taskcreation.ActionRunCompiledTaskHandler;
@@ -156,7 +155,6 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/repeats-remote-clients", new RepeatsRemoteClientPageHandler(objectRenderer));
 		output.put("/global-configs", new GlobalConfigsPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
-		output.put("/task-activation", new TaskActivationPageHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/task-details", new TaskDetailsPageHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/api", new ApiPageHandler());
 		output.put("/about", new AboutPageHandler(objectRenderer));
