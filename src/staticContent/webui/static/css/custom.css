@@ -33,7 +33,7 @@ tr { cursor: default; }
 
 .table-header-fixed > tbody > tr > td,
 .table-header-fixed > thead > tr > th {
-    width: 16.66667%;
+    width: 20%;
     float: left;
 }
 
