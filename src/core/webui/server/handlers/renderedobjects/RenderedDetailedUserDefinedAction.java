@@ -13,6 +13,17 @@ public class RenderedDetailedUserDefinedAction {
 
 	private RenderedDetailedUserDefinedAction() {}
 
+	public static RenderedDetailedUserDefinedAction withEmptyTaskInfo(TaskActivationConstructor activationConstructor) {
+		RenderedDetailedUserDefinedAction result = new RenderedDetailedUserDefinedAction();
+		result.id = "";
+		result.name = "";
+		result.isEnabled = "";
+		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
+		result.hasStatistics = false + "";
+		result.statistics = null;
+		return result;
+	}
+
 	public static RenderedDetailedUserDefinedAction fromHotkey(String id, String name, TaskActivationConstructor activationConstructor) {
 		RenderedDetailedUserDefinedAction result = new RenderedDetailedUserDefinedAction();
 		result.id = id;

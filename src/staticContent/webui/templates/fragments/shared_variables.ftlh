@@ -5,7 +5,7 @@
         </tr>
     </thead>
     <tbody>
-        <#list activation.sharedVariables.variables as variable>
+        <#list task.activation.sharedVariables.variables as variable>
             <tr>
                 <td>(${variable.namespace}) - (${variable.name})</td>
             </tr>

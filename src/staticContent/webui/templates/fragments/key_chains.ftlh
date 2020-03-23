@@ -5,7 +5,7 @@
         </tr>
     </thead>
     <tbody>
-        <#list activation.keyChains as chain>
+        <#list task.activation.keyChains as chain>
             <tr>
                 <td>${chain}</td>
             </tr>

@@ -97,7 +97,6 @@ public class TaskDetailsPageHandler extends AbstractUIHttpHandler {
 		Map<String, Object> data = new HashMap<>();
 		data.put("task", renderedDetailedUserDefinedAction);
 		data.put("taskActivationConstructorId", activationConstructorId);
-		data.put("activation", renderedDetailedUserDefinedAction.getActivation());
 		return renderedPage(exchange, "task_details", data);
 	}
 

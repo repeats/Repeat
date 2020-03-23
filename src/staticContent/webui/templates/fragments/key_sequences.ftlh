@@ -5,7 +5,7 @@
         </tr>
     </thead>
     <tbody>
-        <#list activation.keySequences as sequence>
+        <#list task.activation.keySequences as sequence>
             <tr>
                 <td>${sequence}</td>
             </tr>

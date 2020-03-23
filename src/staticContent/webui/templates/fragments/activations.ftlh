@@ -22,13 +22,13 @@
     </div>
     <div class="row top-buffer">
         <div class="col-xs-6">
-            <button id="button-add-key-chain" type="button" class="btn btn-default btn-span" <#if activation.config.disableKeyChain> disabled </#if>>Add key chain</button>
+            <button id="button-add-key-chain" type="button" class="btn btn-default btn-span" <#if task.activation.config.disableKeyChain> disabled </#if>>Add key chain</button>
             <table id="table-key-chains" class="table">
                 <@key_chains_fragment.fragment/>
             </table>
         </div>
         <div class="col-xs-6">
-            <button id="button-add-key-sequence" type="button" class="btn btn-default btn-span" <#if activation.config.disableKeySequence> disabled </#if>>Add key sequence</button>
+            <button id="button-add-key-sequence" type="button" class="btn btn-default btn-span" <#if task.activation.config.disableKeySequence> disabled </#if>>Add key sequence</button>
             <table id="table-key-sequences" class="table">
                 <@key_sequences_fragment.fragment/>
             </table>
@@ -38,14 +38,14 @@
     <div class="row top-buffer">
         <div class="col-xs-6">
             <span class="label label-default">Phrases</span>
-            <button id="button-add-phrase" type="button" class="btn btn-default btn-span" <#if activation.config.disablePhrase> disabled </#if>>Add phrase</button>
+            <button id="button-add-phrase" type="button" class="btn btn-default btn-span" <#if task.activation.config.disablePhrase> disabled </#if>>Add phrase</button>
             <table id="table-phrases" class="table">
                 <@phrases_fragment.fragment/>
             </table>
         </div>
         <div class="col-xs-6">
             <span class="label label-default">Shared variables</span>
-            <button id="button-add-shared-variables" type="button" class="btn btn-default btn-span" <#if activation.config.disableSharedVariable> disabled </#if>>Add shared variable</button>
+            <button id="button-add-shared-variables" type="button" class="btn btn-default btn-span" <#if task.activation.config.disableSharedVariable> disabled </#if>>Add shared variable</button>
             <table id="table-shared-variables" class="table">
                 <@shared_variables.fragment/>
             </table>
@@ -55,19 +55,19 @@
         <div class="form-group">
             <span class="label label-default">Mouse gestures (hold shift to select more than one)</span>
             <select id="mouse-gestures-selection" multiple class="form-control" size="9">
-                <#if !activation.config.disableMouseGesture>
-                <option <#if activation.mouseGestures.alpha> selected </#if>>Alpha</option>
-                <option <#if activation.mouseGestures.circleLeft> selected </#if>>Circle Left</option>
-                <option <#if activation.mouseGestures.gamma> selected </#if>>Gamma</option>
-                <option <#if activation.mouseGestures.greaterThan> selected </#if>>Greater than</option>
-                <option <#if activation.mouseGestures.hat> selected </#if>>Hat</option>
-                <option <#if activation.mouseGestures.lessThan> selected </#if>>Less than</option>
-                <option <#if activation.mouseGestures.n> selected </#if>>N</option>
-                <option <#if activation.mouseGestures.square> selected </#if>>Square</option>
-                <option <#if activation.mouseGestures.squareRoot> selected </#if>>Square root</option>
-                <option <#if activation.mouseGestures.tilda> selected </#if>>Tilda</option>
-                <option <#if activation.mouseGestures.triangle> selected </#if>>Triangle</option>
-                <option <#if activation.mouseGestures.z> selected </#if>>Z</option>
+                <#if !task.activation.config.disableMouseGesture>
+                <option <#if task.activation.mouseGestures.alpha> selected </#if>>Alpha</option>
+                <option <#if task.activation.mouseGestures.circleLeft> selected </#if>>Circle Left</option>
+                <option <#if task.activation.mouseGestures.gamma> selected </#if>>Gamma</option>
+                <option <#if task.activation.mouseGestures.greaterThan> selected </#if>>Greater than</option>
+                <option <#if task.activation.mouseGestures.hat> selected </#if>>Hat</option>
+                <option <#if task.activation.mouseGestures.lessThan> selected </#if>>Less than</option>
+                <option <#if task.activation.mouseGestures.n> selected </#if>>N</option>
+                <option <#if task.activation.mouseGestures.square> selected </#if>>Square</option>
+                <option <#if task.activation.mouseGestures.squareRoot> selected </#if>>Square root</option>
+                <option <#if task.activation.mouseGestures.tilda> selected </#if>>Tilda</option>
+                <option <#if task.activation.mouseGestures.triangle> selected </#if>>Triangle</option>
+                <option <#if task.activation.mouseGestures.z> selected </#if>>Z</option>
                 </#if>
             </select>
         </div>

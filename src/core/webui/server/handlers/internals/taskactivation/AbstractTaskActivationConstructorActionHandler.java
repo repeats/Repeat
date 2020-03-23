@@ -14,7 +14,7 @@ import core.keyChain.TaskActivationConstructorManager;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
-import core.webui.server.handlers.renderedobjects.RenderedTaskActivation;
+import core.webui.server.handlers.renderedobjects.RenderedDetailedUserDefinedAction;
 import core.webui.webcommon.HttpServerUtilities;
 
 public abstract class AbstractTaskActivationConstructorActionHandler extends AbstractUIHttpHandler {
@@ -49,7 +49,7 @@ public abstract class AbstractTaskActivationConstructorActionHandler extends Abs
 
 	protected final Void renderedTaskActivationPage(HttpAsyncExchange exchange, String template, TaskActivationConstructor constructor) throws IOException {
 		Map<String, Object> data = new HashMap<>();
-		data.put("activation", RenderedTaskActivation.fromActivation(constructor));
+		data.put("task", RenderedDetailedUserDefinedAction.withEmptyTaskInfo(constructor));
 		return renderedPage(exchange, template, data);
 	}
 

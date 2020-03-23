@@ -5,7 +5,7 @@
         </tr>
     </thead>
     <tbody>
-        <#list activation.phrases as phrase>
+        <#list task.activation.phrases as phrase>
             <tr>
                 <td>${phrase}</td>
             </tr>
