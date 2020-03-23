@@ -170,7 +170,7 @@ public class Jsonizer {
         	field.setAccessible(true);
         	Object value = field.get(o);
 
-        	String jsonName = StringUtilities.toSnakeCase(field.getName());
+        	String jsonName = field.getName();
         	JsonStringNode nameNode = JsonNodeFactories.string(jsonName);
         	if (value == null) {
         		continue;

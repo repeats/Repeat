@@ -47,10 +47,12 @@ import core.userDefinedTask.TaskInvoker;
 import core.userDefinedTask.TaskSourceManager;
 import core.userDefinedTask.Tools;
 import core.userDefinedTask.UserDefinedAction;
+import core.userDefinedTask.internals.ActionExecutor;
 import core.userDefinedTask.internals.AggregateTools;
 import core.userDefinedTask.internals.DefaultTools;
 import core.userDefinedTask.internals.ITools;
 import core.userDefinedTask.internals.RemoteRepeatsClientTools;
+import core.userDefinedTask.internals.RunActionConfig;
 import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
@@ -73,6 +75,7 @@ public class MainBackEndHolder {
 	private Language compilingLanguage;
 
 	private ReplayConfig replayConfig;
+	private RunActionConfig runActionConfig;
 	protected Recorder recorder;
 
 	private UserDefinedAction customFunction;
@@ -82,6 +85,7 @@ public class MainBackEndHolder {
 
 	// To allow executing other tasks programmatically.
 	private final TaskInvoker taskInvoker;
+	private final ActionExecutor actionExecutor;
 	protected final GlobalEventsManager keysManager;
 	private RepeatsPeerServiceClientManager peerServiceClientManager;
 
@@ -112,8 +116,10 @@ public class MainBackEndHolder {
 		peerServiceClientManager = new RepeatsPeerServiceClientManager();
 		coreProvider = new CoreProvider(config, peerServiceClientManager);
 		taskInvoker = new TaskInvoker(coreProvider, taskGroups);
-		keysManager = new GlobalEventsManager(config, coreProvider);
+		actionExecutor = new ActionExecutor(coreProvider);
+		keysManager = new GlobalEventsManager(config, coreProvider, actionExecutor);
 		replayConfig = ReplayConfig.of();
+		runActionConfig = RunActionConfig.of();
 		recorder = new Recorder(coreProvider, keysManager);
 
 		switchRecord = new UserDefinedAction() {
@@ -483,6 +489,13 @@ public class MainBackEndHolder {
 
 	/*************************************************************************************************************/
 	/*****************************************Task related********************************************************/
+	public RunActionConfig getRunActionConfig() {
+		return runActionConfig;
+	}
+
+	public void setRunActionConfig(RunActionConfig config) {
+		this.runActionConfig = config;
+	}
 
 	private void recompiledNativeTasks(Language language) {
 		for (TaskGroup group : taskGroups) {
@@ -1039,7 +1052,7 @@ public class MainBackEndHolder {
 	}
 
 	public void haltAllTasks() {
-		keysManager.haltAllTasks();
+		actionExecutor.haltAllTasks();
 	}
 
 	/**
@@ -1109,6 +1122,10 @@ public class MainBackEndHolder {
 
 	public synchronized boolean isRunningCompiledAction() {
 		return isRunningCompiledTask;
+	}
+
+	public ActionExecutor getActionExecutor() {
+		return actionExecutor;
 	}
 
 	public GlobalEventsManager getKeysManager() {

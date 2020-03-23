@@ -29,7 +29,7 @@ public class Config implements ILoggable {
 	public static final String RELEASE_VERSION = "5.4.3";
 	protected static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
-	protected static final String CURRENT_CONFIG_VERSION = "2.10";
+	protected static final String CURRENT_CONFIG_VERSION = "2.11";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
@@ -56,6 +56,8 @@ public class Config implements ILoggable {
 	private boolean executeOnKeyReleased;
 	// Instead of typing out the string, put the content into clipboard and paste it out.
 	private boolean useClipboardToTypeString;
+	// If enabled, will run task with server config instead of asking for one.
+	private boolean runTaskWithServerConfig;
 	private Level nativeHookDebugLevel;
 
 	static {
@@ -81,6 +83,7 @@ public class Config implements ILoggable {
 				new Parser2_8(),
 				new Parser2_9(),
 				new Parser2_10(),
+				new Parser2_11(),
 			});
 	}
 
@@ -188,6 +191,7 @@ public class Config implements ILoggable {
 						JsonNodeFactories.field("enabled_halt_by_key", JsonNodeFactories.booleanNode(enabledHaltingKeyPressed)),
 						JsonNodeFactories.field("execute_on_key_released", JsonNodeFactories.booleanNode(executeOnKeyReleased)),
 						JsonNodeFactories.field("use_clipboard_to_type_string", JsonNodeFactories.booleanNode(useClipboardToTypeString)),
+						JsonNodeFactories.field("run_task_with_server_config", JsonNodeFactories.booleanNode(runTaskWithServerConfig)),
 						JsonNodeFactories.field("global_hotkey", JsonNodeFactories.object(
 								JsonNodeFactories.field("mouse_gesture_activation", JsonNodeFactories.number(mouseGestureActivationKey)),
 								JsonNodeFactories.field("record", RECORD.jsonize()),
@@ -341,6 +345,14 @@ public class Config implements ILoggable {
 
 	public void setUseClipboardToTypeString(boolean useClipboardToTypeString) {
 		this.useClipboardToTypeString = useClipboardToTypeString;
+	}
+
+	public boolean isRunTaskWithServerConfig() {
+		return runTaskWithServerConfig;
+	}
+
+	public void setRunTaskWithServerConfig(boolean runTaskWithServerConfig) {
+		this.runTaskWithServerConfig = runTaskWithServerConfig;
 	}
 
 	@Override

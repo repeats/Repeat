@@ -106,7 +106,10 @@ import core.webui.server.handlers.internals.taskmanagement.ActionMoveTaskUpHandl
 import core.webui.server.handlers.internals.taskmanagement.ActionOverwriteTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.GetRenderedTaskGroupsSelectModalHandler;
 import core.webui.server.handlers.internals.tasks.ActionSaveTaskActivationHandler;
+import core.webui.server.handlers.internals.tasks.GetRunTaskConfigHandler;
 import core.webui.server.handlers.internals.tasks.ModifyTaskNameHandler;
+import core.webui.server.handlers.internals.tasks.RunTaskHandler;
+import core.webui.server.handlers.internals.tasks.SaveRunTaskConfigHandler;
 import core.webui.server.handlers.internals.tasks.SetSelectedTaskHandler;
 import core.webui.server.handlers.internals.tasks.TaskDetailsPageHandler;
 import core.webui.server.handlers.internals.tasks.ToggleTaskEnabledHandler;
@@ -185,6 +188,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/menu/settings/set-debug-level", new MenuSetDebugLevelActionHandler());
 		output.put("/internals/menu/settings/execute-on-release", new MenuExecuteOnReleaseActionHandler());
 		output.put("/internals/menu/settings/use-clipboard-to-type-string", new MenuUseClipboardToTypeStringActionHandler());
+		output.put("/internals/menu/settings/run-task-with-server-config", new MenuUseClipboardToTypeStringActionHandler());
 		output.put("/internals/menu/settings/use-tray-icon", new MenuUseTrayIconActionHandler());
 
 		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
@@ -218,6 +222,9 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/action/move-task-down", new ActionMoveTaskDownHandler(objectRenderer));
 		output.put("/internals/action/move-task-group-down", new ActionMoveTaskGroupDownHandler(objectRenderer));
 		output.put("/internals/action/overwrite-task", new ActionOverwriteTaskHandler(objectRenderer));
+		output.put("/internals/action/run", new RunTaskHandler());
+		output.put("/internals/action/run-config/save", new SaveRunTaskConfigHandler());
+		output.put("/internals/action/run-config/get", new GetRunTaskConfigHandler(objectRenderer));
 		output.put("/internals/action/run-compiled-task", new ActionRunCompiledTaskHandler());
 		output.put("/internals/action/run-ipc-service", new ActionRunIPCServiceHandler(objectRenderer));
 		output.put("/internals/action/start-record", new ActionStartRecordingHandler());

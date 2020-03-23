@@ -88,6 +88,7 @@
                                 <li id="menu-halt-task-by-escape"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.haltTaskByEscape> checked </#if>/>&nbsp;Halt task by ESC</a></li>
                                 <li id="menu-execute-on-release"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.executeOnRelease> checked </#if>/>&nbsp;Execute on release</a></li>
                                 <li id="menu-use-clipboard-to-type-string"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.useClipboardToTypeString> checked </#if>/>&nbsp;Use clipboard to type strings</a></li>
+                                <li id="menu-run-task-with-server-config"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.runTaskWithServerConfig> checked </#if>/>&nbsp;Run task using server config</a></li>
                                 <li class="divider"></li>
                                 <li id="menu-debug-level"><a href="#">Debug level...</a></li>
                                 <li id="menu-use-tray-icon"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.useTrayIcon> checked </#if>/>&nbsp;Use tray icon</a></li>
@@ -142,6 +143,7 @@
                     </div>
                     <div class="col-xs-6">
                         <div class="pull-right">
+                            <button id="button-run-selected" title="${tooltips.runSelected}" type="button" class="btn btn-default repeat-btn-run-selected">&nbsp</button>
                             <button id="button-add" title="${tooltips.add}" type="button" class="btn btn-default repeat-btn-add">&nbsp</button>
                             <button id="button-overwrite" title="${tooltips.overwrite}" type="button" class="btn btn-default repeat-btn-overwrite">&nbsp</button>
                             <button id="button-delete" title="${tooltips.delete}" type="button" class="btn btn-default repeat-btn-delete">&nbsp</button>

@@ -1,11 +1,6 @@
 package core.keyChain.managers;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -22,11 +17,11 @@ import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
+import core.userDefinedTask.internals.ActionExecutor;
 import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import core.userDefinedTask.internals.SharedVariablesSubscriber;
 import core.userDefinedTask.internals.SharedVariablesSubscription;
 import globalListener.GlobalListenerFactory;
-import utilities.RandomUtil;
 import utilities.StringUtilities;
 
 public final class GlobalEventsManager {
@@ -35,23 +30,23 @@ public final class GlobalEventsManager {
 
 	private final Config config;
 	CoreProvider coreProvider;
+	private final ActionExecutor actionExecutor;
 	/**
 	 * This function is the precondition to executing any task.
 	 * It is evaluated every time the manager considers executing any task.
 	 * If it evaluates to true, the task will not be executed.
 	 */
 	private Function<Void, Boolean> disablingFunction;
-	private final Map<String, Thread> executions;
 	private final ActivationEventManager taskActivationManager;
 
 	@SuppressWarnings("unused")
 	private TaskGroup currentTaskGroup;
 
-	public GlobalEventsManager(Config config, CoreProvider coreProvider) {
+	public GlobalEventsManager(Config config, CoreProvider coreProvider, ActionExecutor actionExecutor) {
 		this.config = config;
 		this.coreProvider = coreProvider;
+		this.actionExecutor = actionExecutor;
 
-		this.executions = new HashMap<>();
 		this.disablingFunction = Function.falseFunction();
 
 		this.taskActivationManager = new AggregateActivationEventManager(config,
@@ -74,7 +69,8 @@ public final class GlobalEventsManager {
 				}
 
 				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
-				return startExecutingActions(actions);
+				actionExecutor.startExecutingActions(actions);
+				return true;
 			}
 		});
 
@@ -87,13 +83,14 @@ public final class GlobalEventsManager {
 				}
 
 				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
-				return startExecutingActions(actions);
+				actionExecutor.startExecutingActions(actions);
+				return true;
 			}
 		});
 
 		SharedVariablesPubSubManager.get().addSubscriber(SharedVariablesSubscriber.of(SharedVariablesSubscription.forAll(), e -> {
 			Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(e));
-			startExecutingActions(actions);
+			actionExecutor.startExecutingActions(actions);
 		}));
 
 		taskActivationManager.startListening();
@@ -118,58 +115,11 @@ public final class GlobalEventsManager {
 	private boolean shouldDelegate(KeyStroke stroke) {
 		if (stroke.getKey() == Config.HALT_TASK && config.isEnabledHaltingKeyPressed()) {
 			taskActivationManager.clear();
-			haltAllTasks();
+			actionExecutor.haltAllTasks();
 			return false;
 		}
 
 		return !disablingFunction.apply(null);
-	}
-
-	/**
-	 * Start executing actions, each in a separate thread.
-	 *
-	 * @param actions actions to execute
-	 * @return if all operations succeeded
-	 */
-	private boolean startExecutingActions(Collection<UserDefinedAction> actions) {
-		boolean result = true;
-		for (UserDefinedAction action : actions) {
-			result &= startExecutingAction(action);
-		}
-		return result;
-	}
-
-	/**
-	 * Start executing an action in a separate thread
-	 *
-	 * @param action action to execute
-	 * @return if operation succeeded
-	 */
-	private boolean startExecutingAction(final UserDefinedAction action) {
-		if (action == null) {
-			return true;
-		}
-
-		final String id = RandomUtil.randomID();
-		Thread execution = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					action.trackedAction(coreProvider.get());
-				} catch (InterruptedException e) {
-					LOGGER.info("Task ended prematurely");
-				} catch (Exception e) {
-					String name = action.getName() == null ? "" : action.getName();
-					LOGGER.log(Level.WARNING, "Exception while executing task " + name, e);
-				}
-
-				executions.remove(id);
-			}
-		});
-
-		executions.put(id, execution);
-		execution.start();
-		return true;
 	}
 
 	/**
@@ -241,21 +191,5 @@ public final class GlobalEventsManager {
 				"Newly registered keychains "
 				+ "will collide with previously registered task(s) " + taskNames + "\n"
 				+ "You cannot assign this key chain unless you remove the conflicting key chain...");
-	}
-
-	/**
-	 * Interrupt all currently executing tasks, and clear the record of all executing tasks
-	 */
-	public void haltAllTasks() {
-		LinkedList<Thread> endingThreads = new LinkedList<>();
-		endingThreads.addAll(executions.values());
-
-		for (Thread thread : endingThreads) {
-			while (thread.isAlive() && thread != Thread.currentThread()) {
-				LOGGER.info("Interrupting execution thread " + thread);
-				thread.interrupt();
-			}
-		}
-		executions.clear();
 	}
 }

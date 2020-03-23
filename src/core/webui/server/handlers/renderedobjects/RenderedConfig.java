@@ -10,6 +10,7 @@ public class RenderedConfig {
 	private boolean haltTaskByEscape;
 	private boolean executeOnRelease;
 	private boolean useClipboardToTypeString;
+	private boolean runTaskWithServerConfig;
 	private boolean useTrayIcon;
 	private List<RenderedDebugLevel> debugLevels;
 
@@ -18,6 +19,7 @@ public class RenderedConfig {
 		output.haltTaskByEscape = config.isEnabledHaltingKeyPressed();
 		output.executeOnRelease = config.isExecuteOnKeyReleased();
 		output.useClipboardToTypeString = config.isUseClipboardToTypeString();
+		output.runTaskWithServerConfig = config.isRunTaskWithServerConfig();
 		output.recordMouseClickOnly = recorder.getRecordMode() == Recorder.MODE_MOUSE_CLICK_ONLY;
 		output.useTrayIcon = config.isUseTrayIcon();
 		output.debugLevels = RenderedDebugLevel.of(config.getNativeHookDebugLevel());
@@ -54,6 +56,14 @@ public class RenderedConfig {
 
 	public void setUseClipboardToTypeString(boolean useClipboardToTypeString) {
 		this.useClipboardToTypeString = useClipboardToTypeString;
+	}
+
+	public boolean isRunTaskWithServerConfig() {
+		return runTaskWithServerConfig;
+	}
+
+	public void setRunTaskWithServerConfig(boolean runTaskWithServerConfig) {
+		this.runTaskWithServerConfig = runTaskWithServerConfig;
 	}
 
 	public boolean isUseTrayIcon() {

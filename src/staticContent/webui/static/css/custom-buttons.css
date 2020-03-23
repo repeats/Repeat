@@ -47,6 +47,11 @@
 }
 
 
+.repeat-btn-run-selected {
+	border: none;
+	background-image: url( '/static/img/buttons/run_selected.png' );
+	background-size: 100%;
+}
 
 .repeat-btn-add {
 	border: none;

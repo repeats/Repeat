@@ -17,6 +17,7 @@ function registerMenuIndexPageActions() {
     $("#menu-halt-task-by-escape").click(menuHaltTaskByEscapeAction);
     $("#menu-execute-on-release").click(menuExecuteOnReleaseAction);
     $("#menu-use-clipboard-to-type-string").click(menuUseClipboardToTypeStringAction);
+    $("#menu-run-task-with-server-config").click(menuRunTaskWithServerConfigAction);
     $("#menu-debug-level").click(menuDebugLevelAction);
     $("#menu-use-tray-icon").click(menuUseTrayIconAction);
 
@@ -219,6 +220,10 @@ function menuExecuteOnReleaseAction(e) {
 
 function menuUseClipboardToTypeStringAction(e) {
     menuSetBooleanSettingAction("menu-use-clipboard-to-type-string", "/internals/menu/settings/use-clipboard-to-type-string");
+}
+
+function menuRunTaskWithServerConfigAction(e) {
+    menuSetBooleanSettingAction("menu-run-task-with-server-config", "/internals/menu/settings/run-task-with-server-config");
 }
 
 function menuDebugLevelAction(e) {

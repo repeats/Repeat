@@ -1,3 +1,4 @@
+<#import "/fragments/run_task_config_modal.ftlh" as run_task_config_modal_fragment>
 <#import "/fragments/compiling_languages.ftlh" as compiling_languages_fragment>
 <#import "/fragments/debug_levels.ftlh" as debug_levels_fragment>
 
@@ -81,6 +82,26 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="modal-run-selected" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="modal-run-selected-title" class="modal-title">Run selected task.</h4>
+            </div>
+            <div id="modal-run-selected-body" class="modal-body">
+                <@run_task_config_modal_fragment.fragment/>
+            </div>
+            <div class="modal-footer">
+                <div id="modal-run-selected-repeat-count" style="display:none;">1</div>
+                <button id="modal-run-selected-run" type="button" class="btn btn-primary" data-dismiss="modal">Run</button>
+                <button id="modal-run-selected-save-config" type="button" class="btn btn-default" data-dismiss="modal">Save Config</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
     </div>
     <div id="modal-task-name" class="modal fade" role="dialog">
         <div class="modal-dialog">

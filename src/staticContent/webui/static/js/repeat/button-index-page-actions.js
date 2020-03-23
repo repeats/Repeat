@@ -9,6 +9,9 @@ function registerIndexPageButtonActions() {
     $("#button-edit-code").click(buttonEditCodeAction)
     $("#button-reload").click(buttonReloadAction)
 
+    $("#button-run-selected").click(buttonRunSelectedAction)
+    $("#modal-run-selected-run").click(buttonRunSelectedRunAction)
+    $("#modal-run-selected-save-config").click(buttonRunSelectedSaveConfigAction)
     $("#button-add").click(buttonAddAction)
     $("#button-overwrite").click(buttonOverwriteAction)
     $("#button-delete").click(buttonDeleteAction)
@@ -125,6 +128,59 @@ function buttonReloadAction(e) {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
+
+function buttonRunSelectedAction(e) {
+    var runWithServerConfig = $("#menu-run-task-with-server-config").find("input").is(':checked');
+    if (runWithServerConfig) {
+        var index = utils_GetTableSelectedRowIndex("table-tasks");
+        if (index == -1) {
+            return;
+        }
+
+        $.post("/internals/action/run", JSON.stringify({id: getIdForTaskIndex(index)}), function(data) {
+            // Nothing to do.
+        }).fail(function(response) {
+            alert('Error sending request to run task: ' + response.responseText);
+        });
+    } else {
+        $.get("/internals/action/run-config/get", "", function(data) {
+            $("#modal-run-selected-body").html(data);
+            $("#modal-run-selected").modal();
+        }).fail(function(response) {
+            alert('Error sending request to get current run config: ' + response.responseText);
+        });
+    }
+}
+
+function buttonRunSelectedRunAction(e) {
+    var index = utils_GetTableSelectedRowIndex("table-tasks");
+    if (index == -1) {
+        return;
+    }
+
+    $.post("/internals/action/run", JSON.stringify({
+        id: getIdForTaskIndex(index),
+        runConfig: {
+            repeatCount: $("#new-run-selected-repeat-value").val(),
+            delayMsBetweenRepeat: $("#new-run-selected-delay-value").val(),
+        },
+    }), function(data) {
+        // Nothing to do.
+    }).fail(function(response) {
+        alert('Error sending request to run task: ' + response.responseText);
+    });
+}
+
+function buttonRunSelectedSaveConfigAction(e) {
+    $.post("/internals/action/run-config/save", JSON.stringify({
+        repeatCount: $("#new-run-selected-repeat-value").val(),
+        delayMsBetweenRepeat: $("#new-run-selected-delay-value").val(),
+    }), function(data) {
+        // Nothing to do.
+    }).fail(function(response) {
+        alert('Error sending request to run task: ' + response.responseText);
+    });
+}
 
 function buttonAddAction(e) {
     $.post("/internals/action/add-task", function(data) {
