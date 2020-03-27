@@ -12,7 +12,7 @@ import utilities.json.JSONUtility;
 
 public class RenderedUserDefinedActionStatistics {
 
-	private static final int MAX_EXECUTION_INSTANCES = 50;
+	private static final int MAX_EXECUTION_INSTANCES = 100;
 
 	private String created;
 	private String lastUsed;

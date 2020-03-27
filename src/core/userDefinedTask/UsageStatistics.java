@@ -1,9 +1,9 @@
 package core.userDefinedTask;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,18 +23,19 @@ import utilities.json.Jsonizer;
 public class UsageStatistics implements IJsonable {
 
 	private static final Logger LOGGER = Logger.getLogger(UsageStatistics.class.getName());
+	private static final int MAX_EXECUTION_INSTANCES_STORED = 10000;
 
 	private long count;
 	private Calendar lastUse;
 	private Calendar created;
 	private long totalExecutionTime;
 	private Map<String, ExecutionInstance> onGoingInstances;
-	private List<ExecutionInstance> executionInstances;
+	private LinkedList<ExecutionInstance> executionInstances;
 
 	public UsageStatistics() {
 		created = Calendar.getInstance();
 		onGoingInstances = new HashMap<>();
-		executionInstances = new ArrayList<>();
+		executionInstances = new LinkedList<>();
 	}
 
 	@Override
@@ -66,14 +67,14 @@ public class UsageStatistics implements IJsonable {
 				return null;
 			}
 
-			List<ExecutionInstance> instances = new ArrayList<>();
+			LinkedList<ExecutionInstance> instances = new LinkedList<>();
 			if (node.isArrayNode("execution_instances")) {
 				List<JsonNode> nodes = node.getArrayNode("execution_instances");
 				instances = nodes.stream().map(n -> {
 					ExecutionInstance i = ExecutionInstance.of(0, 0);
 					Jsonizer.parse(n, i);
 					return i;
-				}).collect(Collectors.toList());
+				}).collect(Collectors.toCollection(LinkedList::new));
 			}
 
 			UsageStatistics output = new UsageStatistics();
@@ -127,7 +128,10 @@ public class UsageStatistics implements IJsonable {
 		String id = UUID.randomUUID().toString();
 		ExecutionInstance instance = ExecutionInstance.of(System.currentTimeMillis(), ExecutionInstance.DID_NOT_END);
 		onGoingInstances.put(id, instance);
-		executionInstances.add(instance);
+		executionInstances.addLast(instance);
+		if (executionInstances.size() > MAX_EXECUTION_INSTANCES_STORED) {
+			executionInstances.removeFirst();
+		}
 		return id;
 	}
 
