@@ -129,7 +129,7 @@ public class UsageStatistics implements IJsonable {
 		ExecutionInstance instance = ExecutionInstance.of(System.currentTimeMillis(), ExecutionInstance.DID_NOT_END);
 		onGoingInstances.put(id, instance);
 		executionInstances.addLast(instance);
-		if (executionInstances.size() > MAX_EXECUTION_INSTANCES_STORED) {
+		while (executionInstances.size() > MAX_EXECUTION_INSTANCES_STORED) {
 			executionInstances.removeFirst();
 		}
 		return id;
