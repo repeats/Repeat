@@ -73,14 +73,14 @@ public class RenderedUserDefinedActionStatistics {
 			Color.BLACK
 			);
 
-	private static final class PieChartEntry {
+	private static final class BreakdownPieChartEntry {
 		String name;
 		String color;
 		long data;
 
-		private static PieChartEntry of(String name, String color, long data) {
-			PieChartEntry result = new PieChartEntry();
-			result.name = name;
+		private static BreakdownPieChartEntry of(String name, String color, long data) {
+			BreakdownPieChartEntry result = new BreakdownPieChartEntry();
+			result.name = name.isEmpty() ? "Empty" : name;
 			result.color = color;
 			result.data = data;
 			return result;
@@ -101,12 +101,12 @@ public class RenderedUserDefinedActionStatistics {
 					.collect(Collectors.toList());
 		}
 
-		List<PieChartEntry> data = new ArrayList<>(sortedData.size());
+		List<BreakdownPieChartEntry> data = new ArrayList<>(sortedData.size());
 		for (ListIterator<Pair<String, Long>> iterator = sortedData.listIterator(); iterator.hasNext();) {
 			int i = iterator.nextIndex();
 			Pair<String, Long> e = iterator.next();
 
-			data.add(PieChartEntry.of(e.getA(), formatColor(BREAKDOWN_COLORS.get(i)), e.getB()));
+			data.add(BreakdownPieChartEntry.of(e.getA(), formatColor(BREAKDOWN_COLORS.get(i)), e.getB()));
 		}
 
 		return taskActivationBreakdownFromData(data);
@@ -116,7 +116,7 @@ public class RenderedUserDefinedActionStatistics {
 		return String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue());
 	}
 
-	private static JsonNode taskActivationBreakdownFromData(List<PieChartEntry> counts) {
+	private static JsonNode taskActivationBreakdownFromData(List<BreakdownPieChartEntry> counts) {
 		return JsonNodeFactories.object(JsonNodeFactories.field("taskActivationBreakdown",
 				JsonNodeFactories.object(
 						JsonNodeFactories.field("activations", JsonNodeFactories.array(
