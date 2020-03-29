@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.keyChain.TaskActivation;
 import utilities.DateUtility;
 import utilities.json.AutoJsonable;
 import utilities.json.IJsonable;
@@ -29,11 +30,14 @@ public class UsageStatistics implements IJsonable {
 	private Calendar lastUse;
 	private Calendar created;
 	private long totalExecutionTime;
+	private Map<TaskActivation, Long> taskActivationBreakdown;
+
 	private Map<String, ExecutionInstance> onGoingInstances;
 	private LinkedList<ExecutionInstance> executionInstances;
 
 	public UsageStatistics() {
 		created = Calendar.getInstance();
+		taskActivationBreakdown = new HashMap<>();
 		onGoingInstances = new HashMap<>();
 		executionInstances = new LinkedList<>();
 	}
@@ -45,6 +49,13 @@ public class UsageStatistics implements IJsonable {
 				JsonNodeFactories.field("total_execution_time", JsonNodeFactories.number(totalExecutionTime)),
 				JsonNodeFactories.field("last_use", lastUse != null ? JsonNodeFactories.string(DateUtility.calendarToTimeString(lastUse)) : JsonNodeFactories.nullNode()),
 				JsonNodeFactories.field("created", JsonNodeFactories.string(DateUtility.calendarToTimeString(created))),
+				JsonNodeFactories.field("task_activations_breakdown", JsonNodeFactories.array(
+						taskActivationBreakdown.entrySet().stream().map(
+								e -> JsonNodeFactories.object(
+										JsonNodeFactories.field("task_activation", e.getKey().jsonize()),
+										JsonNodeFactories.field("count", JsonNodeFactories.number(e.getValue())))
+								).collect(Collectors.toList())
+						)),
 				JsonNodeFactories.field("execution_instances", JsonNodeFactories.array(JSONUtility.listToJson(executionInstances)))
 				);
 	}
@@ -63,8 +74,24 @@ public class UsageStatistics implements IJsonable {
 
 			Calendar created = DateUtility.stringToCalendar(node.getStringValue("created"));
 			if (created == null) {
-				LOGGER.warning("Unable to parse object.");
+				LOGGER.warning("Unable to parse created date object.");
 				return null;
+			}
+
+			Map<TaskActivation, Long> taskActivationBreakdown = new HashMap<>();
+			if (node.isArrayNode("task_activations_breakdown")) {
+				List<JsonNode> nodes = node.getArrayNode("task_activations_breakdown");
+				for (JsonNode n : nodes) {
+					JsonNode activationNode = n.getNode("task_activation");
+					TaskActivation activation = TaskActivation.parseJSON(activationNode);
+					if (activation == null) {
+						LOGGER.warning("Unable to parse task activation.");
+						return null;
+					}
+
+					long activationCount = Long.parseLong(n.getNode("count").getNumberValue());
+					taskActivationBreakdown.put(activation, activationCount);
+				}
 			}
 
 			LinkedList<ExecutionInstance> instances = new LinkedList<>();
@@ -82,6 +109,7 @@ public class UsageStatistics implements IJsonable {
 			output.totalExecutionTime = totalExecutionTime;
 			output.lastUse = lastUse;
 			output.created = created;
+			output.taskActivationBreakdown = taskActivationBreakdown;
 			output.executionInstances = instances;
 
 			return output;
@@ -111,6 +139,10 @@ public class UsageStatistics implements IJsonable {
 		return totalExecutionTime;
 	}
 
+	public Map<TaskActivation, Long> getTaskActivationBreakdown() {
+		return Collections.unmodifiableMap(taskActivationBreakdown);
+	}
+
 	public List<ExecutionInstance> getExecutionInstances() {
 		return Collections.unmodifiableList(executionInstances);
 	}
@@ -118,7 +150,7 @@ public class UsageStatistics implements IJsonable {
 	/**
 	 * @return an ID to update at completion time.
 	 */
-	public synchronized String useNow() {
+	public synchronized String useNow(ExecutionContext executionContext) {
 		if (lastUse == null) {
 			lastUse = Calendar.getInstance();
 		} else {
@@ -132,6 +164,8 @@ public class UsageStatistics implements IJsonable {
 		while (executionInstances.size() > MAX_EXECUTION_INSTANCES_STORED) {
 			executionInstances.removeFirst();
 		}
+		long countForActivation = taskActivationBreakdown.getOrDefault(executionContext.getActivation(), 0L);
+		taskActivationBreakdown.put(executionContext.getActivation(), countForActivation + 1);
 		return id;
 	}
 

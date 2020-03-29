@@ -67,7 +67,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	 * @throws InterruptedException
 	 */
 	public final void trackedAction(Core controller) throws InterruptedException {
-		String executionId = statistics.useNow();
+		String executionId = statistics.useNow(ExecutionContext.Builder.of().setActivation(invoker).setController(controller).build());
 		action(controller);
 		statistics.executionFinished(executionId);
 	}

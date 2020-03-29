@@ -1,8 +1,39 @@
+function _drawActivationBreakdown() {
+    var encodedData = document.getElementById('task-activation-breakdown').innerHTML;
+    var data = atob(encodedData);
+    var dataObject = JSON.parse(data);
+
+    var activations = dataObject.taskActivationBreakdown.activations;
+    var colors = dataObject.taskActivationBreakdown.colors;
+    var breakdowns = dataObject.taskActivationBreakdown.values;
+
+    if (activations.length == 0) {
+        return null;
+    }
+
+    var ctx = document.getElementById('activationBreakdownChart').getContext('2d');
+    return new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: activations,
+            datasets: [{
+                label: 'Breakdown by activation',
+                backgroundColor: colors,
+                data: breakdowns
+            }]
+        },
+    });
+}
+
 function _drawPastRun() {
     var encodedData = document.getElementById('task-execution-data').innerHTML;
     var data = atob(encodedData);
     var dataObject = JSON.parse(data);
     var instances = dataObject.executionInstances;
+
+    if (instances.length == 0) {
+        return null;
+    }
 
     var labels = [];
     var data = [];
@@ -11,7 +42,7 @@ function _drawPastRun() {
         data.push(instances[i].duration);
     }
 
-    var ctx = document.getElementById('myChart').getContext('2d');
+    var ctx = document.getElementById('pastRunChart').getContext('2d');
     return new Chart(ctx, {
         type: 'bar',
         data: {

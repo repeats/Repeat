@@ -1,5 +1,6 @@
 package core.keyChain;
 
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,6 +62,32 @@ public class GlobalActivation implements IJsonable {
 		public GlobalActivation build() {
 			return new GlobalActivation(this);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(onKeyPressed, onKeyReleased);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		GlobalActivation other = (GlobalActivation) obj;
+		if (onKeyPressed != other.onKeyPressed) {
+			return false;
+		}
+		if (onKeyReleased != other.onKeyReleased) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

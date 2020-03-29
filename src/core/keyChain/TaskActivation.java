@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -199,6 +200,9 @@ public class TaskActivation implements IJsonable {
 	 * @return the global activation configuration for this activation.
 	 */
 	public final GlobalActivation getGlobalActivation() {
+		if (globalActivation == null) {
+			return GlobalActivation.newBuilder().build();
+		}
 		return globalActivation;
 	}
 
@@ -349,6 +353,37 @@ public class TaskActivation implements IJsonable {
 			LOGGER.log(Level.WARNING, "Exception while parsing task activation.", e);
 			return null;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(
+				getGlobalActivation(),
+				getHotkeys(),
+				getKeySequences(),
+				getMouseGestures(),
+				getPhrases(),
+				getVariables());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		TaskActivation other = (TaskActivation) obj;
+		return getGlobalActivation().equals(other.getGlobalActivation())
+				&& getHotkeys().equals(other.getHotkeys())
+				&& getKeySequences().equals(other.getKeySequences())
+				&& getMouseGestures().equals(other.getMouseGestures())
+				&& getPhrases().equals(other.getPhrases())
+				&& getVariables().equals(other.getVariables());
 	}
 
 	public static Builder newBuilder() {

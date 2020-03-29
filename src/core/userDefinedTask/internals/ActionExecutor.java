@@ -35,7 +35,7 @@ public class ActionExecutor {
 	}
 
 
-	public String startExecutingAction(UserDefinedAction action) {
+	private String startExecutingAction(UserDefinedAction action) {
 		return startExecutingAction(ActionExecutionRequest.of(), action);
 	}
 	/**
