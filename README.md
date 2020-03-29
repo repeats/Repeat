@@ -101,4 +101,5 @@ Libraries used
 5. [Apache HttpClient](https://hc.apache.org/httpcomponents-client-ga/index.html)
 6. [FreeMarker Java Template Engine](https://freemarker.apache.org/)
 7. [Light Bootstrap Dashboard](https://creative-tim.com/product/light-bootstrap-dashboard)
-8. [CodeMirror: a versatile text editor in Javascript](http://codemirror.net/)
+8. [CodeMirror: a versatile text editor in Javascript](http://codemirror.net)
+9. [Chart.js: simple yet flexible JavaScript charting](https://chartjs.org)

@@ -56,7 +56,8 @@
                             <li><a href="https://hc.apache.org/httpcomponents-client-ga/index.html">Apache HttpClient</a></li>
                             <li><a href="https://freemarker.apache.org/">FreeMarker Java Template Engine</a></li>
                             <li><a href="https://creative-tim.com/product/light-bootstrap-dashboard">Light Bootstrap Dashboard</a></li>
-                            <li><a href="http://codemirror.net/">CodeMirror: a versatile text editor in Javascript</a></li>
+                            <li><a href="https://codemirror.net">CodeMirror: a versatile text editor in Javascript</a></li>
+                            <li><a href="https://chartjs.org">Chart.js: simple yet flexible JavaScript charting</a></li>
                         </ul>
                     </div>
                 </div>
