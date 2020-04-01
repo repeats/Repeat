@@ -2,7 +2,7 @@
 Repeat
 ======
 
-Full-fledged mouse/keyboard record/replay and sophisticated automation macros/hotkeys creation using modern programming languages, and more advanced automation features. Available across three major OSes: Windows, OSX, and Linux.
+Đây là chương trình để lưu và chạy lại các tương tác trên bàn phím/chuột, tạo macro bằng cách lập trình, và nhiều tính năng nâng cao khác. Chương trình này chạy trên Windows, Linux, và cả OSX.
 
 [![SourceForge](https://sourceforge.net/sflogo.php?type=11&group_id=3172773)](https://sourceforge.net/projects/repeat1/)
 ========================================================================================================================
@@ -10,7 +10,7 @@ Full-fledged mouse/keyboard record/replay and sophisticated automation macros/ho
 Demo
 ====
 
-Note that the following gifs are at 1x speedup.
+Lưu ý là các gifs sau đều được chạy ở tốc độ thực (1x speedup).
 ![Word expansion demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_key_expansion.gif)
 
 ![Recording & playback](https://raw.githubusercontent.com/repeats/Repeat/master/demo_record_replay.gif)
@@ -20,86 +20,86 @@ Note that the following gifs are at 1x speedup.
 ![Multi clipboard](https://raw.githubusercontent.com/repeats/Repeat/master/demo_multi_clipboard.gif)
 
 
-[Task creation - All caps](https://youtu.be/wICRVQNVNSM)
+[Viết hoa tất cả các chữ tô đậm](https://youtu.be/wICRVQNVNSM)
 
-[Task creation - Fixing a typo](https://youtu.be/oCCyYbj198U)
+[Sửa lỗi đánh máy](https://youtu.be/oCCyYbj198U)
 
-[Task creation - Clipboard with history](https://youtu.be/dqNckwIPjCE)
+[Tạo clipboard với nhiều ngăn](https://youtu.be/dqNckwIPjCE)
 
-[Playing Collapse 3](https://youtu.be/19i5ZlZvsAc)
+[Marco để chơi Collapse 3](https://youtu.be/19i5ZlZvsAc)
 
-[Playing Plants vs Zombies](https://youtu.be/7pQHcFfrpDI)
+[Marco để chơi Plants vs Zombies](https://youtu.be/7pQHcFfrpDI)
 
-Features
-=======
-1. Record and replay computer activities.
-2. Store recorded tasks and replay them later.
-3. Write your own task **in your favorite text editor** using Python or Java so you have more control over the computer.
-4. Assign multiple arbitrary hotkey combinations to activate a stored task.
-5. Assign multiple mouse gestures to activate a stored task.
-6. Compile and run tasks on a group of remote machines.
-7. Manage your Repeat tasks (either recorded or written).
+Các tính năng chính
+===================
+1. Lưu và chạy lại các task trên máy tính.
+2. Lưu các task và chạy lại chúng sau khi khởi động lại.
+3. Viết và compile các task bằng **text editor tùy chọn** bằng Python hoặc Java. Cơ bản là lập trình được là chạy được.
+4. Đặt hotkey bất kỳ để kích hoạt task đã lưu. 
+5. Đặt chuyển động chuột (VD như vẽ vòng tròn) để kích hoạt task đã lưu.
+6. Lưu và chạy các task trên một máy khác (hoặc một nhóm máy khác) trong cùng mạng.
+7. Quản lý các task (task được lưu hoặc được biên dịch từ code).
 
-Disclaimer
+Lưu ý
 ==========
-1. This is not a password storage program. Source code written is not encrypted.
-2. This program executes your own code. Use the advanced compile - replay feature carefully. Test your task before adding it to the list.
+1. Đây không phải chương trình lưu mật khẩu để tự nhập vào. Đoạn mã lệnh viết sẽ không được encrypt.
+2. Đây là chương trình chạy code của người viết. Sử dụng tính năng compile và chạy lại cẩn thận không sẽ dễ bị treo máy.
 
-Requirements
+Yêu cầu tối thiểu
 ============
 
-JDK 8.0 or above. Both Oracle JDK and OpenJDK are OK.
+JDK 8.0 hoặc mới hơn. JDK của Oracle hay OpenJDK đều được.
 
-If you wish to write/run tasks in Python, then Python3 is required.
+Nếu muốn viết và chạy các task bằng Python thì phải có Python 3.
 
-On Windows, no special permission required.
+Trên Windows không cần đặc quyền admin nào.
 
-On Linux, X11 window system. This would not work on Wayland window system.
+Trên Linux, chương trình chỉ chạy trên X11. Nếu hệ điều hành chạy Wayland chương trình sẽ không nhận các tương tác qua chuột và bàn phím.
 
-On OSX, accessibility permission is required for the native hook to work. Enable this in System Preference --> Security & Privacy --> Accessibilty --> Privacy.
+Trên OSX, chương trình cần "accessibility permission" để nhận các tương tác ở level thấp. Chỉnh quyền này bằng cách vào System Preference --> Security & Privacy --> Accessibilty --> Privacy.
 
-Installation
+Cài đặt
 ============
-Just download the [latest version](https://github.com/repeats/Repeat/releases/latest), put the jar in a **separate** directory, and run it with java. That's it! You may need appropriate privileges since Repeat needs to listen to and/or control the mouse and keyboard.
+Download [file JAR mới nhất](https://github.com/repeats/Repeat/releases/latest), đặt file jar vào một thư mục **riêng** rồi chạy bằng Java! Chương trình có thể cần một số đặc quyền vì nó theo dõi các hoạt động của chuột và bàn phím.
 
-The recommended way to launch the program is through terminal:
+Cách tốt nhất để chạy trên Linux/OSX là dùng terminal:
 
      $cd <jar_directory>
      $java -jar Repeat.jar
 
-**Important:** The path containing the JAR file **must not** have space in it.
+**Lưu ý:** Thư mục chứa JAR file **không được** có ký tự trắng (space) trong tên.
 
-Note that since **Java 9**, the jar file must be launched from a JDK (as opposed to a JRE) to be able to compile file. The workaround used in Java 8 and before to set Java home no longer works.
+Từ bản **Java 9** trở lên, file JAR phải được chạy từ JDK (thay vì từ JRE) thì mới compile được code. Cái hack xài ở Java 8 và trước đó để chỉnh Java home không hoạt động ở Java 9 về sau.
 
-FAQ
-===
+Các câu hỏi thường gặp
+======================
 
-## What is the difference between this and [AutoHotkey](https://autohotkey.com/) or [AutoKey](https://github.com/autokey/autokey)?
-1. This runs on any platform that supports Java and is non [headless](https://en.wikipedia.org/wiki/Headless_software). AutoHotkey is written for Windows only, and AutoKey is only for Linux. Repeat works on Linux, Windows, and OSX. **The written macro can be re-used cross platforms.**
-2. The only limit to your hotkey power is your knowledge of the language you write your tasks in (e.g. Java, Python or C#). You don't have to learn a new meta language provided by AutoHotkey. This allows you to leverage your expertise in the language chosen and/or the immense support from the internet.
+## Chương trình này khác [AutoHotkey](https://autohotkey.com/) or [AutoKey](https://github.com/autokey/autokey) chỗ nào?
+1. Repeat chạy trên các hệ điều hành lớn, miễn có Java và không phải [headless](https://en.wikipedia.org/wiki/Headless_software). AutoHotkey chỉ chạy trên Windows, và AutoKey chỉ trạy trên Linux. Repeat chạy trên cả Windows, Linux, và OSX. **Đặc biệt là các đoạn code viết ra có thể được xài lại trên các hệ điều hành khác nhau.**
+2. Vì chương trình là đoạn code, nếu bạn viết code được (Python, Java, hay C#) là chạy được, không bị giới hạn bởi API. Bạn không phải học ngôn ngữ lập trình của AutoHotkey. Code bằng các ngôn ngữ lập trình lớn sẽ dễ hơn nếu bạn có sẵn kinh nghiệm, và có nhiều ví dụ từ Stackoverflow hơn nếu không biết làm cái gì đó.
 
-## Why is this only available in non headless system?
-It does not make sense to listen to keyboard and mouse events in a headless system. How can you move your mouse if you have no screen? What would typing a key mean in such system?
+## Tại sao chương trình này chỉ chạy được trên máy không phải headless?
+Hệ thống headless không có bàn phím và chuột, vì vậy không thể theo dõi và lưu lại, hay điều khiển hoạt động của bàn phím và chuột.
 
-## I am running a Linux machine. Will the C# module get started at application start time?
-C# module is disabled if you are on a non Windows OS. Nothing from C# module will get started.
+## Module C# có chạy trên Linux được không?
+Module C# chỉ chạy trên Windows. Nếu không phải Windows thì module C# sẽ không khởi động.
 
-## Why can't this be a web service? It's a lot of effort downloading the JAR and run it.
-This application listens on your mouse and keyboard events as well as allowing you to simulate mouse/keyboard events. If I could do such thing from a web browser, some hackers must have got your personal information, passwords, bank account number by now.
+## Tại sao chương trình này không host trên trang web được? Nếu được thì đỡ mất công tải file JAR về máy và chạy.
+Chương trình này theo dõi các hoạt động của bàn phím và chuột, và có thể tự động chèn thêm các hoạt động của bàn phím và chuột. Nếu mà trang web làm được mấy cái này từ trình duyệt, các hacker đã thu thập mật khẩu và thông tin ngân hàng của người ta lâu rồi.
 
-Getting started and advanced features
-=====================================
+Hướng dẫn sử dụng và các tính năng nâng cao
+===========================================
 
-Check out the [wiki page](https://github.com/repeats/Repeat/wiki).
+Xem thêm tại [trang wiki](https://github.com/repeats/Repeat/wiki). (Mình sẽ dịch sang tiếng Việt sớm...)
 
-Libraries used
-==============
+Các library sử dụng trong Repeat
+================================
 1. [Simple Native Hooks](https://github.com/repeats/SimpleNativeHooks)
 2. [Argo JSON](http://argo.sourceforge.net)
-3. [Jama - A Java matrix package](https://math.nist.gov/javanumerics/jama/)
+3. [Jama - Library ma trận](https://math.nist.gov/javanumerics/jama/)
 4. [Apache HttpComponents Core](https://hc.apache.org/httpcomponents-core-ga/index.html)
 5. [Apache HttpClient](https://hc.apache.org/httpcomponents-client-ga/index.html)
 6. [FreeMarker Java Template Engine](https://freemarker.apache.org/)
 7. [Light Bootstrap Dashboard](https://creative-tim.com/product/light-bootstrap-dashboard)
-8. [CodeMirror: a versatile text editor in Javascript](http://codemirror.net)
-9. [Chart.js: simple yet flexible JavaScript charting](https://chartjs.org)
+8. [CodeMirror: text editor trên trình duyệt bằng Javascript](http://codemirror.net)
+9. [Chart.js: vẽ đồ thị bằng JavaScript](https://chartjs.org)
