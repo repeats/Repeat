@@ -120,7 +120,7 @@ public class MainBackEndHolder {
 		keysManager = new GlobalEventsManager(config, coreProvider, actionExecutor);
 		replayConfig = ReplayConfig.of();
 		runActionConfig = RunActionConfig.of();
-		recorder = new Recorder(coreProvider, keysManager);
+		recorder = new Recorder(coreProvider);
 
 		switchRecord = new UserDefinedAction() {
 			@Override

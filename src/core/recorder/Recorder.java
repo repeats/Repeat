@@ -10,9 +10,9 @@ import org.simplenativehooks.utilities.Function;
 
 import core.controller.Core;
 import core.controller.CoreProvider;
-import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.Language;
 import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
+import core.languageHandler.sourceGenerator.AbstractSourceGenerator.Device;
 import core.languageHandler.sourceGenerator.CSharpSourceGenerator;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
@@ -38,7 +38,7 @@ public class Recorder {
 
 	private HashMap<Language, AbstractSourceGenerator> sourceGenerators;
 
-	public Recorder(CoreProvider coreProvider, final GlobalEventsManager globalKeys) {
+	public Recorder(CoreProvider coreProvider) {
 		final Core controller = coreProvider.getLocal();
 		taskScheduler = new TaskScheduler();
 
@@ -65,7 +65,7 @@ public class Recorder {
 				}));
 
 				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
-					generator.submitTask(time, "keyBoard", "press", new int[]{code});
+					generator.submitTask(time, Device.KEYBOARD, "press", new int[]{code});
 				}
 				return true;
 			}
@@ -84,7 +84,7 @@ public class Recorder {
 				}));
 
 				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
-					generator.submitTask(time, "keyBoard", "release", new int[]{code});
+					generator.submitTask(time, Device.KEYBOARD, "release", new int[]{code});
 				}
 				return true;
 			}
@@ -110,10 +110,10 @@ public class Recorder {
 
 				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 					if (mode == MODE_MOUSE_CLICK_ONLY) {
-						generator.submitTask(time, "mouse", "move", new int[]{r.getX(), r.getY()});
-						generator.submitTask(time + 5, "mouse", "release", new int[]{code});
+						generator.submitTask(time, Device.MOUSE, "move", new int[]{r.getX(), r.getY()});
+						generator.submitTask(time + 5, Device.MOUSE, "release", new int[]{code});
 					} else {
-						generator.submitTask(time, "mouse", "release", new int[]{code});
+						generator.submitTask(time, Device.MOUSE, "release", new int[]{code});
 					}
 				}
 				return true;
@@ -137,10 +137,10 @@ public class Recorder {
 
 				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
 					if (mode == MODE_MOUSE_CLICK_ONLY) {
-						generator.submitTask(time, "mouse", "move", new int[]{r.getX(), r.getY()});
-						generator.submitTask(time + 5, "mouse", "press", new int[]{code});
+						generator.submitTask(time, Device.MOUSE, "move", new int[]{r.getX(), r.getY()});
+						generator.submitTask(time + 5, Device.MOUSE, "press", new int[]{code});
 					} else {
-						generator.submitTask(time, "mouse", "press", new int[]{code});
+						generator.submitTask(time, Device.MOUSE, "press", new int[]{code});
 					}
 				}
 				return true;
@@ -163,7 +163,7 @@ public class Recorder {
 				}));
 
 				for (AbstractSourceGenerator generator : sourceGenerators.values()) {
-					generator.submitTask(time, "mouse", "move", new int[]{r.getX(), r.getY()});
+					generator.submitTask(time, Device.MOUSE, "move", new int[]{r.getX(), r.getY()});
 				}
 				return true;
 			}

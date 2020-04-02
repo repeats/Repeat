@@ -1,13 +1,12 @@
 package core.languageHandler.sourceGenerator;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import staticResources.BootStrapResources;
 import core.languageHandler.Language;
 import core.scheduler.SchedulingData;
+import staticResources.BootStrapResources;
 
 public abstract class AbstractSourceGenerator {
 
@@ -20,6 +19,22 @@ public abstract class AbstractSourceGenerator {
 	protected static final String TWO_TAB = TAB + TAB;
 	protected static final String THREE_TAB = TWO_TAB + TAB;
 	protected static final String FOUR_TAB = THREE_TAB + TAB;
+
+	public enum Device {
+		MOUSE("mouse"),
+		KEYBOARD("keyBoard");
+
+		private final String text;
+
+		private Device(final String text) {
+	        this.text = text;
+	    }
+
+		@Override
+	    public String toString() {
+	        return text;
+	    }
+	}
 
 	private static final Map<Language, AbstractSourceGenerator> REFERENCE_SOURCES;
 	static {
@@ -49,7 +64,7 @@ public abstract class AbstractSourceGenerator {
 		mouseSourceCodeGenerator = buildMouseSourceCodeGenerator();
 	}
 
-	public final boolean submitTask(long time, String device, String action, int[] param) {
+	public final boolean submitTask(long time, Device device, String action, int[] param) {
 		if (!verify(device, action, param)) {
 			return false;
 		}
@@ -57,11 +72,11 @@ public abstract class AbstractSourceGenerator {
 		return internalSubmitTask(time, device, action, param);
 	}
 
-	protected boolean internalSubmitTask(long time, String device, String action, int[] params) {
+	protected boolean internalSubmitTask(long time, Device device, String action, int[] params) {
 		String mid = "";
-		if (device.equals("mouse")) {
+		if (device.equals(Device.MOUSE)) {
 			mid = mouseSourceCodeGenerator.getSourceCode(action, params);
-		} else if (device.equals("keyBoard")) {
+		} else if (device.equals(Device.KEYBOARD)) {
 			mid = keyboardSourceCodeGenerator.getSourceCode(action, params);
 		} else {
 			return false;
@@ -70,8 +85,8 @@ public abstract class AbstractSourceGenerator {
 		return mid == null ? false : sourceScheduler.addTask(new SchedulingData<String>(time, getSourceTab() + mid + "\n"));
 	}
 
-	protected final boolean verify(String device, String action, int[] param) {
-		return Arrays.asList("mouse", "keyBoard").contains(device);
+	protected final boolean verify(Device device, String action, int[] param) {
+		return true;
 	}
 
 	public final void clear() {
