@@ -30,7 +30,7 @@ public class Jsonizer {
 
 	private Jsonizer() {}
 
-	public static boolean parse(JsonNode node, AutoJsonable dest) {
+	public static boolean parse(JsonNode node, IJsonable dest) {
 		try {
 			return internalParse(node, dest);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
