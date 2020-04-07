@@ -4,6 +4,7 @@ public enum Language {
 	JAVA("java"),
     PYTHON("python"),
     CSHARP("C#"),
+    MANUAL_BUILD("manual"),
     SCALA("scala"),
     ;
 

@@ -45,6 +45,7 @@ public class BootStrapResources {
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.JAVA, getFile("/staticContent/natives/java/TemplateRepeat"));
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON, getFile("/staticContent/natives/python/template_repeat.py"));
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/staticContent/natives/csharp/source/TemplateRepeat.cs"));
+		NATIVE_LANGUAGE_TEMPLATES.put(Language.MANUAL_BUILD, getFile("/staticContent/natives/manual/TemplateRepeat.txt"));
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.SCALA, getFile("/staticContent/natives/scala/TemplateRepeat.scala"));
 
 		/*********************************************************************************/

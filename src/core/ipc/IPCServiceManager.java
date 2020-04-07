@@ -40,6 +40,7 @@ public final class IPCServiceManager {
 		ipcByLanugage.put(Language.JAVA, -1);
 		ipcByLanugage.put(Language.PYTHON, IPCServiceName.PYTHON.value());
 		ipcByLanugage.put(Language.CSHARP, IPCServiceName.CSHARP.value());
+		ipcByLanugage.put(Language.MANUAL_BUILD, -1);
 		ipcByLanugage.put(Language.SCALA, IPCServiceName.SCALA.value());
 	}
 
