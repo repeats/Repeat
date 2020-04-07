@@ -1,9 +1,10 @@
 package utilities.logging;
 
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class LogHolder {
+public class LogHolder extends OutputStream {
 
 	private static final int MAX_LINE_COUNT = 4096;
 
@@ -16,6 +17,7 @@ public class LogHolder {
 		lines = new LinkedList<>();
 	}
 
+	@Override
 	public void write(int b) {
 		String s = String.valueOf((char) b);
 		content.append(s);

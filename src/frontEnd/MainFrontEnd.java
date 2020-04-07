@@ -2,7 +2,6 @@ package frontEnd;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +10,7 @@ import org.jnativehook.NativeHookException;
 import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
-import utilities.logging.OutStream;
+import utilities.logging.CompositeOutputStream;
 
 public class MainFrontEnd {
 
@@ -46,10 +45,8 @@ public class MainFrontEnd {
 		/*************************************************************************************/
 		backEnd.renderTaskGroup();
 
-		PrintStream printStream = new PrintStream(new OutStream(backEnd.logHolder));
-		System.setOut(printStream);
-		System.setErr(printStream);
-		Logger.getLogger("").addHandler(new ConsoleHandler());
+		System.setOut(new PrintStream(CompositeOutputStream.of(backEnd.logHolder, System.out)));
+		System.setErr(new PrintStream(CompositeOutputStream.of(backEnd.logHolder, System.err)));
 		/*************************************************************************************/
 
 		backEnd.initiateBackEndActivities();
