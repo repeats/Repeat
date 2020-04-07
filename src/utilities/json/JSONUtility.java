@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import argo.format.CompactJsonFormatter;
 import argo.format.JsonFormatter;
 import argo.format.PrettyJsonFormatter;
 import argo.jdom.JdomParser;
@@ -40,6 +41,25 @@ public class JSONUtility {
 	 */
 	public static String jsonToString(JsonRootNode node) {
 		JsonFormatter JSON_FORMATTER = new PrettyJsonFormatter();
+		return JSON_FORMATTER.format(node);
+	}
+
+	/**
+	 * Convert JsonNode to string representation that does not have any new line character.
+	 * @param node JSON node
+	 * @return string representation of the json node
+	 */
+	public static String jsonToSingleLineString(JsonNode node) {
+		return jsonToSingleLineString(node.getRootNode());
+	}
+
+	/**
+	 * Convert JsonNode to string representation that does not have any new line character.
+	 * @param node JSON node
+	 * @return string representation of the json node
+	 */
+	public static String jsonToSingleLineString(JsonRootNode node) {
+		JsonFormatter JSON_FORMATTER = new CompactJsonFormatter();
 		return JSON_FORMATTER.format(node);
 	}
 
