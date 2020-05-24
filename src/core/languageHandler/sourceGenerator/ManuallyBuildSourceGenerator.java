@@ -20,7 +20,7 @@ public class ManuallyBuildSourceGenerator extends InjectionSourceGenerator {
 		this.sourceScheduler.setSleepSource(new Function<Long, String>() {
 			@Override
 			public String apply(Long r) {
-				return JSONUtility.jsonToSingleLineString(ControllerDelayStep.of(r.intValue()).jsonize()) + "\n";
+				return JSONUtility.jsonToSingleLineString(ControllerDelayStep.of(r.intValue()).jsonize());
 			}
 		});
 	}

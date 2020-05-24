@@ -1,7 +1,7 @@
 package core.languageHandler.sourceGenerator;
 
-import utilities.Function;
 import core.languageHandler.Language;
+import utilities.Function;
 
 public class ScalaSourceGenerator extends InjectionSourceGenerator {
 
@@ -10,7 +10,7 @@ public class ScalaSourceGenerator extends InjectionSourceGenerator {
 		this.sourceScheduler.setSleepSource(new Function<Long, String>() {
 			@Override
 			public String apply(Long r) {
-				return TAB + "Thread.sleep(" + r + ")\n";
+				return TAB + "Thread.sleep(" + r + ")";
 			}
 		});
 	}

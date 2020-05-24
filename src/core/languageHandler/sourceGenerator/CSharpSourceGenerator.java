@@ -1,7 +1,7 @@
 package core.languageHandler.sourceGenerator;
 
-import utilities.Function;
 import core.languageHandler.Language;
+import utilities.Function;
 
 public class CSharpSourceGenerator extends InjectionSourceGenerator {
 
@@ -10,7 +10,7 @@ public class CSharpSourceGenerator extends InjectionSourceGenerator {
 		this.sourceScheduler.setSleepSource(new Function<Long, String>() {
 			@Override
 			public String apply(Long r) {
-				return FOUR_TAB + "Thread.Sleep(" + r + ");\n";
+				return FOUR_TAB + "Thread.Sleep(" + r + ");";
 			}
 		});
 	}

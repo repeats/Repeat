@@ -2,9 +2,9 @@ package core.languageHandler.sourceGenerator;
 
 import java.util.logging.Logger;
 
-import utilities.Function;
 import core.scheduler.AbstractScheduler;
 import core.scheduler.SchedulingData;
+import utilities.Function;
 
 class TaskSourceScheduler extends AbstractScheduler<String> {
 
@@ -39,7 +39,7 @@ class TaskSourceScheduler extends AbstractScheduler<String> {
 				System.exit(1);
 			}
 
-			output.append(getSleepSource.apply((long) ((currentTime - time) / speedup)));
+			output.append(getSleepSource.apply((long) ((currentTime - time) / speedup)) + "\n");
 
 			time = currentTime;
 			output.append(t.getData());
