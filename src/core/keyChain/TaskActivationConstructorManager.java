@@ -4,9 +4,10 @@ import org.simplenativehooks.events.NativeKeyEvent;
 import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 import org.simplenativehooks.utilities.Function;
 
+import core.background.AbstractBackgroundEntityManager;
 import globalListener.GlobalListenerFactory;
 
-public class TaskActivationConstructorManager extends core.background.AbstractBackgroundEntityManager<TaskActivationConstructor> {
+public class TaskActivationConstructorManager extends AbstractBackgroundEntityManager<TaskActivationConstructor> {
 
 	private AbstractGlobalKeyListener keyListener;
 

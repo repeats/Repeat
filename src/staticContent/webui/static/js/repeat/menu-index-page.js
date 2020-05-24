@@ -174,16 +174,7 @@ function menuHaltAllTasksAction() {
 
 function menuGenerateSourceAction() {
     $.post("/internals/menu/tools/generate-source", function(data) {
-        var replacePage = ((data.taskType == "source") != hasSourceCode()) || data.taskType == "manually_build";
-        if (replacePage) {
-            document.getElementById('source-code-container').innerHTML = data.page;
-            registerSourceTextArea();
-            manuallyBuildTask.registerActions();
-        }
-
-        if (data.taskType == "source") {
-            setCurrentSourceCode(data.source);
-        }
+        fillSourceWithSourcePageResponse(data);
     }).fail(function(response) {
         alert('Error generating source: ' + response.responseText);
     });

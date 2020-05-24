@@ -36,19 +36,23 @@ function getSourceTemplate(editor) {
 
 function fillSourceForTask(taskId) {
     $.post("/internals/set/selected-task", JSON.stringify({ "task" : taskId }), function(data) {
-        var replacePage = ((data.taskType == "source") != hasSourceCode()) || data.taskType == "manually_build";
-        if (replacePage) {
-            document.getElementById('source-code-container').innerHTML = data.page;
-            registerSourceTextArea();
-            manuallyBuildTask.registerActions();
-        }
-
-        if (data.taskType == "source") {
-            setCurrentSourceCode(data.source);
-        }
+        fillSourceWithSourcePageResponse(data);
     }).fail(function(response) {
         alert('Error getting source code for task: ' + response.responseText);
     });
+}
+
+function fillSourceWithSourcePageResponse(response) {
+    var replacePage = ((response.taskType == "source") != hasSourceCode()) || response.taskType == "manually_build";
+    if (replacePage) {
+        document.getElementById('source-code-container').innerHTML = response.page;
+        registerSourceTextArea();
+        manuallyBuildTask.registerActions();
+    }
+
+    if (response.taskType == "source") {
+        setCurrentSourceCode(response.source);
+    }
 }
 
 function getCurrentSourceCode() {
