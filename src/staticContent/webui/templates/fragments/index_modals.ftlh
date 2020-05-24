@@ -132,10 +132,10 @@
                     <h4 class="modal-title">Pick a hotkey to configure</h4>
                 </div>
                 <div class="modal-body">
-                    <a class="btn btn-default form-control" href="/task-details?id=record"> Start/Stop recording </a>
-                    <a class="btn btn-default form-control" href="/task-details?id=replay"> Start/stop replaying </a>
-                    <a class="btn btn-default form-control" href="/task-details?id=runCompiled"> Run/Stop compiled action </a>
-                    <a class="btn btn-default form-control" href="/task-details?id=mouseGestureActivation"> Mouse gesture activation </a>
+                    <a class="btn btn-default form-control" href="/tasks/details?id=record"> Start/Stop recording </a>
+                    <a class="btn btn-default form-control" href="/tasks/details?id=replay"> Start/stop replaying </a>
+                    <a class="btn btn-default form-control" href="/tasks/details?id=runCompiled"> Run/Stop compiled action </a>
+                    <a class="btn btn-default form-control" href="/tasks/details?id=mouseGestureActivation"> Mouse gesture activation </a>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

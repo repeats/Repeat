@@ -15,6 +15,8 @@ import org.apache.http.protocol.HttpContext;
 import core.languageHandler.Language;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
+import core.userDefinedTask.manualBuild.ManuallyBuildActionConstructorManager;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ManuallyBuildActionBuilderBody;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedCompilingLanguage;
 import core.webui.server.handlers.renderedobjects.RenderedConfig;
@@ -27,8 +29,11 @@ import utilities.DateUtility;
 
 public class IndexPageHandler extends AbstractUIHttpHandler {
 
-	public IndexPageHandler(ObjectRenderer objectRenderer) {
+	private final ManuallyBuildActionConstructorManager manuallyBuildActionConstructorManager;
+
+	public IndexPageHandler(ObjectRenderer objectRenderer, ManuallyBuildActionConstructorManager manuallyBuildActionConstructorManager) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.GET_METHOD);
+		this.manuallyBuildActionConstructorManager = manuallyBuildActionConstructorManager;
 	}
 
 	@Override
@@ -53,6 +58,13 @@ public class IndexPageHandler extends AbstractUIHttpHandler {
 			languages.add(RenderedCompilingLanguage.forLanguage(language, language == selectedLanguage));
 		}
 		data.put("compilingLanguages", languages);
+		boolean displayManualBuild = backEndHolder.getSelectedLanguage() == Language.MANUAL_BUILD;
+		data.put("displayManualBuild", displayManualBuild);
+		if (displayManualBuild) {
+			String id = manuallyBuildActionConstructorManager.addNew();
+			Map<String, Object> manuallyBuildBodyData = ManuallyBuildActionBuilderBody.bodyData(manuallyBuildActionConstructorManager, id);
+			data.putAll(manuallyBuildBodyData);
+		}
 
 		return renderedPage(exchange, "index", data);
 	}

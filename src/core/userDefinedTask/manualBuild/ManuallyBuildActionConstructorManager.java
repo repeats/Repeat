@@ -1,12 +1,18 @@
 package core.userDefinedTask.manualBuild;
 
-public class ManuallyBuildActionConstructorManager extends AbstractConstructorManager<ManuallyBuildActionConstructor> {
+import core.background.AbstractBackgroundEntityManager;
+
+public class ManuallyBuildActionConstructorManager extends AbstractBackgroundEntityManager<ManuallyBuildActionConstructor> {
 
 	public static ManuallyBuildActionConstructorManager of() {
 		return new ManuallyBuildActionConstructorManager();
 	}
 
-	public String addNewConstructor() {
-		return addNew(ManuallyBuildActionConstructor.of());
+	public String addNew() {
+		return add(ManuallyBuildActionConstructor.of());
+	}
+
+	public String addNew(ManuallyBuildAction action) {
+		return add(ManuallyBuildActionConstructor.of(action));
 	}
 }

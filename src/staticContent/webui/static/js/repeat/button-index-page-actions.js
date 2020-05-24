@@ -74,13 +74,21 @@ function buttonReplayConfigSaveAction(e) {
 //////////////////////////////////////////////////////////////////////////////////
 
 function buttonCompileAction(e) {
-    var source = getCurrentSourceCode();
+    if (document.getElementById("manually-build-task-id")) {
+        $.post("/internals/action/manually-build/constructor/build", JSON.stringify({id: document.getElementById("manually-build-task-id").innerHTML}), function(data) {
+            // Nothing to do.
+        }).fail(function(response) {
+            alert('Error sending request to compile: ' + response.responseText);
+        });
+    } else {
+        var source = getCurrentSourceCode();
 
-    $.post("/internals/action/compile-task", source, function(status) {
-        // Nothing to do.
-    }).fail(function(response) {
-        alert('Error sending request to compile: ' + response.responseText);
-    });
+        $.post("/internals/action/compile-task", source, function(status) {
+            // Nothing to do.
+        }).fail(function(response) {
+            alert('Error sending request to compile: ' + response.responseText);
+        });    
+    }
 }
 
 function buttonRunAction(e) {

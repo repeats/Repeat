@@ -4,10 +4,9 @@ import org.simplenativehooks.events.NativeKeyEvent;
 import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
 import org.simplenativehooks.utilities.Function;
 
-import core.userDefinedTask.manualBuild.AbstractConstructorManager;
 import globalListener.GlobalListenerFactory;
 
-public class TaskActivationConstructorManager extends AbstractConstructorManager<TaskActivationConstructor> {
+public class TaskActivationConstructorManager extends core.background.AbstractBackgroundEntityManager<TaskActivationConstructor> {
 
 	private AbstractGlobalKeyListener keyListener;
 
@@ -37,7 +36,7 @@ public class TaskActivationConstructorManager extends AbstractConstructorManager
 	}
 
 	private synchronized void onStroke(KeyStroke stroke) {
-		for (TaskActivationConstructor constructor : constructors.values()) {
+		for (TaskActivationConstructor constructor : entities.values()) {
 			constructor.onStroke(stroke);
 		}
 	}
@@ -48,6 +47,6 @@ public class TaskActivationConstructorManager extends AbstractConstructorManager
 
 	public synchronized String addNewConstructor(TaskActivation source, TaskActivationConstructor.Config config) {
 		TaskActivationConstructor constructor = new TaskActivationConstructor(source, config);
-		return addNew(constructor);
+		return add(constructor);
 	}
 }

@@ -109,7 +109,7 @@ public class MainBackEndHolder {
 		logHolder = new LogHolder();
 
 		executor = new ScheduledThreadPoolExecutor(10);
-		compilingLanguage = Language.JAVA;
+		compilingLanguage = Language.MANUAL_BUILD;
 
 		taskGroups = new ArrayList<>();
 
@@ -211,6 +211,8 @@ public class MainBackEndHolder {
 
 		GlobalListenerHookController.of().cleanup();
 		SharedVariablesPubSubManager.get().stop();
+
+		LOGGER.info("All backend acitvities terminated!");
 	}
 
 	public void scheduleExit(long delayMs) {
@@ -224,10 +226,12 @@ public class MainBackEndHolder {
 	private void exit() {
 		stopBackEndActivities();
 
+		LOGGER.info("Writing config file...");
 		if (!writeConfigFile()) {
-			JOptionPane.showMessageDialog(null, "Error saving configuration file.");
+			LOGGER.log(Level.SEVERE, "Error saving configuration file.");
 			System.exit(2);
 		}
+		LOGGER.info("Wrote config file.");
 
 		if (trayIcon != null) {
 			trayIcon.remove();
@@ -240,6 +244,8 @@ public class MainBackEndHolder {
 		} catch (InterruptedException e) {
 			LOGGER.log(Level.WARNING, "Interrupted while awaiting backend executor termination.", e);
 		}
+
+		LOGGER.info("Terminated all background processes.");
 
 		// Only if really needed.
 		// System.exit(0);
@@ -616,7 +622,7 @@ public class MainBackEndHolder {
 			addTask(customFunction, group);
 			customFunction = null;
 		} else {
-			JOptionPane.showMessageDialog(null, "Nothing to add. Compile first?");
+			LOGGER.warning("Nothing to add. Compile first?");
 		}
 	}
 
@@ -837,23 +843,6 @@ public class MainBackEndHolder {
 		}
 	}
 
-	public String getSource(int row) {
-		// Load source if possible
-		if (row < 0 || row >= currentGroup.getTasks().size()) {
-			return null;
-		}
-
-		UserDefinedAction task = currentGroup.getTasks().get(row);
-		String source = task.getSource();
-
-		if (source == null) {
-			LOGGER.warning("Cannot retrieve source code for task " + task.getName() + ".\nTry recompiling and add again");
-			return null;
-		}
-
-		return source;
-	}
-
 	/**
 	 * Populate all tasks with task invoker to dynamically execute other tasks.
 	 */
@@ -981,6 +970,12 @@ public class MainBackEndHolder {
 		customFunction = null;
 	}
 
+	/**
+	 * Compile the given source code and sets it as the currently compiled action.
+	 *
+	 * @param source source code to compile.
+	 * @param taskName name of the newly created task. A default name will be given if not provided.
+	 */
 	public boolean compileSourceAndSetCurrent(String source, String taskName) {
 		AbstractNativeCompiler compiler = getCompiler();
 		UserDefinedAction createdInstance = compileSourceNatively(compiler, source, taskName);

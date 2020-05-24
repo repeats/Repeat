@@ -39,7 +39,7 @@ public abstract class AbstractTaskActivationConstructorActionHandler extends Abs
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Failed to get task activation constructor ID.");
 		}
 
-		TaskActivationConstructor constructor = taskActivationConstructorManager.getConstructor(id);
+		TaskActivationConstructor constructor = taskActivationConstructorManager.get(id);
 		if (constructor == null) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 404, "No constructor found for ID '" + id + "'.");
 		}

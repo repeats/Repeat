@@ -22,7 +22,7 @@ function tableTaskOnClick(cell, row, col) {
     var isFocused = utils_GetTableSelectedRowIndex("table-tasks") == row;
 
     if (!isFocused || col != 1) {
-        fillSourceForTask(row);
+        fillSourceForTask(getIdForTaskIndex(row));
     }
 
     if (!isFocused) {
@@ -36,7 +36,7 @@ function tableTaskOnClick(cell, row, col) {
         utils_FocusInputForModal("new-task-name");
     } 
     if (col == 1) { // Activation.
-        window.location.assign("/task-details?id=" + getIdForTaskIndex(row));
+        window.location.assign("/tasks/details?id=" + getIdForTaskIndex(row));
     }
     if (col == 2) { // Enable/disable.
         $.post("/internals/toggle/task-enabled", JSON.stringify({task: getIdForTaskIndex(row)}), function(data) {

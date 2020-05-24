@@ -19,6 +19,7 @@ import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import core.config.WebUIConfig;
 import core.ipc.IPCServiceWithModifablePort;
 import core.keyChain.TaskActivationConstructorManager;
+import core.userDefinedTask.manualBuild.ManuallyBuildActionConstructorManager;
 import core.webui.server.handlers.AboutPageHandler;
 import core.webui.server.handlers.ApiPageHandler;
 import core.webui.server.handlers.IndexPageHandler;
@@ -111,8 +112,14 @@ import core.webui.server.handlers.internals.tasks.ModifyTaskNameHandler;
 import core.webui.server.handlers.internals.tasks.RunTaskHandler;
 import core.webui.server.handlers.internals.tasks.SaveRunTaskConfigHandler;
 import core.webui.server.handlers.internals.tasks.SetSelectedTaskHandler;
+import core.webui.server.handlers.internals.tasks.TaskBuilderPageHandler;
 import core.webui.server.handlers.internals.tasks.TaskDetailsPageHandler;
+import core.webui.server.handlers.internals.tasks.TaskSourceCodeFragmentHandler;
 import core.webui.server.handlers.internals.tasks.ToggleTaskEnabledHandler;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionAddStepHandler;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionBuilldAction;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionListActionsForActorHandler;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionRemoveStepHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.webcommon.HttpHandlerWithBackend;
 import core.webui.webcommon.StaticFileServingHandler;
@@ -129,7 +136,9 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 	private MainBackEndHolder backEndHolder;
 	private TaskActivationConstructorManager taskActivationConstructorManager;
+	private ManuallyBuildActionConstructorManager manuallyBuildActionConstructorManager;
 	private final ObjectRenderer objectRenderer;
+	private final TaskSourceCodeFragmentHandler taskSourceCodeFragmentHandler;
 	private Thread mainThread;
 	private HttpServer server;
 
@@ -137,7 +146,9 @@ public class UIServer extends IPCServiceWithModifablePort {
 		setPort(DEFAULT_PORT);
 
 		taskActivationConstructorManager = new TaskActivationConstructorManager();
+		manuallyBuildActionConstructorManager = ManuallyBuildActionConstructorManager.of();
 		objectRenderer = new ObjectRenderer(BootStrapResources.getWebUIResource().getTemplateDir());
+		taskSourceCodeFragmentHandler = new TaskSourceCodeFragmentHandler(objectRenderer, manuallyBuildActionConstructorManager);
 	}
 
 	public synchronized void setMainBackEndHolder(MainBackEndHolder backEndHolder) {
@@ -153,12 +164,13 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 	private Map<String, HttpHandlerWithBackend> createHandlers() {
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
-		output.put("/", new IndexPageHandler(objectRenderer));
+		output.put("/", new IndexPageHandler(objectRenderer, manuallyBuildActionConstructorManager));
 		output.put("/ipcs", new IPCPageHandler(objectRenderer));
 		output.put("/repeats-remote-clients", new RepeatsRemoteClientPageHandler(objectRenderer));
 		output.put("/global-configs", new GlobalConfigsPageHandler(objectRenderer));
 		output.put("/task-groups", new TaskGroupsPageHandler(objectRenderer));
-		output.put("/task-details", new TaskDetailsPageHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/tasks/details", new TaskDetailsPageHandler(objectRenderer, taskActivationConstructorManager));
+		output.put("/tasks/manually-build", new TaskBuilderPageHandler(objectRenderer, manuallyBuildActionConstructorManager));
 		output.put("/api", new ApiPageHandler());
 		output.put("/about", new AboutPageHandler(objectRenderer));
 
@@ -174,7 +186,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/menu/file/exit", new MenuExitActionHandler());
 
 		output.put("/internals/menu/tools/halt-all-tasks", new MenuHaltAllTasksActionHandler());
-		output.put("/internals/menu/tools/generate-source", new MenuGetGeneratedSourceHandler());
+		output.put("/internals/menu/tools/generate-source", new MenuGetGeneratedSourceHandler(taskSourceCodeFragmentHandler));
 		output.put("/internals/menu/tools/get-compiling-languages-options", new MenuGetCompilingLanguagesActionHandler(objectRenderer));
 		output.put("/internals/menu/tools/set-compiling-language", new MenuSetCompilingLanguagesActionHandler(objectRenderer));
 
@@ -206,6 +218,11 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/action/task-activation/strokes/get", new ActionTaskActivationGetStrokesHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/global-key-action/released/set", new ActionTaskActivationSetGlobalKeyAction(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/global-key-action/pressed/set", new ActionTaskActivationSetGlobalKeyAction(objectRenderer, taskActivationConstructorManager));
+
+		output.put("/internals/action/manually-build/constructor/possible-actions", new ActionManuallyBuildActionListActionsForActorHandler(objectRenderer));
+		output.put("/internals/action/manually-build/constructor/add-step", new ActionManuallyBuildActionAddStepHandler(objectRenderer, manuallyBuildActionConstructorManager));
+		output.put("/internals/action/manually-build/constructor/remove-step", new ActionManuallyBuildActionRemoveStepHandler(objectRenderer, manuallyBuildActionConstructorManager));
+		output.put("/internals/action/manually-build/constructor/build", new ActionManuallyBuildActionBuilldAction(manuallyBuildActionConstructorManager));
 
 		output.put("/internals/action/add-task", new ActionAddTaskHandler(objectRenderer));
 		output.put("/internals/action/add-task-group", new ActionAddTaskGroupHandler(objectRenderer));
@@ -252,7 +269,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/get/rendered-task-groups-dropdown", new GetRenderedTaskGroupsDropdown(objectRenderer));
 		output.put("/internals/get/rendered-task-groups-select-modal", new GetRenderedTaskGroupsSelectModalHandler(objectRenderer));
 
-		output.put("/internals/set/selected-task", new SetSelectedTaskHandler());
+		output.put("/internals/set/selected-task", new SetSelectedTaskHandler(taskSourceCodeFragmentHandler));
 
 		output.put("/internals/modify/ipc-service-port", new ModifyIPCServicePortHandler(objectRenderer));
 		output.put("/internals/modify/task-name", new ModifyTaskNameHandler(objectRenderer));
@@ -273,6 +290,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 		handlers = createHandlers();
 		taskActivationConstructorManager.start();
+		manuallyBuildActionConstructorManager.start();
 		setMainBackEndHolder(backEndHolder);
 
 		ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
@@ -307,6 +325,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 	@Override
 	protected void stop() throws IOException {
 		taskActivationConstructorManager.stop();
+		manuallyBuildActionConstructorManager.stop();
 		server.shutdown(TERMINATION_DELAY_SECOND, TimeUnit.SECONDS);
 		try {
 			mainThread.join();

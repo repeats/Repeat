@@ -174,7 +174,16 @@ function menuHaltAllTasksAction() {
 
 function menuGenerateSourceAction() {
     $.post("/internals/menu/tools/generate-source", function(data) {
-        setCurrentSourceCode(data);
+        var replacePage = ((data.taskType == "source") != hasSourceCode()) || data.taskType == "manually_build";
+        if (replacePage) {
+            document.getElementById('source-code-container').innerHTML = data.page;
+            registerSourceTextArea();
+            manuallyBuildTask.registerActions();
+        }
+
+        if (data.taskType == "source") {
+            setCurrentSourceCode(data.source);
+        }
     }).fail(function(response) {
         alert('Error generating source: ' + response.responseText);
     });
@@ -194,9 +203,14 @@ function selectCompilingLanguageAction(e) {
     if (index == -1) {
         return;
     }
+    var selectedLanguage = getSelectedTextRadioInputFromModalBody("modal-compiling-languages-body");
 
     $.post("/internals/menu/tools/set-compiling-language", JSON.stringify({ index: index }), function(data) {
-        setCurrentSourceCode(data);
+        // if (selectedLanguage == "manual") {
+            window.location.assign("/");
+        // } else {
+        //     setCurrentSourceCode(data);
+        // }
     }).fail(function(response) {
         alert('Error setting compiling languages with index ' + index + ':' + response.responseText);
     });
@@ -276,4 +290,18 @@ function getSelectedRadioInputFromModalBody(modalBodyId) {
     });
 
     return index;
+}
+
+function getSelectedTextRadioInputFromModalBody(modalBodyId) {
+    var rows = $('#' + modalBodyId).find("input");
+    var value = null;
+    rows.each(function(i) {
+        if ($(this).is(":checked")) {
+            var selectedId = rows[i].id;
+            value = $("label[for='" + selectedId + "']")[0].innerHTML;
+            return false;
+        }
+    });
+
+    return value;
 }

@@ -1,4 +1,5 @@
 <#import "/fragments/index_modals.ftlh" as index_modals_fragment>
+<#import "/fragments/source_code.ftlh" as source_code_fragment>
 <#import "/fragments/tasks.ftlh" as task_fragment>
 <#import "/fragments/task_groups_dropdown.ftlh" as task_groups_dropdown_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
@@ -155,9 +156,8 @@
                 </div>
                 <div class="row top-buffer">
                     <div class="col-xs-6">
-                        <div class="col-xs-12 form-group">
-                            <label for="source-code">Source code:</label>
-                            <textarea class="form-control" id="source-code"></textarea>
+                        <div id="source-code-container" class="col-xs-12 form-group">
+                            <@source_code_fragment.fragment/>
                         </div>
                     </div>
                     <div class="col-xs-6">
@@ -202,6 +202,8 @@
     <script src="/static/js/repeat/source-textarea.js"></script>
     <script src="/static/js/repeat/task-groups-dropdown.js"></script>
     <script src="/static/js/repeat/table-tasks.js"></script>
+    <script src="/static/js/repeat/table-tasks.js"></script>
+    <script src="/static/js/repeat/manually-build-task.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function(){
@@ -214,6 +216,8 @@
             registerTableTasks();
             registerTaskGroupsDropdownEvents();
             registerMenuIndexPageActions();
+
+            manuallyBuildTask.registerActions();
         });
     </script>
 

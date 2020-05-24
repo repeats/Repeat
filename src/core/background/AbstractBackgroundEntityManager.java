@@ -1,4 +1,4 @@
-package core.userDefinedTask.manualBuild;
+package core.background;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,25 +10,25 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractConstructorManager<T> {
+public abstract class AbstractBackgroundEntityManager<T> {
 
 	private static final long MAX_TIME_UNUSED_MS = 3600 * 1000;
 	private static final long CLEAN_UP_PERIOD_SECOND = 1;
 
-	protected Map<String, T> constructors;
+	protected Map<String, T> entities;
 
 	private ScheduledThreadPoolExecutor executor;
 	private Map<String, Long> lastUsed;
 
-	protected AbstractConstructorManager() {
-		constructors = new HashMap<>();
+	protected AbstractBackgroundEntityManager() {
+		entities = new HashMap<>();
 		lastUsed = new HashMap<>();
 	}
 
-	protected final String addNew(T constructor) {
+	protected final String add(T entity) {
 		String id = UUID.randomUUID().toString();
 
-		constructors.put(id, constructor);
+		entities.put(id, entity);
 		lastUsed.put(id, System.currentTimeMillis());
 		return id;
 	}
@@ -71,14 +71,14 @@ public abstract class AbstractConstructorManager<T> {
 	}
 
 
-	public final T getConstructor(String id) {
-		T output = constructors.get(id);
+	public final T get(String id) {
+		T output = entities.get(id);
 		lastUsed.put(id, System.currentTimeMillis());
 		return output;
 	}
 
 	public synchronized void remove(String id) {
 		lastUsed.remove(id);
-		constructors.remove(id);
+		entities.remove(id);
 	}
 }

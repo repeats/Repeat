@@ -1,7 +1,15 @@
 var _internalEditor = null;
 
+function hasSourceCode() {
+    return document.getElementById('source-code') != null
+}
+
 function registerSourceTextArea() {
-    var editor = CodeMirror.fromTextArea(document.getElementById("source-code"), {
+    if (!hasSourceCode()) {
+        return
+    }
+
+    var editor = CodeMirror.fromTextArea(document.getElementById('source-code'), {
       lineNumbers: true,
       mode: "text/html",
       matchBrackets: true,
@@ -26,18 +34,33 @@ function getSourceTemplate(editor) {
     });
 }
 
-function fillSourceForTask(index) {
-    $.post("/internals/set/selected-task", JSON.stringify({ "task" : index }), function(data) {
-        setCurrentSourceCode(data);
+function fillSourceForTask(taskId) {
+    $.post("/internals/set/selected-task", JSON.stringify({ "task" : taskId }), function(data) {
+        var replacePage = ((data.taskType == "source") != hasSourceCode()) || data.taskType == "manually_build";
+        if (replacePage) {
+            document.getElementById('source-code-container').innerHTML = data.page;
+            registerSourceTextArea();
+            manuallyBuildTask.registerActions();
+        }
+
+        if (data.taskType == "source") {
+            setCurrentSourceCode(data.source);
+        }
     }).fail(function(response) {
         alert('Error getting source code for task: ' + response.responseText);
     });
 }
 
 function getCurrentSourceCode() {
+    if (!hasSourceCode()) {
+        return "";
+    }
     return _internalEditor.getValue();
 }
 
 function setCurrentSourceCode(source) {
+    if (!hasSourceCode()) {
+        return;
+    }
     _internalEditor.getDoc().setValue(source);
 }

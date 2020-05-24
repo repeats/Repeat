@@ -175,6 +175,10 @@ public class HttpServerUtilities {
 		return prepareStringResponse(exchange, code, data, "text/plain");
 	}
 
+	public static Void prepareJsonResponse(HttpAsyncExchange exchange, int code, JsonNode data) throws IOException {
+		return prepareStringResponse(exchange, code, JSONUtility.jsonToSingleLineString(data), "application/json");
+	}
+
 	private static Void prepareStringResponse(HttpAsyncExchange exchange, int code, String data, String contentType) throws IOException {
 		HttpResponse response = exchange.getResponse();
 		response.setStatusCode(code);

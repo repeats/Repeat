@@ -8,35 +8,38 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
+import argo.jdom.JsonNode;
+import core.languageHandler.Language;
+import core.userDefinedTask.UserDefinedAction;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
+import core.webui.server.handlers.AbstractTaskSourceCodeHandler;
+import core.webui.server.handlers.internals.tasks.TaskSourceCodeFragmentHandler.RenderException;
 import core.webui.webcommon.HttpServerUtilities;
-import utilities.NumberUtility;
 
-public class SetSelectedTaskHandler extends AbstractSingleMethodHttpHandler {
+public class SetSelectedTaskHandler extends AbstractTaskSourceCodeHandler {
 
-	public SetSelectedTaskHandler() {
-		super(AbstractSingleMethodHttpHandler.POST_METHOD);
+	public SetSelectedTaskHandler(TaskSourceCodeFragmentHandler taskSourceCodeFragmentHandler) {
+		super(taskSourceCodeFragmentHandler, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
-	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context)
-			throws HttpException, IOException {
+	protected Void handleAllowedRequestWithBackend(HttpRequest request, HttpAsyncExchange exchange, HttpContext context) throws HttpException, IOException {
 		Map<String, String> params = HttpServerUtilities.parseSimplePostParameters(request);
 		if (params == null) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 500, "Unable to parse GET request parameters.");
 		}
-		String indexString = params.get("task");
-		if (indexString == null || !NumberUtility.isNonNegativeInteger(indexString)) {
-			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Task index must be provided as a non-negative integer.");
+		String taskId = params.get("task");
+		if (taskId == null || taskId.isEmpty()) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 400, "Task ID must be provided.");
 		}
-		int index = Integer.parseInt(indexString);
 
-		String source = backEndHolder.getSource(index);
-		if (source == null) {
-			return HttpServerUtilities.prepareTextResponse(exchange, 500, "Unable to get source code.");
+		UserDefinedAction action = backEndHolder.getTask(taskId);
+		Language language = action.getCompiler();
+		try {
+			JsonNode data = taskSourceCodeFragmentHandler.render(language, action.getSource(), action);
+			return HttpServerUtilities.prepareJsonResponse(exchange, 200, data);
+		} catch (RenderException e) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 500, "Failed to render page: " + e.getMessage());
 		}
-		backEndHolder.setCompilingLanguage(backEndHolder.getCurrentTaskGroup().getTask(index).getCompiler());
-
-		return HttpServerUtilities.prepareTextResponse(exchange, 200, source);
 	}
 }
