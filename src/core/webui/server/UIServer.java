@@ -188,7 +188,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/menu/tools/halt-all-tasks", new MenuHaltAllTasksActionHandler());
 		output.put("/internals/menu/tools/generate-source", new MenuGetGeneratedSourceHandler(taskSourceCodeFragmentHandler));
 		output.put("/internals/menu/tools/get-compiling-languages-options", new MenuGetCompilingLanguagesActionHandler(objectRenderer));
-		output.put("/internals/menu/tools/set-compiling-language", new MenuSetCompilingLanguagesActionHandler(objectRenderer));
+		output.put("/internals/menu/tools/set-compiling-language", new MenuSetCompilingLanguagesActionHandler(taskSourceCodeFragmentHandler));
 
 		output.put("/internals/menu/settings/get-compiler-path", new MenuGetCompilerPathActionHandler());
 		output.put("/internals/menu/settings/set-compiler-path", new MenuSetCompilerPathActionHandler());

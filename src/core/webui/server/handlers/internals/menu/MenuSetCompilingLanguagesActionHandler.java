@@ -8,18 +8,19 @@ import org.apache.http.HttpRequest;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
+import argo.jdom.JsonNode;
 import core.languageHandler.Language;
-import core.languageHandler.sourceGenerator.AbstractSourceGenerator;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
-import core.webui.server.handlers.AbstractUIHttpHandler;
-import core.webui.server.handlers.renderedobjects.ObjectRenderer;
+import core.webui.server.handlers.AbstractTaskSourceCodeHandler;
+import core.webui.server.handlers.internals.tasks.TaskSourceCodeFragmentHandler;
+import core.webui.server.handlers.internals.tasks.TaskSourceCodeFragmentHandler.RenderException;
 import core.webui.webcommon.HttpServerUtilities;
 import utilities.NumberUtility;
 
-public class MenuSetCompilingLanguagesActionHandler extends AbstractUIHttpHandler {
+public class MenuSetCompilingLanguagesActionHandler extends AbstractTaskSourceCodeHandler {
 
-	public MenuSetCompilingLanguagesActionHandler(ObjectRenderer objectRenderer) {
-		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
+	public MenuSetCompilingLanguagesActionHandler(TaskSourceCodeFragmentHandler taskSourceCodeFragmentHandler) {
+		super(taskSourceCodeFragmentHandler, AbstractSingleMethodHttpHandler.POST_METHOD);
 	}
 
 	@Override
@@ -37,8 +38,12 @@ public class MenuSetCompilingLanguagesActionHandler extends AbstractUIHttpHandle
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Language index " + indexString + " unknown.");
 		}
 
-		backEndHolder.setCompilingLanguage(language);
-		String source = AbstractSourceGenerator.getReferenceSource(backEndHolder.getSelectedLanguage());
-		return HttpServerUtilities.prepareTextResponse(exchange, 200, source);
+		try {
+			JsonNode data = taskSourceCodeFragmentHandler.render(language);
+			backEndHolder.setCompilingLanguage(language);
+			return HttpServerUtilities.prepareJsonResponse(exchange, 200, data);
+		} catch (RenderException e) {
+			return HttpServerUtilities.prepareTextResponse(exchange, 500, "Failed to render page: " + e.getMessage());
+		}
 	}
 }

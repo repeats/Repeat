@@ -197,11 +197,7 @@ function selectCompilingLanguageAction(e) {
     var selectedLanguage = getSelectedTextRadioInputFromModalBody("modal-compiling-languages-body");
 
     $.post("/internals/menu/tools/set-compiling-language", JSON.stringify({ index: index }), function(data) {
-        // if (selectedLanguage == "manual") {
-            window.location.assign("/");
-        // } else {
-        //     setCurrentSourceCode(data);
-        // }
+        fillSourceWithSourcePageResponse(data);
     }).fail(function(response) {
         alert('Error setting compiling languages with index ' + index + ':' + response.responseText);
     });
