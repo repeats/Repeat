@@ -2,6 +2,7 @@ package frontEnd;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +48,7 @@ public class MainFrontEnd {
 
 		System.setOut(new PrintStream(CompositeOutputStream.of(backEnd.logHolder, System.out)));
 		System.setErr(new PrintStream(CompositeOutputStream.of(backEnd.logHolder, System.err)));
+		Logger.getLogger("").addHandler(new ConsoleHandler());
 		/*************************************************************************************/
 
 		backEnd.initiateBackEndActivities();
