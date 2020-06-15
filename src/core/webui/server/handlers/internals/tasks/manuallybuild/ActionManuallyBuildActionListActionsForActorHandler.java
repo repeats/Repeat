@@ -30,7 +30,7 @@ public class ActionManuallyBuildActionListActionsForActorHandler extends Abstrac
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "No actor provided.");
 		}
 		String actor = params.get("actor").toLowerCase();
-		List<String> actions = ManuallyBuildActionParametersParser.of().actionsForActor(actor);
+		List<String> actions = ManuallyBuildActionFeModel.of().actionsForActor(actor);
 		Map<String, Object> data = new HashMap<>();
 		data.put("possibleActions", RenderedPossibleManuallyBuildActions.of(actions));
 
@@ -41,5 +41,4 @@ public class ActionManuallyBuildActionListActionsForActorHandler extends Abstrac
 
 		return HttpServerUtilities.prepareHttpResponse(exchange, HttpStatus.SC_OK, page);
 	}
-
 }

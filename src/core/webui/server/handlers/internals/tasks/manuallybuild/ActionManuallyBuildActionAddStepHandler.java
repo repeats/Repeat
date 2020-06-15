@@ -19,6 +19,7 @@ import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedManuallyBuildSteps;
 import core.webui.webcommon.HttpServerUtilities;
+import utilities.ExceptionsUtility;
 
 public class ActionManuallyBuildActionAddStepHandler extends AbstractUIHttpHandler {
 
@@ -53,8 +54,8 @@ public class ActionManuallyBuildActionAddStepHandler extends AbstractUIHttpHandl
 		ManuallyBuildStep step = null;
 		try {
 			step = getStepFromRequest(params);
-		} catch (InvalidSuppliedBuildStepException e) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 400, e.getMessage());
+		} catch (InvalidManuallyBuildComponentException e) {
+			return HttpServerUtilities.prepareHttpResponse(exchange, 400, ExceptionsUtility.getStackTrace(e));
 		}
 		if (step == null) {
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Cannot parse step.");
@@ -71,15 +72,15 @@ public class ActionManuallyBuildActionAddStepHandler extends AbstractUIHttpHandl
 		return HttpServerUtilities.prepareHttpResponse(exchange, HttpStatus.SC_OK, page);
 	}
 
-	private ManuallyBuildStep getStepFromRequest(JsonNode params) throws InvalidSuppliedBuildStepException {
+	private ManuallyBuildStep getStepFromRequest(JsonNode params) throws InvalidManuallyBuildComponentException {
 		if (!params.isStringValue("actor")) {
-			throw new InvalidSuppliedBuildStepException("Paramter 'actor' must be provided.");
+			throw new InvalidManuallyBuildComponentException("Paramter 'actor' must be provided.");
 		}
 		if (!params.isStringValue("action")) {
-			throw new InvalidSuppliedBuildStepException("Paramter 'action' must be provided.");
+			throw new InvalidManuallyBuildComponentException("Paramter 'action' must be provided.");
 		}
 		if (!params.isStringValue("parameters")) {
-			throw new InvalidSuppliedBuildStepException("Paramter 'parameters' must be provided.");
+			throw new InvalidManuallyBuildComponentException("Paramter 'parameters' must be provided.");
 		}
 
 		String actor = params.getStringValue("actor").toLowerCase();

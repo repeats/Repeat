@@ -16,7 +16,7 @@ public class ManuallyBuildActionBuilderBody {
 
 		data.put("constructorId", constructorId);
 		data.put("constructor", RenderedManuallyBuildSteps.fromManuallyBuildActionConstructor(constructor));
-		data.put("possibleActions", RenderedPossibleManuallyBuildActions.of(ManuallyBuildActionParametersParser.of().noAction()));
+		data.put("possibleActions", RenderedPossibleManuallyBuildActions.of(ManuallyBuildActionFeModel.of().noAction()));
 		return data;
 	}
 

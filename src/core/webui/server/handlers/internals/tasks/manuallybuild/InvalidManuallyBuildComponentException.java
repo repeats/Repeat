@@ -1,11 +1,11 @@
 package core.webui.server.handlers.internals.tasks.manuallybuild;
 
-public class InvalidSuppliedBuildStepException extends Exception {
+public class InvalidManuallyBuildComponentException extends Exception {
 	private static final long serialVersionUID = 5763742112199815619L;
 
 	private String message;
 
-	public InvalidSuppliedBuildStepException(String message) {
+	public InvalidManuallyBuildComponentException(String message) {
 		this.message = message;
 	}
 

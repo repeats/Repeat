@@ -12,8 +12,18 @@ manuallyBuildTask = function() {
     }
 
     var listActionsAction = function(e) {
+        var actor = document.getElementById("manually-build-task-button-actor").innerHTML;
         var action = e.target.innerHTML;
+
+        var query = "?actor=" + encodeURIComponent(actor);
+        query += "&action=" + encodeURIComponent(action);
+
         document.getElementById("manually-build-task-button-action").innerHTML = action;
+        $.get("/internals/action/manually-build/constructor/params-placeholder" + query, function(data) {
+            document.getElementById("manually-build-task-parameters-value").placeholder = data;
+        }).fail(function(response) {
+            alert('Error sending request to get list of possible actions: ' + response.responseText);
+        });
     }
 
     var addStepAction = function(e) {
@@ -77,6 +87,25 @@ manuallyBuildTask = function() {
         });
     }
 
+    var registerUpdateParameterSuggestionsHook = function() {
+        var input = $("#manually-build-task-parameters-value");
+        input.autocomplete({ source: [] });
+
+        input.keypress(function(){
+            var actor = document.getElementById("manually-build-task-button-actor").innerHTML;
+            var action = document.getElementById("manually-build-task-button-action").innerHTML;
+            var params = document.getElementById("manually-build-task-parameters-value").value;
+
+            var query = "?actor=" + encodeURIComponent(actor);
+            query += "&action=" + encodeURIComponent(action);
+            query += "&params=" + encodeURIComponent(params);
+
+            $.get("/internals/action/manually-build/constructor/suggest-params" + query, function(data) {
+                input.autocomplete("option", "source", data.suggestions);
+            });
+        });
+    }
+
     registerActions = function() {
         $("#manually-build-task-actor").click(listActorAction);
         $("#manually-build-task-actions").click(listActionsAction);
@@ -87,6 +116,7 @@ manuallyBuildTask = function() {
         }
 
         registerRemoveStepAction();
+        registerUpdateParameterSuggestionsHook();
     }
 
     return {
