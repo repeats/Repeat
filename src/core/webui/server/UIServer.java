@@ -119,7 +119,6 @@ import core.webui.server.handlers.internals.tasks.ToggleTaskEnabledHandler;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionAddStepHandler;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionBuilldAction;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionListActionsForActorHandler;
-import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionListParameterSuggestionsHandler;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionParametersPlaceHolderHandler;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionRemoveStepHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
@@ -221,7 +220,6 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/action/task-activation/global-key-action/released/set", new ActionTaskActivationSetGlobalKeyAction(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/global-key-action/pressed/set", new ActionTaskActivationSetGlobalKeyAction(objectRenderer, taskActivationConstructorManager));
 
-		output.put("/internals/action/manually-build/constructor/suggest-params", new ActionManuallyBuildActionListParameterSuggestionsHandler());
 		output.put("/internals/action/manually-build/constructor/params-placeholder", new ActionManuallyBuildActionParametersPlaceHolderHandler());
 		output.put("/internals/action/manually-build/constructor/possible-actions", new ActionManuallyBuildActionListActionsForActorHandler(objectRenderer));
 		output.put("/internals/action/manually-build/constructor/add-step", new ActionManuallyBuildActionAddStepHandler(objectRenderer, manuallyBuildActionConstructorManager));

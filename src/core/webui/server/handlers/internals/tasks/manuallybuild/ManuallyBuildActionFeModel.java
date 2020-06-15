@@ -61,11 +61,11 @@ public class ManuallyBuildActionFeModel {
 
 	public static enum MouseAction implements Action {
 		CLICK("click"),
-		CLICK_CURRENT_POSITION("click_current_position"),
-		MOVE_BY("move_by"),
+		CLICK_CURRENT_POSITION("click current position"),
+		MOVE_BY("move by"),
 		MOVE("move"),
-		PRESS_CURRENT_POSITION("press_current_position"),
-		RELEASE_CURRENT_POSITION("release_current_position")
+		PRESS_CURRENT_POSITION("press current position"),
+		RELEASE_CURRENT_POSITION("release current position")
 		;
 
 		private String value;
@@ -80,7 +80,7 @@ public class ManuallyBuildActionFeModel {
 		PRESS_KEY("press"),
 		RELEASE_KEY("release"),
 		TYPE_KEY("type"),
-		TYPE_STRING_KEY("type_string")
+		TYPE_STRING_KEY("type string")
 		;
 
 		private String value;
@@ -92,7 +92,7 @@ public class ManuallyBuildActionFeModel {
 	}
 
 	public static enum ControllerAction implements Action {
-		WAIT("blocking_wait");
+		WAIT("blocking wait");
 
 		private String value;
 		private ControllerAction(String s) { value = s; }

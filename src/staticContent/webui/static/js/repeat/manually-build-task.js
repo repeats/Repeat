@@ -6,6 +6,7 @@ manuallyBuildTask = function() {
             document.getElementById("manually-build-task-button-actor").innerHTML = actor;
             document.getElementById("manually-build-task-actions").innerHTML = data;
             document.getElementById("manually-build-task-button-action").innerHTML = "Action";
+            document.getElementById("manually-build-task-parameters-value").placeholder = "Pick an action.";
         }).fail(function(response) {
             alert('Error sending request to get list of possible actions: ' + response.responseText);
         });

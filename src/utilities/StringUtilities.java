@@ -272,6 +272,21 @@ public class StringUtilities {
 	}
 
 	/**
+	 * Capitalize the first letter of every word in a string.
+	 */
+	public static String title(String s) {
+		if (s == null) {
+			return null;
+		}
+		if (s.length() == 0) {
+			return s;
+		}
+		StringBuilder sb = new StringBuilder();
+		Arrays.stream(s.split("\\s+")).forEach(part -> sb.append(Character.toTitleCase(part.charAt(0))).append(part.substring(1)).append(" "));
+		return sb.toString().trim();
+	}
+
+	/**
 	 * Private constructor so that no instance is created
 	 */
 	private StringUtilities() {
