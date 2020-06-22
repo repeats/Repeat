@@ -33,7 +33,11 @@
     </div>
     <div class="row top-buffer"></div>
     <div class="row">
-        <div><button id="manually-build-task-add-step-button" type="button" class="btn btn-default btn-span">Add step</button></div>
+        <div class="col-xs-3"><button id="manually-build-task-insert-step-button" type="button" class="btn btn-default btn-span">Insert step</button></div>
+        <div class="col-xs-3"><button id="manually-build-task-remove-step-button" type="button" class="btn btn-default btn-span">Remove step(s)</button></div>
+        <div class="col-xs-3"><button id="manually-build-task-move-up-button" type="button" class="btn btn-default btn-span">Move up</button></div>
+        <div class="col-xs-3"><button id="manually-build-task-move-down-button" type="button" class="btn btn-default btn-span">Move down</button></div>
+
     </div>
 
     <div class="row top-buffer">

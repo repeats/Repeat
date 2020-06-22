@@ -46,6 +46,103 @@ function utils_SuggestPaths(elementId) {
 /**************************Common table operations ******************************/
 /********************************************************************************/
 
+utilMutiSelectTable = function() {
+    var clearRows = function(rows) {
+        rows.removeClass('table-highlight');
+    }
+
+    var toggleRow = function(cell) {
+        cell.classList.toggle('table-highlight');
+    }
+
+    var highlightRow = function(cell) {
+        cell.classList.add('table-highlight');
+    }
+
+    var onClick = function(e, rows, cell, row, col) {
+        if (e.ctrlKey) {
+            toggleRow(cell);
+            return;
+        }
+        if (e.shiftKey) {
+            var firstIndex = firstSelected(rows);
+            if (firstIndex == -1) {
+                firstIndex = 0;
+            }
+            var low = Math.min(firstIndex, row);
+            var high = Math.max(firstIndex, row);
+            if (low == high) {
+                return;
+            }
+
+            for (var i = low; i <= high; i++) {
+                rows[i].classList.add('table-highlight');
+            }
+            return;
+        }
+
+        clearRows(rows);
+        var isSelected = cell.classList.contains('table-highlight');
+        if (!isSelected) {
+            highlightRow(cell);
+        }
+    }
+
+    var register = function(tableId) {
+        var rows = $("#" + tableId).find("td");
+        var table = document.getElementById(tableId);
+        for (var i = 1; i < table.rows.length; i++) {
+            for (var j = 0; j < table.rows[i].cells.length; j++)
+            table.rows[i].cells[j].onclick = function(cell, i, j) {
+                return function(e) {
+                    console.log(e);
+
+                    // Minus one so that row index starts from 0.
+                    onClick(e, rows, cell, i - 1, j);
+                };
+            }(table.rows[i].cells[j], i, j);
+        }
+    }
+
+
+    var firstSelected = function(tableId) {
+        var rows = $("#" + tableId).find("td");
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].classList.contains('table-highlight')) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    var lastSelected = function(tableId) {
+        var rows = $("#" + tableId).find("td");
+        for (var i = rows.length - 1; i >= 0; i--) {
+            if (rows[i].classList.contains('table-highlight')) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    var allSelected = function(tableId) {
+        var rows = $("#" + tableId).find("td");
+        var selectedIndices = [];
+        for (var i = rows.length - 1; i >= 0; i--) {
+            if (rows[i].classList.contains('table-highlight')) {
+                selectedIndices.push(i);
+            }
+        }
+        return selectedIndices;
+    }
+
+    return {
+        register: register,
+        lastSelected: lastSelected,
+        allSelected: allSelected,
+    }
+}()
+
 function utils_TableHighlight(tableId) {
     /* Get all rows from your 'table' but not the first one 
     * that includes headers. */

@@ -2,7 +2,9 @@ package core.webui.server.handlers.internals.tasks.manuallybuild;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -13,20 +15,19 @@ import org.apache.http.protocol.HttpContext;
 import argo.jdom.JsonNode;
 import core.userDefinedTask.manualBuild.ManuallyBuildActionConstructor;
 import core.userDefinedTask.manualBuild.ManuallyBuildActionConstructorManager;
-import core.userDefinedTask.manualBuild.ManuallyBuildStep;
 import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.server.handlers.renderedobjects.RenderedManuallyBuildSteps;
 import core.webui.webcommon.HttpServerUtilities;
-import utilities.ExceptionsUtility;
 
-public class ActionManuallyBuildActionAddStepHandler extends AbstractUIHttpHandler {
+public class ActionManuallyBuildActionMoveUpHandler extends AbstractUIHttpHandler {
 
 	protected ManuallyBuildActionConstructorManager manuallyBuildActionConstructorManager;
 
-	public ActionManuallyBuildActionAddStepHandler(ObjectRenderer objectRenderer, ManuallyBuildActionConstructorManager manuallyBuildActionConstructorManager) {
+	public ActionManuallyBuildActionMoveUpHandler(ObjectRenderer objectRenderer, ManuallyBuildActionConstructorManager manuallyBuildActionConstructorManager) {
 		super(objectRenderer, AbstractSingleMethodHttpHandler.POST_METHOD);
+
 		this.manuallyBuildActionConstructorManager = manuallyBuildActionConstructorManager;
 	}
 
@@ -46,22 +47,20 @@ public class ActionManuallyBuildActionAddStepHandler extends AbstractUIHttpHandl
 			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "No builder ID provided.");
 		}
 
+		if (!params.isArrayNode("indices")) {
+			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Indices is not an array node.");
+		}
+
+		List<JsonNode> indicesNodes = params.getArrayNode("indices");
+		if (indicesNodes.stream().anyMatch(n -> !n.isNumberValue())) {
+			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Indices must all be integers.");
+		}
+		// Get indices, smallest one first.
+		List<Integer> indices = indicesNodes.stream().map(n -> Integer.parseInt(n.getNumberValue())).sorted().collect(Collectors.toList());
+
 		ManuallyBuildActionConstructor constructor = manuallyBuildActionConstructorManager.get(id);
-		if (constructor == null) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 400, "No builder for ID " + id + ".");
-		}
-
-		ManuallyBuildStep step = null;
-		try {
-			step = getStepFromRequest(params);
-		} catch (InvalidManuallyBuildComponentException e) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 400, ExceptionsUtility.getStackTrace(e));
-		}
-		if (step == null) {
-			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Cannot parse step.");
-		}
-
-		constructor.addStep(step);
+		// Since the list of indices is sorted with the smallest one first, it's safe to move them sequentially.
+		indices.stream().forEach(i -> constructor.moveStepUp(i));
 
 		Map<String, Object> data = new HashMap<>();
 		data.put("constructor", RenderedManuallyBuildSteps.fromManuallyBuildActionConstructor(constructor));
@@ -70,22 +69,5 @@ public class ActionManuallyBuildActionAddStepHandler extends AbstractUIHttpHandl
 			return HttpServerUtilities.prepareHttpResponse(exchange, 500, "Failed to render page.");
 		}
 		return HttpServerUtilities.prepareHttpResponse(exchange, HttpStatus.SC_OK, page);
-	}
-
-	private ManuallyBuildStep getStepFromRequest(JsonNode params) throws InvalidManuallyBuildComponentException {
-		if (!params.isStringValue("actor")) {
-			throw new InvalidManuallyBuildComponentException("Paramter 'actor' must be provided.");
-		}
-		if (!params.isStringValue("action")) {
-			throw new InvalidManuallyBuildComponentException("Paramter 'action' must be provided.");
-		}
-		if (!params.isStringValue("parameters")) {
-			throw new InvalidManuallyBuildComponentException("Paramter 'parameters' must be provided.");
-		}
-
-		String actor = params.getStringValue("actor").toLowerCase();
-		String action = params.getStringValue("action").toLowerCase();
-		String parameters = params.getStringValue("parameters");
-		return ManuallyBuildActionParametersParser.of().parse(actor, action, parameters);
 	}
 }

@@ -25,8 +25,8 @@ public class ManuallyBuildActionConstructor {
 		return Collections.unmodifiableList(steps);
 	}
 
-	public ManuallyBuildActionConstructor addStep(ManuallyBuildStep step) {
-		steps.add(step);
+	public ManuallyBuildActionConstructor addStep(int index, ManuallyBuildStep step) {
+		steps.add(index, step);
 		return this;
 	}
 
@@ -34,6 +34,28 @@ public class ManuallyBuildActionConstructor {
 		if (index >= 0 && index < steps.size()) {
 			steps.remove(index);
 		}
+		return this;
+	}
+
+	public ManuallyBuildActionConstructor moveStepUp(int index) {
+		if (index <= 0 || index >= steps.size()) {
+			return this;
+		}
+
+		ManuallyBuildStep tmp = steps.get(index);
+		steps.set(index, steps.get(index - 1));
+		steps.set(index - 1, tmp);
+		return this;
+	}
+
+	public ManuallyBuildActionConstructor moveStepDown(int index) {
+		if (index < 0 || index >= steps.size()) {
+			return this;
+		}
+
+		ManuallyBuildStep tmp = steps.get(index);
+		steps.set(index, steps.get(index + 1));
+		steps.set(index + 1, tmp);
 		return this;
 	}
 

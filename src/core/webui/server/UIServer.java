@@ -116,11 +116,13 @@ import core.webui.server.handlers.internals.tasks.TaskBuilderPageHandler;
 import core.webui.server.handlers.internals.tasks.TaskDetailsPageHandler;
 import core.webui.server.handlers.internals.tasks.TaskSourceCodeFragmentHandler;
 import core.webui.server.handlers.internals.tasks.ToggleTaskEnabledHandler;
-import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionAddStepHandler;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionBuilldAction;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionInsertStepHandler;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionListActionsForActorHandler;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionMoveDownHandler;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionMoveUpHandler;
 import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionParametersPlaceHolderHandler;
-import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionRemoveStepHandler;
+import core.webui.server.handlers.internals.tasks.manuallybuild.ActionManuallyBuildActionRemoveStepsHandler;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
 import core.webui.webcommon.HttpHandlerWithBackend;
 import core.webui.webcommon.StaticFileServingHandler;
@@ -222,8 +224,10 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 		output.put("/internals/action/manually-build/constructor/params-placeholder", new ActionManuallyBuildActionParametersPlaceHolderHandler());
 		output.put("/internals/action/manually-build/constructor/possible-actions", new ActionManuallyBuildActionListActionsForActorHandler(objectRenderer));
-		output.put("/internals/action/manually-build/constructor/add-step", new ActionManuallyBuildActionAddStepHandler(objectRenderer, manuallyBuildActionConstructorManager));
-		output.put("/internals/action/manually-build/constructor/remove-step", new ActionManuallyBuildActionRemoveStepHandler(objectRenderer, manuallyBuildActionConstructorManager));
+		output.put("/internals/action/manually-build/constructor/insert-step", new ActionManuallyBuildActionInsertStepHandler(objectRenderer, manuallyBuildActionConstructorManager));
+		output.put("/internals/action/manually-build/constructor/remove-steps", new ActionManuallyBuildActionRemoveStepsHandler(objectRenderer, manuallyBuildActionConstructorManager));
+		output.put("/internals/action/manually-build/constructor/move-up", new ActionManuallyBuildActionMoveUpHandler(objectRenderer, manuallyBuildActionConstructorManager));
+		output.put("/internals/action/manually-build/constructor/move-down", new ActionManuallyBuildActionMoveDownHandler(objectRenderer, manuallyBuildActionConstructorManager));
 		output.put("/internals/action/manually-build/constructor/build", new ActionManuallyBuildActionBuilldAction(manuallyBuildActionConstructorManager));
 
 		output.put("/internals/action/add-task", new ActionAddTaskHandler(objectRenderer));

@@ -1,5 +1,7 @@
 
 manuallyBuildTask = function() {
+    var tableStepsId = 'manually-build-action-table-steps';
+
     var listActorAction = function(e) {
         var actor = e.target.innerHTML;
         $.get("/internals/action/manually-build/constructor/possible-actions?actor=" + actor, function(data) {
@@ -34,12 +36,14 @@ manuallyBuildTask = function() {
 
         var data = {
             id: document.getElementById("manually-build-task-id").innerHTML,
+            index: utilMutiSelectTable.lastSelected(tableStepsId),
             actor: actor,
             action: action,
             parameters: params,
         }
-        $.post("/internals/action/manually-build/constructor/add-step", JSON.stringify(data), function(data) {
+        $.post("/internals/action/manually-build/constructor/insert-step", JSON.stringify(data), function(data) {
             document.getElementById("manually-build-action-steps").innerHTML = data;
+            utilMutiSelectTable.register(tableStepsId);
             registerRemoveStepAction();
         }).fail(function(response) {
             alert('Error adding step: ' + response.responseText);
@@ -47,8 +51,7 @@ manuallyBuildTask = function() {
     }
 
     var registerRemoveStepAction = function() {
-        var tableId = "manually-build-action-table-steps";
-        var table = document.getElementById(tableId);
+        var table = document.getElementById(tableStepsId);
         if (!table) {
             return;
         }
@@ -59,21 +62,53 @@ manuallyBuildTask = function() {
                 table.rows[i].cells[j].ondblclick = function(cell, i, j) {
                     return function() {
                         // Minus one so that row index starts from 0.
-                        removeStepRowAction(i - 1, tableId);
+                        removeStepRowAction([i - 1]);
                     };
                 }(table.rows[i].cells[j], i, j);
             }
         }
     }
 
-    var removeStepRowAction = function(row, tableId) {
+    var postActionOnSelectedRows = function(endpoint) {
+        var selectedRows = utilMutiSelectTable.allSelected(tableStepsId);
         var data = {
             id: document.getElementById("manually-build-task-id").innerHTML,
-            index: row,
+            indices: selectedRows,
+        }
+        $.post(endpoint, JSON.stringify(data), function(data) {
+            $("#manually-build-action-steps").html(data);
+            utilMutiSelectTable.register(tableStepsId);
+            registerRemoveStepAction();
+        }).fail(function(response) {
+            alert('Error calling ' + endpoint + ': ' + response.responseText);
+        });
+    }
+
+    var moveUpAction = function(tableId) {
+        postActionOnSelectedRows("/internals/action/manually-build/constructor/move-up");
+    }
+
+    var moveDownAction = function(tableId) {
+        postActionOnSelectedRows("/internals/action/manually-build/constructor/move-down");
+    }
+
+    var removeStepsAction = function(tableId) {
+        postActionOnSelectedRows("/internals/action/manually-build/constructor/remove-steps");
+    }
+
+    var removeStepRowAction = function(rows) {
+        if (rows.length == 0) {
+            return;
         }
 
-        $.post("/internals/action/manually-build/constructor/remove-step", JSON.stringify(data), function(data) {
+        var data = {
+            id: document.getElementById("manually-build-task-id").innerHTML,
+            indices: rows,
+        }
+
+        $.post("/internals/action/manually-build/constructor/remove-steps", JSON.stringify(data), function(data) {
             $("#manually-build-action-steps").html(data);
+            utilMutiSelectTable.register(tableStepsId);
             registerRemoveStepAction();
         }).fail(function(response) {
             alert('Error removing step: ' + response.responseText);
@@ -88,36 +123,24 @@ manuallyBuildTask = function() {
         });
     }
 
-    var registerUpdateParameterSuggestionsHook = function() {
-        var input = $("#manually-build-task-parameters-value");
-        input.autocomplete({ source: [] });
-
-        input.keypress(function(){
-            var actor = document.getElementById("manually-build-task-button-actor").innerHTML;
-            var action = document.getElementById("manually-build-task-button-action").innerHTML;
-            var params = document.getElementById("manually-build-task-parameters-value").value;
-
-            var query = "?actor=" + encodeURIComponent(actor);
-            query += "&action=" + encodeURIComponent(action);
-            query += "&params=" + encodeURIComponent(params);
-
-            $.get("/internals/action/manually-build/constructor/suggest-params" + query, function(data) {
-                input.autocomplete("option", "source", data.suggestions);
-            });
-        });
+    var registerTableSelectionHooks = function() {
+        utilMutiSelectTable.register(tableStepsId);
     }
 
     registerActions = function() {
         $("#manually-build-task-actor").click(listActorAction);
         $("#manually-build-task-actions").click(listActionsAction);
-        $("#manually-build-task-add-step-button").click(addStepAction);
+        $("#manually-build-task-insert-step-button").click(addStepAction);
+        $("#manually-build-task-remove-step-button").click(removeStepsAction);
+        $("#manually-build-task-move-up-button").click(moveUpAction);
+        $("#manually-build-task-move-down-button").click(moveDownAction);
 
         if (document.getElementById("manually-build-task-save-button")) {
             $("#manually-build-task-save-button").click(saveButtonAction);
         }
 
         registerRemoveStepAction();
-        registerUpdateParameterSuggestionsHook();
+        registerTableSelectionHooks();
     }
 
     return {
