@@ -35,8 +35,11 @@ public class SetSelectedTaskHandler extends AbstractTaskSourceCodeHandler {
 
 		UserDefinedAction action = backEndHolder.getTask(taskId);
 		Language language = action.getCompiler();
+
+
 		try {
 			JsonNode data = taskSourceCodeFragmentHandler.render(language, action.getSource(), action);
+			backEndHolder.setCompilingLanguage(language);
 			return HttpServerUtilities.prepareJsonResponse(exchange, 200, data);
 		} catch (RenderException e) {
 			return HttpServerUtilities.prepareTextResponse(exchange, 500, "Failed to render page: " + e.getMessage());
