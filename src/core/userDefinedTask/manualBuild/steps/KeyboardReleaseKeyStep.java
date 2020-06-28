@@ -2,9 +2,8 @@ package core.userDefinedTask.manualBuild.steps;
 
 import argo.jdom.JsonNode;
 import core.controller.Core;
-import core.keyChain.KeyboardState;
 import core.userDefinedTask.manualBuild.ManuallyBuildStep;
-import utilities.KeyCodeToChar;
+import utilities.KeyEventCodeToString;
 
 public class KeyboardReleaseKeyStep extends ManuallyBuildStep {
 
@@ -23,7 +22,7 @@ public class KeyboardReleaseKeyStep extends ManuallyBuildStep {
 
 	@Override
 	public String getDisplayString() {
-		return String.format("release key %s", KeyCodeToChar.getCharForCode(key, KeyboardState.getDefault()).toUpperCase());
+		return String.format("release key %s", KeyEventCodeToString.codeToString(key).toUpperCase());
 	}
 
 	public static KeyboardReleaseKeyStep parseJSON(JsonNode node) {
