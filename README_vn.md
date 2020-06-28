@@ -92,7 +92,7 @@ Chương trình này theo dõi các hoạt động của bàn phím và chuột,
 Hướng dẫn sử dụng và các tính năng nâng cao
 ===========================================
 
-Xem thêm tại [trang wiki](https://github.com/repeats/Repeat/wiki). (Mình sẽ dịch sang tiếng Việt sớm...)
+Xem thêm tại [trang wiki](https://github.com/repeats/Repeat/wiki).
 
 Các library sử dụng trong Repeat
 ================================
