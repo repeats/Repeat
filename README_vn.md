@@ -47,6 +47,11 @@ Lưu ý
 1. Đây không phải chương trình quản lý mật khẩu như LastPass. Đoạn mã lệnh viết sẽ không được encrypt.
 2. Đây là chương trình chạy code của người viết. Sử dụng tính năng compile và chạy lại cẩn thận không sẽ dễ bị treo máy.
 
+Hướng dẫn sử dụng và các tính năng nâng cao
+===========================================
+
+Xem thêm tại [trang wiki](https://github.com/repeats/Repeat/wiki).
+
 Yêu cầu tối thiểu
 ============
 
@@ -88,11 +93,6 @@ Module C# chỉ chạy trên Windows. Nếu không phải Windows thì module C#
 
 ## Tại sao chương trình này không host trên trang web được? Nếu được thì đỡ mất công tải file JAR về máy và chạy.
 Chương trình này theo dõi các hoạt động của bàn phím và chuột, và có thể tự động chèn thêm các hoạt động của bàn phím và chuột. Nếu mà trang web làm được mấy cái này từ trình duyệt, các hacker đã thu thập mật khẩu và thông tin ngân hàng của người ta lâu rồi.
-
-Hướng dẫn sử dụng và các tính năng nâng cao
-===========================================
-
-Xem thêm tại [trang wiki](https://github.com/repeats/Repeat/wiki).
 
 Các library sử dụng trong Repeat
 ================================

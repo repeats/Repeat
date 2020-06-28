@@ -49,6 +49,12 @@ Disclaimer
 1. This is not a password storage program. Source code written is not encrypted.
 2. This program executes your own code. Use the advanced compile - replay feature carefully. Test your task before adding it to the list.
 
+
+Getting started and advanced features
+=====================================
+
+Check out the [wiki page](https://github.com/repeats/Repeat/wiki).
+
 Requirements
 ============
 
@@ -90,11 +96,6 @@ C# module is disabled if you are on a non Windows OS. Nothing from C# module wil
 
 ## Why can't this be a web service? It's a lot of effort downloading the JAR and run it.
 This application listens on your mouse and keyboard events as well as allowing you to simulate mouse/keyboard events. If I could do such thing from a web browser, some hackers must have got your personal information, passwords, bank account number by now.
-
-Getting started and advanced features
-=====================================
-
-Check out the [wiki page](https://github.com/repeats/Repeat/wiki).
 
 Libraries used
 ==============
