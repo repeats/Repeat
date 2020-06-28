@@ -33,6 +33,7 @@ manuallyBuildTask = function() {
         var actor = document.getElementById("manually-build-task-button-actor").innerHTML;
         var action = document.getElementById("manually-build-task-button-action").innerHTML;
         var params = document.getElementById("manually-build-task-parameters-value").value;
+        var currentlySelectedIndex = utilMutiSelectTable.firstSelected(tableStepsId);
 
         var data = {
             id: document.getElementById("manually-build-task-id").innerHTML,
@@ -44,6 +45,7 @@ manuallyBuildTask = function() {
         $.post("/internals/action/manually-build/constructor/insert-step", JSON.stringify(data), function(data) {
             document.getElementById("manually-build-action-steps").innerHTML = data;
             utilMutiSelectTable.register(tableStepsId);
+            utilMutiSelectTable.setSelectedRow(tableStepsId, currentlySelectedIndex + 1);
             registerRemoveStepAction();
         }).fail(function(response) {
             alert('Error adding step: ' + response.responseText);
@@ -69,8 +71,9 @@ manuallyBuildTask = function() {
         }
     }
 
-    var postActionOnSelectedRows = function(endpoint) {
+    var postActionOnSelectedRows = function(endpoint, adjustedSelectedIndex) {
         var selectedRows = utilMutiSelectTable.allSelected(tableStepsId);
+
         var data = {
             id: document.getElementById("manually-build-task-id").innerHTML,
             indices: selectedRows,
@@ -78,6 +81,7 @@ manuallyBuildTask = function() {
         $.post(endpoint, JSON.stringify(data), function(data) {
             $("#manually-build-action-steps").html(data);
             utilMutiSelectTable.register(tableStepsId);
+            utilMutiSelectTable.setSelectedRow(tableStepsId, adjustedSelectedIndex);
             registerRemoveStepAction();
         }).fail(function(response) {
             alert('Error calling ' + endpoint + ': ' + response.responseText);
@@ -85,15 +89,18 @@ manuallyBuildTask = function() {
     }
 
     var moveUpAction = function(tableId) {
-        postActionOnSelectedRows("/internals/action/manually-build/constructor/move-up");
+        var currentlySelectedIndex = utilMutiSelectTable.firstSelected(tableStepsId);
+        postActionOnSelectedRows("/internals/action/manually-build/constructor/move-up", currentlySelectedIndex-1);
     }
 
     var moveDownAction = function(tableId) {
-        postActionOnSelectedRows("/internals/action/manually-build/constructor/move-down");
+        var currentlySelectedIndex = utilMutiSelectTable.firstSelected(tableStepsId);
+        postActionOnSelectedRows("/internals/action/manually-build/constructor/move-down", currentlySelectedIndex+1);
     }
 
     var removeStepsAction = function(tableId) {
-        postActionOnSelectedRows("/internals/action/manually-build/constructor/remove-steps");
+        var currentlySelectedIndex = utilMutiSelectTable.firstSelected(tableStepsId);
+        postActionOnSelectedRows("/internals/action/manually-build/constructor/remove-steps", currentlySelectedIndex);
     }
 
     var removeStepRowAction = function(rows) {

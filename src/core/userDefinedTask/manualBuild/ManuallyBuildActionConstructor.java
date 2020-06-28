@@ -26,6 +26,14 @@ public class ManuallyBuildActionConstructor {
 	}
 
 	public ManuallyBuildActionConstructor addStep(int index, ManuallyBuildStep step) {
+		index = index + 1;
+		if (index >= steps.size()) {
+			index = steps.size() - 1;
+		}
+		if (index < 0) { // Edge case where list is empty.
+			index = 0;
+		}
+
 		steps.add(index, step);
 		return this;
 	}

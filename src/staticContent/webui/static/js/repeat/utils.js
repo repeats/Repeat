@@ -59,13 +59,23 @@ utilMutiSelectTable = function() {
         cell.classList.add('table-highlight');
     }
 
-    var onClick = function(e, rows, cell, row, col) {
+    var setSelectedRow = function(tableId, index) {
+        var rows = $("#" + tableId).find("td");
+        if (index < 0 || index > rows.length) {
+            return;
+        }
+
+        console.log(rows[index]);
+        rows[index].classList.add('table-highlight');
+    }
+
+    var onClick = function(e, tableId, rows, cell, row, col) {
         if (e.ctrlKey) {
             toggleRow(cell);
             return;
         }
         if (e.shiftKey) {
-            var firstIndex = firstSelected(rows);
+            var firstIndex = firstSelected(tableId);
             if (firstIndex == -1) {
                 firstIndex = 0;
             }
@@ -99,10 +109,8 @@ utilMutiSelectTable = function() {
             for (var j = 0; j < table.rows[i].cells.length; j++)
             table.rows[i].cells[j].onclick = function(cell, i, j) {
                 return function(e) {
-                    console.log(e);
-
                     // Minus one so that row index starts from 0.
-                    onClick(e, rows, cell, i - 1, j);
+                    onClick(e, tableId, rows, cell, i - 1, j);
                 };
             }(table.rows[i].cells[j], i, j);
         }
@@ -142,8 +150,10 @@ utilMutiSelectTable = function() {
 
     return {
         register: register,
+        firstSelected: firstSelected,
         lastSelected: lastSelected,
         allSelected: allSelected,
+        setSelectedRow: setSelectedRow,
     }
 }()
 
