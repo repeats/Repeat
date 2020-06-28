@@ -19,6 +19,8 @@ Lưu ý là các gifs sau đều được chạy ở tốc độ thực (1x spee
 
 ![Multi clipboard](https://raw.githubusercontent.com/repeats/Repeat/master/demo_multi_clipboard.gif)
 
+![Simple manually build task](https://raw.githubusercontent.com/repeats/Repeat/master/demo_manually_build_task.gif)
+
 
 [Viết hoa tất cả các chữ tô đậm](https://youtu.be/wICRVQNVNSM)
 

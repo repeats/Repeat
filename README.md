@@ -21,6 +21,8 @@ Note that the following gifs are at 1x speedup.
 
 ![Multi clipboard](https://raw.githubusercontent.com/repeats/Repeat/master/demo_multi_clipboard.gif)
 
+![Simple manually build task](https://raw.githubusercontent.com/repeats/Repeat/master/demo_manually_build_task.gif)
+
 
 [Task creation - All caps](https://youtu.be/wICRVQNVNSM)
 
