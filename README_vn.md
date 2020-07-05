@@ -7,6 +7,22 @@ Repeat
 [![SourceForge](https://sourceforge.net/sflogo.php?type=11&group_id=3172773)](https://sourceforge.net/projects/repeat1/)
 ========================================================================================================================
 
+Cài đặt
+============
+Download [file JAR mới nhất](https://github.com/repeats/Repeat/releases/latest), đặt file jar vào một thư mục **riêng** rồi chạy bằng Java! Chương trình có thể cần một số đặc quyền vì nó theo dõi các hoạt động của chuột và bàn phím.
+
+Cách dễ nhất để chạy trên Windows là click phải vào file JAR --> Open with --> Java như hình sau:
+![Open with](https://raw.githubusercontent.com/repeats/Repeat/master/open_with_java.PNG)
+
+Cách tốt nhất để chạy trên Linux/OSX là dùng terminal:
+
+     $cd <jar_directory>
+     $java -jar Repeat.jar
+
+**Lưu ý:** Thư mục chứa JAR file **không được** có ký tự trắng (space) trong tên.
+
+Từ bản **Java 9** trở lên, file JAR phải được chạy từ JDK (thay vì từ JRE) thì mới compile được code. Cái hack xài ở Java 8 và trước đó để chỉnh Java home không hoạt động ở Java 9 về sau.
+
 Demo
 ====
 
@@ -64,19 +80,6 @@ Trên Windows không cần đặc quyền admin nào.
 Trên Linux, chương trình chỉ chạy trên X11. Nếu hệ điều hành chạy Wayland chương trình sẽ không nhận các tương tác qua chuột và bàn phím.
 
 Trên OSX, chương trình cần "accessibility permission" để nhận các tương tác ở level thấp. Chỉnh quyền này bằng cách vào System Preference --> Security & Privacy --> Accessibilty --> Privacy.
-
-Cài đặt
-============
-Download [file JAR mới nhất](https://github.com/repeats/Repeat/releases/latest), đặt file jar vào một thư mục **riêng** rồi chạy bằng Java! Chương trình có thể cần một số đặc quyền vì nó theo dõi các hoạt động của chuột và bàn phím.
-
-Cách tốt nhất để chạy trên Linux/OSX là dùng terminal:
-
-     $cd <jar_directory>
-     $java -jar Repeat.jar
-
-**Lưu ý:** Thư mục chứa JAR file **không được** có ký tự trắng (space) trong tên.
-
-Từ bản **Java 9** trở lên, file JAR phải được chạy từ JDK (thay vì từ JRE) thì mới compile được code. Cái hack xài ở Java 8 và trước đó để chỉnh Java home không hoạt động ở Java 9 về sau.
 
 Các câu hỏi thường gặp
 ======================
