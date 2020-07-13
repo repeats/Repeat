@@ -31,6 +31,8 @@ Lưu ý là các gifs sau đều được chạy ở tốc độ thực (1x spee
 
 ![Recording & playback](https://raw.githubusercontent.com/repeats/Repeat/master/demo_record_replay.gif)
 
+![Fuzzy find demo](https://raw.githubusercontent.com/repeats/Repeat/master/demo_fuzzy_find.gif)
+
 ![Mouse gesture activation](https://raw.githubusercontent.com/repeats/Repeat/master/demo_gesture.gif)
 
 ![Multi clipboard](https://raw.githubusercontent.com/repeats/Repeat/master/demo_multi_clipboard.gif)
