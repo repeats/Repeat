@@ -38,7 +38,7 @@ public class KeyChainManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
+	public synchronized Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
 		pressedKeys.add(stroke);
 		currentKeyChain.addKeyStroke(stroke);
 
