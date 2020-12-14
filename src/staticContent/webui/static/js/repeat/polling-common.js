@@ -1,4 +1,4 @@
-function createPollingButtonFunction(params) {
+function createPollingButtonFunction(params, defaultBackoffMillis) {
     function pollingFunction(state) {
         var scheduleNext = function(state) {
             setTimeout(function() {
@@ -7,17 +7,21 @@ function createPollingButtonFunction(params) {
         }
 
         $.get(params.endpoint, function(data) {
-            state.backOff = 100;
+            state.backOff = defaultBackoffMillis;
             if (data == "true") {
                 $("#" + params.buttonId).removeClass(params.offClass);
                 $("#" + params.buttonId).addClass(params.onClass);
+                if (typeof params.onActive != 'undefined') {
+                    params.onActive();
+                }
                 scheduleNext(state);
             } else {
                 $("#" + params.buttonId).removeClass(params.onClass);
                 $("#" + params.buttonId).addClass(params.offClass);
-                if (typeof params.onFinish != 'undefined') {
-                    params.onFinish();
+                if (typeof params.onInactive != 'undefined') {
+                    params.onInactive();
                 }
+                scheduleNext(state);
             }
         }).fail(function(response) {
             state.backOff = Math.min(3600000, Math.floor(state.backOff * 2));

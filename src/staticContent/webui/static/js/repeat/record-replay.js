@@ -1,6 +1,36 @@
 function registerRecordReplayActions() {
     $("#button-record").click(buttonRecordAction);
     $("#button-replay").click(buttonReplayAction);
+
+    // Need to poll always because the start/stop action can be triggered by hotkeys instead.
+    var pollingRecording = createPollingButtonFunction({
+        endpoint: "/internals/get/is-recording",
+        buttonId: "button-record",
+        onClass: "repeat-btn-stop",
+        offClass: "repeat-btn-record",
+        onActive: function() {
+            $("#button-replay").prop('disabled', true);
+        },
+        onInactive: function() {
+            $("#button-replay").prop('disabled', false);
+        },
+    });
+    pollingRecording({ backOff: 1 }, 1000);
+
+    // Need to poll always because the start/stop action can be triggered by hotkeys instead.
+    var pollingReplaying = createPollingButtonFunction({
+        endpoint: "/internals/get/is-replaying",
+        buttonId: "button-replay",
+        onClass: "repeat-btn-stop",
+        offClass: "repeat-btn-replay",
+        onActive: function() {
+            $("#button-record").prop('disabled', true);
+        },
+        onInactive: function() {
+            $("#button-record").prop('disabled', false);
+        },
+    });
+    pollingReplaying({ backOff: 1 }, 1000);
 }
 
 function buttonRecordAction(e) {
@@ -14,16 +44,6 @@ function buttonRecordAction(e) {
     } else {
         $.post("/internals/action/start-record", function(status) {
             $("#button-replay").prop('disabled', true);
-            var polling = createPollingButtonFunction({
-                endpoint: "/internals/get/is-recording",
-                buttonId: "button-record",
-                onClass: "repeat-btn-stop",
-                offClass: "repeat-btn-record",
-                onFinish: function() {
-                    $("#button-replay").prop('disabled', false);
-                },
-            });
-            polling({ backOff: 1 });
         }).fail(function(response) {
             alert('Error sending request to start replaying: ' + response.responseText);
         });
@@ -49,16 +69,6 @@ function buttonReplayAction(e) {
             speedup: speedupText,
         }, function(status) {
             $("#button-record").prop('disabled', true);
-            var polling = createPollingButtonFunction({
-                endpoint: "/internals/get/is-replaying",
-                buttonId: "button-replay",
-                onClass: "repeat-btn-stop",
-                offClass: "repeat-btn-replay",
-                onFinish: function() {
-                    $("#button-record").prop('disabled', false);
-                },
-            });
-            polling({ backOff: 1 });
         }).fail(function(response) {
             alert('Error sending request to start replaying: ' + response.responseText);
         });

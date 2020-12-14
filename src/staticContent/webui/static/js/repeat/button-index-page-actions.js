@@ -19,6 +19,15 @@ function registerIndexPageButtonActions() {
     $("#button-down").click(buttonMoveDownAction)
     $("#button-change-group").click(buttonChangeGroupAction)
     $("#modal-move-to-task-group-move").click(buttonMoveGroupAction);
+
+    // Need to poll always because the start/stop action can be triggered by hotkeys instead.
+    var pollingRunCompiledTask = createPollingButtonFunction({
+        endpoint: "/internals/get/is-running-compiled-task",
+        buttonId: "button-run",
+        onClass: "repeat-btn-stop-running-compiled",
+        offClass: "repeat-btn-run",
+    });
+    pollingRunCompiledTask({ backOff: 1 }, 500);
 }
 
 //////////////////////////////////////////////////////////////////////////////////
