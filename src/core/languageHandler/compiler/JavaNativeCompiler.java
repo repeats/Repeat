@@ -145,9 +145,15 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
                 		return output;
 	                } else {
 	                    for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-	                    	getLogger().warning("Error on line " + diagnostic.getLineNumber() +" in " + diagnostic.getSource().toUri() + ".");
-	                    	getLogger().warning(diagnostic.getMessage(Locale.US));
-	                    }
+	                    	String lineNumber = diagnostic != null ? String.valueOf(diagnostic.getLineNumber()) : "'unknown'";
+	                    	String fileUri = "unknown";
+	                    	if (diagnostic != null && diagnostic.getSource() != null) {
+	                    		fileUri = diagnostic.getSource().toUri().toString();
+	                    	}
+							String message = diagnostic != null ? diagnostic.getMessage(Locale.US) : "unknown message";
+							getLogger().warning("Error on line " + lineNumber + " in " + fileUri + ".");
+							getLogger().warning(message);
+						}
 	                }
 	                fileManager.close();
 	            } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException exp) {
