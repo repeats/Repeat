@@ -32,6 +32,7 @@ import javax.swing.ListSelectionModel;
 
 import core.config.Config;
 import core.keyChain.ActivationPhrase;
+import core.keyChain.ButtonStroke;
 import core.keyChain.KeyChain;
 import core.keyChain.KeySequence;
 import core.keyChain.KeyStroke;
@@ -46,7 +47,7 @@ public class KeyChainInputPanel extends JPanel {
 	private static final ReentrantLock inUse = new ReentrantLock();
 
 	private JTextField tfPhrase;
-	private List<KeyStroke> keyStrokes;
+	private List<ButtonStroke> keyStrokes;
 	private final DefaultListModel<KeyChain> modelKeyChain;
 	private final DefaultListModel<KeySequence> modelKeySequence;
 	private final DefaultListModel<ActivationPhrase> modelPhrases;

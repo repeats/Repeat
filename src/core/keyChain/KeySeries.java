@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
@@ -17,12 +18,12 @@ import utilities.json.IJsonable;
 public abstract class KeySeries implements IJsonable {
 
 	private static final Logger LOGGER = Logger.getLogger(KeySeries.class.getName());
-	protected List<KeyStroke> keys;
+	protected List<ButtonStroke> keys;
 
-	public KeySeries(List<KeyStroke> keys) {
+	public KeySeries(List<ButtonStroke> keys) {
 		this.keys = new ArrayList<>(keys.size());
 
-		for (KeyStroke key : keys) {
+		for (ButtonStroke key : keys) {
 			this.keys.add(key);
 		}
 	}
@@ -52,7 +53,7 @@ public abstract class KeySeries implements IJsonable {
 	@Deprecated
 	public List<Integer> getKeys() {
 		List<Integer> output = new ArrayList<>();
-		for (KeyStroke key : keys) {
+		for (ButtonStroke key : keys) {
 			output.add(key.getKey());
 		}
 		return output;
@@ -61,9 +62,9 @@ public abstract class KeySeries implements IJsonable {
 	/**
 	 * @return the list of key strokes contained in this key chain.
 	 */
-	public List<KeyStroke> getKeyStrokes() {
-		List<KeyStroke> output = new ArrayList<>(keys.size());
-		for (KeyStroke key : keys) {
+	public List<ButtonStroke> getKeyStrokes() {
+		List<ButtonStroke> output = new ArrayList<>(keys.size());
+		for (ButtonStroke key : keys) {
 			output.add(key.clone());
 		}
 		return output;
@@ -87,7 +88,7 @@ public abstract class KeySeries implements IJsonable {
 	 * Add a single stroke to the key chain.
 	 * @param stroke stroke to add.
 	 */
-	public void addKeyStroke(KeyStroke stroke) {
+	public void addKeyStroke(ButtonStroke stroke) {
 		keys.add(stroke);
 	}
 
@@ -110,8 +111,8 @@ public abstract class KeySeries implements IJsonable {
 	 * @param stroke the key stroke to find.
 	 * @return whether the given key stroke is in this key chain.
 	 */
-	public boolean contains(KeyStroke stroke) {
-		for (KeyStroke key : keys) {
+	public boolean contains(ButtonStroke stroke) {
+		for (ButtonStroke key : keys) {
 			if (key.equals(stroke)) {
 				return true;
 			}
@@ -127,7 +128,7 @@ public abstract class KeySeries implements IJsonable {
 		StringBuilder builder = new StringBuilder();
 		KeyboardState keyboardState = KeyboardState.getDefault();
 
-		for (KeyStroke keyStroke : getKeyStrokes()) {
+		for (ButtonStroke keyStroke : getKeyStrokes()) {
 			String s = KeyCodeToChar.getCharForCode(keyStroke.getKey(), keyboardState);
 			builder.append(s);
 		}
@@ -137,10 +138,10 @@ public abstract class KeySeries implements IJsonable {
 
 	@Override
 	public String toString() {
-		return StringUtilities.join(new Function<KeyStroke, String>() {
+		return StringUtilities.join(new Function<ButtonStroke, String>() {
 			@Override
-			public String apply(KeyStroke k) {
-				return k.toString();
+			public String apply(ButtonStroke s) {
+				return s.toString();
 			}
 		}.map(keys), " + ");
 	}
@@ -174,9 +175,9 @@ public abstract class KeySeries implements IJsonable {
 
 	@Override
 	public JsonRootNode jsonize() {
-		List<JsonNode> keyChain = new Function<KeyStroke, JsonNode>() {
+		List<JsonNode> keyChain = new Function<ButtonStroke, JsonNode>() {
 			@Override
-			public JsonNode apply(KeyStroke s) {
+			public JsonNode apply(ButtonStroke s) {
 				return s.jsonize();
 			}
 		}.map(getKeyStrokes());
@@ -184,15 +185,9 @@ public abstract class KeySeries implements IJsonable {
 		return JsonNodeFactories.array(keyChain);
 	}
 
-	public static List<KeyStroke> parseKeyStrokes(List<JsonNode> list) {
+	public static List<ButtonStroke> parseKeyStrokes(List<JsonNode> list) {
 		try {
-			List<KeyStroke> keys = new Function<JsonNode, KeyStroke>() {
-				@Override
-				public KeyStroke apply(JsonNode n) {
-					return KeyStroke.parseJSON(n);
-				}
-			}.map(list);
-			return keys;
+			return list.stream().map(ButtonStroke::parseJSON).collect(Collectors.toList());
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to parse key series", e);
 			return null;

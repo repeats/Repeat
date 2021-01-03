@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import core.config.Config;
-import core.keyChain.KeyStroke;
+import core.keyChain.ButtonStroke;
 import core.keyChain.RollingKeySeries;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
@@ -32,7 +32,7 @@ public abstract class RollingKeySeriesManager extends KeyStrokeManager {
 	}
 
 	@Override
-	synchronized public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
+	synchronized public Set<UserDefinedAction> onButtonStrokePressed(ButtonStroke stroke) {
 		currentRollingKeySeries.addKeyStroke(stroke);
 		if (!getConfig().isExecuteOnKeyReleased()) {
 			return considerTaskExecution(stroke);
@@ -42,7 +42,7 @@ public abstract class RollingKeySeriesManager extends KeyStrokeManager {
 	}
 
 	@Override
-	synchronized public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+	synchronized public Set<UserDefinedAction> onButtonStrokeReleased(ButtonStroke stroke) {
 		if (getConfig().isExecuteOnKeyReleased()) {
 			return considerTaskExecution(stroke);
 		}
@@ -96,7 +96,7 @@ public abstract class RollingKeySeriesManager extends KeyStrokeManager {
 	 * Given a new key stroke coming in, consider start executing actions based on their activations.
 	 * @return set of actions to execute.
 	 */
-	protected final Set<UserDefinedAction> considerTaskExecution(KeyStroke key) {
+	protected final Set<UserDefinedAction> considerTaskExecution(ButtonStroke key) {
 		if (key.getKey() == Config.HALT_TASK && getConfig().isEnabledHaltingKeyPressed()) {
 			clear();
 			return Collections.<UserDefinedAction>emptySet();

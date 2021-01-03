@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import core.config.Config;
+import core.keyChain.ButtonStroke;
 import core.keyChain.KeyChain;
-import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
@@ -29,7 +29,7 @@ public class GlobalKeyActionManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
+	public Set<UserDefinedAction> onButtonStrokePressed(ButtonStroke stroke) {
 		for (UserDefinedAction action : onKeyStrokePressedTasks) {
 			action.setInvoker(TaskActivation.newBuilder().withHotKey(new KeyChain(Arrays.asList(stroke))).build());
 		}
@@ -38,7 +38,7 @@ public class GlobalKeyActionManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+	public Set<UserDefinedAction> onButtonStrokeReleased(ButtonStroke stroke) {
 		for (UserDefinedAction action : onKeyReleasedTasks) {
 			action.setInvoker(TaskActivation.newBuilder().withHotKey(new KeyChain(Arrays.asList(stroke))).build());
 		}

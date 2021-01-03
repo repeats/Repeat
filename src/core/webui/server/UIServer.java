@@ -71,6 +71,7 @@ import core.webui.server.handlers.internals.repeatsclient.RepeatsRemoteClientPag
 import core.webui.server.handlers.internals.repeatsclient.SetLaunchAtStartupRemoteClientHandler;
 import core.webui.server.handlers.internals.repeatsclient.StartRemoteClientHandler;
 import core.webui.server.handlers.internals.repeatsclient.StopRemoteClientHandler;
+import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddMouseKey;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddPhraseHandler;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddSharedVariables;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddStrokesAsKeyChainHandler;
@@ -216,6 +217,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/action/task-activation/phrase/remove", new ActionTaskActivationRemovePhraseHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/shared-variables/add", new ActionTaskActivationAddSharedVariables(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/shared-variables/remove", new ActionTaskActivationRemoveSharedVariables(objectRenderer, taskActivationConstructorManager));
+		output.put("/internals/action/task-activation/strokes/add-mouse-key", new ActionTaskActivationAddMouseKey(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/strokes/add-as-key-chain", new ActionTaskActivationAddStrokesAsKeyChainHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/strokes/add-as-key-sequence", new ActionTaskActivationAddStrokesAsKeySequenceHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/strokes/get", new ActionTaskActivationGetStrokesHandler(objectRenderer, taskActivationConstructorManager));

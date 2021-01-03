@@ -5,7 +5,7 @@ import core.userDefinedTask.internals.SharedVariablesEvent;
 public class ActivationEvent {
 	public static enum EventType {
 		UNKNOWN("unknown"),
-		KEY_STROKE("key_stroke"),
+		BUTTON_STROKE("button_stroke"),
 		SHARED_VARIABLE("shared_variable");
 
 		private String value;
@@ -21,12 +21,12 @@ public class ActivationEvent {
 	}
 
 	private EventType type;
-	private KeyStroke keyStroke;
+	private ButtonStroke buttonStroke;
 	private SharedVariablesEvent variable;
 
-	private ActivationEvent(KeyStroke keyStroke) {
-		this.type = EventType.KEY_STROKE;
-		this.keyStroke = keyStroke;
+	private ActivationEvent(ButtonStroke buttonStroke) {
+		this.type = EventType.BUTTON_STROKE;
+		this.buttonStroke = buttonStroke;
 	}
 
 	private ActivationEvent(SharedVariablesEvent variable) {
@@ -34,8 +34,8 @@ public class ActivationEvent {
 		this.variable = variable;
 	}
 
-	public static ActivationEvent of(KeyStroke keyStroke) {
-		return new ActivationEvent(keyStroke);
+	public static ActivationEvent of(ButtonStroke buttonStroke) {
+		return new ActivationEvent(buttonStroke);
 	}
 
 	public static ActivationEvent of(SharedVariablesEvent variable) {
@@ -46,11 +46,11 @@ public class ActivationEvent {
 		return type;
 	}
 
-	public KeyStroke getKeyStroke() {
-		if (type != EventType.KEY_STROKE) {
-			throw new IllegalStateException("Even is not key stroke but is type " + type + ".");
+	public ButtonStroke getButtonStroke() {
+		if (type != EventType.BUTTON_STROKE) {
+			throw new IllegalStateException("Even is not button stroke but is type " + type + ".");
 		}
-		return keyStroke;
+		return buttonStroke;
 	}
 
 	public SharedVariablesEvent getVariable() {

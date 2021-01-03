@@ -10,7 +10,7 @@ import utilities.StringUtilities;
 
 public class TaskActivationConstructor {
 
-	private LinkedList<KeyStroke> strokes;
+	private LinkedList<ButtonStroke> strokes;
 	private List<KeyChain> keyChains;
 	private List<KeySequence> keySequences;
 	private List<ActivationPhrase> phrases;
@@ -39,7 +39,7 @@ public class TaskActivationConstructor {
 	}
 
 	public String getStrokes() {
-		return StringUtilities.join(strokes.stream().map(KeyStroke::toString).collect(Collectors.toList()), " + ");
+		return StringUtilities.join(strokes.stream().map(ButtonStroke::toString).collect(Collectors.toList()), " + ");
 	}
 
 	public void clearStrokes() {
@@ -65,11 +65,26 @@ public class TaskActivationConstructor {
 		listening = false;
 	}
 
+	public boolean isListening() {
+		return listening;
+	}
+
 	public void onStroke(KeyStroke stroke) {
 		if (!listening) {
 			return;
 		}
 		strokes.add(stroke);
+		if (strokes.size() > config.maxStrokes) {
+			strokes.removeFirst();
+		}
+	}
+
+	public void addMouseKey(MouseKey mouseKey) {
+		if (!listening) {
+			return;
+		}
+
+		strokes.add(mouseKey);
 		if (strokes.size() > config.maxStrokes) {
 			strokes.removeFirst();
 		}

@@ -11,15 +11,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import core.config.Config;
+import core.keyChain.ButtonStroke;
 import core.keyChain.KeyChain;
-import core.keyChain.KeyStroke;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
 public class KeyChainManager extends KeyStrokeManager {
 
 	private KeyChain currentKeyChain;
-	private final Set<KeyStroke> pressedKeys;
+	private final Set<ButtonStroke> pressedKeys;
 	private final Map<KeyChain, UserDefinedAction> keyChainActions;
 
 	private UserDefinedAction pendingAction;
@@ -38,7 +38,7 @@ public class KeyChainManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public synchronized Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke) {
+	public synchronized Set<UserDefinedAction> onButtonStrokePressed(ButtonStroke stroke) {
 		pressedKeys.add(stroke);
 		currentKeyChain.addKeyStroke(stroke);
 
@@ -51,7 +51,7 @@ public class KeyChainManager extends KeyStrokeManager {
 	}
 
 	@Override
-	public synchronized Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke) {
+	public synchronized Set<UserDefinedAction> onButtonStrokeReleased(ButtonStroke stroke) {
 		pressedKeys.remove(stroke);
 		UserDefinedAction action = null;
 		if (getConfig().isExecuteOnKeyReleased()) {

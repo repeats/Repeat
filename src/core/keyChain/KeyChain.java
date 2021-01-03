@@ -15,7 +15,7 @@ public class KeyChain extends KeySeries {
 
 	private static final Logger LOGGER = Logger.getLogger(KeyChain.class.getName());
 
-	public KeyChain(List<KeyStroke> keys) {
+	public KeyChain(List<ButtonStroke> keys) {
 		super(keys);
 	}
 
@@ -55,8 +55,8 @@ public class KeyChain extends KeySeries {
 			throw new IllegalArgumentException("Cannot compare " + getClass() + " with " + other.getClass());
 		}
 
-		List<KeyStroke> keys = getKeyStrokes();
-		List<KeyStroke> otherKeys = other.getKeyStrokes();
+		List<ButtonStroke> keys = getKeyStrokes();
+		List<ButtonStroke> otherKeys = other.getKeyStrokes();
 		if (keys.size() > otherKeys.size()) {
 			return Collections.indexOfSubList(keys, otherKeys) == 0;
 		} else {
@@ -66,7 +66,7 @@ public class KeyChain extends KeySeries {
 
 	public static KeyChain parseJSON(List<JsonNode> list) {
 		try {
-			List<KeyStroke> keys = KeySeries.parseKeyStrokes(list);
+			List<ButtonStroke> keys = KeySeries.parseKeyStrokes(list);
 			if (keys == null) {
 				LOGGER.warning("Failed to parse KeyChain!");
 				return null;

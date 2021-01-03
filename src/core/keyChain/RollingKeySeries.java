@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import core.keyChain.ButtonStroke.KeyboardResult;
 import utilities.KeyCodeToChar;
 
 /**
@@ -16,24 +17,24 @@ public class RollingKeySeries extends KeySeries {
 	private static final int DEFAULT_LIMIT = 100;
 
 	private int limit;
-	private LinkedList<KeyStroke> keys; // This is an alias for the underlying keys.
+	private LinkedList<ButtonStroke> keys; // This is an alias for the underlying keys.
 
 	public RollingKeySeries() {
 		this(Arrays.asList(), DEFAULT_LIMIT);
 	}
 
-	public RollingKeySeries(List<KeyStroke> keys) {
+	public RollingKeySeries(List<ButtonStroke> keys) {
 		this(keys, DEFAULT_LIMIT);
 	}
 
-	public RollingKeySeries(List<KeyStroke> keys, int limit) {
+	public RollingKeySeries(List<ButtonStroke> keys, int limit) {
 		super();
 		super.keys = new LinkedList<>();
-		this.keys = (LinkedList<KeyStroke>) super.keys;
+		this.keys = (LinkedList<ButtonStroke>) super.keys;
 
 		this.limit = limit;
 
-		for (KeyStroke key : keys) {
+		for (ButtonStroke key : keys) {
 			addKeyStroke(key);
 		}
 	}
@@ -43,7 +44,7 @@ public class RollingKeySeries extends KeySeries {
 	 */
 	@Override
 	public void addFrom(KeySeries other) {
-		for (KeyStroke key : other.keys) {
+		for (ButtonStroke key : other.keys) {
 			addKeyStroke(key);
 		}
 	}
@@ -53,7 +54,7 @@ public class RollingKeySeries extends KeySeries {
 	 * @param stroke stroke to add.
 	 */
 	@Override
-	public void addKeyStroke(KeyStroke stroke) {
+	public void addKeyStroke(ButtonStroke stroke) {
 		keys.add(stroke);
 		if (keys.size() > limit) {
 			keys.removeFirst();
@@ -63,7 +64,7 @@ public class RollingKeySeries extends KeySeries {
 	/**
 	 * @return last key stroke in the series.
 	 */
-	public KeyStroke getLast() {
+	public ButtonStroke getLast() {
 		if (keys.size() == 0) {
 			return null;
 		}
@@ -81,10 +82,12 @@ public class RollingKeySeries extends KeySeries {
 		StringBuilder builder = new StringBuilder();
 		KeyboardState keyboardState = KeyboardState.getDefault();
 
-		for (KeyStroke keyStroke : getKeyStrokes()) {
-			keyboardState = keyboardState.changeWith(keyStroke);
-			if (keyStroke.isPressed()) {
-				String s = KeyCodeToChar.getCharForCode(keyStroke.getKey(), keyboardState);
+		for (ButtonStroke buttonStroke : getKeyStrokes()) {
+			KeyboardResult typeResult = buttonStroke.getTypedString(keyboardState);
+			keyboardState = typeResult.keyboardState();
+
+			if (buttonStroke.isPressed()) {
+				String s = typeResult.typedString();
 				builder.append(s);
 			}
 		}
@@ -111,16 +114,16 @@ public class RollingKeySeries extends KeySeries {
 	}
 
 	private boolean collideWithKeySequence(KeySequence other) {
-		List<KeyStroke> otherKeyStrokes = other.getKeyStrokes();
+		List<ButtonStroke> otherKeyStrokes = other.getKeyStrokes();
 		if (otherKeyStrokes.size() > keys.size()) {
 			return false;
 		}
 
-		ListIterator<KeyStroke> otherIterator = otherKeyStrokes.listIterator(otherKeyStrokes.size());
-		ListIterator<KeyStroke> iterator = keys.listIterator(keys.size());
+		ListIterator<ButtonStroke> otherIterator = otherKeyStrokes.listIterator(otherKeyStrokes.size());
+		ListIterator<ButtonStroke> iterator = keys.listIterator(keys.size());
 		for (int i = 0; i < otherKeyStrokes.size(); i++) {
-			KeyStroke otherKeyStroke = otherIterator.previous();
-			KeyStroke keyStroke = iterator.previous();
+			ButtonStroke otherKeyStroke = otherIterator.previous();
+			ButtonStroke keyStroke = iterator.previous();
 
 			if (!otherKeyStroke.equals(keyStroke)) {
 				return false;

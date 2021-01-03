@@ -6,7 +6,7 @@ import java.util.Set;
 import core.config.Config;
 import core.keyChain.ActivationEvent;
 import core.keyChain.ActivationEvent.EventType;
-import core.keyChain.KeyStroke;
+import core.keyChain.ButtonStroke;
 import core.userDefinedTask.UserDefinedAction;
 
 public abstract class KeyStrokeManager extends ActivationEventManager {
@@ -17,17 +17,17 @@ public abstract class KeyStrokeManager extends ActivationEventManager {
 
 	@Override
 	public final Set<UserDefinedAction> onActivationEvent(ActivationEvent event) {
-		if (event.getType() != EventType.KEY_STROKE) {
+		if (event.getType() != EventType.BUTTON_STROKE) {
 			return new HashSet<>();
 		}
 
-		KeyStroke keyStroke = event.getKeyStroke();
-		if (keyStroke.isPressed()) {
-			return onKeyStrokePressed(keyStroke);
+		ButtonStroke buttonStroke = event.getButtonStroke();
+		if (buttonStroke.isPressed()) {
+			return onButtonStrokePressed(buttonStroke);
 		}
-		return onKeyStrokeReleased(keyStroke);
+		return onButtonStrokeReleased(buttonStroke);
 	}
 
-	public abstract Set<UserDefinedAction> onKeyStrokePressed(KeyStroke stroke);
-	public abstract Set<UserDefinedAction> onKeyStrokeReleased(KeyStroke stroke);
+	public abstract Set<UserDefinedAction> onButtonStrokePressed(ButtonStroke stroke);
+	public abstract Set<UserDefinedAction> onButtonStrokeReleased(ButtonStroke stroke);
 }

@@ -8,15 +8,17 @@ import org.simplenativehooks.events.NativeKeyEvent;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import utilities.KeyCodeToChar;
 import utilities.KeyEventCodeToString;
-import utilities.json.IJsonable;
 
 /**
  * Represents a key stroke on the keyboard.
  */
-public class KeyStroke implements IJsonable {
+public class KeyStroke implements ButtonStroke {
 
 	private static final Logger LOGGER = Logger.getLogger(KeyStroke.class.getName());
+
+	static final String TYPE_STRING = "key_stroke";
 
 	public static enum Modifier {
 		KEY_MODIFIER_UNKNOWN(0), // Unknown is equal to both left and right.
@@ -110,15 +112,9 @@ public class KeyStroke implements IJsonable {
 	 *
 	 * @return the integer representing the key on the keyboard.
 	 */
+	@Override
 	public int getKey() {
 		return key;
-	}
-
-	/**
-	 * Syntactic sugar for {@link #getKey()}.
-	 */
-	public int k() {
-		return getKey();
 	}
 
 	/**
@@ -149,6 +145,7 @@ public class KeyStroke implements IJsonable {
 		return this;
 	}
 
+	@Override
 	public boolean isPressed() {
 		return pressed;
 	}
@@ -168,6 +165,14 @@ public class KeyStroke implements IJsonable {
 			suffix = " (R)";
 		}
 		return KeyEventCodeToString.codeToString(getKey()) + suffix;
+	}
+
+	@Override
+	public KeyboardResult getTypedString(KeyboardState keyboardState) {
+		keyboardState = keyboardState.changeWith(this);
+		String s = KeyCodeToChar.getCharForCode(getKey(), keyboardState);
+
+		return KeyboardResult.of(keyboardState, s);
 	}
 
 	@Override
@@ -203,6 +208,7 @@ public class KeyStroke implements IJsonable {
 	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
+				JsonNodeFactories.field("type", JsonNodeFactories.string(TYPE_STRING)),
 				JsonNodeFactories.field("key", JsonNodeFactories.number(getKey())),
 				JsonNodeFactories.field("modifier", JsonNodeFactories.number(getModifier().getValue()))
 				);

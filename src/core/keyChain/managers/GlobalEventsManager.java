@@ -7,13 +7,16 @@ import javax.swing.JFrame;
 
 import org.jnativehook.NativeHookException;
 import org.simplenativehooks.events.NativeKeyEvent;
+import org.simplenativehooks.events.NativeMouseEvent;
 import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
+import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
 import org.simplenativehooks.utilities.Function;
 
 import core.config.Config;
 import core.controller.CoreProvider;
 import core.keyChain.ActivationEvent;
 import core.keyChain.KeyStroke;
+import core.keyChain.MouseKey;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.TaskGroup;
 import core.userDefinedTask.UserDefinedAction;
@@ -88,6 +91,28 @@ public final class GlobalEventsManager {
 			}
 		});
 
+		AbstractGlobalMouseListener mouseListener = GlobalListenerFactory.of().createGlobalMouseListener();
+		mouseListener.setMousePressed(new Function<NativeMouseEvent, Boolean>(){
+			@Override
+			public Boolean apply(NativeMouseEvent r) {
+				MouseKey stroke = MouseKey.of(r);
+
+				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
+				actionExecutor.startExecutingActions(actions);
+				return true;
+			}
+		});
+		mouseListener.setMouseReleased(new Function<NativeMouseEvent, Boolean>(){
+			@Override
+			public Boolean apply(NativeMouseEvent r) {
+				MouseKey stroke = MouseKey.of(r);
+
+				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
+				actionExecutor.startExecutingActions(actions);
+				return true;
+			}
+		});
+
 		SharedVariablesPubSubManager.get().addSubscriber(SharedVariablesSubscriber.of(SharedVariablesSubscription.forAll(), e -> {
 			Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(e));
 			actionExecutor.startExecutingActions(actions);
@@ -95,6 +120,7 @@ public final class GlobalEventsManager {
 
 		taskActivationManager.startListening();
 		keyListener.startListening();
+		mouseListener.startListening();
 	}
 
 	public void setDisablingFunction(Function<Void, Boolean> disablingFunction) {

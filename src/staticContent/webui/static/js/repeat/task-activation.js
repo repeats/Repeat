@@ -3,6 +3,9 @@ function registerTaskActivationActions() {
     $("#button-on-key-pressed").click(buttonOnKeyPressedAction);
     $("#button-on-key-released").click(buttonOnKeyReleasedAction);
     $("#button-strokes").click(buttonStrokeAction);
+    $("#button-add-mouse-key-left").click(buttonMouseKeyAction("LEFT"));
+    $("#button-add-mouse-key-middle").click(buttonMouseKeyAction("MIDDLE"));
+    $("#button-add-mouse-key-right").click(buttonMouseKeyAction("RIGHT"));
     $("#button-add-key-chain").click(buttonAddKeyChainAction);
     $("#button-add-key-sequence").click(buttonAddKeySequenceAction);
     $("#button-add-phrase").click(buttonAddPhraseAction);
@@ -136,6 +139,21 @@ function buttonStrokeAction(e) {
     }).fail(function(response) {
         alert('Error toggling task activation listening: ' + response.responseText);
     });
+}
+
+function buttonMouseKeyAction(key) {
+    return function(e) {
+        var endpoint = "/internals/action/task-activation/strokes/add-mouse-key";
+        var params = getTaskActivationParameters();
+        params.key = key;
+
+        $.post(endpoint, JSON.stringify(params), function(data) {
+            var button = $("#button-strokes");
+            button.html(data);
+        }).fail(function(response) {
+            alert('Error adding mouse key: ' + response.responseText);
+        });
+    }
 }
 
 var shouldStopPollingKeyStrokes = false;

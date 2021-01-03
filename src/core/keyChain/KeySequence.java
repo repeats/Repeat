@@ -19,7 +19,7 @@ public class KeySequence extends KeySeries {
 		super();
 	}
 
-	public KeySequence(List<KeyStroke> keys) {
+	public KeySequence(List<ButtonStroke> keys) {
 		super(keys);
 	}
 
@@ -40,8 +40,8 @@ public class KeySequence extends KeySeries {
 			throw new IllegalArgumentException("Cannot compare " + getClass() + " with " + other.getClass());
 		}
 
-		List<KeyStroke> keys = getKeyStrokes();
-		List<KeyStroke> otherKeys = other.getKeyStrokes();
+		List<ButtonStroke> keys = getKeyStrokes();
+		List<ButtonStroke> otherKeys = other.getKeyStrokes();
 		if (keys.size() > otherKeys.size()) {
 			return Collections.indexOfSubList(keys, otherKeys) >= 0;
 		} else {
@@ -51,11 +51,12 @@ public class KeySequence extends KeySeries {
 
 	public static KeySequence parseJSON(List<JsonNode> list) {
 		try {
-			List<KeyStroke> keys = KeySeries.parseKeyStrokes(list);
+			List<ButtonStroke> keys = KeySeries.parseKeyStrokes(list);
 			if (keys == null) {
 				LOGGER.warning("Failed to parse KeyChain!");
 				return null;
 			}
+
 			return new KeySequence(keys);
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to parse KeyChain", e);

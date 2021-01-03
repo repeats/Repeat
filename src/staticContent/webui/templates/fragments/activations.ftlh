@@ -21,6 +21,17 @@
         <div><button id="button-strokes" type="button" class="btn btn-default btn-span">None</button></div>
     </div>
     <div class="row top-buffer">
+        <div class="col-xs-4">
+            <div><button id="button-add-mouse-key-left" type="button" class="btn btn-default btn-span" title="This is usually the left mouse button unless configured otherwise.">Add left mouse button (button 1)</button></div>
+        </div>
+        <div class="col-xs-4">
+            <div><button id="button-add-mouse-key-middle" type="button" class="btn btn-default btn-span" title="This is usually the middle mouse button unless configured otherwise.">Add middle mouse button (button 2)</button></div>
+        </div>
+        <div class="col-xs-4">
+            <div><button id="button-add-mouse-key-right" type="button" class="btn btn-default btn-span" title="This is usually the right mouse button unless configured otherwise.">Add right button (button 3)</button></div>
+        </div>
+    </div>
+    <div class="row top-buffer">
         <div class="col-xs-6">
             <button id="button-add-key-chain" type="button" class="btn btn-default btn-span" <#if task.activation.config.disableKeyChain> disabled </#if>>Add key chain</button>
             <table id="table-key-chains" class="table">
