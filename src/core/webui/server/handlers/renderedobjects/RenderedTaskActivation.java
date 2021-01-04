@@ -22,9 +22,9 @@ public class RenderedTaskActivation {
 		TaskActivation activation = constructor.getActivation();
 
 		RenderedTaskActivation output = new RenderedTaskActivation();
-		output.keyChains = activation.getHotkeys().stream().map(KeyChain::toString).collect(Collectors.toList());
-		output.keySequences = activation.getKeySequences().stream().map(KeySequence::toString).collect(Collectors.toList());
-		output.phrases = activation.getPhrases().stream().map(ActivationPhrase::toString).collect(Collectors.toList());
+		output.keyChains = activation.getHotkeys().stream().map(KeyChain::toString).sorted().collect(Collectors.toList());
+		output.keySequences = activation.getKeySequences().stream().map(KeySequence::toString).sorted().collect(Collectors.toList());
+		output.phrases = activation.getPhrases().stream().map(ActivationPhrase::toString).sorted().collect(Collectors.toList());
 		output.mouseGestures = RenderedMouseGestureActivation.fromActivation(activation);
 		output.sharedVariables = RenderedSharedVariablesActivation.fromActivation(activation);
 		output.globalActivation = RenderedGlobalActivation.fromActivation(activation);
