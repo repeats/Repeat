@@ -1,6 +1,5 @@
 package core.webui.server.handlers.renderedobjects;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -23,16 +22,13 @@ public class ObjectRenderer {
 	private final String TEMPLATE_EXTENSION = ".ftlh";
 	private final Configuration config;
 
-	public ObjectRenderer(File templateDir) {
+	public ObjectRenderer() {
 		config = new Configuration(Configuration.VERSION_2_3_28);
-		try {
-			config.setDirectoryForTemplateLoading(templateDir);
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "Error setting template directory to " + templateDir.getAbsolutePath(), e);
-		}
+		config.setLocalizedLookup(false);
+		config.setTemplateLoader(StaticTemplateLoader.of());
 		config.setDefaultEncoding("UTF-8");
 		config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-		config.setLogTemplateExceptions(false);
+		config.setLogTemplateExceptions(true);
 		config.setWrapUncheckedExceptions(true);
 	}
 

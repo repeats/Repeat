@@ -19,6 +19,7 @@ import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.protocol.HttpContext;
 
 import staticResources.BootStrapResources;
+import staticResources.WebUIResources;
 
 public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 
@@ -61,7 +62,7 @@ public class StaticFileServingHandler extends HttpSimpleAsyncRequestHandler {
 		response.setStatusCode(HttpStatus.SC_OK);
 		response.addHeader("Cache-Control", "max-age=3600"); // Max age = 1 hour.
 		String contentType = contentType(decodedPath);
-		InputStream inputStream = BootStrapResources.getStaticContentStream("/staticContent/webui/static/" + decodedPath);
+		InputStream inputStream = BootStrapResources.getStaticContentStream(WebUIResources.STATIC_RESOURCES_PREFIX + decodedPath);
 		InputStreamEntity body = new InputStreamEntity(inputStream, ContentType.create(contentType));
 		response.setEntity(body);
 		exchange.submitResponse(new BasicAsyncResponseProducer(response));

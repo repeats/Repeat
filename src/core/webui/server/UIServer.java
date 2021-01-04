@@ -129,7 +129,6 @@ import core.webui.webcommon.HttpHandlerWithBackend;
 import core.webui.webcommon.StaticFileServingHandler;
 import core.webui.webcommon.UpAndRunningHandler;
 import frontEnd.MainBackEndHolder;
-import staticResources.BootStrapResources;
 
 public class UIServer extends IPCServiceWithModifablePort {
 
@@ -151,7 +150,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 		taskActivationConstructorManager = new TaskActivationConstructorManager();
 		manuallyBuildActionConstructorManager = ManuallyBuildActionConstructorManager.of();
-		objectRenderer = new ObjectRenderer(BootStrapResources.getWebUIResource().getTemplateDir());
+		objectRenderer = new ObjectRenderer();
 		taskSourceCodeFragmentHandler = new TaskSourceCodeFragmentHandler(objectRenderer, manuallyBuildActionConstructorManager);
 	}
 
