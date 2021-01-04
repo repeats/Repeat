@@ -13,7 +13,7 @@ public class WebUIResources extends AbstractBootstrapResource {
 
 	@Override
 	protected File getExtractingDest() {
-		return new File(FileUtility.joinPath("resources", "webui"));
+		return new File(FileUtility.joinPath("resources", "webui", "templates"));
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class WebUIResources extends AbstractBootstrapResource {
 
 	@Override
 	protected String getRelativeSourcePath() {
-		return "staticContent/webui";
+		return "staticContent/webui/templates";
 	}
 
 	/**
@@ -34,16 +34,9 @@ public class WebUIResources extends AbstractBootstrapResource {
 	}
 
 	/**
-	 * Returns the directory containing all static resources.
-	 */
-	public File getStaticDir() {
-		return new File(FileUtility.joinPath(getRoot().getAbsolutePath(), "static"));
-	}
-
-	/**
 	 * Returns the directory containing all HTML templates.
 	 */
 	public File getTemplateDir() {
-		return new File(FileUtility.joinPath(getRoot().getAbsolutePath(), "templates"));
+		return new File(FileUtility.joinPath(getRoot().getAbsolutePath()));
 	}
 }
