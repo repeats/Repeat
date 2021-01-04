@@ -26,8 +26,8 @@ function registerIndexPageButtonActions() {
         buttonId: "button-run",
         onClass: "repeat-btn-stop-running-compiled",
         offClass: "repeat-btn-run",
-    });
-    pollingRunCompiledTask({ backOff: 1 }, 500);
+    }, 1000);
+    pollingRunCompiledTask({ backOff: 1000 });
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -115,8 +115,8 @@ function buttonRunAction(e) {
                 buttonId: "button-run",
                 onClass: "repeat-btn-stop-running-compiled",
                 offClass: "repeat-btn-run",
-            });
-            polling({ backOff: 1 });
+            }, 1000);
+            polling({ backOff: 1000 });
 
         }).fail(function(response) {
             alert('Error sending request to run compiled action: ' + response.responseText);

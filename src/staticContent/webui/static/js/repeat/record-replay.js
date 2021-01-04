@@ -14,8 +14,8 @@ function registerRecordReplayActions() {
         onInactive: function() {
             $("#button-replay").prop('disabled', false);
         },
-    });
-    pollingRecording({ backOff: 1 }, 1000);
+    }, 1000);
+    pollingRecording({ backOff: 1000 });
 
     // Need to poll always because the start/stop action can be triggered by hotkeys instead.
     var pollingReplaying = createPollingButtonFunction({
@@ -29,8 +29,8 @@ function registerRecordReplayActions() {
         onInactive: function() {
             $("#button-record").prop('disabled', false);
         },
-    });
-    pollingReplaying({ backOff: 1 }, 1000);
+    }, 1000);
+    pollingReplaying({ backOff: 1000 });
 }
 
 function buttonRecordAction(e) {
