@@ -308,7 +308,7 @@ public class UIServer extends IPCServiceWithModifablePort {
                 .setServerInfo("Repeat")
 				.setExceptionLogger(ExceptionLogger.STD_ERR)
 				.registerHandler("/test", new UpAndRunningHandler())
-				.registerHandler("/static/*", new StaticFileServingHandler(BootStrapResources.getWebUIResource().getStaticDir().getAbsolutePath()));
+				.registerHandler("/static/*", new StaticFileServingHandler());
 		for (Entry<String, HttpHandlerWithBackend> entry : handlers.entrySet()) {
 			serverBootstrap.registerHandler(entry.getKey(), entry.getValue());
 		}
