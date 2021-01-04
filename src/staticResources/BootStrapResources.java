@@ -35,7 +35,6 @@ public class BootStrapResources {
 
 
 	private static final NativeHookBootstrapResources nativeHookResources;
-	private static final WebUIResources webUIResource;
 
 	public static final Image TRAY_IMAGE;
 
@@ -69,13 +68,6 @@ public class BootStrapResources {
 
 		nativeHookResources = new NativeHookBootstrapResources();
 		BOOTSTRAP_RESOURCES.add(nativeHookResources);
-
-		webUIResource = new WebUIResources();
-		BOOTSTRAP_RESOURCES.add(webUIResource);
-	}
-
-	public static WebUIResources getWebUIResource() {
-		return webUIResource;
 	}
 
 	public static AbstractNativeLanguageBootstrapResource getBootstrapResource(Language language) {

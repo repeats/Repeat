@@ -1,42 +1,9 @@
 package staticResources;
 
-import java.io.File;
+public class WebUIResources {
 
-import utilities.FileUtility;
+	public static final String STATIC_RESOURCES_PREFIX = "/staticContent/webui/static/";
+	public static final String TEMPLATES_RESOURCES_PREFIX = "/staticContent/webui/templates/";
 
-public class WebUIResources extends AbstractBootstrapResource {
-
-	@Override
-	protected boolean correctExtension(String name) {
-		return true;
-	}
-
-	@Override
-	protected File getExtractingDest() {
-		return new File(FileUtility.joinPath("resources", "webui", "templates"));
-	}
-
-	@Override
-	protected String getName() {
-		return "WebUI";
-	}
-
-	@Override
-	protected String getRelativeSourcePath() {
-		return "staticContent/webui/templates";
-	}
-
-	/**
-	 * Returns the directory containing all web UI resources.
-	 */
-	public File getRoot() {
-		return getExtractingDest();
-	}
-
-	/**
-	 * Returns the directory containing all HTML templates.
-	 */
-	public File getTemplateDir() {
-		return new File(FileUtility.joinPath(getRoot().getAbsolutePath()));
-	}
+	private WebUIResources() {}
 }
