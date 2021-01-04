@@ -2,6 +2,7 @@ package staticResources;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,6 +25,14 @@ public class BootStrapResources {
 	private static final Map<Language, String> NATIVE_LANGUAGE_TEMPLATES;
 	private static final Map<Language, AbstractNativeLanguageBootstrapResource> NATIVE_BOOTSTRAP_RESOURCES;
 	private static final Set<BootstrapResourcesExtrator> BOOTSTRAP_RESOURCES;
+
+	public static final String SOUND_POSITIVE1_PATH = "/staticContent/sounds/notifications/positive1.wav";
+	public static final String SOUND_POSITIVE2_PATH = "/staticContent/sounds/notifications/positive2.wav";
+	public static final String SOUND_POSITIVE3_PATH = "/staticContent/sounds/notifications/positive3.wav";
+	public static final String SOUND_POSITIVE4_PATH = "/staticContent/sounds/notifications/positive4.wav";
+	public static final String SOUND_NEGATIVE1_PATH = "/staticContent/sounds/notifications/negative1.wav";
+	public static final String SOUND_NEGATIVE2_PATH = "/staticContent/sounds/notifications/negative2.wav";
+
 
 	private static final NativeHookBootstrapResources nativeHookResources;
 	private static final WebUIResources webUIResource;
@@ -81,6 +90,10 @@ public class BootStrapResources {
 
 	protected static ImageIcon getIcon(String resource) {
 		return new ImageIcon(getImage(resource));
+	}
+
+	public static InputStream getStaticContentStream(String resource) {
+		return BootStrapResources.class.getResourceAsStream(resource);
 	}
 
 	protected static Image getImage(String resource) {
