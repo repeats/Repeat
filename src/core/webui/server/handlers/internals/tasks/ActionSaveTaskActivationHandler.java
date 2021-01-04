@@ -67,7 +67,7 @@ public class ActionSaveTaskActivationHandler extends AbstractTaskActivationConst
 			return emptySuccessResponse(exchange);
 		}
 		if (taskString.equals("mouseGestureActivation")) {
-			backEndHolder.getConfig().setMouseGestureActivationKey(hotKey.getKeyStrokes().iterator().next().getKey());
+			backEndHolder.getConfig().setMouseGestureActivationKey(hotKey.getButtonStrokes().iterator().next().getKey());
 			return emptySuccessResponse(exchange);
 		}
 		return HttpServerUtilities.prepareHttpResponse(exchange, 400, "Unknown hotkey " + taskString + ".");

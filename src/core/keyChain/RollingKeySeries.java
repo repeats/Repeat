@@ -82,7 +82,7 @@ public class RollingKeySeries extends KeySeries {
 		StringBuilder builder = new StringBuilder();
 		KeyboardState keyboardState = KeyboardState.getDefault();
 
-		for (ButtonStroke buttonStroke : getKeyStrokes()) {
+		for (ButtonStroke buttonStroke : getButtonStrokes()) {
 			KeyboardResult typeResult = buttonStroke.getTypedString(keyboardState);
 			keyboardState = typeResult.keyboardState();
 
@@ -114,7 +114,7 @@ public class RollingKeySeries extends KeySeries {
 	}
 
 	private boolean collideWithKeySequence(KeySequence other) {
-		List<ButtonStroke> otherKeyStrokes = other.getKeyStrokes();
+		List<ButtonStroke> otherKeyStrokes = other.getButtonStrokes();
 		if (otherKeyStrokes.size() > keys.size()) {
 			return false;
 		}

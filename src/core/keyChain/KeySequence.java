@@ -40,8 +40,8 @@ public class KeySequence extends KeySeries {
 			throw new IllegalArgumentException("Cannot compare " + getClass() + " with " + other.getClass());
 		}
 
-		List<ButtonStroke> keys = getKeyStrokes();
-		List<ButtonStroke> otherKeys = other.getKeyStrokes();
+		List<ButtonStroke> keys = getButtonStrokes();
+		List<ButtonStroke> otherKeys = other.getButtonStrokes();
 		if (keys.size() > otherKeys.size()) {
 			return Collections.indexOfSubList(keys, otherKeys) >= 0;
 		} else {

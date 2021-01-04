@@ -144,7 +144,7 @@ public class HotkeySetting extends JFrame {
 					return;
 				}
 
-				backEnd.config.setMouseGestureActivationKey(newKeyChain.getKeyStrokes().get(0).getKey());
+				backEnd.config.setMouseGestureActivationKey(newKeyChain.getButtonStrokes().get(0).getKey());
 				tfMouseGestureActivation.setText(newKeyChain.toString());
 			}
 		});

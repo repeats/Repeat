@@ -48,7 +48,7 @@ public abstract class KeySeries implements IJsonable {
 
 	/**
 	 * @return list of key codes in this key chain.
-	 * @deprecated change to use {@link #getKeyStrokes()} instead.
+	 * @deprecated change to use {@link #getButtonStrokes()} instead.
 	 */
 	@Deprecated
 	public List<Integer> getKeys() {
@@ -61,8 +61,25 @@ public abstract class KeySeries implements IJsonable {
 
 	/**
 	 * @return the list of key strokes contained in this key chain.
+	 * @deprecated change to use {@link #getButtonStrokes()} instead. This will not
+	 *             include any mouse related strokes.
 	 */
-	public List<ButtonStroke> getKeyStrokes() {
+	@Deprecated
+	public List<KeyStroke> getKeyStrokes() {
+		List<KeyStroke> output = new ArrayList<>(keys.size());
+		for (ButtonStroke key : keys) {
+			ButtonStroke stroke = key.clone();
+			if (stroke instanceof KeyStroke) {
+				output.add((KeyStroke) stroke);
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * @return the list of button strokes contained in this key chain.
+	 */
+	public List<ButtonStroke> getButtonStrokes() {
 		List<ButtonStroke> output = new ArrayList<>(keys.size());
 		for (ButtonStroke key : keys) {
 			output.add(key.clone());
@@ -128,7 +145,7 @@ public abstract class KeySeries implements IJsonable {
 		StringBuilder builder = new StringBuilder();
 		KeyboardState keyboardState = KeyboardState.getDefault();
 
-		for (ButtonStroke keyStroke : getKeyStrokes()) {
+		for (ButtonStroke keyStroke : getButtonStrokes()) {
 			String s = KeyCodeToChar.getCharForCode(keyStroke.getKey(), keyboardState);
 			builder.append(s);
 		}
@@ -180,7 +197,7 @@ public abstract class KeySeries implements IJsonable {
 			public JsonNode apply(ButtonStroke s) {
 				return s.jsonize();
 			}
-		}.map(getKeyStrokes());
+		}.map(getButtonStrokes());
 
 		return JsonNodeFactories.array(keyChain);
 	}
