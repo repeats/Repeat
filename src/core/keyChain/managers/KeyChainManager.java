@@ -12,21 +12,24 @@ import java.util.stream.Collectors;
 
 import core.config.Config;
 import core.keyChain.ButtonStroke;
+import core.keyChain.ButtonStroke.Source;
 import core.keyChain.KeyChain;
 import core.keyChain.TaskActivation;
 import core.userDefinedTask.UserDefinedAction;
 
 public class KeyChainManager extends KeyStrokeManager {
 
-	private KeyChain currentKeyChain;
-	private final Set<ButtonStroke> pressedKeys;
+	private KeyChain currentKeyboardChain, currentKeyChain;
+	private final Set<ButtonStroke> pressedKeyboardKeys, pressedKeys;
 	private final Map<KeyChain, UserDefinedAction> keyChainActions;
 
 	private UserDefinedAction pendingAction;
 
 	public KeyChainManager(Config config) {
 		super(config);
+		currentKeyboardChain = new KeyChain();
 		currentKeyChain = new KeyChain();
+		pressedKeyboardKeys = Collections.synchronizedSet(new HashSet<>());
 		pressedKeys = Collections.synchronizedSet(new HashSet<>());
 		keyChainActions = new HashMap<>();
 
@@ -39,12 +42,19 @@ public class KeyChainManager extends KeyStrokeManager {
 
 	@Override
 	public synchronized Set<UserDefinedAction> onButtonStrokePressed(ButtonStroke stroke) {
+		if (stroke.getSource() == Source.KEYBOARD) {
+			pressedKeyboardKeys.add(stroke);
+		}
 		pressedKeys.add(stroke);
+
+		if (stroke.getSource() == Source.KEYBOARD) {
+			currentKeyboardChain.addKeyStroke(stroke);
+		}
 		currentKeyChain.addKeyStroke(stroke);
 
 		UserDefinedAction action = null;
 		if (!getConfig().isExecuteOnKeyReleased()) {
-			action = considerTaskExecution(stroke.getKey());
+			action = considerTaskExecution(stroke);
 		}
 
 		return Arrays.asList(action).stream().filter(a -> a != null).collect(Collectors.toSet());
@@ -52,26 +62,35 @@ public class KeyChainManager extends KeyStrokeManager {
 
 	@Override
 	public synchronized Set<UserDefinedAction> onButtonStrokeReleased(ButtonStroke stroke) {
+		if (stroke.getSource() == Source.KEYBOARD) {
+			pressedKeyboardKeys.remove(stroke);
+		}
 		pressedKeys.remove(stroke);
 		UserDefinedAction action = null;
 		if (getConfig().isExecuteOnKeyReleased()) {
-			action = considerTaskExecution(stroke.getKey());
+			action = considerTaskExecution(stroke);
+		}
+
+		if (stroke.getSource() == Source.KEYBOARD) {
+			currentKeyboardChain.clearKeys();
 		}
 		currentKeyChain.clearKeys();
+
 		if (action != null) {
 			pendingAction = action;
 		}
-		if (pressedKeys.isEmpty()) {
+		if (pressedKeyboardKeys.isEmpty() || pressedKeys.isEmpty()) {
 			UserDefinedAction toExecute = pendingAction;
 			pendingAction = null;
 			return Arrays.asList(toExecute).stream().filter(a -> a != null).collect(Collectors.toSet());
 		}
 
-		return new HashSet<>();
+		return Collections.emptySet();
 	}
 
 	@Override
 	public void clear() {
+		currentKeyboardChain.clearKeys();
 		currentKeyChain.clearKeys();
 	}
 
@@ -115,10 +134,18 @@ public class KeyChainManager extends KeyStrokeManager {
 	 * @param keyCode new keyCode coming in
 	 * @return if operation succeeded (even if no action has been invoked)
 	 */
-	private UserDefinedAction considerTaskExecution(int keyCode) {
-		if (keyCode == Config.HALT_TASK && getConfig().isEnabledHaltingKeyPressed()) {
+	private UserDefinedAction considerTaskExecution(ButtonStroke stroke) {
+		if (stroke.getKey() == Config.HALT_TASK && getConfig().isEnabledHaltingKeyPressed()) {
 			clear();
 			return null;
+		}
+
+		if (stroke.getSource() == Source.KEYBOARD) {
+			UserDefinedAction action = keyChainActions.get(currentKeyboardChain);
+			if (action != null) {
+				action.setInvoker(TaskActivation.newBuilder().withHotKey(currentKeyboardChain.clone()).build());
+			}
+			return action;
 		}
 
 		UserDefinedAction action = keyChainActions.get(currentKeyChain);

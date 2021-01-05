@@ -49,6 +49,11 @@ public class MouseKey implements ButtonStroke {
 	}
 
 	@Override
+	public Source getSource() {
+		return Source.MOUSE;
+	}
+
+	@Override
 	public JsonRootNode jsonize() {
 		return JsonNodeFactories.object(
 				JsonNodeFactories.field("type", JsonNodeFactories.string(TYPE_STRING)),

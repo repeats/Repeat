@@ -9,6 +9,11 @@ import utilities.json.IJsonable;
 public interface ButtonStroke extends IJsonable {
 	public int getKey();
 
+	public static enum Source {
+		KEYBOARD,
+		MOUSE;
+	}
+
 	/**
 	 * Syntactic sugar for {@link #getKey()}.
 	 */
@@ -19,6 +24,7 @@ public interface ButtonStroke extends IJsonable {
 	public boolean isPressed();
 	public KeyboardResult getTypedString(KeyboardState keyboardState);
 	public ButtonStroke clone();
+	public Source getSource();
 
 	public static ButtonStroke parseJSON(JsonNode n) {
 		if (n.isStringValue("type") && n.getStringValue("type").equals(MouseKey.TYPE_STRING)) {

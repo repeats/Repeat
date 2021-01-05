@@ -117,6 +117,11 @@ public class KeyStroke implements ButtonStroke {
 		return key;
 	}
 
+	@Override
+	public Source getSource() {
+		return Source.KEYBOARD;
+	}
+
 	/**
 	 * Retrieve the modifier of the key stroke. Either left or right for
 	 * keys like shift, ctrl or alt, or has undefined meaning for keys
