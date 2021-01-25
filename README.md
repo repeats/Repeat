@@ -8,8 +8,6 @@ Repeat
 
 Full-fledged mouse/keyboard record/replay and sophisticated automation macros/hotkeys creation using modern programming languages, and more advanced automation features. Available across three major OSes: Windows, OSX, and Linux.
 
-========================================================================================================================
-
 Demo
 ====
 
