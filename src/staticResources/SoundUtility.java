@@ -1,5 +1,6 @@
 package staticResources;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -80,7 +81,8 @@ public class SoundUtility {
 	 * @throws InterruptedException
 	 */
 	private static void play(InputStream stream) throws UnsupportedAudioFileException, IOException, LineUnavailableException, InterruptedException {
-		AudioInputStream ais = AudioSystem.getAudioInputStream(stream);
+		InputStream bufferedInput = new BufferedInputStream(stream);
+		AudioInputStream ais = AudioSystem.getAudioInputStream(bufferedInput);
         Clip clip = AudioSystem.getClip();
 
         clip.open(ais);
