@@ -7,7 +7,7 @@
     <tbody>
         <#list task.activation.keyChains as chain>
             <tr>
-                <td>${chain}</td>
+                <td data-original-index="${chain.originalIndex}">${chain.value}</td>
             </tr>
         </#list>
     </tbody>

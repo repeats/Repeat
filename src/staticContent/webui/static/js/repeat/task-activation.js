@@ -43,15 +43,18 @@ function registerRemoveActivationAction(tableId, endpoint) {
         table.rows[i].cells[j].ondblclick = function(cell, i, j) {
             return function() {
                 // Minus one so that row index starts from 0.
-                removeActivationRowAction(i - 1, tableId, endpoint);
+                removeActivationRowAction(i - 1, table.rows[i].cells[j], tableId, endpoint);
             };
         }(table.rows[i].cells[j], i, j);
     }
 }
 
-function removeActivationRowAction(row, tableId, endpoint) {
+function removeActivationRowAction(row, cellObject, tableId, endpoint) {
+    var table = document.getElementById(tableId);
+    var originalIndex = cellObject.dataset.originalIndex;
+
     var postData = getTaskActivationParameters();
-    postData.index = row;
+    postData.index = parseInt(originalIndex);
 
     $.post(endpoint, JSON.stringify(postData), function(data) {
         $("#" + tableId).html(data);

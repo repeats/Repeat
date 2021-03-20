@@ -1,7 +1,9 @@
 package core.webui.server.handlers.renderedobjects;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import core.keyChain.ActivationPhrase;
 import core.keyChain.KeyChain;
@@ -10,9 +12,9 @@ import core.keyChain.TaskActivation;
 import core.keyChain.TaskActivationConstructor;
 
 public class RenderedTaskActivation {
-	private List<String> keyChains;
-	private List<String> keySequences;
-	private List<String> phrases;
+	private List<SortedString> keyChains;
+	private List<SortedString> keySequences;
+	private List<SortedString> phrases;
 	private RenderedMouseGestureActivation mouseGestures;
 	private RenderedSharedVariablesActivation sharedVariables;
 	private RenderedGlobalActivation globalActivation;
@@ -22,9 +24,9 @@ public class RenderedTaskActivation {
 		TaskActivation activation = constructor.getActivation();
 
 		RenderedTaskActivation output = new RenderedTaskActivation();
-		output.keyChains = activation.getHotkeys().stream().map(KeyChain::toString).sorted().collect(Collectors.toList());
-		output.keySequences = activation.getKeySequences().stream().map(KeySequence::toString).sorted().collect(Collectors.toList());
-		output.phrases = activation.getPhrases().stream().map(ActivationPhrase::toString).sorted().collect(Collectors.toList());
+		output.keyChains = sortedStrings(activation.getHotkeys().stream().map(KeyChain::toString).collect(Collectors.toList()));
+		output.keySequences = sortedStrings(activation.getKeySequences().stream().map(KeySequence::toString).collect(Collectors.toList()));
+		output.phrases = sortedStrings(activation.getPhrases().stream().map(ActivationPhrase::toString).collect(Collectors.toList()));
 		output.mouseGestures = RenderedMouseGestureActivation.fromActivation(activation);
 		output.sharedVariables = RenderedSharedVariablesActivation.fromActivation(activation);
 		output.globalActivation = RenderedGlobalActivation.fromActivation(activation);
@@ -37,6 +39,35 @@ public class RenderedTaskActivation {
 							.setDisableMouseGesture(config.isDisableMouseGesture())
 							.setDisableSharedVariable(config.isDisableVariablesActivation());
 		return output;
+	}
+
+	private static List<SortedString> sortedStrings(List<String> vals) {
+		return IntStream.range(0, vals.size()).mapToObj(i -> SortedString.of(i, vals.get(i))).sorted(Comparator.comparing(s -> s.getValue())).collect(Collectors.toList());
+	}
+
+	public static class SortedString {
+		int originalIndex;
+		String value;
+
+		public static SortedString of(int originalIndex, String value) {
+			SortedString result = new SortedString();
+			result.originalIndex = originalIndex;
+			result.value = value;
+			return result;
+		}
+
+		public int getOriginalIndex() {
+			return originalIndex;
+		}
+		public void setOriginalIndex(int originalIndex) {
+			this.originalIndex = originalIndex;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
 	}
 
 	public static class Config {
@@ -117,22 +148,22 @@ public class RenderedTaskActivation {
 		}
 	}
 
-	public List<String> getKeyChains() {
+	public List<SortedString> getKeyChains() {
 		return keyChains;
 	}
-	public void setKeyChains(List<String> keyChains) {
+	public void setKeyChains(List<SortedString> keyChains) {
 		this.keyChains = keyChains;
 	}
-	public List<String> getKeySequences() {
+	public List<SortedString> getKeySequences() {
 		return keySequences;
 	}
-	public void setKeySequences(List<String> keySequences) {
+	public void setKeySequences(List<SortedString> keySequences) {
 		this.keySequences = keySequences;
 	}
-	public List<String> getPhrases() {
+	public List<SortedString> getPhrases() {
 		return phrases;
 	}
-	public void setPhrases(List<String> phrases) {
+	public void setPhrases(List<SortedString> phrases) {
 		this.phrases = phrases;
 	}
 	public RenderedMouseGestureActivation getMouseGestures() {
