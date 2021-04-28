@@ -7,7 +7,7 @@
     <tbody>
         <#list task.activation.phrases as phrase>
             <tr>
-                <td data-original-index="${chain.originalIndex}">${phrase.value}</td>
+                <td data-original-index="${phrase.originalIndex}">${phrase.value}</td>
             </tr>
         </#list>
     </tbody>
