@@ -41,7 +41,7 @@ public class ServerMainProcessor implements ILoggable {
 	private final TaskProcessor taskProcessor;
 	private final SystemRequestProcessor systemProcessor;
 	private final SharedMemoryProcessor sharedMemoryProcessor;
-	// Whether this processor is procesing requests from local client.
+	// Whether this processor is processing requests from local client.
 	private boolean localClientProcessor;
 
 	public ServerMainProcessor(MainBackEndHolder backEnd, MainMessageSender messageSender) {

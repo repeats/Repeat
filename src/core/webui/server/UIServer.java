@@ -37,6 +37,7 @@ import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.IPCPageHandler;
 import core.webui.server.handlers.internals.ipcs.ModifyIPCServicePortHandler;
 import core.webui.server.handlers.internals.ipcs.ToggleIPCServiceLaunchAtStartupHandler;
+import core.webui.server.handlers.internals.logs.LogsPageHandler;
 import core.webui.server.handlers.internals.menu.MenuCleanUnusedSourcesActionHandler;
 import core.webui.server.handlers.internals.menu.MenuExecuteOnReleaseActionHandler;
 import core.webui.server.handlers.internals.menu.MenuExitActionHandler;
@@ -168,6 +169,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 	private Map<String, HttpHandlerWithBackend> createHandlers() {
 		Map<String, HttpHandlerWithBackend> output = new HashMap<>();
 		output.put("/", new IndexPageHandler(objectRenderer, manuallyBuildActionConstructorManager));
+		output.put("/logs", new LogsPageHandler(objectRenderer));
 		output.put("/ipcs", new IPCPageHandler(objectRenderer));
 		output.put("/repeats-remote-clients", new RepeatsRemoteClientPageHandler(objectRenderer));
 		output.put("/global-configs", new GlobalConfigsPageHandler(objectRenderer));
