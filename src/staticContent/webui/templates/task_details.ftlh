@@ -9,7 +9,7 @@
 <html lang="en">
 <head>
     <@common_header_fragment.fragment/>
-    <script src="/static/js/Chart.bundle.min.js"></script>
+    <script src="/static/js/chart.min.js"></script>
 </head>
 <body>
 

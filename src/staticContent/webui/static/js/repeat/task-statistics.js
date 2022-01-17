@@ -64,15 +64,15 @@ function _drawPastRun() {
         },
         options: {
             scales: {
-                yAxes: [{
+                yAxes: {
                     ticks: {
                         beginAtZero: true
                     },
-                    scaleLabel: {
+                    title: {
                         display: true,
-                        labelString: 'Execution time (ms)'
+                        text: 'Execution time (ms)'
                     }
-                }]
+                }
             }
         }
     });
