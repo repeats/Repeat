@@ -28,14 +28,16 @@ public class MainFrontEnd {
 			System.exit(2);
 		}
 		/*************************************************************************************/
+		/********************************Load configs****************************/
+		backEnd = new MainBackEndHolder();
+		backEnd.loadConfig(null);
+		/*************************************************************************************/
 		/********************************Initializing global hooks****************************/
-		GlobalListenerHookController.of().initialize();
+		GlobalListenerHookController.Config hookConfig = GlobalListenerHookController.Config.Builder.of().useJavaAwtForMousePosition(backEnd.getConfig().isUseJavaAwtToGetMousePosition()).build();
+		GlobalListenerHookController.of().initialize(hookConfig);
 		SharedVariablesPubSubManager.get().start();
 		/*************************************************************************************/
 		/********************************Start main program***********************************/
-		backEnd = new MainBackEndHolder();
-		backEnd.loadConfig(null);
-
 		try {
 			backEnd.keysManager.startGlobalListener();
 		} catch (NativeHookException e) {

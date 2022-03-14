@@ -58,6 +58,7 @@ import core.webui.server.handlers.internals.menu.MenuSetCompilerPathActionHandle
 import core.webui.server.handlers.internals.menu.MenuSetCompilingLanguagesActionHandler;
 import core.webui.server.handlers.internals.menu.MenuSetDebugLevelActionHandler;
 import core.webui.server.handlers.internals.menu.MenuUseClipboardToTypeStringActionHandler;
+import core.webui.server.handlers.internals.menu.MenuUseJavaAwtForMousePosition;
 import core.webui.server.handlers.internals.menu.MenuUseTrayIconActionHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionChangeReplayConfigHandler;
 import core.webui.server.handlers.internals.recordsreplays.ActionStartRecordingHandler;
@@ -207,6 +208,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/menu/settings/use-clipboard-to-type-string", new MenuUseClipboardToTypeStringActionHandler());
 		output.put("/internals/menu/settings/run-task-with-server-config", new MenuUseClipboardToTypeStringActionHandler());
 		output.put("/internals/menu/settings/use-tray-icon", new MenuUseTrayIconActionHandler());
+		output.put("/internals/menu/settings/use-java-awt-for-mouse-position", new MenuUseJavaAwtForMousePosition());
 
 		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/start-listening", new ActionTaskActivationStartListeningHandler(objectRenderer, taskActivationConstructorManager));

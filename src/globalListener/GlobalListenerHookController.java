@@ -14,11 +14,41 @@ public class GlobalListenerHookController {
 
 	private GlobalListenerHookController() {}
 
+	public static class Config {
+		// Only applicable for Windows.
+		private boolean useJavaAwtForMousePosition;
+
+		private Config(boolean useJavaAwtForMousePosition) {
+			this.useJavaAwtForMousePosition = useJavaAwtForMousePosition;
+		}
+
+		public boolean useJavaAwtForMousePosition() {
+			return useJavaAwtForMousePosition;
+		}
+
+		public static class Builder {
+			private boolean useJavaAwtForMousePosition;
+
+			public static Builder of() {
+				return new Builder();
+			}
+
+			public Builder useJavaAwtForMousePosition(boolean use) {
+				this.useJavaAwtForMousePosition = use;
+				return this;
+			}
+
+			public Config build() {
+				return new Config(useJavaAwtForMousePosition);
+			}
+		}
+	}
+
 	public static GlobalListenerHookController of() {
 		return INSTANCE;
 	}
 
-	public void initialize() {
+	public void initialize(Config config) {
 		if (GlobalListenerFactory.USE_JNATIVE_HOOK) {
 			// Get the logger for "org.jnativehook" and set the level to WARNING to begin with.
 			Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
@@ -33,7 +63,10 @@ public class GlobalListenerHookController {
 				}
 			}
 		} else {
-			NativeHookInitializer.of().start();
+			NativeHookInitializer.Config nativeConfig = NativeHookInitializer.Config.Builder.of().useJnaForWindows(true)
+					.useJavaAwtToReportMousePositionOnWindows(config.useJavaAwtForMousePosition())
+					.build();
+			NativeHookInitializer.of(nativeConfig).start();
 		}
 	}
 

@@ -18,6 +18,7 @@ function registerMenuIndexPageActions() {
     $("#menu-execute-on-release").click(menuExecuteOnReleaseAction);
     $("#menu-use-clipboard-to-type-string").click(menuUseClipboardToTypeStringAction);
     $("#menu-run-task-with-server-config").click(menuRunTaskWithServerConfigAction);
+    $("#menu-use-java-awt-for-mouse-position").click(menuUseJavaAwtForMousePosition);
     $("#menu-debug-level").click(menuDebugLevelAction);
     $("#menu-use-tray-icon").click(menuUseTrayIconAction);
 
@@ -225,6 +226,11 @@ function menuUseClipboardToTypeStringAction(e) {
 
 function menuRunTaskWithServerConfigAction(e) {
     menuSetBooleanSettingAction("menu-run-task-with-server-config", "/internals/menu/settings/run-task-with-server-config");
+}
+
+function menuUseJavaAwtForMousePosition(e) {
+    alert('This requires a restart to take effect.');
+    menuSetBooleanSettingAction("menu-use-java-awt-for-mouse-position", "/internals/menu/settings/use-java-awt-for-mouse-position");
 }
 
 function menuDebugLevelAction(e) {

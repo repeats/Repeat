@@ -90,6 +90,7 @@
                                 <li id="menu-execute-on-release"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.executeOnRelease> checked </#if>/>&nbsp;Execute on release</a></li>
                                 <li id="menu-use-clipboard-to-type-string"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.useClipboardToTypeString> checked </#if>/>&nbsp;Use clipboard to type strings</a></li>
                                 <li id="menu-run-task-with-server-config"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.runTaskWithServerConfig> checked </#if>/>&nbsp;Run task using server config</a></li>
+                                <li id="menu-use-java-awt-for-mouse-position"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.useJavaAwtToGetMousePosition> checked </#if>/>&nbsp;Use Java AWT for mouse position</a></li>
                                 <li class="divider"></li>
                                 <li id="menu-debug-level"><a href="#">Debug level...</a></li>
                                 <li id="menu-use-tray-icon"><a href="#" data-value="option1" tabIndex="-1"><input type="checkbox" <#if config.useTrayIcon> checked </#if>/>&nbsp;Use tray icon</a></li>

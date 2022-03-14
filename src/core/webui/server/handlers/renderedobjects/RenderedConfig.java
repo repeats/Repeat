@@ -11,6 +11,7 @@ public class RenderedConfig {
 	private boolean executeOnRelease;
 	private boolean useClipboardToTypeString;
 	private boolean runTaskWithServerConfig;
+	private boolean useJavaAwtToGetMousePosition;
 	private boolean useTrayIcon;
 	private List<RenderedDebugLevel> debugLevels;
 
@@ -21,6 +22,7 @@ public class RenderedConfig {
 		output.useClipboardToTypeString = config.isUseClipboardToTypeString();
 		output.runTaskWithServerConfig = config.isRunTaskWithServerConfig();
 		output.recordMouseClickOnly = recorder.getRecordMode() == Recorder.MODE_MOUSE_CLICK_ONLY;
+		output.useJavaAwtToGetMousePosition = config.isUseJavaAwtToGetMousePosition();
 		output.useTrayIcon = config.isUseTrayIcon();
 		output.debugLevels = RenderedDebugLevel.of(config.getNativeHookDebugLevel());
 		return output;
@@ -64,6 +66,14 @@ public class RenderedConfig {
 
 	public void setRunTaskWithServerConfig(boolean runTaskWithServerConfig) {
 		this.runTaskWithServerConfig = runTaskWithServerConfig;
+	}
+
+	public boolean isUseJavaAwtToGetMousePosition() {
+		return useJavaAwtToGetMousePosition;
+	}
+
+	public void setUseJavaAwtToGetMousePosition(boolean useJavaAwtToGetMousePosition) {
+		this.useJavaAwtToGetMousePosition = useJavaAwtToGetMousePosition;
 	}
 
 	public boolean isUseTrayIcon() {
