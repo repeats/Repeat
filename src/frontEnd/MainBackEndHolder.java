@@ -839,9 +839,23 @@ public class MainBackEndHolder {
 			}
 
 			action.setEnabled(true);
-			if (action.isEnabled()) {
-				keysManager.registerTask(action);
+			if (!action.isEnabled()) {
+				return;
 			}
+
+			// Check if the group containing the action is enabled.
+			for (TaskGroup group : taskGroups) {
+				if (group.getTask(action.getActionId()) == null) {
+					continue;
+				}
+				// Found the group. Check if the group is enabled.
+				if (!group.isEnabled()) {
+					LOGGER.info("Task " + action.getName() + " is enabled but not registered because the group containing it is not enabled.");
+					return;
+				}
+			}
+
+			keysManager.registerTask(action);
 		}
 	}
 
