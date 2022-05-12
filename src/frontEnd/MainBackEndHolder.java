@@ -543,7 +543,9 @@ public class MainBackEndHolder {
 				if (!recompiled.isEnabled()) {
 					continue;
 				}
-				reRegisterTask(task, recompiled);
+				if (group.isEnabled()) {
+					reRegisterTask(task, recompiled);
+				}
 			}
 		}
 	}
