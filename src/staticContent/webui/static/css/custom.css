@@ -69,3 +69,8 @@ tr { cursor: default; }
 .ui-front {
     z-index: 2147483647;
 }
+
+/*Change Codemirror font to monospace.*/
+.CodeMirror * {
+    font-family: Arial, monospace;
+}
