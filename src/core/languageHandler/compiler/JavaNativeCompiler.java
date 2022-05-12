@@ -78,6 +78,14 @@ public class JavaNativeCompiler extends AbstractNativeCompiler {
 			getLogger().log(Level.WARNING, "Cannot load class file " + classFile.getAbsolutePath(), e);
 			getLogger().info("Compiling using source code");
 			return compile(sourceCode);
+		} catch (Throwable e) {
+			// Note that we need to catch Throwable instead of Exception
+			// because certain class loading errors manifest as java.lang.Error, not java.lang.Exception.
+			// As a result, catching Exception alone would not cover all
+			// failure cases here.
+			getLogger().log(Level.WARNING, "Encountering unknown throwable when loading class file " + classFile.getAbsolutePath(), e);
+			getLogger().info("Compiling using source code");
+			return compile(sourceCode);
 		}
 	}
 
