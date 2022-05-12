@@ -155,12 +155,7 @@ public abstract class KeySeries implements IJsonable {
 
 	@Override
 	public String toString() {
-		return StringUtilities.join(new Function<ButtonStroke, String>() {
-			@Override
-			public String apply(ButtonStroke s) {
-				return s.toString();
-			}
-		}.map(keys), " + ");
+		return StringUtilities.join(keys.stream().map(s -> s.toString()).collect(Collectors.toList()), " + ");
 	}
 
 	@Override
