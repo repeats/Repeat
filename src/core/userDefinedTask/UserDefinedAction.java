@@ -18,6 +18,8 @@ import core.languageHandler.Language;
 import core.languageHandler.compiler.AbstractNativeCompiler;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import core.languageHandler.compiler.RemoteRepeatsCompiler;
+import core.userDefinedTask.internals.TaskSourceHistory;
+import core.userDefinedTask.internals.TaskSourceHistoryEntry;
 import utilities.FileUtility;
 import utilities.ILoggable;
 import utilities.json.IJsonable;
@@ -39,7 +41,9 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	// This is to enable invoking task programmatically.
 	protected TaskInvoker taskInvoker;
+
 	protected UsageStatistics statistics;
+	protected TaskSourceHistory sourceHistory;
 
 	public UserDefinedAction() {
 		this(UUID.randomUUID().toString());
@@ -51,6 +55,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		invoker = TaskActivation.newBuilder().build();
 		invokingKeyChain = new KeyChain();
 		statistics = new UsageStatistics();
+		sourceHistory = new TaskSourceHistory();
 		enabled = true;
 	}
 
@@ -123,6 +128,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		this.sourcePath = sourcePath;
 	}
 
+	public final void recordSourceHistory(String sourcePath) {
+		sourceHistory.addEntry(TaskSourceHistoryEntry.of(sourcePath));
+	}
+
 	public final Language getCompiler() {
 		return compiler;
 	}
@@ -151,10 +160,15 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 		return statistics;
 	}
 
+	public final TaskSourceHistory getTaskSourceHistory() {
+		return sourceHistory;
+	}
+
 	public final void override(UserDefinedAction other) {
 		setName(other.getName());
 		activation.copy(other.activation);
 		statistics = other.statistics;
+		sourceHistory.addHistory(other.sourceHistory);
 	}
 
 	/**

@@ -52,6 +52,7 @@ import core.userDefinedTask.internals.ITools;
 import core.userDefinedTask.internals.RemoteRepeatsClientTools;
 import core.userDefinedTask.internals.RunActionConfig;
 import core.userDefinedTask.internals.SharedVariablesPubSubManager;
+import core.userDefinedTask.internals.TaskSourceHistoryEntry;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
 import utilities.Desktop;
@@ -855,6 +856,16 @@ public class MainBackEndHolder {
 
 			keysManager.registerTask(action);
 		}
+	}
+
+	public String getSourceForTask(UserDefinedAction action, long timestamp) {
+		TaskSourceHistoryEntry entry = action.getTaskSourceHistory().findEntry(timestamp);
+		if (entry == null) {
+			LOGGER.warning("No source path for action " + action.getName() + " at time " + timestamp + ".");
+			return null;
+		}
+
+		return FileUtility.readFromFile(entry.getSourcePath()).toString();
 	}
 
 	/**

@@ -26,7 +26,9 @@ public class TaskSourceManager {
 			return false;
 		}
 
-		task.setSourcePath(FileUtility.getRelativePwdPath(sourceFile));
+		String relativePath = FileUtility.getRelativePwdPath(sourceFile);
+		task.setSourcePath(relativePath);
+		task.recordSourceHistory(relativePath);
 		return true;
 	}
 

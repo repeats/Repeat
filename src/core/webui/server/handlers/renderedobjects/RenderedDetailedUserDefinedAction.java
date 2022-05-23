@@ -10,6 +10,8 @@ public class RenderedDetailedUserDefinedAction {
 	private RenderedTaskActivation activation;
 	private String hasStatistics;
 	private RenderedUserDefinedActionStatistics statistics;
+	private String hasSourceHistory;
+	private RenderedTaskSourceHistory sourceHistory;
 
 	private RenderedDetailedUserDefinedAction() {}
 
@@ -21,6 +23,8 @@ public class RenderedDetailedUserDefinedAction {
 		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
 		result.hasStatistics = false + "";
 		result.statistics = null;
+		result.hasSourceHistory = false + "";
+		result.sourceHistory = null;
 		return result;
 	}
 
@@ -32,6 +36,8 @@ public class RenderedDetailedUserDefinedAction {
 		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
 		result.hasStatistics = false + "";
 		result.statistics = null;
+		result.hasSourceHistory = false + "";
+		result.sourceHistory = null;
 		return result;
 	}
 
@@ -43,6 +49,8 @@ public class RenderedDetailedUserDefinedAction {
 		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
 		result.hasStatistics = true + "";
 		result.statistics = RenderedUserDefinedActionStatistics.fromUserDefinedActionStatistics(action.getStatistics());
+		result.hasSourceHistory = true + "";
+		result.sourceHistory = RenderedTaskSourceHistory.of(action.getActionId(), action.getTaskSourceHistory());
 		return result;
 	}
 
@@ -75,6 +83,12 @@ public class RenderedDetailedUserDefinedAction {
 	}
 	public void setStatistics(RenderedUserDefinedActionStatistics statistics) {
 		this.statistics = statistics;
+	}
+	public String getHasSourceHistory() {
+		return hasSourceHistory;
+	}
+	public RenderedTaskSourceHistory getSourceHistory() {
+		return sourceHistory;
 	}
 	public String getIsEnabled() {
 		return isEnabled;

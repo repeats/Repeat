@@ -111,6 +111,7 @@ import core.webui.server.handlers.internals.taskmanagement.ActionOverwriteTaskHa
 import core.webui.server.handlers.internals.taskmanagement.GetRenderedTaskGroupsSelectModalHandler;
 import core.webui.server.handlers.internals.tasks.ActionSaveTaskActivationHandler;
 import core.webui.server.handlers.internals.tasks.GetRunTaskConfigHandler;
+import core.webui.server.handlers.internals.tasks.GetTaskSourceHandler;
 import core.webui.server.handlers.internals.tasks.ModifyTaskNameHandler;
 import core.webui.server.handlers.internals.tasks.RunTaskHandler;
 import core.webui.server.handlers.internals.tasks.SaveRunTaskConfigHandler;
@@ -277,6 +278,7 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/get/mouse-position", new GetMousePositionHandler());
 		output.put("/internals/get/path-suggestion", new GetPathSuggestionHandler());
 		output.put("/internals/get/source-templates", new GetSourceTemplateHandler());
+		output.put("/internals/get/task-source", new GetTaskSourceHandler());
 		output.put("/internals/get/rendered-task-groups-dropdown", new GetRenderedTaskGroupsDropdown(objectRenderer));
 		output.put("/internals/get/rendered-task-groups-select-modal", new GetRenderedTaskGroupsSelectModalHandler(objectRenderer));
 

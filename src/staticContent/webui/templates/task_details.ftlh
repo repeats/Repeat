@@ -1,5 +1,6 @@
 <#import "/fragments/activations_modals.ftlh" as activations_modals_fragment>
 <#import "/fragments/activations.ftlh" as activations_fragment>
+<#import "/fragments/task_source_history.ftlh" as task_source_history_fragment>
 <#import "/fragments/task_statistics.ftlh" as task_statistics_fragment>
 <#import "/fragments/common_header.ftlh" as common_header_fragment>
 <#import "/fragments/footer.ftlh" as footer_fragment>
@@ -56,6 +57,7 @@
                 <div id="task-activation-constructor-id" style="display:none;">${taskActivationConstructorId}</div>
 
                 <@activations_fragment.fragment/>
+                <@task_source_history_fragment.fragment/>
                 <@task_statistics_fragment.fragment/>
             </div>
         </div>
