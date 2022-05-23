@@ -248,7 +248,8 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
 				JsonNodeFactories.field("activation", activation.jsonize()),
 				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled)),
-				JsonNodeFactories.field("statistics", statistics.jsonize())
+				JsonNodeFactories.field("statistics", statistics.jsonize()),
+				JsonNodeFactories.field("source_history", sourceHistory.jsonize())
 				);
 	}
 
@@ -299,6 +300,13 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 			} else {
 				output.statistics.createNow();
 				LOGGER.warning("Unable to retrieve statistics for task " + name);
+			}
+
+			TaskSourceHistory sourceHistory = TaskSourceHistory.parseJSON(node.getNode("source_history"));
+			if (sourceHistory == null) {
+				LOGGER.warning("Unable to retrieve task source history for task " + name);
+			} else {
+				output.sourceHistory = sourceHistory;
 			}
 
 			boolean enabled = node.getBooleanValue("enabled");

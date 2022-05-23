@@ -32,10 +32,5 @@ public class TaskSourceManager {
 		return true;
 	}
 
-	public static boolean removeTask(UserDefinedAction task) {
-		File sourceFile = new File(task.getSourcePath());
-		return FileUtility.removeFile(sourceFile);
-	}
-
 	private TaskSourceManager() {}
 }

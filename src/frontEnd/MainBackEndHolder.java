@@ -609,9 +609,6 @@ public class MainBackEndHolder {
 
 	private void unregisterTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
-		if (!TaskSourceManager.removeTask(task)) {
-			LOGGER.warning("Encountered error removing source file " + task.getSourcePath());
-		}
 	}
 
 	public void addCurrentTask() {
@@ -634,6 +631,7 @@ public class MainBackEndHolder {
 		group.getTasks().add(task);
 
 		writeConfigFile();
+		cleanUnusedSource();
 	}
 
 	/**
@@ -807,6 +805,7 @@ public class MainBackEndHolder {
 			}
 			break;
 		}
+		cleanUnusedSource();
 	}
 
 	public void changeHotkeyTask(UserDefinedAction action, TaskActivation newActivation) {
@@ -865,7 +864,12 @@ public class MainBackEndHolder {
 			return null;
 		}
 
-		return FileUtility.readFromFile(entry.getSourcePath()).toString();
+		StringBuffer content = FileUtility.readFromFile(entry.getSourcePath());
+		if (content == null) {
+			LOGGER.warning("No source content for action " + action.getName() + " at file " + entry.getSourcePath() + ".");
+			return null;
+		}
+		return content.toString();
 	}
 
 	/**
@@ -951,12 +955,13 @@ public class MainBackEndHolder {
 
 		Set<String> using = new HashSet<>();
 		for (TaskGroup group : taskGroups) {
-			using.addAll(new Function<UserDefinedAction, String>() {
-				@Override
-				public String apply(UserDefinedAction task) {
-					return new File(task.getSourcePath()).getAbsolutePath();
-				}
-			}.map(group.getTasks()));
+			for (UserDefinedAction task : group.getTasks()) {
+				List<String> sources = new ArrayList<>();
+				String currentSource = new File(task.getSourcePath()).getAbsolutePath();
+				sources.add(currentSource);
+				sources.addAll(task.getTaskSourceHistory().getEntries().stream().map(e -> new File(e.getSourcePath()).getAbsolutePath()).collect(Collectors.toList()));
+				using.addAll(sources);
+			}
 		}
 
 		allNames.removeAll(using);

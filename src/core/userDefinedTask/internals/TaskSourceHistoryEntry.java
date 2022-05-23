@@ -16,6 +16,13 @@ public class TaskSourceHistoryEntry {
 		return new TaskSourceHistoryEntry(path, Calendar.getInstance());
 	}
 
+	public static TaskSourceHistoryEntry of(String path, long time) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(time);
+		return new TaskSourceHistoryEntry(path, calendar);
+	}
+
+
 	public String getSourcePath() {
 		return sourcePath;
 	}
