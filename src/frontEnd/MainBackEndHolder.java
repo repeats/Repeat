@@ -17,8 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.swing.JOptionPane;
-
 import org.jnativehook.GlobalScreen;
 
 import core.config.AbstractRemoteRepeatsClientsConfig;
@@ -378,7 +376,7 @@ public class MainBackEndHolder {
 			}
 		} else {
 			if (customFunction == null) {
-				JOptionPane.showMessageDialog(null, "No compiled action in memory");
+				LOGGER.warning("No compiled action in memory");
 				return;
 			}
 
@@ -581,12 +579,12 @@ public class MainBackEndHolder {
 
 			FileUtility.writeToFile(source, tempSourceFile, false);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Encountered error creating temporary source file.\n" + e.getMessage());
+			LOGGER.warning("Encountered error creating temporary source file.\n" + e.getMessage());
 			return;
 		}
 
 		if (!Desktop.openFile(tempSourceFile)) {
-			JOptionPane.showMessageDialog(null, "Unable to open file for editting.\n");
+			LOGGER.warning("Unable to open file for editting.\n");
 		}
 	}
 
@@ -595,13 +593,13 @@ public class MainBackEndHolder {
 	 */
 	public String reloadSourceCode() {
 		if (tempSourceFile == null || !tempSourceFile.exists()) {
-			JOptionPane.showMessageDialog(null, "Temp file not accessible.");
+			LOGGER.warning("Temp file not accessible.");
 			return null;
 		}
 
 		StringBuffer sourceCode = FileUtility.readFromFile(tempSourceFile);
 		if (sourceCode == null) {
-			JOptionPane.showMessageDialog(null, "Unable to read from temp file.");
+			LOGGER.warning("Unable to read from temp file.");
 			return null;
 		}
 		String source = sourceCode.toString();
@@ -611,7 +609,7 @@ public class MainBackEndHolder {
 	private void unregisterTask(UserDefinedAction task) {
 		keysManager.unregisterTask(task);
 		if (!TaskSourceManager.removeTask(task)) {
-			JOptionPane.showMessageDialog(null, "Encountered error removing source file " + task.getSourcePath());
+			LOGGER.warning("Encountered error removing source file " + task.getSourcePath());
 		}
 	}
 
@@ -888,7 +886,6 @@ public class MainBackEndHolder {
 		boolean moved = FileUtility.moveDirectory(src, dst);
 		if (!moved) {
 			LOGGER.warning("Failed to move files from " + src.getAbsolutePath() + " to " + dst.getAbsolutePath());
-			JOptionPane.showMessageDialog(null, "Failed to move files.");
 			return;
 		}
 		int existingGroupCount = taskGroups.size();
@@ -899,13 +896,13 @@ public class MainBackEndHolder {
 			currentGroup = taskGroups.get(existingGroupCount); // Take the new group with lowest index.
 			setTaskInvoker();
 		} else {
-			JOptionPane.showMessageDialog(null, "No new task group found!");
+			LOGGER.warning("No new task group found!");
 			return;
 		}
 		if (result) {
-			JOptionPane.showMessageDialog(null, "Successfully imported tasks. Switching to a new task group...");
+			LOGGER.info("Successfully imported tasks. Switching to a new task group...");
 		} else {
-			JOptionPane.showMessageDialog(null, "Encountered error(s) while importing tasks. Switching to a new task group...");
+			LOGGER.warning("Encountered error(s) while importing tasks. Switching to a new task group...");
 		}
 	}
 
@@ -929,7 +926,7 @@ public class MainBackEndHolder {
 		ZipUtility.zipDir(destination, zipFile);
 		FileUtility.deleteFile(destination);
 
-		JOptionPane.showMessageDialog(null, "Data exported to " + zipPath);
+		LOGGER.info("Data exported to " + zipPath);
 	}
 
 	public void cleanUnusedSource() {
