@@ -12,7 +12,13 @@
 
     <div class="row col-xs-12">
         <h2> Invocation breakdown by task activation </h2>
-        <canvas id="activationBreakdownChart" ></canvas>
+    </div>
+    <div class="row">
+        <div class="col-xs-3"></div>
+        <div class="col-xs-6">
+            <canvas id="activationBreakdownChart" ></canvas>
+        </div>
+        <div class="col-xs-3"></div>
     </div>
 
     <div class="row col-xs-12">
