@@ -41,7 +41,7 @@ tr { cursor: default; }
     text-align: center;
 }
 
-.top-buffer { margin-top:20px; }
+.top-buffer { margin-top:10px; }
 
 .dropdown-menu .dropdown-menu {
     position: static;

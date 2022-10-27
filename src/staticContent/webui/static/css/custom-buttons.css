@@ -89,8 +89,14 @@
 	background-size: 100%;
 }
 
-.repeat-btn-show-action-id {
+.repeat-btn-expand {
 	border: none;
-	background-image: url( '/static/img/buttons/view.png' );
+	background-image: url( '/static/img/buttons/expand.png' );
+	background-size: 100%;
+}
+
+.repeat-btn-shrink {
+	border: none;
+	background-image: url( '/static/img/buttons/shrink.png' );
 	background-size: 100%;
 }

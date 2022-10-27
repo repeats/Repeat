@@ -1,7 +1,41 @@
 function registerTableTasks() {
+    $("#button-task-table-expand").click(buttonTaskTableExpandAction);
+    $("#button-task-table-shrink").click(buttonTaskTableShrinkAction);
     registerCells();
 
     $('#modal-task-name-save').click(newNameOnClick);
+}
+
+function buttonTaskTableExpandAction(e) {
+    _setTaskTableHeightPercentViewHeight(100);
+}
+
+function buttonTaskTableShrinkAction(e) {
+    _setTaskTableHeightPercentViewHeight(25);
+}
+
+function _setTaskTableHeightPercentViewHeight(percent) {
+    var body = document.querySelectorAll('#table-tasks-body')[0];
+    var heightPixel = _taskTableHeightPixel(body);
+    var heightPercent = Math.round(_computeViewHeightPercent(heightPixel));
+    var newHeightPercent = percent;
+    body.style.setProperty('height',  newHeightPercent + 'vh');
+}
+
+function _taskTableHeightPixel(bodyElement) {
+    var heightPixel = getComputedStyle(bodyElement).getPropertyValue('height');
+    var heightFloatString = heightPixel.substring(0, heightPixel.length - 2);
+    return parseFloat(heightFloatString);
+}
+
+function _computeViewHeightPercent(heightPx) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (heightPx / h) * 100;
+}
+
+function _computeViewHeightPx(percent) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (percent * h) / 100;
 }
 
 function registerCells() {
