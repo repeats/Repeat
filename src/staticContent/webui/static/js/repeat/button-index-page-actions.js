@@ -19,6 +19,7 @@ function registerIndexPageButtonActions() {
     $("#button-down").click(buttonMoveDownAction)
     $("#button-change-group").click(buttonChangeGroupAction)
     $("#modal-move-to-task-group-move").click(buttonMoveGroupAction);
+    $("#button-task-table-expand-shrink").click(buttonTaskTableExpandShrinkAction);
 
     // Need to poll always because the start/stop action can be triggered by hotkeys instead.
     var pollingRunCompiledTask = createPollingButtonFunction({
@@ -296,4 +297,44 @@ function buttonMoveGroupAction(e) {
     }).fail(function(response) {
         alert('Error sending request to move task to new group: ' + response.responseText);
     });
+}
+
+function buttonTaskTableExpandShrinkAction(e) {
+    var body = document.querySelectorAll("#table-tasks-body")[0];
+    var currentPercent = _taskTableHeightPercent(body);
+    if (currentPercent > 50) {
+        $("#button-task-table-expand-shrink").addClass("repeat-btn-expand");
+        $("#button-task-table-expand-shrink").removeClass("repeat-btn-shrink");
+        _setTaskTableHeightPercentViewHeight(25);
+    } else {
+        $("#button-task-table-expand-shrink").removeClass("repeat-btn-expand");
+        $("#button-task-table-expand-shrink").addClass("repeat-btn-shrink");
+        _setTaskTableHeightPercentViewHeight(100);
+    }
+}
+
+function _setTaskTableHeightPercentViewHeight(percent) {
+    var body = document.querySelectorAll('#table-tasks-body')[0];
+    body.style.setProperty('height',  percent + 'vh');
+}
+
+function _taskTableHeightPercent(bodyElement) {
+    var heightPixel = _taskTableHeightPixel(bodyElement);
+    return Math.round(_computeViewHeightPercent(heightPixel));
+}
+
+function _taskTableHeightPixel(bodyElement) {
+    var heightPixel = getComputedStyle(bodyElement).getPropertyValue('height');
+    var heightFloatString = heightPixel.substring(0, heightPixel.length - 2);
+    return parseFloat(heightFloatString);
+}
+
+function _computeViewHeightPercent(heightPx) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (heightPx / h) * 100;
+}
+
+function _computeViewHeightPx(percent) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (percent * h) / 100;
 }

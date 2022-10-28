@@ -3,9 +3,6 @@
         <div id="div-task-id-${task.id}" style="display:none;">${task.id}</div>
     </#list>
 
-    <button id="button-task-table-expand" type="button" class="btn btn-default repeat-btn-expand">&nbsp</button>
-    <button id="button-task-table-shrink" type="button" class="btn btn-default repeat-btn-shrink">&nbsp</button>
-
     <table id="table-tasks" class="table table-header-fixed">
         <thead class="thead-dark">
             <tr>

@@ -152,6 +152,7 @@
                             <button id="button-up" title="${tooltips.up}" type="button" class="btn btn-default repeat-btn-up">&nbsp</button>
                             <button id="button-down" title="${tooltips.down}" type="button" class="btn btn-default repeat-btn-down">&nbsp</button>
                             <button id="button-change-group" title="${tooltips.changeGroup}" type="button" class="btn btn-default repeat-btn-change-group">&nbsp</button>
+                            <button id="button-task-table-expand-shrink" type="button" class="btn btn-default repeat-btn-expand">&nbsp</button>
                         </div>
                     </div>
                 </div>
