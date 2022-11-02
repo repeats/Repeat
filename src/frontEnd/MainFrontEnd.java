@@ -6,8 +6,6 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jnativehook.NativeHookException;
-
 import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
@@ -40,7 +38,7 @@ public class MainFrontEnd {
 		/********************************Start main program***********************************/
 		try {
 			backEnd.keysManager.startGlobalListener();
-		} catch (NativeHookException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

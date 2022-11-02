@@ -17,8 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.jnativehook.GlobalScreen;
-
 import core.config.AbstractRemoteRepeatsClientsConfig;
 import core.config.Config;
 import core.controller.Core;
@@ -1069,10 +1067,6 @@ public class MainBackEndHolder {
 
 	public void changeDebugLevel(Level level) {
 		config.setNativeHookDebugLevel(level);
-
-		// Get the logger for "org.jnativehook" and set the level to appropriate level.
-		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-		logger.setLevel(config.getNativeHookDebugLevel());
 	}
 
 	public void haltAllTasks() {

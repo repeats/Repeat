@@ -7,8 +7,6 @@ import org.simplenativehooks.listeners.AbstractGlobalMouseListener;
 
 public class GlobalListenerFactory {
 
-	public static final boolean USE_JNATIVE_HOOK = false;
-
 	private GlobalListenerFactory() {}
 
 	public static GlobalListenerFactory of() {
@@ -16,18 +14,10 @@ public class GlobalListenerFactory {
 	}
 
 	public AbstractGlobalKeyListener createGlobalKeyListener() {
-		if (USE_JNATIVE_HOOK) {
-			return new GlobalJNativeHookKeyListener();
-		}
-
 		return NativeKeyHook.of();
 	}
 
 	public AbstractGlobalMouseListener createGlobalMouseListener() {
-		if (USE_JNATIVE_HOOK) {
-			return new GlobalJNativeHookMouseListener();
-		}
-
 		return NativeMouseHook.of();
 	}
 }

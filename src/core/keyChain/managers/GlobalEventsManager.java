@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
-import org.jnativehook.NativeHookException;
 import org.simplenativehooks.events.NativeKeyEvent;
 import org.simplenativehooks.events.NativeMouseEvent;
 import org.simplenativehooks.listeners.AbstractGlobalKeyListener;
@@ -61,7 +60,7 @@ public final class GlobalEventsManager {
 				new GlobalKeyActionManager(config));
 	}
 
-	public void startGlobalListener() throws NativeHookException {
+	public void startGlobalListener() throws Exception {
 		AbstractGlobalKeyListener keyListener = GlobalListenerFactory.of().createGlobalKeyListener();
 		keyListener.setKeyPressed(new Function<NativeKeyEvent, Boolean>() {
 			@Override
