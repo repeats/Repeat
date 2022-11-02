@@ -14,7 +14,7 @@ public class RenderedCompilingLanguage {
 		RenderedCompilingLanguage output = new RenderedCompilingLanguage();
 		output.id = UUID.randomUUID().toString();
 		output.name = language.toString();
-		output.disabled = language == Language.SCALA;
+		output.disabled = false;
 		output.selected = selected;
 		return output;
 	}

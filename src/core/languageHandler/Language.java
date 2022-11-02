@@ -5,7 +5,6 @@ public enum Language {
     PYTHON("python"),
     CSHARP("C#"),
     MANUAL_BUILD("manual"),
-    SCALA("scala"),
     ;
 
     private final String text;

@@ -28,7 +28,6 @@ public class DynamicCompilerManager implements IJsonable {
 		compilers.put(Language.PYTHON, new PythonRemoteCompiler(new File("core")));
 		compilers.put(Language.CSHARP, new CSharpRemoteCompiler(new File("core")));
 		compilers.put(Language.MANUAL_BUILD, new ManualBuildNativeCompiler(new File("core")));
-		compilers.put(Language.SCALA, new ScalaRemoteCompiler(new File("core")));
 
 		remoteRepeatsCompilerConfig = new RemoteRepeatsCompilerConfig(new ArrayList<>());
 	}
@@ -87,7 +86,7 @@ public class DynamicCompilerManager implements IJsonable {
 					LOGGER.log(Level.WARNING, "Compiler " + name + " was unable to parse its specific arguments.");
 				}
 			} else {
-				throw new IllegalStateException("Unknown compiler " + name);
+				LOGGER.warning("Unknown compiler " + name);
 			}
 		}
 		return true;

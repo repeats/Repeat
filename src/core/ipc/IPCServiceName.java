@@ -8,7 +8,6 @@ public enum IPCServiceName {
 	WEB_UI_SERVER(2, "web_ui_server"),
     PYTHON(3, Language.PYTHON.toString()),
     CSHARP(4, Language.CSHARP.toString()),
-    SCALA(5, Language.SCALA.toString()),
     ;
 
     private final int index;

@@ -17,7 +17,6 @@ import core.languageHandler.sourceGenerator.CSharpSourceGenerator;
 import core.languageHandler.sourceGenerator.JavaSourceGenerator;
 import core.languageHandler.sourceGenerator.ManuallyBuildSourceGenerator;
 import core.languageHandler.sourceGenerator.PythonSourceGenerator;
-import core.languageHandler.sourceGenerator.ScalaSourceGenerator;
 import core.scheduler.SchedulingData;
 import globalListener.GlobalListenerFactory;
 
@@ -50,7 +49,6 @@ public class Recorder {
 		sourceGenerators.put(Language.PYTHON, new PythonSourceGenerator());
 		sourceGenerators.put(Language.CSHARP, new CSharpSourceGenerator());
 		sourceGenerators.put(Language.MANUAL_BUILD, new ManuallyBuildSourceGenerator());
-		sourceGenerators.put(Language.SCALA, new ScalaSourceGenerator());
 
 		/*************************************************************************************************/
 		keyListener = GlobalListenerFactory.of().createGlobalKeyListener();

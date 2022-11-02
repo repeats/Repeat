@@ -11,7 +11,6 @@ import argo.jdom.JsonNodeFactories;
 import core.cli.server.CliServer;
 import core.ipc.repeatClient.CSharpIPCClientService;
 import core.ipc.repeatClient.PythonIPCClientService;
-import core.ipc.repeatClient.ScalaIPCClientService;
 import core.ipc.repeatServer.ControllerServer;
 import core.languageHandler.Language;
 import core.webui.server.UIServer;
@@ -34,14 +33,12 @@ public final class IPCServiceManager {
 		ipcServices[IPCServiceName.WEB_UI_SERVER.value()] =  new UIServer();
 		ipcServices[IPCServiceName.PYTHON.value()] = new PythonIPCClientService();
 		ipcServices[IPCServiceName.CSHARP.value()] = new CSharpIPCClientService();
-		ipcServices[IPCServiceName.SCALA.value()] = new ScalaIPCClientService();
 
 		ipcByLanugage = new HashMap<>();
 		ipcByLanugage.put(Language.JAVA, -1);
 		ipcByLanugage.put(Language.PYTHON, IPCServiceName.PYTHON.value());
 		ipcByLanugage.put(Language.CSHARP, IPCServiceName.CSHARP.value());
 		ipcByLanugage.put(Language.MANUAL_BUILD, -1);
-		ipcByLanugage.put(Language.SCALA, IPCServiceName.SCALA.value());
 	}
 
 	public static void setBackEnd(MainBackEndHolder backEnd) {

@@ -46,7 +46,6 @@ public class BootStrapResources {
 		LANGUAGE_API.put(Language.JAVA, getFile("/staticContent/core/languageHandler/API/JavaAPI.txt"));
 		LANGUAGE_API.put(Language.PYTHON, getFile("/staticContent/core/languageHandler/API/PythonAPI.txt"));
 		LANGUAGE_API.put(Language.CSHARP, getFile("/staticContent/core/languageHandler/API/CSharpAPI.txt"));
-		LANGUAGE_API.put(Language.SCALA, getFile("/staticContent/core/languageHandler/API/ScalaAPI.txt"));
 
 		/*********************************************************************************/
 		NATIVE_LANGUAGE_TEMPLATES = new HashMap<>();
@@ -54,13 +53,11 @@ public class BootStrapResources {
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.PYTHON, getFile("/staticContent/natives/python/template_repeat.py"));
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.CSHARP, getFile("/staticContent/natives/csharp/source/TemplateRepeat.cs"));
 		NATIVE_LANGUAGE_TEMPLATES.put(Language.MANUAL_BUILD, getFile("/staticContent/natives/manual/TemplateRepeat.txt"));
-		NATIVE_LANGUAGE_TEMPLATES.put(Language.SCALA, getFile("/staticContent/natives/scala/TemplateRepeat.scala"));
 
 		/*********************************************************************************/
 		NATIVE_BOOTSTRAP_RESOURCES = new HashMap<>();
 		NATIVE_BOOTSTRAP_RESOURCES.put(Language.PYTHON, new PythonResources());
 		NATIVE_BOOTSTRAP_RESOURCES.put(Language.CSHARP, new CSharpResources());
-		NATIVE_BOOTSTRAP_RESOURCES.put(Language.SCALA, new ScalaResources());
 
 		/*********************************************************************************/
 		BOOTSTRAP_RESOURCES = new HashSet<>();
