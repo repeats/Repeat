@@ -70,10 +70,11 @@ function refreshTasksWithDataAndIndex(data, index) {
     registerCells();
     utils_SetTableSelectedIndex("table-tasks", index);
     _setLastToLastScrollPosition();
+    _adjustTaskTableHeight();
 }
 
 function getIdForTaskIndex(index) {
-    return $('div[id^=\'div-task-id-\']').eq(index)[0].id.substring('div-task-id-'.length);
+    return $("div[id^=\'div-task-id-\']").eq(index)[0].id.substring("div-task-id-".length);
 }
 
 var _lastScrollPosition = 0;
@@ -84,4 +85,53 @@ function _rememberLastScrollPosition() {
 
 function _setLastToLastScrollPosition() {
     $("#table-tasks-body")[0].scrollTop = _lastScrollPosition;
+}
+
+function _adjustTaskTableHeight() {
+    var isExpanded = $("#button-task-table-expand-shrink").hasClass("repeat-btn-shrink");
+    if (isExpanded) {
+        _setTaskTableHeightPercentViewHeight(100);
+    } else {
+        _setTaskTableHeightPercentViewHeight(25);
+    }
+}
+
+function toggleTaskTableExpandShrinkAction(e) {
+    var body = document.querySelectorAll("#table-tasks-body")[0];
+    var currentPercent = _taskTableHeightPercent(body);
+    if (currentPercent > 50) {
+        $("#button-task-table-expand-shrink").addClass("repeat-btn-expand");
+        $("#button-task-table-expand-shrink").removeClass("repeat-btn-shrink");
+        _setTaskTableHeightPercentViewHeight(25);
+    } else {
+        $("#button-task-table-expand-shrink").removeClass("repeat-btn-expand");
+        $("#button-task-table-expand-shrink").addClass("repeat-btn-shrink");
+        _setTaskTableHeightPercentViewHeight(100);
+    }
+}
+
+function _setTaskTableHeightPercentViewHeight(percent) {
+    var body = document.querySelectorAll('#table-tasks-body')[0];
+    body.style.setProperty("height",  percent + "vh");
+}
+
+function _taskTableHeightPercent(bodyElement) {
+    var heightPixel = _taskTableHeightPixel(bodyElement);
+    return Math.round(_computeViewHeightPercent(heightPixel));
+}
+
+function _taskTableHeightPixel(bodyElement) {
+    var heightPixel = getComputedStyle(bodyElement).getPropertyValue("height");
+    var heightFloatString = heightPixel.substring(0, heightPixel.length - 2);
+    return parseFloat(heightFloatString);
+}
+
+function _computeViewHeightPercent(heightPx) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (heightPx / h) * 100;
+}
+
+function _computeViewHeightPx(percent) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (percent * h) / 100;
 }
