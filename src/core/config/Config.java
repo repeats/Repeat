@@ -29,7 +29,7 @@ public class Config implements ILoggable {
 	public static final String RELEASE_VERSION = "5.6.5";
 	protected static final String CONFIG_FILE_NAME = "config.json";
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
-	protected static final String CURRENT_CONFIG_VERSION = "2.14";
+	protected static final String CURRENT_CONFIG_VERSION = "2.15";
 
 	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
@@ -90,7 +90,8 @@ public class Config implements ILoggable {
 				new Parser2_11(),
 				new Parser2_12(),
 				new Parser2_13(),
-				new Parser2_14()
+				new Parser2_14(),
+				new Parser2_15()
 			});
 	}
 

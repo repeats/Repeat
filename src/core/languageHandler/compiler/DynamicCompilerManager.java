@@ -86,7 +86,7 @@ public class DynamicCompilerManager implements IJsonable {
 					LOGGER.log(Level.WARNING, "Compiler " + name + " was unable to parse its specific arguments.");
 				}
 			} else {
-				LOGGER.warning("Unknown compiler " + name);
+				throw new IllegalStateException("Unknown compiler " + name);
 			}
 		}
 		return true;
