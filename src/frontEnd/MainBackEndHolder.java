@@ -4,7 +4,11 @@ import java.awt.AWTException;
 import java.awt.SystemTray;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,8 +17,12 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 import core.config.AbstractRemoteRepeatsClientsConfig;
@@ -53,11 +61,13 @@ import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import core.userDefinedTask.internals.TaskSourceHistoryEntry;
 import globalListener.GlobalListenerHookController;
 import staticResources.BootStrapResources;
+import utilities.DateUtility;
 import utilities.Desktop;
 import utilities.FileUtility;
 import utilities.Function;
 import utilities.StringUtilities;
 import utilities.ZipUtility;
+import utilities.logging.CompositeOutputStream;
 import utilities.logging.LogHolder;
 
 public class MainBackEndHolder {
@@ -147,6 +157,44 @@ public class MainBackEndHolder {
 				return null;
 			}
 		});
+	}
+
+	protected void initializeLogging() {
+		// Change stdout and stderr to also copy content to the logHolder.
+		System.setOut(new PrintStream(CompositeOutputStream.of(logHolder, System.out)));
+		System.setErr(new PrintStream(CompositeOutputStream.of(logHolder, System.err)));
+
+		// Once we've updated stdout and stderr, we need to re-register the ConsoleHandler of the root
+		// logger because it was only logging to the old stderr which we just changed above.
+		Logger rootLogger = Logger.getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		for (Handler handler : handlers) {
+			if (handler.getClass().getName().equals(ConsoleHandler.class.getName())) {
+				Logger.getLogger("").removeHandler(handler);
+			}
+		}
+		Handler newHandler = new ConsoleHandler();
+		newHandler.setFormatter(new SimpleFormatter() {
+			private static final String FORMAT = "[%s] %s %s: %s\n";
+
+			@Override
+			public synchronized String format(LogRecord lr) {
+				Calendar cal = DateUtility.calendarFromMillis(lr.getMillis());
+				String base = String.format(FORMAT, DateUtility.calendarToTimeString(cal), lr.getLoggerName(), lr.getLevel().getLocalizedName(), lr.getMessage());
+				StringBuilder builder = new StringBuilder(base);
+				if (lr.getThrown() != null) {
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					lr.getThrown().printStackTrace(pw);
+					builder.append(sw.toString());
+				}
+				return builder.toString();
+			}
+		});
+		Logger.getLogger("").addHandler(newHandler);
+
+		// Update the logging level based on the config.
+		changeDebugLevel(config.getNativeHookDebugLevel());
 	}
 
 	/*************************************************************************************************************/
@@ -1067,6 +1115,11 @@ public class MainBackEndHolder {
 
 	public void changeDebugLevel(Level level) {
 		config.setNativeHookDebugLevel(level);
+
+		Logger.getLogger("").setLevel(level);
+		for (Handler h : Logger.getLogger("").getHandlers()) {
+			h.setLevel(level);
+		}
 	}
 
 	public void haltAllTasks() {

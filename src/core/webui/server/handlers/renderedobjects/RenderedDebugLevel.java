@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class RenderedDebugLevel {
-	public static final Level[] LEVELS = new Level[] {Level.FINE, Level.INFO, Level.WARNING, Level.SEVERE};
+	public static final Level[] LEVELS = new Level[] {Level.ALL, Level.FINEST, Level.FINER, Level.FINE, Level.INFO, Level.WARNING, Level.SEVERE};
 
 	private String name;
 	private boolean selected;

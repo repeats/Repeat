@@ -58,6 +58,7 @@ public class MouseGestureManager extends KeyStrokeManager {
 		mouseListener.setMouseMoved(new Function<NativeMouseEvent, Boolean> () {
 			@Override
 			public Boolean apply(NativeMouseEvent d) {
+				LOGGER.fine("Mouse moved to " + d.getX() + ", " + d.getY() + ".");
 				if (enabled && coordinates.size() < MAX_COORDINATES_COUNT) {
 					coordinates.add(new Point(d.getX(), d.getY()));
 				}
