@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,18 +20,53 @@ public class SubprocessUttility {
 	 * @throws ExecutionException if there is any exception encountered.
 	 */
 	public static String[] execute(String command, String cwd) throws ExecutionException {
-		File dir = null;
+		final File dir;
 		if (cwd != null && !cwd.isEmpty()) {
 			dir = new File(cwd);
+		} else {
+			dir = null;
 		}
 
+		return execute(command, new ExceptableFunction<Void, Process, IOException>() {
+			@Override
+			public Process apply(Void d) throws IOException {
+				return Runtime.getRuntime().exec(command, null, dir);
+			}
+		});
+	}
+
+	/**
+	 * Execute a command in the runtime environment
+	 * @param command The command to execute
+	 * @param cwd directory in which the command should be executed. Set null or empty string to execute in the current directory
+	 * @return stdout and stderr of the command
+	 * @throws ExecutionException if there is any exception encountered.
+	 */
+	public static String[] execute(String[] command, String cwd) throws ExecutionException {
+		final File dir;
+		if (cwd != null && !cwd.isEmpty()) {
+			dir = new File(cwd);
+		} else {
+			dir = null;
+		}
+
+		return execute(String.join(" ", Arrays.asList(command)), new ExceptableFunction<Void, Process, IOException>() {
+			@Override
+			public Process apply(Void d) throws IOException {
+				return Runtime.getRuntime().exec(command, null, dir);
+			}
+		});
+	}
+
+	private static String[] execute(String command, ExceptableFunction<Void, Process, IOException> processSupplier) throws ExecutionException {
 		// 0 for stdout, 1 for stderr.
 		final boolean[] fail = new boolean[2];
 
 		try {
 			StringBuffer stdout = new StringBuffer();
 			StringBuffer stderr = new StringBuffer();
-			Process process = Runtime.getRuntime().exec(command, null, dir);
+//			Process process = Runtime.getRuntime().exec(command, null, dir);
+			Process process = processSupplier.apply(null);
 			BufferedReader bufferStdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			BufferedReader bufferStderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 

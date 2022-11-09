@@ -10,11 +10,19 @@ import utilities.OSIdentifier;
 /**
  * Provides interaction with Window processes via Windows native DLLs.
  */
-class WindowsNativeProcessUtil {
+final class WindowsNativeProcessUtil {
 
 	private static final int MAX_TITLE_LENGTH = 1024;
 
-	static String getActiveWindowTitle() {
+
+	public static NativeProcessUtil.NativeWindowInfo getActiveWindowInfo() {
+		String title = getActiveWindowTitle();
+		String processName = getActiveWindowProcessName();
+
+		return NativeProcessUtil.NativeWindowInfo.of(title, processName);
+	}
+
+	private static String getActiveWindowTitle() {
 		char[] buffer = new char[MAX_TITLE_LENGTH * 2];
 		HWND window = User32DLL.GetForegroundWindow();
 		User32DLL.GetWindowTextW(window, buffer, MAX_TITLE_LENGTH);
@@ -22,7 +30,7 @@ class WindowsNativeProcessUtil {
 		return title;
 	}
 
-	static String getActiveWindowProcessName() {
+	private static String getActiveWindowProcessName() {
 		char[] buffer = new char[MAX_TITLE_LENGTH * 2];
 		PointerByReference pointer = new PointerByReference();
 		HWND window = User32DLL.GetForegroundWindow();
