@@ -132,10 +132,7 @@ public class ActionSaveTaskDetailsHandler extends AbstractUIHttpHandler {
 
 	private boolean isHotkey(String taskString) {
 		return taskString != null &&
-				(taskString.equals("record")
-				|| taskString.equals("replay")
-				|| taskString.equals("runCompiled")
-				|| taskString.equals("mouseGestureActivation"));
+				(TaskDetailsPageHandler.HOTKEY_NAMES.containsKey(taskString));
 	}
 
 	private TaskExecutionPreconditions getTaskExecutionPreconditions(JsonNode params) {

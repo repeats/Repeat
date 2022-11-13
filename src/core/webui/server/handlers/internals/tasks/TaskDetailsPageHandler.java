@@ -22,14 +22,18 @@ import core.webui.webcommon.HttpServerUtilities;
 
 public class TaskDetailsPageHandler extends AbstractUIHttpHandler {
 
-	private static final Map<String, String> HOTKEY_NAMES;
+	private static final String RECORD_TASK_NAME = "record";
+	private static final String REPLAY_TASK_NAME = "replay";
+	private static final String RUN_COMPILED_TASK_NAME = "runCompiled";
+	private static final String MOUSE_GESTURE_ACTIVATION_TASK_NAME = "mouseGestureActivation";
+	public static final Map<String, String> HOTKEY_NAMES;
 
 	static {
 		HOTKEY_NAMES = new HashMap<>();
-		HOTKEY_NAMES.put("record", "Start/Stop recording");
-		HOTKEY_NAMES.put("replay", "Start/Stop replaying");
-		HOTKEY_NAMES.put("runCompiled", "Run compiled task");
-		HOTKEY_NAMES.put("mouseGestureActivation", "Mouse gesture recognition activation/de-activation");
+		HOTKEY_NAMES.put(RECORD_TASK_NAME, "Start/Stop recording");
+		HOTKEY_NAMES.put(REPLAY_TASK_NAME, "Start/Stop replaying");
+		HOTKEY_NAMES.put(RUN_COMPILED_TASK_NAME, "Run compiled task");
+		HOTKEY_NAMES.put(MOUSE_GESTURE_ACTIVATION_TASK_NAME, "Mouse gesture recognition activation/de-activation");
 	}
 
 	private TaskActivationConstructorManager taskActivationConstructorManager;
@@ -101,9 +105,6 @@ public class TaskDetailsPageHandler extends AbstractUIHttpHandler {
 	}
 
 	private boolean isHotkey(String taskString) {
-		return taskString.equals("record")
-				|| taskString.equals("replay")
-				|| taskString.equals("runCompiled")
-				|| taskString.equals("mouseGestureActivation");
+		return HOTKEY_NAMES.containsKey(taskString);
 	}
 }
