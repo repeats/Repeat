@@ -66,7 +66,7 @@ function removeActivationRowAction(row, cellObject, tableId, endpoint) {
 
 function buttonSaveAction(e) {
     function save() {
-        $.post("/internals/action/task-activation/save", JSON.stringify(getTaskActivationParameters()), function(data) {
+        $.post("/internals/action/task-details/save", JSON.stringify(getTaskDetailsParameters()), function(data) {
             window.location.assign("/");
         }).fail(function(response) {
             alert('Error saving task activation: ' + response.responseText);
@@ -258,5 +258,16 @@ function getTaskActivationParameters() {
     return {
         id: $("#task-activation-constructor-id").html(),
         task: $("#task-activation-task").html(),
+    };
+}
+
+function getTaskDetailsParameters() {
+    return {
+        id: $("#task-activation-constructor-id").html(),
+        task: $("#task-activation-task").html(),
+        preconditions: {
+            "activeWindowTitle": document.getElementById("precondition-active-window-title").value,
+            "activeProcessName": document.getElementById("precondition-active-process-name").value,
+        },
     };
 }

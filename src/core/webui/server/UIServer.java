@@ -110,6 +110,7 @@ import core.webui.server.handlers.internals.taskmanagement.ActionMoveTaskUpHandl
 import core.webui.server.handlers.internals.taskmanagement.ActionOverwriteTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.GetRenderedTaskGroupsSelectModalHandler;
 import core.webui.server.handlers.internals.tasks.ActionSaveTaskActivationHandler;
+import core.webui.server.handlers.internals.tasks.ActionSaveTaskDetailsHandler;
 import core.webui.server.handlers.internals.tasks.GetRunTaskConfigHandler;
 import core.webui.server.handlers.internals.tasks.GetTaskSourceHandler;
 import core.webui.server.handlers.internals.tasks.ModifyTaskNameHandler;
@@ -210,6 +211,8 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/menu/settings/run-task-with-server-config", new MenuUseClipboardToTypeStringActionHandler());
 		output.put("/internals/menu/settings/use-tray-icon", new MenuUseTrayIconActionHandler());
 		output.put("/internals/menu/settings/use-java-awt-for-mouse-position", new MenuUseJavaAwtForMousePosition());
+
+		output.put("/internals/action/task-details/save", new ActionSaveTaskDetailsHandler(objectRenderer, taskActivationConstructorManager));
 
 		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/start-listening", new ActionTaskActivationStartListeningHandler(objectRenderer, taskActivationConstructorManager));

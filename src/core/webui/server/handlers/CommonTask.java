@@ -32,6 +32,16 @@ public class CommonTask {
 		return IPCServiceManager.getIPCService(index);
 	}
 
+	public static UserDefinedAction getTaskFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
+		String taskId = getTaskIdFromRequest(backEndHolder, params);
+		if (taskId == null || taskId.isEmpty()) {
+			LOGGER.warning("Cannot find task ID.");
+			return null;
+		}
+
+		return getTaskFromId(backEndHolder, taskId);
+	}
+
 	public static String getTaskIdFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
 		String taskValue = params.get("task");
 		if (taskValue == null || taskValue.isEmpty()) {
@@ -42,16 +52,10 @@ public class CommonTask {
 		return taskValue;
 	}
 
-	public static UserDefinedAction getTaskFromRequest(MainBackEndHolder backEndHolder, Map<String, String> params) {
-		String taskId = getTaskIdFromRequest(backEndHolder, params);
-		if (taskId == null || taskId.isEmpty()) {
-			LOGGER.warning("Cannot find task ID.");
-			return null;
-		}
-
-		UserDefinedAction task = backEndHolder.getTask(taskId);
+	public static UserDefinedAction getTaskFromId(MainBackEndHolder backEndHolder, String id) {
+		UserDefinedAction task = backEndHolder.getTask(id);
 		if (task == null) {
-			LOGGER.warning("No such task with ID " + taskId + ".");
+			LOGGER.warning("No such task with ID " + id + ".");
 			return null;
 		}
 

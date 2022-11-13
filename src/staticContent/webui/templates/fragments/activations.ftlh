@@ -6,10 +6,6 @@
 
 <#macro fragment>
     <h1> Activation </h1>
-    <div class="row">
-        <span class="label label-warning">Moving tasks around when editting its activation may result in undefined behavior!</span>
-        <div><button id="button-save" type="button" class="btn btn-default btn-span">Save Activation</button></div>
-    </div>
     <div class="row top-buffer">
         <span class="label label-default">Global Key Action</span>
         <div>

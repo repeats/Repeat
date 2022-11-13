@@ -7,6 +7,8 @@ public class RenderedDetailedUserDefinedAction {
 	private String id;
 	private String name;
 	private String isEnabled;
+	private String hasPreconditions;
+	private RenderedTaskExecutionPreconditions preconditions;
 	private RenderedTaskActivation activation;
 	private String hasStatistics;
 	private RenderedUserDefinedActionStatistics statistics;
@@ -20,6 +22,8 @@ public class RenderedDetailedUserDefinedAction {
 		result.id = "";
 		result.name = "";
 		result.isEnabled = "";
+		result.hasPreconditions = false + "";
+		result.preconditions = null;
 		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
 		result.hasStatistics = false + "";
 		result.statistics = null;
@@ -33,6 +37,8 @@ public class RenderedDetailedUserDefinedAction {
 		result.id = id;
 		result.name = name;
 		result.isEnabled = true + "";
+		result.hasPreconditions = false + "";
+		result.preconditions = null;
 		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
 		result.hasStatistics = false + "";
 		result.statistics = null;
@@ -46,6 +52,8 @@ public class RenderedDetailedUserDefinedAction {
 		result.id = action.getActionId();
 		result.name = action.getName();
 		result.isEnabled = action.isEnabled() + "";
+		result.hasPreconditions = true + "";
+		result.preconditions = RenderedTaskExecutionPreconditions.of(action.getExecutionPreconditions());
 		result.activation = RenderedTaskActivation.fromActivation(activationConstructor);
 		result.hasStatistics = true + "";
 		result.statistics = RenderedUserDefinedActionStatistics.fromUserDefinedActionStatistics(action.getStatistics());
@@ -65,6 +73,18 @@ public class RenderedDetailedUserDefinedAction {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getHasPreconditions() {
+		return hasPreconditions;
+	}
+	public void setHasPreconditions(String hasPreconditions) {
+		this.hasPreconditions = hasPreconditions;
+	}
+	public RenderedTaskExecutionPreconditions getPreconditions() {
+		return preconditions;
+	}
+	public void setPreconditions(RenderedTaskExecutionPreconditions preconditions) {
+		this.preconditions = preconditions;
 	}
 	public RenderedTaskActivation getActivation() {
 		return activation;

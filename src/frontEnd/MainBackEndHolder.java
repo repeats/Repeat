@@ -854,19 +854,20 @@ public class MainBackEndHolder {
 		cleanUnusedSource();
 	}
 
-	public void changeHotkeyTask(UserDefinedAction action, TaskActivation newActivation) {
+	public boolean changeHotkeyTask(UserDefinedAction action, TaskActivation newActivation) {
 		if (newActivation == null) {
-			return;
+			return false;
 		}
 
 		Set<UserDefinedAction> collisions = keysManager.isActivationRegistered(newActivation);
 		collisions.remove(action);
 		if (!collisions.isEmpty()) {
 			GlobalEventsManager.showCollisionWarning(null, collisions);
-			return;
+			return false;
 		}
 
 		keysManager.reRegisterTask(action, newActivation);
+		return true;
 	}
 
 	public void switchEnableTask(UserDefinedAction action) {

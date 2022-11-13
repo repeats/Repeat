@@ -2,6 +2,7 @@ package core.keyChain.managers;
 
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.swing.JFrame;
 
@@ -23,6 +24,7 @@ import core.userDefinedTask.internals.ActionExecutor;
 import core.userDefinedTask.internals.SharedVariablesPubSubManager;
 import core.userDefinedTask.internals.SharedVariablesSubscriber;
 import core.userDefinedTask.internals.SharedVariablesSubscription;
+import core.userDefinedTask.internals.preconditions.ExecutionPreconditionsChecker;
 import globalListener.GlobalListenerFactory;
 import utilities.StringUtilities;
 
@@ -33,12 +35,7 @@ public final class GlobalEventsManager {
 	private final Config config;
 	CoreProvider coreProvider;
 	private final ActionExecutor actionExecutor;
-	/**
-	 * This function is the precondition to executing any task.
-	 * It is evaluated every time the manager considers executing any task.
-	 * If it evaluates to true, the task will not be executed.
-	 */
-	private Function<Void, Boolean> disablingFunction;
+	private final ExecutionPreconditionsChecker executionPreconditionsChecker;
 	private final ActivationEventManager taskActivationManager;
 
 	@SuppressWarnings("unused")
@@ -49,8 +46,7 @@ public final class GlobalEventsManager {
 		this.coreProvider = coreProvider;
 		this.actionExecutor = actionExecutor;
 
-		this.disablingFunction = Function.falseFunction();
-
+		this.executionPreconditionsChecker = ExecutionPreconditionsChecker.of();
 		this.taskActivationManager = new AggregateActivationEventManager(config,
 				new KeyChainManager(config),
 				new KeySequenceManager(config),
@@ -73,6 +69,7 @@ public final class GlobalEventsManager {
 				}
 
 				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
+				actions = actions.stream().filter(executionPreconditionsChecker::shouldExecute).collect(Collectors.toSet());
 				actionExecutor.startExecutingActions(actions);
 				return true;
 			}
@@ -88,6 +85,7 @@ public final class GlobalEventsManager {
 				}
 
 				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
+				actions = actions.stream().filter(executionPreconditionsChecker::shouldExecute).collect(Collectors.toSet());
 				actionExecutor.startExecutingActions(actions);
 				return true;
 			}
@@ -100,6 +98,7 @@ public final class GlobalEventsManager {
 				MouseKey stroke = MouseKey.of(r);
 
 				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
+				actions = actions.stream().filter(executionPreconditionsChecker::shouldExecute).collect(Collectors.toSet());
 				actionExecutor.startExecutingActions(actions);
 				return true;
 			}
@@ -110,6 +109,7 @@ public final class GlobalEventsManager {
 				MouseKey stroke = MouseKey.of(r);
 
 				Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(stroke));
+				actions = actions.stream().filter(executionPreconditionsChecker::shouldExecute).collect(Collectors.toSet());
 				actionExecutor.startExecutingActions(actions);
 				return true;
 			}
@@ -117,16 +117,13 @@ public final class GlobalEventsManager {
 
 		SharedVariablesPubSubManager.get().addSubscriber(SharedVariablesSubscriber.of(SharedVariablesSubscription.forAll(), e -> {
 			Set<UserDefinedAction> actions = taskActivationManager.onActivationEvent(ActivationEvent.of(e));
+			actions = actions.stream().filter(executionPreconditionsChecker::shouldExecute).collect(Collectors.toSet());
 			actionExecutor.startExecutingActions(actions);
 		}));
 
 		taskActivationManager.startListening();
 		keyListener.startListening();
 		mouseListener.startListening();
-	}
-
-	public void setDisablingFunction(Function<Void, Boolean> disablingFunction) {
-		this.disablingFunction = disablingFunction;
 	}
 
 	public void setCurrentTaskGroup(TaskGroup currentTaskGroup) {
@@ -147,7 +144,7 @@ public final class GlobalEventsManager {
 			return false;
 		}
 
-		return !disablingFunction.apply(null);
+		return true;
 	}
 
 	/**

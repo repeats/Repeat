@@ -1,4 +1,5 @@
 <#import "/fragments/activations_modals.ftlh" as activations_modals_fragment>
+<#import "/fragments/task_execution_preconditions.ftlh" as task_execution_preconditions_fragment>
 <#import "/fragments/activations.ftlh" as activations_fragment>
 <#import "/fragments/task_source_history.ftlh" as task_source_history_fragment>
 <#import "/fragments/task_statistics.ftlh" as task_statistics_fragment>
@@ -56,6 +57,12 @@
                 <div id="task-activation-task" style="display:none;">${task.id}</div>
                 <div id="task-activation-constructor-id" style="display:none;">${taskActivationConstructorId}</div>
 
+
+                <div class="row col-xs-12">
+                    <span class="label label-warning">Moving tasks around when editting its activation may result in undefined behavior!</span>
+                    <div><button id="button-save" type="button" class="btn btn-default btn-span">Save</button></div>
+                </div>
+                <@task_execution_preconditions_fragment.fragment/>
                 <@activations_fragment.fragment/>
                 <@task_source_history_fragment.fragment/>
                 <@task_statistics_fragment.fragment/>

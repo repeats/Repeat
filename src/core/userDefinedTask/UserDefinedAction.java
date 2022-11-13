@@ -20,6 +20,7 @@ import core.languageHandler.compiler.DynamicCompilerManager;
 import core.languageHandler.compiler.RemoteRepeatsCompiler;
 import core.userDefinedTask.internals.TaskSourceHistory;
 import core.userDefinedTask.internals.TaskSourceHistoryEntry;
+import core.userDefinedTask.internals.preconditions.TaskExecutionPreconditions;
 import utilities.FileUtility;
 import utilities.ILoggable;
 import utilities.json.IJsonable;
@@ -30,7 +31,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	protected String actionId;
 	protected String name;
+
+	private TaskExecutionPreconditions executionPreconditions;
 	private TaskActivation activation;
+
 	protected String sourcePath;
 	protected Language compiler;
 	protected boolean enabled;
@@ -51,6 +55,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	protected UserDefinedAction(String actionId) {
 		this.actionId = actionId;
+		executionPreconditions = TaskExecutionPreconditions.defaultConditions();
 		activation = TaskActivation.newBuilder().build();
 		invoker = TaskActivation.newBuilder().build();
 		invokingKeyChain = new KeyChain();
@@ -101,6 +106,13 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 	}
 
 	/**
+	 * @return the execution preconditions for this task.
+	 */
+	public final TaskExecutionPreconditions getExecutionPreconditions() {
+		return executionPreconditions;
+	}
+
+	/**
 	 * @return the activation entity associated with this action.
 	 */
 	public final TaskActivation getActivation() {
@@ -146,6 +158,10 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public final void setExecutionPreconditions(TaskExecutionPreconditions preconditions) {
+		this.executionPreconditions = preconditions;
 	}
 
 	public final void setActivation(TaskActivation activation) {
@@ -246,6 +262,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				JsonNodeFactories.field("source_path", JsonNodeFactories.string(sourcePath)),
 				JsonNodeFactories.field("compiler", JsonNodeFactories.string(compiler.toString())),
 				JsonNodeFactories.field("name", JsonNodeFactories.string(name)),
+				JsonNodeFactories.field("execution_preconditions", executionPreconditions.jsonize()),
 				JsonNodeFactories.field("activation", activation.jsonize()),
 				JsonNodeFactories.field("enabled", JsonNodeFactories.booleanNode(enabled)),
 				JsonNodeFactories.field("statistics", statistics.jsonize()),
@@ -273,6 +290,15 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 			}
 
 			String name = node.getStringValue("name");
+			TaskExecutionPreconditions executionPreconditions = TaskExecutionPreconditions.defaultConditions();
+			if (node.isNode("execution_preconditions")) {
+				executionPreconditions = TaskExecutionPreconditions.parseJSON(node.getNode("execution_preconditions"));
+				if (executionPreconditions == null) {
+					LOGGER.warning("Unable to parse execution preconditions.");
+					executionPreconditions = TaskExecutionPreconditions.defaultConditions();
+				}
+			}
+
 			JsonNode activationJSONs =  node.getNode("activation");
 			TaskActivation activation = TaskActivation.parseJSON(activationJSONs);
 
@@ -315,6 +341,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 			output.sourcePath = sourcePath;
 			output.compiler = compiler.getName();
 			output.name = name;
+			output.executionPreconditions = executionPreconditions;
 			output.activation = activation;
 			output.enabled = enabled;
 
