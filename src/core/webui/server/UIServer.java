@@ -109,7 +109,6 @@ import core.webui.server.handlers.internals.taskmanagement.ActionMoveTaskDownHan
 import core.webui.server.handlers.internals.taskmanagement.ActionMoveTaskUpHandler;
 import core.webui.server.handlers.internals.taskmanagement.ActionOverwriteTaskHandler;
 import core.webui.server.handlers.internals.taskmanagement.GetRenderedTaskGroupsSelectModalHandler;
-import core.webui.server.handlers.internals.tasks.ActionSaveTaskActivationHandler;
 import core.webui.server.handlers.internals.tasks.ActionSaveTaskDetailsHandler;
 import core.webui.server.handlers.internals.tasks.GetRunTaskConfigHandler;
 import core.webui.server.handlers.internals.tasks.GetTaskSourceHandler;
@@ -214,7 +213,6 @@ public class UIServer extends IPCServiceWithModifablePort {
 
 		output.put("/internals/action/task-details/save", new ActionSaveTaskDetailsHandler(objectRenderer, taskActivationConstructorManager));
 
-		output.put("/internals/action/task-activation/save", new ActionSaveTaskActivationHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/start-listening", new ActionTaskActivationStartListeningHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/stop-listening", new ActionTaskActivationStopListeningHandler(objectRenderer, taskActivationConstructorManager));
 		output.put("/internals/action/task-activation/key-chain/remove", new ActionTaskActivationRemoveKeyChainHandler(objectRenderer, taskActivationConstructorManager));
