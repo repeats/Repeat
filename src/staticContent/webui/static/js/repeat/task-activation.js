@@ -262,12 +262,15 @@ function getTaskActivationParameters() {
 }
 
 function getTaskDetailsParameters() {
-    return {
+    var result = {
         id: $("#task-activation-constructor-id").html(),
         task: $("#task-activation-task").html(),
-        preconditions: {
+    };
+    if (document.getElementById("precondition-active-window-title") != null && document.getElementById("precondition-active-process-name") != null) {
+        result.preconditions = {
             "activeWindowTitle": document.getElementById("precondition-active-window-title").value,
             "activeProcessName": document.getElementById("precondition-active-process-name").value,
-        },
-    };
+        }
+    }
+    return result;
 }
