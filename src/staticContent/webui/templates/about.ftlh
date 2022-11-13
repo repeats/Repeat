@@ -52,6 +52,8 @@
                             <li><a href="https://github.com/repeats/SimpleNativeHooks">Simple Native Hooks</a></li>
                             <li><a href="http://argo.sourceforge.net">Argo JSON</a></li>
                             <li><a href="https://math.nist.gov/javanumerics/jama/">Jama - A Java matrix package</a></li>
+                            <li><a href="https://commons.apache.org/proper/commons-lang">Apache Commons Lang</a></li>
+                            <li><a href="https://commons.apache.org/proper/commons-text">Apache Commons Text</a></li>
                             <li><a href="https://hc.apache.org/httpcomponents-core-ga/index.html">Apache HttpComponents Core</a></li>
                             <li><a href="https://hc.apache.org/httpcomponents-client-ga/index.html">Apache HttpClient</a></li>
                             <li><a href="https://freemarker.apache.org/">FreeMarker Java Template Engine</a></li>
