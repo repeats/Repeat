@@ -267,8 +267,13 @@ function getTaskDetailsParameters() {
         task: $("#task-activation-task").html(),
     };
     if (document.getElementById("precondition-active-window-title") != null && document.getElementById("precondition-active-process-name") != null) {
+        var windowTitleMatchType = document.getElementById("precondition-active-window-title-match-type").value;
+        var processNameMatchType = document.getElementById("precondition-active-process-name-match-type").value;
+
         result.preconditions = {
+            "activeWindowTitleMatchType": windowTitleMatchType,
             "activeWindowTitle": document.getElementById("precondition-active-window-title").value,
+            "activeProcessNameMatchType": processNameMatchType,
             "activeProcessName": document.getElementById("precondition-active-process-name").value,
         }
     }

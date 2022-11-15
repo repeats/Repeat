@@ -21,6 +21,10 @@ public abstract class StringMatchingCondition implements IJsonable {
 
 	public static StringMatchingCondition parseJSON(JsonNode node) {
 		String type = node.getStringValue("type");
+		if (type.equals(ContainingStringMatchingCondition.of("xxx").jsonTypeName())) {
+			return ContainingStringMatchingCondition.parseJSON(node);
+		}
+
 		if (type.equals(ExactStringMatchCondition.of("xxx").jsonTypeName())) {
 			return ExactStringMatchCondition.parseJSON(node);
 		}

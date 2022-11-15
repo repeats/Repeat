@@ -2,6 +2,7 @@ package core.webui.server.handlers.internals.tasks;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -16,6 +17,8 @@ import core.keyChain.TaskActivationConstructorManager;
 import core.userDefinedTask.UserDefinedAction;
 import core.userDefinedTask.internals.preconditions.ActiveWindowsInfoCondition;
 import core.userDefinedTask.internals.preconditions.AlwaysMatchingStringCondition;
+import core.userDefinedTask.internals.preconditions.ContainingStringMatchingCondition;
+import core.userDefinedTask.internals.preconditions.ExactStringMatchCondition;
 import core.userDefinedTask.internals.preconditions.RegexStringMatchingCondition;
 import core.userDefinedTask.internals.preconditions.StringMatchingCondition;
 import core.userDefinedTask.internals.preconditions.TaskExecutionPreconditions;
@@ -23,9 +26,12 @@ import core.webui.server.handlers.AbstractSingleMethodHttpHandler;
 import core.webui.server.handlers.AbstractUIHttpHandler;
 import core.webui.server.handlers.CommonTask;
 import core.webui.server.handlers.renderedobjects.ObjectRenderer;
+import core.webui.server.handlers.renderedobjects.RenderedMatchingOptionSelection;
 import core.webui.webcommon.HttpServerUtilities;
 
 public class ActionSaveTaskDetailsHandler extends AbstractUIHttpHandler {
+
+	private static final Logger LOGGER = Logger.getLogger(ActionSaveTaskDetailsHandler.class.getName());
 
 	protected TaskActivationConstructorManager taskActivationConstructorManager;
 
@@ -89,8 +95,16 @@ public class ActionSaveTaskDetailsHandler extends AbstractUIHttpHandler {
 		}
 
 		JsonNode preconditions = params.getNode("preconditions");
+		if (!preconditions.isStringValue("activeWindowTitleMatchType")) {
+			HttpServerUtilities.prepareHttpResponse(exchange, 400, "No active window title precondition match type provided.");
+			return false;
+		}
 		if (!preconditions.isStringValue("activeWindowTitle")) {
 			HttpServerUtilities.prepareHttpResponse(exchange, 400, "No active window title precondition provided.");
+			return false;
+		}
+		if (!preconditions.isStringValue("activeProcessNameMatchType")) {
+			HttpServerUtilities.prepareHttpResponse(exchange, 400, "No active process name precondition match type provided.");
 			return false;
 		}
 		if (!preconditions.isStringValue("activeProcessName")) {
@@ -136,12 +150,33 @@ public class ActionSaveTaskDetailsHandler extends AbstractUIHttpHandler {
 	}
 
 	private TaskExecutionPreconditions getTaskExecutionPreconditions(JsonNode params) {
-		String activeWindowTitle = params.getNode("preconditions").getStringValue("activeWindowTitle");
-		String activeProcessName = params.getNode("preconditions").getStringValue("activeProcessName");
+		JsonNode preconditions = params.getNode("preconditions");
 
-		StringMatchingCondition titleCondition = activeWindowTitle.isEmpty() ? AlwaysMatchingStringCondition.INSTANCE : RegexStringMatchingCondition.of(activeWindowTitle);
-		StringMatchingCondition processNameCondition = activeProcessName.isEmpty() ? AlwaysMatchingStringCondition.INSTANCE : RegexStringMatchingCondition.of(activeProcessName);
+		String activeWindowTitleMatchType = preconditions.getStringValue("activeWindowTitleMatchType");
+		String activeWindowTitle = preconditions.getStringValue("activeWindowTitle");
+		String activeProcessNameMatchType = preconditions.getStringValue("activeProcessNameMatchType");
+		String activeProcessName = preconditions.getStringValue("activeProcessName");
+
+		StringMatchingCondition titleCondition = constructStringMatchingCondition(activeWindowTitleMatchType, activeWindowTitle);
+		StringMatchingCondition processNameCondition = constructStringMatchingCondition(activeProcessNameMatchType, activeProcessName);
 		ActiveWindowsInfoCondition windowsInfoCondition = ActiveWindowsInfoCondition.of(titleCondition, processNameCondition);
 		return TaskExecutionPreconditions.of(windowsInfoCondition);
+	}
+
+	private static StringMatchingCondition constructStringMatchingCondition(String type, String value) {
+		if (value.isEmpty()) {
+			return AlwaysMatchingStringCondition.INSTANCE;
+		}
+
+		if (type.equals(RenderedMatchingOptionSelection.CONTAINING.getHtmlValue())) {
+			return ContainingStringMatchingCondition.of(value);
+		}
+		if (type.equals(RenderedMatchingOptionSelection.EXACT_MATCH.getHtmlValue())) {
+			return ExactStringMatchCondition.of(value);
+		}
+		if (type.equals(RenderedMatchingOptionSelection.REGEX_MATCH.getHtmlValue())) {
+			return RegexStringMatchingCondition.of(value);
+		}
+		return AlwaysMatchingStringCondition.INSTANCE;
 	}
 }

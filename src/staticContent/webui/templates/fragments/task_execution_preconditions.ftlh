@@ -5,21 +5,21 @@
         <div class="col-xs-6">
             <span class="label label-default">Active window title</span>
             <select id="precondition-active-window-title-match-type" class="form-control">
-                <option selected value="match_contains">Containing</option>
-                <option value="match_exact">Exact match</option>
-                <option value="match_regex">Regex match</option>
+                <#list task.preconditions.activeWindowInfosPreconditions.activeWindowTitleMatchingTypes as selection>
+                <option <#if selection.chosen> selected </#if> value="${selection.htmlValue}">${selection.displayedOption}</option>
+                </#list>
             </select>
-            <input id="precondition-active-window-title" type="text" class="form-control" data-toggle="tooltip" title="Leave empty to allow all" placeholder="Title of active window (regex accepted)." aria-label="Title of active window"
+            <input id="precondition-active-window-title" type="text" class="form-control" data-toggle="tooltip" title="Leave empty to allow all" placeholder="Title of active window."
             value="${task.preconditions.activeWindowInfosPreconditions.activeWindowTitle}">
         </div>
         <div class="col-xs-6">
             <span class="label label-default">Active process name (the process of the active window)</span>
             <select id="precondition-active-process-name-match-type" class="form-control">
-                <option selected value="match_contains">Containing</option>
-                <option value="match_exact">Exact match</option>
-                <option value="match_regex">Regex match</option>
+                <#list task.preconditions.activeWindowInfosPreconditions.activeProcessNameMatchingTypes as selection>
+                <option <#if selection.chosen> selected </#if> value="${selection.htmlValue}">${selection.displayedOption}</option>
+                </#list>
             </select>
-            <input id="precondition-active-process-name" type="text" class="form-control" data-toggle="tooltip" title="Leave empty to allow all" placeholder="Active process name (regex accepted)" aria-label="Active process name"
+            <input id="precondition-active-process-name" type="text" class="form-control" data-toggle="tooltip" title="Leave empty to allow all" placeholder="Active process name."
             value="${task.preconditions.activeWindowInfosPreconditions.activeProcessName}">
         </div>
     </div>
