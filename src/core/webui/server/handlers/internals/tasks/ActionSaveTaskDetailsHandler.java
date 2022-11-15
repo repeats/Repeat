@@ -2,7 +2,6 @@ package core.webui.server.handlers.internals.tasks;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -30,8 +29,6 @@ import core.webui.server.handlers.renderedobjects.RenderedMatchingOptionSelectio
 import core.webui.webcommon.HttpServerUtilities;
 
 public class ActionSaveTaskDetailsHandler extends AbstractUIHttpHandler {
-
-	private static final Logger LOGGER = Logger.getLogger(ActionSaveTaskDetailsHandler.class.getName());
 
 	protected TaskActivationConstructorManager taskActivationConstructorManager;
 
@@ -122,22 +119,22 @@ public class ActionSaveTaskDetailsHandler extends AbstractUIHttpHandler {
 		}
 		KeyChain hotKey = hotKeys.iterator().next();
 
-		if (taskString.equals("record")) {
+		if (taskString.equals(TaskDetailsPageHandler.RECORD_TASK_NAME)) {
 			backEndHolder.getConfig().setRECORD(hotKey);
 			backEndHolder.reconfigureSwitchRecord();
 			return emptySuccessResponse(exchange);
 		}
-		if (taskString.equals("replay")) {
+		if (taskString.equals(TaskDetailsPageHandler.REPLAY_TASK_NAME)) {
 			backEndHolder.getConfig().setREPLAY(hotKey);
 			backEndHolder.reconfigureSwitchReplay();
 			return emptySuccessResponse(exchange);
 		}
-		if (taskString.equals("runCompiled")) {
+		if (taskString.equals(TaskDetailsPageHandler.RUN_COMPILED_TASK_NAME)) {
 			backEndHolder.getConfig().setCOMPILED_REPLAY(hotKey);
 			backEndHolder.reconfigureSwitchCompiledReplay();
 			return emptySuccessResponse(exchange);
 		}
-		if (taskString.equals("mouseGestureActivation")) {
+		if (taskString.equals(TaskDetailsPageHandler.MOUSE_GESTURE_ACTIVATION_TASK_NAME)) {
 			backEndHolder.getConfig().setMouseGestureActivationKey(hotKey.getButtonStrokes().iterator().next().getKey());
 			return emptySuccessResponse(exchange);
 		}

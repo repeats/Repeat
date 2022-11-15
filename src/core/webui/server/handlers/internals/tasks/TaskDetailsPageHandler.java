@@ -22,10 +22,10 @@ import core.webui.webcommon.HttpServerUtilities;
 
 public class TaskDetailsPageHandler extends AbstractUIHttpHandler {
 
-	private static final String RECORD_TASK_NAME = "record";
-	private static final String REPLAY_TASK_NAME = "replay";
-	private static final String RUN_COMPILED_TASK_NAME = "runCompiled";
-	private static final String MOUSE_GESTURE_ACTIVATION_TASK_NAME = "mouseGestureActivation";
+	public static final String RECORD_TASK_NAME = "record";
+	public static final String REPLAY_TASK_NAME = "replay";
+	public static final String RUN_COMPILED_TASK_NAME = "runCompiled";
+	public static final String MOUSE_GESTURE_ACTIVATION_TASK_NAME = "mouseGestureActivation";
 	public static final Map<String, String> HOTKEY_NAMES;
 
 	static {
