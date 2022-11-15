@@ -119,7 +119,8 @@
                 <div class="row">
                     <div class="col-xs-6">
                         <button id="button-record" title="${tooltips.record}" type="button" class="btn btn-default repeat-btn-record">&nbsp</button>
-                        Mouse position: <button id="mouse-position" type="button" class="btn btn-default">0, 0</button>
+                        Mouse position: <button id="mouse-position" title="${tooltips.mousePosition}" type="button" class="btn btn-default">0, 0</button>
+                        <button id="button-active-window-infos" title="${tooltips.activeWindowInfosLogging}" type="button" class="btn btn-default repeat-btn-active-window-infos-off">&nbsp</button>
                     </div>
                     <div class="col-xs-6">
                         <div id="task-groups-dropdown-container" class="btn-group pull-right">

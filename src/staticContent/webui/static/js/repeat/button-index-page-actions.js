@@ -1,4 +1,6 @@
 function registerIndexPageButtonActions() {
+    $("#button-active-window-infos").click(buttonActiveWindowInfosLoggingAction);
+
     $("#button-replay-count").click(buttonReplayCountAction);
     $("#button-replay-delay").click(buttonReplayDelayAction);
     $("#button-replay-speedup").click(buttonReplaySpeedupAction);
@@ -34,6 +36,29 @@ function registerIndexPageButtonActions() {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
+
+function buttonActiveWindowInfosLoggingAction(e) {
+    $.get("/internals/get/is-active-window-info-logging-enabled", function(data) {
+        var wantedState = false + "";
+        if (data == "false") {
+            wantedState = true + "";
+        }
+        var postData = { "enabled": "" + wantedState }
+        $.post("/internals/set/active-window-info-logging-enabled", JSON.stringify(postData), function(data) {
+            if (wantedState == "true") {
+                $("#button-active-window-infos").addClass("btn-success repeat-btn-active-window-infos-on");
+                $("#button-active-window-infos").removeClass("btn-default repeat-btn-active-window-infos-off");
+            } else {
+                $("#button-active-window-infos").addClass("btn-default repeat-btn-active-window-infos-off");
+                $("#button-active-window-infos").removeClass("btn-success repeat-btn-active-window-infos-on");
+            }
+        }).fail(function(response) {
+            alert('Error setting current active window infos logging state to `' + wantedState + '`: ' + response.responseText);
+        });
+    }).fail(function(response) {
+        alert('Error getting current active window infos logging state: ' + response.responseText);
+    });
+}
 
 function buttonReplayCountAction(e) {
     $("#modal-replay-config-title").html("Enter replay count.");

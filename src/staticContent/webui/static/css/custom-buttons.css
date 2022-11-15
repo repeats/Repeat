@@ -4,6 +4,17 @@
 	background-size: 100%;
 }
 
+.repeat-btn-active-window-infos-off {
+	border: none;
+	background-image: url( '/static/img/buttons/window.png' );
+	background-size: 100%;
+}
+
+.repeat-btn-active-window-infos-on {
+	background-image: url( '/static/img/buttons/window.png' );
+	background-size: 100%;
+}
+
 .repeat-btn-replay {
 	border: none;
 	background-image: url( '/static/img/buttons/replay.gif' );

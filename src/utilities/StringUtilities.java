@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 /**
  * Provide static interface to utilities
  *
@@ -284,6 +286,13 @@ public class StringUtilities {
 		StringBuilder sb = new StringBuilder();
 		Arrays.stream(s.split("\\s+")).forEach(part -> sb.append(Character.toTitleCase(part.charAt(0))).append(part.substring(1)).append(" "));
 		return sb.toString().trim();
+	}
+
+	/**
+	 * Returns an HTML-escaped version of the string.
+	 */
+	public static String escapeHtml(String s) {
+		return StringEscapeUtils.escapeHtml4(s);
 	}
 
 	/**

@@ -37,7 +37,11 @@ import core.webui.server.handlers.internals.ipcs.ActionStopIPCServiceHandler;
 import core.webui.server.handlers.internals.ipcs.IPCPageHandler;
 import core.webui.server.handlers.internals.ipcs.ModifyIPCServicePortHandler;
 import core.webui.server.handlers.internals.ipcs.ToggleIPCServiceLaunchAtStartupHandler;
+import core.webui.server.handlers.internals.logs.GetIsActiveWindowInfosLoggingEnabledHandler;
+import core.webui.server.handlers.internals.logs.GetIsMousePositionLoggingEnabledHandler;
 import core.webui.server.handlers.internals.logs.LogsPageHandler;
+import core.webui.server.handlers.internals.logs.SetActiveWindowInfosLoggingEnabledHandler;
+import core.webui.server.handlers.internals.logs.SetMousePositionLoggingEnabledHandler;
 import core.webui.server.handlers.internals.menu.MenuCleanUnusedSourcesActionHandler;
 import core.webui.server.handlers.internals.menu.MenuExecuteOnReleaseActionHandler;
 import core.webui.server.handlers.internals.menu.MenuExitActionHandler;
@@ -275,6 +279,8 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/get/is-running-compiled-task", new GetIsRunningCompiledTaskHandler());
 		output.put("/internals/get/is-recording", new GetIsRecordingHandler());
 		output.put("/internals/get/is-replaying", new GetIsReplayingHandler());
+		output.put("/internals/get/is-mouse-position-logging-enabled", new GetIsMousePositionLoggingEnabledHandler());
+		output.put("/internals/get/is-active-window-info-logging-enabled", new GetIsActiveWindowInfosLoggingEnabledHandler());
 		output.put("/internals/get/logs", new GetLogsHandler());
 		output.put("/internals/get/mouse-position", new GetMousePositionHandler());
 		output.put("/internals/get/path-suggestion", new GetPathSuggestionHandler());
@@ -284,6 +290,8 @@ public class UIServer extends IPCServiceWithModifablePort {
 		output.put("/internals/get/rendered-task-groups-select-modal", new GetRenderedTaskGroupsSelectModalHandler(objectRenderer));
 
 		output.put("/internals/set/selected-task", new SetSelectedTaskHandler(taskSourceCodeFragmentHandler));
+		output.put("/internals/set/mouse-position-logging-enabled", new SetMousePositionLoggingEnabledHandler());
+		output.put("/internals/set/active-window-info-logging-enabled", new SetActiveWindowInfosLoggingEnabledHandler());
 
 		output.put("/internals/modify/ipc-service-port", new ModifyIPCServicePortHandler(objectRenderer));
 		output.put("/internals/modify/task-name", new ModifyTaskNameHandler(objectRenderer));

@@ -1,12 +1,11 @@
 package core.webui.server.handlers.renderedobjects;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import core.userDefinedTask.internals.preconditions.ActiveWindowsInfoCondition;
 import core.userDefinedTask.internals.preconditions.AlwaysMatchingStringCondition;
 import core.userDefinedTask.internals.preconditions.ExactStringMatchCondition;
 import core.userDefinedTask.internals.preconditions.RegexStringMatchingCondition;
 import core.userDefinedTask.internals.preconditions.StringMatchingCondition;
+import utilities.StringUtilities;
 
 public class RenderedActiveWindowInfosPreconditions {
 
@@ -26,11 +25,11 @@ public class RenderedActiveWindowInfosPreconditions {
 		}
 		if (condition instanceof RegexStringMatchingCondition) {
 			String value = ((RegexStringMatchingCondition) condition).getRegex();
-			return StringEscapeUtils.escapeHtml4(value);
+			return StringUtilities.escapeHtml(value);
 		}
 		if (condition instanceof ExactStringMatchCondition) {
 			String value = ((ExactStringMatchCondition) condition).getValue();
-			return StringEscapeUtils.escapeHtml4(value);
+			return StringUtilities.escapeHtml(value);
 		}
 		return "";
 	}

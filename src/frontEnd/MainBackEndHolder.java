@@ -25,6 +25,8 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
+import core.background.loggers.ActiveWindowInfosLogger;
+import core.background.loggers.MousePositionLogger;
 import core.config.AbstractRemoteRepeatsClientsConfig;
 import core.config.Config;
 import core.controller.Core;
@@ -76,6 +78,8 @@ public class MainBackEndHolder {
 
 	protected MinimizedFrame trayIcon;
 	protected LogHolder logHolder;
+	private final ActiveWindowInfosLogger activeWindowInfosLogger;
+	private final MousePositionLogger mousePositionLogger;
 
 	protected ScheduledThreadPoolExecutor executor;
 	private Thread compiledExecutor;
@@ -125,6 +129,8 @@ public class MainBackEndHolder {
 		taskInvoker = new TaskInvoker(coreProvider, taskGroups);
 		actionExecutor = new ActionExecutor(coreProvider);
 		keysManager = new GlobalEventsManager(config, coreProvider, actionExecutor);
+		activeWindowInfosLogger = new ActiveWindowInfosLogger(coreProvider);
+		mousePositionLogger = new MousePositionLogger(coreProvider);
 		replayConfig = ReplayConfig.of();
 		runActionConfig = RunActionConfig.of();
 		recorder = new Recorder(coreProvider);
@@ -240,6 +246,8 @@ public class MainBackEndHolder {
 	}
 
 	protected void stopBackEndActivities() {
+		activeWindowInfosLogger.stop();
+		mousePositionLogger.stop();
 		executor.shutdown();
 
 		try {
@@ -314,6 +322,24 @@ public class MainBackEndHolder {
 
 	public void reconfigureSwitchCompiledReplay() {
 		keysManager.reRegisterTask(switchReplayCompiled, TaskActivation.newBuilder().withHotKey(config.getCOMPILED_REPLAY()).build());
+	}
+
+	/*************************************************************************************************************/
+	/****************************************Background logging***************************************************/
+	public void setEnabledMousePositionLogging(boolean enabled) {
+		mousePositionLogger.setEnabled(enabled);
+	}
+
+	public boolean isMousePositionLoggingEnabled() {
+		return mousePositionLogger.isEnabled();
+	}
+
+	public void setEnabledActiveWindowInfosLogging(boolean enabled) {
+		activeWindowInfosLogger.setEnabled(enabled);
+	}
+
+	public boolean isActiveWindowInfosLoggingEnabled() {
+		return activeWindowInfosLogger.isEnabled();
 	}
 
 	/*************************************************************************************************************/

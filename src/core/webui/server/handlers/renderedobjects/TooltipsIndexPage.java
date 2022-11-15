@@ -1,6 +1,10 @@
 package core.webui.server.handlers.renderedobjects;
 
+import utilities.StringUtilities;
+
 public class TooltipsIndexPage {
+	private String mousePosition = StringUtilities.escapeHtml("If enabled, mouse position will be logged on every left control click (key down time).");
+	private String activeWindowInfosLogging = StringUtilities.escapeHtml("If enabled, active window infos will be logged on every mouse click (key up time).");
 	private String record = "Record mouse and keyboard activities.";
 	private String replay = "Replay recorded activities.";
 	private String compile = "Compile source code.";
@@ -16,6 +20,18 @@ public class TooltipsIndexPage {
 	private String changeGroup = "Change the select task's group.";
 	private String showActionId = "Show task ID.";
 
+	public String getMousePosition() {
+		return mousePosition;
+	}
+	public void setMousePosition(String mousePosition) {
+		this.mousePosition = mousePosition;
+	}
+	public String getActiveWindowInfosLogging() {
+		return activeWindowInfosLogging;
+	}
+	public void setActiveWindowInfosLogging(String activeWindowInfosLogging) {
+		this.activeWindowInfosLogging = activeWindowInfosLogging;
+	}
 	public String getRecord() {
 		return record;
 	}
