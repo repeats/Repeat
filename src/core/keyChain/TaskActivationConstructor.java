@@ -57,6 +57,22 @@ public class TaskActivationConstructor {
 				.build();
 	}
 
+	public List<KeyChain> getKeyChains() {
+		return keyChains;
+	}
+
+	public List<KeySequence> getKeySequences() {
+		return keySequences;
+	}
+
+	public List<ActivationPhrase> getPhrases() {
+		return phrases;
+	}
+
+	public List<SharedVariablesActivation> getVariables() {
+		return variables;
+	}
+
 	public void startListening() {
 		listening = true;
 	}

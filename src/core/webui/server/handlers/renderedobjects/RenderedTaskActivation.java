@@ -24,11 +24,14 @@ public class RenderedTaskActivation {
 		TaskActivation activation = constructor.getActivation();
 
 		RenderedTaskActivation output = new RenderedTaskActivation();
-		output.keyChains = sortedStrings(activation.getHotkeys().stream().map(KeyChain::toString).collect(Collectors.toList()));
-		output.keySequences = sortedStrings(activation.getKeySequences().stream().map(KeySequence::toString).collect(Collectors.toList()));
-		output.phrases = sortedStrings(activation.getPhrases().stream().map(ActivationPhrase::toString).collect(Collectors.toList()));
+		// Since the lists below are ordered strings, we can't
+		// use the Set interface provided by TaskActivation because set
+		// iteration does not have any specific order.
+		output.keyChains = sortedStrings(constructor.getKeyChains().stream().map(KeyChain::toString).collect(Collectors.toList()));
+		output.keySequences = sortedStrings(constructor.getKeySequences().stream().map(KeySequence::toString).collect(Collectors.toList()));
+		output.phrases = sortedStrings(constructor.getPhrases().stream().map(ActivationPhrase::toString).collect(Collectors.toList()));
 		output.mouseGestures = RenderedMouseGestureActivation.fromActivation(activation);
-		output.sharedVariables = RenderedSharedVariablesActivation.fromActivation(activation);
+		output.sharedVariables = RenderedSharedVariablesActivation.fromActivation(constructor.getVariables());
 		output.globalActivation = RenderedGlobalActivation.fromActivation(activation);
 		TaskActivationConstructor.Config config = constructor.getConfig();
 		output.config = Config.of(true)

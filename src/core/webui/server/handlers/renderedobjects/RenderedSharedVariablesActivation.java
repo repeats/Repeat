@@ -2,18 +2,15 @@ package core.webui.server.handlers.renderedobjects;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import core.keyChain.SharedVariablesActivation;
-import core.keyChain.TaskActivation;
 import core.webui.server.handlers.internals.taskactivation.ActionTaskActivationAddSharedVariables;
 
 public class RenderedSharedVariablesActivation {
 
 	private List<RenderedSharedVariableActivation> variables;
 
-	public static RenderedSharedVariablesActivation fromActivation(TaskActivation activation) {
-		Set<SharedVariablesActivation> variables = activation.getVariables();
+	public static RenderedSharedVariablesActivation fromActivation(List<SharedVariablesActivation> variables) {
 		RenderedSharedVariablesActivation output = new RenderedSharedVariablesActivation();
 		output.variables = new ArrayList<>();
 		for (SharedVariablesActivation variable : variables) {
