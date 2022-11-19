@@ -32,6 +32,11 @@ public class ExactStringMatchCondition extends StringMatchingCondition {
 	}
 
 	@Override
+	public ExactStringMatchCondition copy() {
+		return of(value);
+	}
+
+	@Override
 	public String jsonTypeName() {
 		return "exact_match";
 	}

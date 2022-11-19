@@ -20,6 +20,10 @@ public class ActiveWindowsInfoCondition implements IJsonable {
 		return result;
 	}
 
+	public ActiveWindowsInfoCondition copy() {
+		return of(title.copy(), processName.copy());
+	}
+
 	public StringMatchingCondition getTitleCondition() {
 		return title;
 	}

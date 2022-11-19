@@ -30,6 +30,11 @@ public class ContainingStringMatchingCondition extends StringMatchingCondition {
 	}
 
 	@Override
+	public ContainingStringMatchingCondition copy() {
+		return of(substring);
+	}
+
+	@Override
 	public String jsonTypeName() {
 		return "containing";
 	}

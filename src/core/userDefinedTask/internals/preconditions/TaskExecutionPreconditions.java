@@ -24,6 +24,10 @@ public class TaskExecutionPreconditions implements IJsonable {
 		return result;
 	}
 
+	public TaskExecutionPreconditions copy() {
+		return of(activeWindowCondition.copy());
+	}
+
 	public ActiveWindowsInfoCondition getActiveWindowCondition() {
 		return activeWindowCondition;
 	}

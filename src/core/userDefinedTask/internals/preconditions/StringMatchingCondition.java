@@ -17,6 +17,8 @@ public abstract class StringMatchingCondition implements IJsonable {
 	// Whether this is a static condition that doesn't depend on any external parameters.
 	public abstract boolean isStatic();
 
+	public abstract StringMatchingCondition copy();
+
 	public abstract String jsonTypeName();
 
 	public static StringMatchingCondition parseJSON(JsonNode node) {

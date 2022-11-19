@@ -27,6 +27,11 @@ public class AlwaysMatchingStringCondition extends StringMatchingCondition {
 	}
 
 	@Override
+	public AlwaysMatchingStringCondition copy() {
+		return INSTANCE;
+	}
+
+	@Override
 	public String jsonTypeName() {
 		return "always_valid";
 	}

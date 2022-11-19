@@ -45,6 +45,11 @@ public class RegexStringMatchingCondition extends StringMatchingCondition {
 		return regex;
 	}
 
+	@Override
+	public RegexStringMatchingCondition copy() {
+		return of(regex);
+	}
+
 	public static RegexStringMatchingCondition parseJSON(JsonNode node) {
 		String regex = node.getStringValue("regex");
 		if (!isValidRegex(regex)) {
