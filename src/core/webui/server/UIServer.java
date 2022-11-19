@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.http.ExceptionLogger;
 import org.apache.http.impl.nio.bootstrap.HttpServer;
 import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
@@ -320,7 +319,7 @@ public class UIServer extends IPCServiceWithModifablePort {
                 .setIOReactorConfig(IOReactorConfig.custom().setSoReuseAddress(true).build())
                 .setListenerPort(port)
                 .setServerInfo("Repeat")
-				.setExceptionLogger(ExceptionLogger.STD_ERR)
+				.setExceptionLogger(new UIServerExceptionLogger())
 				.registerHandler("/test", new UpAndRunningHandler())
 				.registerHandler("/static/*", new StaticFileServingHandler());
 		for (Entry<String, HttpHandlerWithBackend> entry : handlers.entrySet()) {
