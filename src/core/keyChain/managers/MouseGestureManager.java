@@ -78,8 +78,7 @@ public class MouseGestureManager extends KeyStrokeManager {
 	@Override
 	public Set<UserDefinedAction> onButtonStrokeReleased(ButtonStroke stroke) {
 		if (stroke.getKey() == getConfig().getMouseGestureActivationKey()) {
-			UserDefinedAction action = finishRecording();
-			return new HashSet<>(Arrays.asList(action));
+			return finishRecording();
 		}
 		return Collections.<UserDefinedAction>emptySet();
 	}
@@ -164,23 +163,25 @@ public class MouseGestureManager extends KeyStrokeManager {
 	/**
 	 * Finish recording the gesture. Now decode it.
 	 */
-	protected synchronized UserDefinedAction finishRecording() {
+	private synchronized Set<UserDefinedAction> finishRecording() {
 		enabled = false;
 		try {
 			MouseGesture gesture = processCurrentData();
 			if (MouseGesture.IGNORED_CLASSIFICATIONS.contains(gesture)) {
-				return null;
+				return Collections.emptySet();
 			}
 
 			UserDefinedAction task = actionMap.get(gesture);
-			if (task != null) {
-				task.setInvoker(TaskActivation.newBuilder().withMouseGesture(gesture).build());
+			if (task == null) {
+				return Collections.emptySet();
 			}
-			return task;
+
+			task.setInvoker(TaskActivation.newBuilder().withMouseGesture(gesture).build());
+			return new HashSet<>(Arrays.asList(task));
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Unable to classify recorded data", e);
 		}
-		return null;
+		return Collections.emptySet();
 	}
 
 	/**
