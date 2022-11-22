@@ -12,7 +12,7 @@ public class NativeProcessUtil {
 			return WindowsNativeProcessUtil.getActiveWindowInfo();
 		}
 		if (OSIdentifier.IS_LINUX) {
-			throw new IllegalStateException("OS is not supported.");
+			return X11NativeProcessUtil.getActiveWindowInfo();
 		}
 		if (OSIdentifier.IS_OSX) {
 			return OSXNativeProcessUtil.getActiveWindowInfo();
