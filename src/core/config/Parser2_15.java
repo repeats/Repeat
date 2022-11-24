@@ -97,7 +97,7 @@ public class Parser2_15 extends ConfigParser {
 
 			config.getBackEnd().clearTaskGroup();
 			for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
-				TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
+				TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode, ConfigParsingMode.DEFAULT);
 				if (taskGroup != null) {
 					config.getBackEnd().addTaskGroup(taskGroup);
 				}
@@ -119,7 +119,7 @@ public class Parser2_15 extends ConfigParser {
 		boolean result = true;
 
 		for (JsonNode taskGroupNode : root.getArrayNode("task_groups")) {
-			TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode);
+			TaskGroup taskGroup = TaskGroup.parseJSON(config.getCompilerFactory(), taskGroupNode, ConfigParsingMode.IMPORT_PARSING);
 			result &= taskGroup != null;
 			if (taskGroup != null) {
 				result &= config.getBackEnd().addPopulatedTaskGroup(taskGroup);

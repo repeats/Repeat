@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.config.ConfigParsingMode;
 import core.keyChain.managers.GlobalEventsManager;
 import core.languageHandler.compiler.DynamicCompilerManager;
 import utilities.json.IJsonable;
@@ -143,15 +144,15 @@ public class TaskGroup implements IJsonable {
 				);
 	}
 
-	public static TaskGroup parseJSON(DynamicCompilerManager factory, JsonNode node) {
+	public static TaskGroup parseJSON(DynamicCompilerManager factory, JsonNode node, ConfigParsingMode parseMode) {
 		try {
 			String groupId = node.getStringValue("group_id");
-			TaskGroup output = new TaskGroup("", groupId);
+			TaskGroup output = parseMode == ConfigParsingMode.DEFAULT ? new TaskGroup("", groupId) : new TaskGroup("");
 			String name = node.getStringValue("name");
 			output.name = name;
 
 			for (JsonNode task : node.getArrayNode("tasks")) {
-				UserDefinedAction action = UserDefinedAction.parseJSON(factory, task);
+				UserDefinedAction action = UserDefinedAction.parseJSON(factory, task, parseMode);
 				if (action != null) {
 					output.tasks.add(action);
 				}

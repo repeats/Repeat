@@ -979,6 +979,7 @@ public class MainBackEndHolder {
 		int existingGroupCount = taskGroups.size();
 		boolean result = config.importTaskConfig();
 		FileUtility.deleteFile(new File("tmp"));
+		FileUtility.deleteFile(new File(Config.EXPORTED_CONFIG_FILE_NAME));
 
 		if (taskGroups.size() > existingGroupCount) {
 			currentGroup = taskGroups.get(existingGroupCount); // Take the new group with lowest index.

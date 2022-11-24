@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.config.ConfigParsingMode;
 import core.controller.Core;
 import core.keyChain.KeyChain;
 import core.keyChain.MouseGesture;
@@ -272,17 +273,20 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				);
 	}
 
-	public static UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
+	public static UserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node, ConfigParsingMode parseMode) {
 		if (node.isNode("composite_action")) {
-			return CompositeUserDefinedAction.parseJSON(factory, node);
+			return CompositeUserDefinedAction.parseJSON(factory, node, parseMode);
 		}
 
-		return parsePureJSON(factory, node);
+		return parsePureJSON(factory, node, parseMode);
 	}
 
-	protected static UserDefinedAction parsePureJSON(DynamicCompilerManager factory, JsonNode node) {
+	protected static UserDefinedAction parsePureJSON(DynamicCompilerManager factory, JsonNode node, ConfigParsingMode parseMode) {
 		try {
 			String actionId = node.getStringValue("action_id");
+			if (parseMode == ConfigParsingMode.IMPORT_PARSING) {
+				actionId = UUID.randomUUID().toString();
+			}
 
 			String sourcePath = node.getStringValue("source_path");
 			AbstractNativeCompiler compiler = factory.getNativeCompiler(node.getStringValue("compiler"));
@@ -330,7 +334,7 @@ public abstract class UserDefinedAction implements IJsonable, ILoggable {
 				LOGGER.warning("Unable to retrieve statistics for task " + name);
 			}
 
-			TaskSourceHistory sourceHistory = TaskSourceHistory.parseJSON(node.getNode("source_history"));
+			TaskSourceHistory sourceHistory = TaskSourceHistory.parseJSON(node.getNode("source_history"), parseMode);
 			if (sourceHistory == null) {
 				LOGGER.warning("Unable to retrieve task source history for task " + name);
 			} else {

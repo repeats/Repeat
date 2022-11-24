@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.config.ConfigParsingMode;
 import core.controller.Core;
 import core.keyChain.TaskActivation;
 import core.languageHandler.compiler.DynamicCompilerManager;
@@ -110,7 +111,7 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 						JsonNodeFactories.field("compiler_config", clients.jsonize()))).getRootNode();
 	}
 
-	public static CompositeUserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node) {
+	public static CompositeUserDefinedAction parseJSON(DynamicCompilerManager factory, JsonNode node, ConfigParsingMode parseMode) {
 		if (!node.isNode("composite_action")) {
 			LOGGER.warning("Missing required 'composite_action' node when parsing composite user defined action.");
 			return null;
@@ -123,7 +124,7 @@ public class CompositeUserDefinedAction extends UserDefinedAction {
 			return null;
 		}
 
-		final UserDefinedAction local = UserDefinedAction.parsePureJSON(factory, node);
+		final UserDefinedAction local = UserDefinedAction.parsePureJSON(factory, node, parseMode);
 		if (local == null) {
 			LOGGER.warning("Failed to parse local action from JSON.");
 			return null;

@@ -1,13 +1,16 @@
 package core.userDefinedTask.internals;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import argo.jdom.JsonNode;
 import argo.jdom.JsonNodeFactories;
 import argo.jdom.JsonRootNode;
+import core.config.ConfigParsingMode;
 import utilities.json.IJsonable;
 
 /** Contains information about the source history of a task. */
@@ -63,7 +66,7 @@ public class TaskSourceHistory implements IJsonable {
 		return entries.stream().sorted((e1, e2) -> e2.getCreated().compareTo(e1.getCreated())).collect(Collectors.toList());
 	}
 
-	public static TaskSourceHistory parseJSON(JsonNode node) {
+	public static TaskSourceHistory parseJSON(JsonNode node, ConfigParsingMode parseMode) {
 		if (!node.isArrayNode("entries")) {
 			LOGGER.warning("Unable to retrieve task source history entries.");
 			return null;
@@ -74,6 +77,16 @@ public class TaskSourceHistory implements IJsonable {
 			String path = entry.getStringValue("path");
 			long createdTime = Long.parseLong(entry.getNumberValue("created_time"));
 			entries.add(TaskSourceHistoryEntry.of(path, createdTime));
+		}
+		if (parseMode == ConfigParsingMode.IMPORT_PARSING) {
+			// Only retain the latest entry.
+			Optional<TaskSourceHistoryEntry> latest = entries.stream().sorted(Comparator.comparing(TaskSourceHistoryEntry::getCreated).reversed()).findFirst();
+			if (!latest.isPresent()) {
+				entries = new ArrayList<>();
+			} else {
+				entries = new ArrayList<>();
+				entries.add(latest.get());
+			}
 		}
 
 		TaskSourceHistory result = new TaskSourceHistory();
