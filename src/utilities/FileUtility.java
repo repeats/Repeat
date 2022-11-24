@@ -523,9 +523,10 @@ public class FileUtility {
 	 * @param filteringFunction the function to filter files by. Only files with returned value true will be extracted.
 	 * @param postProcessingFunction to perform any post processing of the extracted file.
 	 * @throws IOException
+	 * @throws URISyntaxException
 	 */
-	public static void extractFromCurrentJar(String path, File destination, Function<String, Boolean> filteringFunction, Function<String, Boolean> postProcessingFunction) throws IOException {
-		final File jarFile = new File(BlankClass.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+	public static void extractFromCurrentJar(String path, File destination, Function<String, Boolean> filteringFunction, Function<String, Boolean> postProcessingFunction) throws IOException, URISyntaxException {
+		final File jarFile = new File(BlankClass.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 
 		if (jarFile.isFile()) {// Run with JAR file
 		    final JarFile jar = new JarFile(jarFile);

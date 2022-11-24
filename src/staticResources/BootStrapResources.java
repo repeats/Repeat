@@ -3,6 +3,7 @@ package staticResources;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class BootStrapResources {
 		return NATIVE_BOOTSTRAP_RESOURCES.get(language);
 	}
 
-	public static void extractResources() throws IOException {
+	public static void extractResources() throws IOException, URISyntaxException {
 		for (BootstrapResourcesExtrator resource : BOOTSTRAP_RESOURCES) {
 			resource.extractResources();
 		}

@@ -1,6 +1,7 @@
 package frontEnd;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ public class MainFrontEnd {
 		/********************************Extracting resources*********************************/
 		try {
 			BootStrapResources.extractResources();
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			LOGGER.log(Level.SEVERE, "Cannot extract bootstrap resources.", e);
 			System.exit(2);
 		}
