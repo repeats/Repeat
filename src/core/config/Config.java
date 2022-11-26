@@ -31,7 +31,7 @@ public class Config implements ILoggable {
 	public static final String EXPORTED_CONFIG_FILE_NAME = "exported_" + CONFIG_FILE_NAME;
 	protected static final String CURRENT_CONFIG_VERSION = "2.15";
 
-	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.WARNING;
+	private static final Level DEFAULT_NATIVE_HOOK_DEBUG_LEVEL = Level.INFO;
 	private static final boolean DEFAULT_TRAY_ICON_USE = true;
 
 	private static final List<ConfigParser> knownParsers;
