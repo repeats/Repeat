@@ -172,17 +172,17 @@ public class HttpServerUtilities {
 	}
 
 	public static Void prepareTextResponse(HttpAsyncExchange exchange, int code, String data) throws IOException {
-		return prepareStringResponse(exchange, code, data, "text/plain");
+		return prepareStringResponse(exchange, code, data, "text/plain; charset=utf-8");
 	}
 
 	public static Void prepareJsonResponse(HttpAsyncExchange exchange, int code, JsonNode data) throws IOException {
-		return prepareStringResponse(exchange, code, JSONUtility.jsonToSingleLineString(data), "application/json");
+		return prepareStringResponse(exchange, code, JSONUtility.jsonToSingleLineString(data), "application/json; charset=utf-8");
 	}
 
 	private static Void prepareStringResponse(HttpAsyncExchange exchange, int code, String data, String contentType) throws IOException {
 		HttpResponse response = exchange.getResponse();
 		response.setStatusCode(code);
-		StringEntity entity = new StringEntity(data);
+		StringEntity entity = new StringEntity(data, "UTF-8");
 		entity.setContentEncoding("UTF-8");
 		entity.setContentType(contentType);
 		response.setEntity(entity);
